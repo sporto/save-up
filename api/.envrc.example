@@ -1,0 +1,2 @@
+export DATABASE_URL=postgres://postgres@localhost/inn_dev
+export DATABASE_URL_TEST=xx

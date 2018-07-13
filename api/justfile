@@ -1,0 +1,18 @@
+up:
+  diesel migration run
+
+up-test:
+  DATABASE_URL=$DATABASE_URL_TEST diesel migration run
+
+schema:
+  diesel print-schema > src/models/schema.rs
+
+build:
+  cargo build
+
+run: build
+  cargo run
+
+test:
+  APP_ENV=test cargo test
+
