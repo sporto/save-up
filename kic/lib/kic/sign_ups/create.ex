@@ -1,4 +1,4 @@
-defmodule Kic.SignUps do
+defmodule Kic.SignUps.Create do
 
   def call do
     "Hello"

@@ -1,13 +1,12 @@
-defmodule Kic.SignUpsTest do
+defmodule Kic.SignUps.CreateTest do
   use Kic.DataCase
 
-  alias Kic.SignUps
+  alias Kic.SignUps.Create
 
   describe "sign_ups" do
-    alias Kic.SignUps.SignUp
 
     test "it works" do
-      res = SignUps.call()
+      res = Create.call()
       assert(res == "Hello")
     end
 
