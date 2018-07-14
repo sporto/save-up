@@ -1,0 +1,57 @@
+<% label_class = "blocktext-sm font-bold" %>
+<% input_class = "appearance-none border w-full py-2 px-3 text-grey-darker leading-tight mt-1" %>
+<div class="flex items-center justify-center pt-16">
+  <section>
+    <h1>Sign up</h1>
+    <div class="bg-white shadow-md rounded p-8 mt-3">
+      <%= form_for @conn, sign_up_path(@conn, :create), fn f -> %>
+        <p class="">
+          <label
+            for="name"
+            class="<%= label_class %>"
+            >
+            Name
+          </label>
+          <input
+            type="text"
+            name="sign_up[name]"
+            class="<%= input_class %>"
+          />
+        </p>
+        <p class="mt-6">
+          <label
+            for="email"
+            class="<%= label_class %>"
+            >
+            Email
+          </label>
+          <input
+            type="email"
+            name="sign_up[email]"
+            class="<%= input_class %>"
+            />
+        </p>
+        <p class="mt-6">
+          <label
+            for="email"
+            class="<%= label_class %>"
+            >
+            Password
+          </label>
+          <input
+            type="password"
+            name="sign_up[password]"
+            class="<%= input_class %>"
+            />
+        </p>
+        <p class="mt-6">
+          <input
+            class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded"
+            type="submit"
+            value="Sign up" />
+        </p>
+      <% end %>
+    </div>
+  </section>
+</div>
+
