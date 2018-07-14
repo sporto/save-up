@@ -9,7 +9,10 @@
 	<div class="flex items-center justify-center pt-16">
 		<section>
 			<h1>Sign up</h1>
-			<form class="bg-white shadow-md rounded p-8 mt-3">
+			<form
+				action="/sign_up"
+				method="POST"
+				class="bg-white shadow-md rounded p-8 mt-3">
 				<p class="">
 					<label
 						for="name"
@@ -48,6 +51,12 @@
 						name="password"
 						class="{{ input_class }}"
 						/>
+				</p>
+				<p class="mt-6">
+					<input
+						class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded"
+						type="submit"
+						value="Sign up" />
 				</p>
 			</form>
 		</section>

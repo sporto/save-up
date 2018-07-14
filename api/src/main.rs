@@ -1,5 +1,6 @@
 #![feature(plugin)]
 #![plugin(rocket_codegen)]
+#![feature(custom_derive)]
 
 extern crate rocket;
 extern crate rocket_contrib;
@@ -114,6 +115,7 @@ fn rocket() -> Rocket {
 	let routes = routes![
 		handlers::index,
 		handlers::sign_up,
+		handlers::sign_up_create,
 		seed,
 		graphiql,
 		get_graphql_handler,

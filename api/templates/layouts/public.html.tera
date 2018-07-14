@@ -6,7 +6,7 @@
     <title>{% block title %}{% endblock title %} - My Webpage</title>
     {% endblock head %}
 </head>
-<body class="bg-grey">
+<body class="bg-grey-light">
     <div>{% block content %}{% endblock content %}</div>
 </body>
 </html>
