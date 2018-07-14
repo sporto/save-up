@@ -2,7 +2,6 @@ use super::schema::clients;
 use diesel;
 use diesel::prelude::*;
 use diesel::result::Error;
-use utils::ids::{hash_id, unhash_id};
 
 use diesel::pg::PgConnection;
 
@@ -22,19 +21,8 @@ pub struct ClientAttrs {
 }
 
 impl Client {
-	#[allow(dead_code)]
-	pub fn hash_id(id: i32) -> String {
-		hash_id(id, RESOURCE_KIND)
-	}
-
-	#[allow(dead_code)]
-	pub fn unhash_id(id: &str) -> i32 {
-		unhash_id(id, RESOURCE_KIND)
-	}
-
 	// Create
-	#[allow(dead_code)]
-	pub fn add(conn: &PgConnection, attrs: ClientAttrs) -> Result<Client, Error> {
+	pub fn create(conn: &PgConnection, attrs: ClientAttrs) -> Result<Client, Error> {
 		diesel::insert_into(clients::dsl::clients)
 			.values(&attrs)
 			.get_results(conn)

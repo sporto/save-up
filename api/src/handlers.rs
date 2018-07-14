@@ -1,5 +1,8 @@
 use rocket_contrib::Template;
+use db;
 use rocket::request::Form;
+use services::sign_ups;
+
 
 #[get("/")]
 fn index() -> String {
@@ -13,21 +16,22 @@ struct TemplateContext {
 
 #[get("/sign_up")]
 fn sign_up() -> Template {
+
 	let context = TemplateContext {
 		name: "Hello".to_string(),
 	};
+
 	Template::render("sign_up", &context)
 }
 
-#[derive(FromForm)]
-struct SignUpForm {
-	name: String,
-	email: String,
-	password: String,
-}
-
-
 #[post("/sign_up", data = "<sign_up_form>")]
-fn sign_up_create(sign_up_form: Form<SignUpForm>) -> String {
+fn sign_up_create(conn: db::Conn, sign_up_form: Form<sign_ups::create::SignUp>) -> String {
+
+	let res =
+		sign_ups::create::call(
+			&conn,
+			sign_up_form.get().clone()
+		);
+
 	format!("Ok")
 }

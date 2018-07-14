@@ -8,8 +8,10 @@ use diesel::result::Error;
 pub struct User {
 	pub id: i32,
 	pub client_id: i32,
+	pub role: String,
 	pub name: String,
 	pub email: String,
+	pub encrypted_password: String,
 	pub timezone: String,
 }
 
@@ -17,14 +19,16 @@ pub struct User {
 #[table_name = "users"]
 pub struct UserAttrs {
 	pub client_id: i32,
+	pub role: String,
 	pub name: String,
 	pub email: String,
+	pub encrypted_password: String,
 	pub timezone: String,
 }
 
 impl User {
 	// Create
-	pub fn add(conn: &PgConnection, attrs: UserAttrs) -> Result<User, Error> {
+	pub fn create(conn: &PgConnection, attrs: UserAttrs) -> Result<User, Error> {
 		diesel::insert_into(users::dsl::users)
 			.values(&attrs)
 			.get_results(conn)

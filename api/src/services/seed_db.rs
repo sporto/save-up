@@ -20,25 +20,25 @@ pub fn run(conn: db::Conn) -> bool {
 }
 
 fn seed(conn: db::Conn) -> Result<String, String> {
-	let _ = User::delete_all(&conn);
-	let _ = Client::delete_all(&conn);
+	// let _ = User::delete_all(&conn);
+	// let _ = Client::delete_all(&conn);
 
-	let client_attrs = ClientAttrs {
-		name: "Basil".to_string(),
-	};
+	// let client_attrs = ClientAttrs {};
 
-	Client::add(&conn, client_attrs)
-		.map_err(|e| format!("{:?}", e))
-		.map(|client| {
-			let user_attrs = UserAttrs {
-				client_id: client.id,
-				name: "Sam Sample".to_string(),
-				email: "sam@sample.com".to_string(),
-				timezone: "Australia/Melbourne".to_string(),
-			};
+	// Client::create(&conn, client_attrs)
+	// 	.map_err(|e| format!("{:?}", e))
+	// 	.map(|client| {
+	// 		let user_attrs = UserAttrs {
+	// 			client_id: client.id,
+	// 			name: "Sam Sample".to_string(),
+	// 			email: "sam@sample.com".to_string(),
+	// 			timezone: "Australia/Melbourne".to_string(),
+	// 		};
 
-			let _ = User::add(&conn, user_attrs);
+	// 		let _ = User::add(&conn, user_attrs);
 
-			"Ok".to_string()
-		})
+	// 		"Ok".to_string()
+	// 	})
+
+	Err("Not implemented".to_string())
 }
