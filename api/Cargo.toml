@@ -15,7 +15,6 @@ r2d2-diesel = "1.0.0"
 regex = "0.2.5"
 rocket = "0.3.14"
 rocket_codegen = "0.3.14"
-rocket_contrib = "0.3.14"
 rocket_cors = "0.2.3"
 serde = "1.0"
 serde_derive = "1.0"
@@ -26,6 +25,11 @@ validator_derive = "0.7"
 [dependencies.hashids]
 git = "https://github.com/charsyam/hashids_rust.git"
 version = "1.0.0"
+
+[dependencies.rocket_contrib]
+version = "*"
+default-features = false
+features = ["tera_templates"]
 
 [dev-dependencies]
 fake = "*"

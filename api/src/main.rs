@@ -15,6 +15,8 @@ extern crate juniper;
 extern crate juniper_codegen;
 extern crate juniper_rocket;
 #[macro_use]
+extern crate serde_derive;
+#[macro_use]
 extern crate validator_derive;
 
 extern crate hashids;
@@ -31,8 +33,10 @@ mod models;
 mod utils;
 mod graph;
 mod services;
+mod handlers;
 // #[cfg(test)] mod test;
 
+// use handlers;
 use rocket::response::NamedFile;
 use std::path::{Path, PathBuf};
 use juniper::RootNode;
@@ -41,17 +45,13 @@ use rocket::State;
 use rocket::response::content;
 use rocket::http::Method;
 use rocket_cors::{AllowedHeaders, AllowedOrigins};
+use rocket_contrib::Template;
 
 type Schema = RootNode<'static, graph::query_root::QueryRoot, graph::mutation_root::MutationRoot>;
 
 #[get("/assets/<file..>")]
 fn assets(file: PathBuf) -> Option<NamedFile> {
 	NamedFile::open(Path::new("assets/").join(file)).ok()
-}
-
-#[get("/")]
-fn index() -> String {
-	format!("Hello")
 }
 
 #[get("/seed")]
@@ -112,7 +112,8 @@ fn rocket() -> Rocket {
 	};
 
 	let routes = routes![
-		index,
+		handlers::index,
+		handlers::sign_up,
 		seed,
 		graphiql,
 		get_graphql_handler,
@@ -126,6 +127,7 @@ fn rocket() -> Rocket {
 		.manage(Schema::new(query_root, mutation_root))
 		.mount("/", routes)
 		.attach(options)
+		.attach(Template::fairing())
 }
 
 fn main() {
