@@ -5,6 +5,9 @@ use diesel::prelude::*;
 use diesel::result::Error;
 use validator::Validate;
 
+pub const ROLE_PARENT: &str = "parent";
+pub const ROLE_CHILDREN: &str = "children";
+
 #[derive(Queryable, GraphQLObject, Debug)]
 pub struct User {
     pub id: i32,

@@ -1,12 +1,12 @@
+use bcrypt::{hash, DEFAULT_COST};
 use diesel::dsl::exists;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::select;
-use bcrypt::{DEFAULT_COST, hash};
 use models::clients::{Client, ClientAttrs};
 // use models::errors::UpdateResult;
 // use models::schema::clients;
-use models::users::{User, UserAttrs};
+use models::users::{User, UserAttrs, ROLE_PARENT};
 // use rocket::request::Form;
 use models::schema::users;
 use validator::Validate;
@@ -24,7 +24,7 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, String> {
     // Validate the user attrs
     let temp_user_attrs = UserAttrs {
         client_id: 1,
-        role: "parent".to_string(),
+        role: ROLE_PARENT.to_string(),
         name: sign_up.name.clone(),
         email: sign_up.email.clone(),
         password_hash: "abc".to_owned(),
@@ -53,7 +53,7 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, String> {
                 .and_then(|client| {
                     let user_attrs = UserAttrs {
                         client_id: client.id,
-                        role: "parent".to_string(),
+                        role: ROLE_PARENT.to_string(),
                         name: sign_up.name,
                         email: sign_up.email,
                         password_hash: password_hash,
