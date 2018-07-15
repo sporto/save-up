@@ -3,6 +3,7 @@ use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
+use validator::Validate;
 
 #[derive(Queryable, GraphQLObject, Debug)]
 pub struct User {
@@ -15,12 +16,14 @@ pub struct User {
     pub timezone: String,
 }
 
-#[derive(Insertable)]
+#[derive(Insertable, Validate)]
 #[table_name = "users"]
 pub struct UserAttrs {
     pub client_id: i32,
     pub role: String,
+    #[validate(length(min = "1"))]
     pub name: String,
+    #[validate(email)]
     pub email: String,
     pub password_hash: String,
     pub timezone: String,
