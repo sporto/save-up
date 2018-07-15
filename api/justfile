@@ -16,6 +16,9 @@ build:
 run: build
   cargo run
 
+watch:
+  cargo watch -x run
+
 test:
   APP_ENV=test cargo test
 
