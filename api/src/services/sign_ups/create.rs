@@ -73,7 +73,7 @@ mod tests {
             assert!(result.is_ok());
 
             let user = result.unwrap();
-            println!("{:?}", user.password_hash);
+            // println!("{:?}", user.password_hash);
 
             assert_eq!(user.name, "Sam".to_owned());
             assert_eq!(user.email, "sam@sample.com".to_owned());
