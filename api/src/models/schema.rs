@@ -12,7 +12,7 @@ table! {
         role -> Varchar,
         name -> Varchar,
         email -> Varchar,
-        encrypted_password -> Varchar,
+        password_hash -> Varchar,
         timezone -> Varchar,
     }
 }

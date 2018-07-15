@@ -2,12 +2,14 @@ use diesel::dsl::exists;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::select;
+use bcrypt::{DEFAULT_COST, hash};
 use models::clients::{Client, ClientAttrs};
 // use models::errors::UpdateResult;
 // use models::schema::clients;
 use models::users::{User, UserAttrs};
 // use rocket::request::Form;
 use models::schema::users;
+use utils::tests::with_db;
 
 #[derive(FromForm, Clone)]
 pub struct SignUp {
@@ -30,6 +32,8 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, String> {
                 name: sign_up.name.clone(),
             };
 
+            let password_hash = hash(&sign_up.password, DEFAULT_COST).map_err(|e| e.to_string())?;
+
             // Create client and then user
             Client::create(conn, client_attrs)
                 .and_then(|client| {
@@ -38,7 +42,7 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, String> {
                         role: "parent".to_string(),
                         name: sign_up.name,
                         email: sign_up.email,
-                        encrypted_password: "ABC".to_string(),
+                        password_hash: password_hash,
                         timezone: sign_up.timezone,
                     };
 
@@ -47,5 +51,35 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, String> {
                 .map_err(|e| e.to_string())
         }
         Err(e) => Err(e.to_string()),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_creates_a_client_and_user() {
+        tests::with_db(|conn| {
+            let attrs = SignUp {
+                name: "Sam".to_string(),
+                email: "sam@sample.com".to_string(),
+                password: "password".to_string(),
+                timezone: "TZ".to_string(),
+            };
+
+            let result = call(conn, attrs);
+
+            assert!(result.is_ok());
+
+            let user = result.unwrap();
+            println!("{:?}", user.password_hash);
+
+            assert_eq!(user.name, "Sam".to_owned());
+            assert_eq!(user.email, "sam@sample.com".to_owned());
+            assert_eq!(user.role, "parent".to_owned());
+            assert_ne!(user.password_hash, "password".to_owned());
+
+        })
     }
 }
