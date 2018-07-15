@@ -54,6 +54,7 @@ impl Client {
     }
 
     // Delete
+    #[allow(dead_code)]
     pub fn delete_all(conn: &PgConnection) -> Result<usize, Error> {
         diesel::delete(clients::table).execute(conn)
     }

@@ -24,7 +24,7 @@ fn sign_up() -> Template {
 
 #[post("/sign_up", data = "<sign_up_form>")]
 fn sign_up_create(conn: db::Conn, sign_up_form: Form<sign_ups::create::SignUp>) -> String {
-    let res = sign_ups::create::call(&conn, sign_up_form.get().clone());
+    let _res = sign_ups::create::call(&conn, sign_up_form.get().clone());
 
     format!("Ok")
 }
