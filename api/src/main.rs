@@ -5,6 +5,7 @@
 extern crate rocket;
 extern crate rocket_contrib;
 extern crate validator;
+extern crate bcrypt;
 
 // #[cfg(test)] #[macro_use] extern crate hamcrest;
 #[macro_use]

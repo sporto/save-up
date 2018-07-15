@@ -4,6 +4,9 @@ up:
 up-test:
   DATABASE_URL=$DATABASE_URL_TEST diesel migration run
 
+setup-test:
+  DATABASE_URL=$DATABASE_URL_TEST diesel setup
+
 schema:
   diesel print-schema > src/models/schema.rs
 

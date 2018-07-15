@@ -4,14 +4,14 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
 
-#[derive(Queryable, GraphQLObject)]
+#[derive(Queryable, GraphQLObject, Debug)]
 pub struct User {
     pub id: i32,
     pub client_id: i32,
     pub role: String,
     pub name: String,
     pub email: String,
-    pub encrypted_password: String,
+    pub password_hash: String,
     pub timezone: String,
 }
 
@@ -22,7 +22,7 @@ pub struct UserAttrs {
     pub role: String,
     pub name: String,
     pub email: String,
-    pub encrypted_password: String,
+    pub password_hash: String,
     pub timezone: String,
 }
 

@@ -4,6 +4,6 @@ CREATE TABLE users (
   role VARCHAR NOT NULL,
   name VARCHAR NOT NULL,
   email VARCHAR NOT NULL,
-  encrypted_password VARCHAR NOT NULL,
+  password_hash VARCHAR NOT NULL,
   timezone VARCHAR NOT NULL
 )
