@@ -1,0 +1,8 @@
+{% extends "layouts/public" %}
+
+{% block content %}
+<h1>Welcome</h1>
+<ul>
+    <li><a href="/sign_up">Sign Up</a></li>
+</ul>
+{% endblock content %}

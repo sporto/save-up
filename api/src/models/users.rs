@@ -5,8 +5,8 @@ use diesel::prelude::*;
 use diesel::result::Error;
 use validator::Validate;
 
-pub const ROLE_PARENT: &str = "parent";
-pub const ROLE_CHILDREN: &str = "children";
+pub const ROLE_ADMIN: &str = "admin";
+pub const ROLE_INVESTOR: &str = "investor";
 
 #[derive(Queryable, GraphQLObject, Debug)]
 pub struct User {

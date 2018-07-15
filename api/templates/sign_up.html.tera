@@ -1,6 +1,5 @@
 {% extends "layouts/public" %}
 
-
 {% block title %}Sign up{% endblock title %}
 
 {% block content %}
@@ -52,6 +51,11 @@
 						class="{{ input_class }}"
 						/>
 				</p>
+                <input
+                    type="hidden"
+                    name="timezone"
+                    value="Australia/Melbourne"
+                    />
 				<p class="mt-6">
 					<input
 						class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded"
