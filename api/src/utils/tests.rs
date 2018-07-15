@@ -1,16 +1,17 @@
 use chrono::NaiveDate;
-use diesel::result::Error;
-use diesel::pg::PgConnection;
-use diesel::Connection;
 use db;
+use diesel::pg::PgConnection;
+use diesel::result::Error;
+use diesel::Connection;
 use models::bookings::{Booking, BookingAttrs};
 use models::clients::{Client, ClientAttrs};
-use models::rooms::{Room, RoomAttrs};
 use models::room_bookings::{RoomBooking, RoomBookingAttrs};
+use models::rooms::{Room, RoomAttrs};
 use models::venues::{Venue, VenueAttrs};
 
 pub fn with_db<F>(f: F) -> ()
-    where F: Fn(&PgConnection) -> ()
+where
+    F: Fn(&PgConnection) -> (),
 {
     let conn = db::get_test_connection();
 
@@ -18,12 +19,13 @@ pub fn with_db<F>(f: F) -> ()
         f(&conn);
         Ok(())
     });
-
 }
 
 // Client
 pub fn client() -> ClientAttrs {
-    ClientAttrs { name: "Client".to_string() }
+    ClientAttrs {
+        name: "Client".to_string(),
+    }
 }
 
 impl ClientAttrs {
@@ -54,10 +56,10 @@ impl VenueAttrs {
 
 // Room
 pub fn room(venue: &Venue) -> RoomAttrs {
-   RoomAttrs {
-       venue_id: venue.id,
-       name: "Room".to_owned(),
-   }
+    RoomAttrs {
+        venue_id: venue.id,
+        name: "Room".to_owned(),
+    }
 }
 
 impl RoomAttrs {
@@ -82,7 +84,6 @@ impl BookingAttrs {
 
 // Room Booking
 pub fn room_booking(room: &Room, booking: &Booking) -> RoomBookingAttrs {
-
     RoomBookingAttrs {
         room_id: room.id,
         booking_id: booking.id,
@@ -105,5 +106,4 @@ impl RoomBookingAttrs {
     pub fn save(self, conn: &PgConnection) -> RoomBooking {
         RoomBooking::add(conn, self).unwrap()
     }
-
 }

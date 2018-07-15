@@ -10,7 +10,7 @@ use models::clients::*;
 use models::users::*;
 
 pub struct Context {
-	pub pool: r2d2::Pool<r2d2_diesel::ConnectionManager<PgConnection>>,
+    pub pool: r2d2::Pool<r2d2_diesel::ConnectionManager<PgConnection>>,
 }
 
 impl JuniperContext for Context {}
