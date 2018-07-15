@@ -1,12 +1,19 @@
 use db;
+use rocket::http::{Cookie, Cookies};
 use rocket::request::Form;
 use rocket::response::Redirect;
 use rocket_contrib::Template;
 use services::sign_ups;
 
+#[derive(Serialize)]
+struct RootView {
+}
+
 #[get("/")]
-fn index() -> String {
-    format!("Hello")
+fn index() -> Template {
+    let context = RootView {};
+
+    Template::render("root", &context)
 }
 
 #[derive(Serialize)]
@@ -26,10 +33,14 @@ fn sign_up() -> Template {
 #[post("/sign_up", data = "<sign_up_form>")]
 fn sign_up_create(
     conn: db::Conn,
+    mut cookies: Cookies,
     sign_up_form: Form<sign_ups::create::SignUp>,
 ) -> Result<Redirect, Template> {
     sign_ups::create::call(&conn, sign_up_form.get().clone())
-        .map(|_user| Redirect::to("/home"))
+        .map(|user| {
+            cookies.add_private(Cookie::new("user_id", user.id.to_string()));
+            Redirect::to("/admins/home")
+        })
         .map_err(|e| {
             let context = SignUpView {
                 error: e.to_string(),
@@ -37,6 +48,4 @@ fn sign_up_create(
 
             Template::render("sign_up", &context)
         })
-
-    // format!("Ok")
 }
