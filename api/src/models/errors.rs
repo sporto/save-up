@@ -1,6 +1,7 @@
 use diesel::result::Error;
 use validator::ValidationErrors;
 
+#[allow(dead_code)]
 pub enum UpdateResult<T> {
     DbErr(Error),
     ValidationErr(ValidationErrors),
@@ -8,6 +9,7 @@ pub enum UpdateResult<T> {
 }
 
 impl<T> UpdateResult<T> {
+    #[allow(dead_code)]
     pub fn is_ok(self) -> bool {
         match self {
             UpdateResult::Ok(_) => true,
@@ -15,6 +17,7 @@ impl<T> UpdateResult<T> {
         }
     }
 
+    #[allow(dead_code)]
     pub fn unwrap(self) -> T {
         match self {
             UpdateResult::DbErr(error) => panic!("{:?}", error),

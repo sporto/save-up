@@ -1,9 +1,9 @@
 use graph::query_root::Context;
-use juniper::{FieldError, FieldResult};
+// use juniper::{FieldError, FieldResult};
 use validator::{ValidationError, ValidationErrors};
 
-use models::errors::UpdateResult;
-use services;
+// use models::errors::UpdateResult;
+// use services;
 
 pub struct MutationRoot;
 
@@ -13,6 +13,7 @@ struct MutationError {
     messages: Vec<String>,
 }
 
+#[allow(dead_code)]
 fn to_mutation_errors(errors: ValidationErrors) -> Vec<MutationError> {
     errors
         .inner()
@@ -24,6 +25,7 @@ fn to_mutation_errors(errors: ValidationErrors) -> Vec<MutationError> {
         .collect()
 }
 
+#[allow(dead_code)]
 fn to_mutation_error_messages(errors: Vec<ValidationError>) -> Vec<String> {
     errors
         .iter()

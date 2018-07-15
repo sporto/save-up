@@ -3,7 +3,7 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::select;
 use models::clients::{Client, ClientAttrs};
-use models::errors::UpdateResult;
+// use models::errors::UpdateResult;
 // use models::schema::clients;
 use models::users::{User, UserAttrs};
 // use rocket::request::Form;
@@ -18,7 +18,7 @@ pub struct SignUp {
 }
 
 pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, String> {
-    let filter = users::table.filter(users::email.eq(sign_up.email));
+    let filter = users::table.filter(users::email.eq(sign_up.email.clone()));
 
     let existing = select(exists(filter)).get_result(conn);
 
@@ -26,7 +26,9 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, String> {
         Ok(true) => Err("Already taken".to_owned()),
 
         Ok(false) => {
-            let client_attrs = ClientAttrs { name: sign_up.name };
+            let client_attrs = ClientAttrs {
+                name: sign_up.name.clone(),
+            };
 
             // Create client and then user
             Client::create(conn, client_attrs)
@@ -43,14 +45,6 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, String> {
                     User::create(conn, user_attrs)
                 })
                 .map_err(|e| e.to_string())
-
-            // match result {
-            // 	UpdateResult::Ok(rb) => Ok(rb),
-
-            // 	UpdateResult::ValidationErr(_e) => Err("Validation Error".to_owned()),
-
-            // 	UpdateResult::DbErr(e) => Err(e.to_string()),
-            // }
         }
         Err(e) => Err(e.to_string()),
     }

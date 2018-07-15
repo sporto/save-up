@@ -1,6 +1,6 @@
 use db;
-use models::clients::{Client, ClientAttrs};
-use models::users::{User, UserAttrs};
+// use models::clients::{Client, ClientAttrs};
+// use models::users::{User, UserAttrs};
 use utils::config;
 
 pub fn run(conn: db::Conn) -> bool {
@@ -19,7 +19,7 @@ pub fn run(conn: db::Conn) -> bool {
     }
 }
 
-fn seed(conn: db::Conn) -> Result<String, String> {
+fn seed(_conn: db::Conn) -> Result<String, String> {
     // let _ = User::delete_all(&conn);
     // let _ = Client::delete_all(&conn);
 

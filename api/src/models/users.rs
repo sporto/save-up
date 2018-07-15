@@ -48,6 +48,7 @@ impl User {
     }
 
     // Delete
+    #[allow(dead_code)]
     pub fn delete_all(conn: &PgConnection) -> Result<usize, Error> {
         diesel::delete(users::table).execute(conn)
     }

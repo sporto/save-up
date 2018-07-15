@@ -17,7 +17,7 @@ extern crate juniper_codegen;
 extern crate juniper_rocket;
 #[macro_use]
 extern crate serde_derive;
-extern crate validator_derive;
+// extern crate validator_derive;
 
 extern crate hashids;
 
