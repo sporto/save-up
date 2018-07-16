@@ -1,9 +1,35 @@
 use db;
+use std::collections::HashMap;
 use rocket::http::{Cookie, Cookies};
-use rocket::request::Form;
-use rocket::response::Redirect;
+use rocket::request::{self, FlashMessage, Form, FromRequest, Request};
+use rocket::response::{Redirect, Flash};
 use rocket_contrib::Template;
+use rocket::outcome::IntoOutcome;
 use services::sign_ups;
+use models::users::User;
+
+impl<'a, 'r> FromRequest<'a, 'r> for User {
+    type Error = ();
+
+    fn from_request(request: &'a Request<'r>) -> request::Outcome<User, ()> {
+        request.cookies()
+            .get_private("user_id")
+            .and_then(|cookie| cookie.value().parse().ok())
+            .map(|id| 
+                // TODO find the users in the DB
+                User {
+                    id: id,
+                    client_id: 1,
+                    role: "Jaom".to_owned(),
+                    name: "Sam".to_owned(),
+                    email: "Sam".to_owned(),
+                    password_hash: "Sam".to_owned(),
+                    timezone: "Sam".to_owned(),
+                }
+            )
+            .or_forward(())
+    }
+}
 
 #[derive(Serialize)]
 struct RootView {
@@ -50,8 +76,49 @@ fn sign_up_create(
         })
 }
 
-#[get("/admins/home")]
-fn admins_home() -> Template {
+#[get("/sign_in")]
+fn sign_in(flash: Option<FlashMessage>) -> Template {
+    let mut context = HashMap::new();
+
+    if let Some(ref msg) = flash {
+        context.insert("flash", msg.msg());
+    }
+
+    Template::render("sign_in", &context)
+}
+
+#[derive(FromForm)]
+struct SignIn {
+    email: String,
+    password: String
+}
+
+#[post("/sign_in", data = "<sign_in>")]
+fn sign_in_create(mut cookies: Cookies, sign_in: Form<SignIn>) -> Result<Redirect, Flash<Redirect>> {
+    if sign_in.get().email == "sam@sample.com" && sign_in.get().password == "password" {
+        cookies.add_private(Cookie::new("user_id", 1.to_string()));
+        Ok(Redirect::to("/admins/home"))
+    } else {
+        Err(Flash::error(Redirect::to("/sign_in"), "Invalid email or password."))
+    }
+}
+
+#[post("/sign_out")]
+fn sign_out(mut cookies: Cookies) -> Flash<Redirect> {
+    cookies.remove_private(Cookie::named("user_id"));
+
+    // Redirect::to(uri!(sign_in)),
+
+    Flash::success(
+        Redirect::to("/"),
+        "Successfully logged out.",
+    )
+}
+
+// Admins
+
+#[get("/home")]
+fn admins_home(user: User) -> Template {
     let context = SignUpView {
         error: "".to_string(),
     };

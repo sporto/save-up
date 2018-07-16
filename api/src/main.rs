@@ -117,7 +117,9 @@ fn rocket() -> Rocket {
         handlers::index,
         handlers::sign_up,
         handlers::sign_up_create,
-        handlers::admins_home,
+        handlers::sign_in,
+        handlers::sign_in_create,
+        handlers::sign_out,
         seed,
         graphiql,
         get_graphql_handler,
@@ -125,11 +127,16 @@ fn rocket() -> Rocket {
         assets
     ];
 
+    let admin_routes = routes![
+        handlers::admins_home,
+    ];
+
     rocket::ignite()
         .manage(pool.clone())
         .manage(graph::query_root::Context { pool: pool })
         .manage(Schema::new(query_root, mutation_root))
         .mount("/", routes)
+        .mount("/admins/", admin_routes)
         .attach(options)
         .attach(Template::fairing())
 }
