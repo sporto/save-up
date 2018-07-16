@@ -3,6 +3,7 @@
 {% block content %}
 <h1>Welcome</h1>
 <ul>
+    <li><a href="/sign_in">Sign In</a></li>
     <li><a href="/sign_up">Sign Up</a></li>
 </ul>
 {% endblock content %}

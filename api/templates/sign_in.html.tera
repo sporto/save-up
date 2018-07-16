@@ -1,0 +1,54 @@
+{% extends "layouts/public" %}
+
+{% block title %}Sign in{% endblock title %}
+
+{% block content %}
+	{% set label_class = "blocktext-sm font-bold" %}
+	{% set input_class = "appearance-none border w-full py-2 px-3 text-grey-darker leading-tight mt-1" %}
+	<div class="flex items-center justify-center pt-16">
+		<section>
+			<h1>Sign in</h1>
+			<form
+				action="/sign_in"
+				method="POST"
+				class="bg-white shadow-md rounded p-8 mt-3">
+                {%if flash %}
+                    <p>Error: {{ flash }}</p>
+                {% endif %}
+				<p class="mt-6">
+					<label
+						for="email"
+						class="{{ label_class }}"
+						>
+						Email
+					</label>
+					<input
+						type="email"
+						name="email"
+						class="{{ input_class }}" 
+						 />
+				</p>
+				<p class="mt-6">
+					<label
+						for="email"
+						class="{{ label_class }}"
+						>
+						Password
+					</label>
+					<input
+						type="password"
+						name="password"
+						class="{{ input_class }}"
+						/>
+				</p>
+				<p class="mt-6">
+					<input
+						class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded"
+						type="submit"
+						value="Sign in" />
+				</p>
+			</form>
+		</section>
+	</div>
+{% endblock content %}
+
