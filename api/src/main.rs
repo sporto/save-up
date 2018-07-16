@@ -117,6 +117,7 @@ fn rocket() -> Rocket {
         handlers::index,
         handlers::sign_up,
         handlers::sign_up_create,
+        handlers::admins_home,
         seed,
         graphiql,
         get_graphql_handler,
