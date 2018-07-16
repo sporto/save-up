@@ -128,7 +128,8 @@ fn rocket() -> Rocket {
     ];
 
     let admin_routes = routes![
-        handlers::admins_home,
+        handlers::admins,
+        handlers::admins_empty,
     ];
 
     rocket::ignite()

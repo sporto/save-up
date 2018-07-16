@@ -11,9 +11,10 @@ use models::users::User;
 impl<'a, 'r> FromRequest<'a, 'r> for User {
     type Error = ();
 
-    fn from_request(request: &'a Request<'r>) -> request::Outcome<User, ()> {
+    fn from_request(request: &'a Request<'r>) -> request::Outcome<User,()> {
         request.cookies()
-            .get_private("user_id")
+            // .get_private("user_id")
+            .get("user_id")
             .and_then(|cookie| cookie.value().parse().ok())
             .map(|id| 
                 // TODO find the users in the DB
@@ -64,8 +65,11 @@ fn sign_up_create(
 ) -> Result<Redirect, Template> {
     sign_ups::create::call(&conn, sign_up_form.get().clone())
         .map(|user| {
-            cookies.add_private(Cookie::new("user_id", user.id.to_string()));
-            Redirect::to("/admins/home")
+            // cookies.add_private(
+            cookies.add(
+                Cookie::new("user_id", user.id.to_string())
+            );
+            Redirect::to("/admins")
         })
         .map_err(|e| {
             let context = SignUpView {
@@ -96,8 +100,11 @@ struct SignIn {
 #[post("/sign_in", data = "<sign_in>")]
 fn sign_in_create(mut cookies: Cookies, sign_in: Form<SignIn>) -> Result<Redirect, Flash<Redirect>> {
     if sign_in.get().email == "sam@sample.com" && sign_in.get().password == "password" {
-        cookies.add_private(Cookie::new("user_id", 1.to_string()));
-        Ok(Redirect::to("/admins/home"))
+        // cookies.add_private(
+        cookies.add(
+            Cookie::new("user_id", 1.to_string())
+        );
+        Ok(Redirect::to("/admins"))
     } else {
         Err(Flash::error(Redirect::to("/sign_in"), "Invalid email or password."))
     }
@@ -117,11 +124,16 @@ fn sign_out(mut cookies: Cookies) -> Flash<Redirect> {
 
 // Admins
 
-#[get("/home")]
-fn admins_home(user: User) -> Template {
+#[get("/")]
+fn admins(user: User) -> Template {
     let mut context = HashMap::new();
 
     context.insert("user_email", user.email);
 
-    Template::render("admins/home", &context)
+    Template::render("admins/root", &context)
+}
+
+#[get("/", rank = 2)]
+fn admins_empty() -> Redirect {
+    Redirect::to("/sign_in")
 }
