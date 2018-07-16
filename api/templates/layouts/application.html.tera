@@ -7,6 +7,12 @@
     {% endblock head %}
 </head>
 <body class="bg-grey-light">
+    <nav class="bg-black">
+      <div>{{ user_email }}.</div>
+      <form action="/logout" method="post" accept-charset="utf-8">
+          <input type="submit" name="logout" id="logout" value="logout" />
+       </form>
+    </nav>
     <div>{% block content %}{% endblock content %}</div>
 </body>
 </html>

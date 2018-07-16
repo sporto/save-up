@@ -119,9 +119,9 @@ fn sign_out(mut cookies: Cookies) -> Flash<Redirect> {
 
 #[get("/home")]
 fn admins_home(user: User) -> Template {
-    let context = SignUpView {
-        error: "".to_string(),
-    };
+    let mut context = HashMap::new();
+
+    context.insert("user_email", user.email);
 
     Template::render("admins/home", &context)
 }
