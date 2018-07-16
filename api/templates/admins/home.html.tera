@@ -1,0 +1,5 @@
+{% extends "layouts/public" %}
+
+{% block content %}
+<h1>Hello</h1>
+{% endblock content %}

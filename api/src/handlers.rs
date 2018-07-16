@@ -49,3 +49,12 @@ fn sign_up_create(
             Template::render("sign_up", &context)
         })
 }
+
+#[get("/admins/home")]
+fn admins_home() -> Template {
+    let context = SignUpView {
+        error: "".to_string(),
+    };
+
+    Template::render("admins/home", &context)
+}
