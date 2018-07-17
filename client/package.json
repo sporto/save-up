@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {},
   "devDependencies": {
-    "webpack": "^4.16.1"
+    "elm-webpack-loader": "^4.5.0",
+    "ts-node": "^7.0.0",
+    "webpack": "^4.16.1",
+    "webpack-command": "^0.4.1"
   }
 }

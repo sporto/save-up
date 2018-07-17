@@ -1,4 +1,4 @@
-module Admin exposing (main)
+module Investor exposing (main)
 
 import Browser
 import Html exposing (Html, button, div, text)
