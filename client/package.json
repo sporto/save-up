@@ -3,10 +3,17 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "webpack": "ts-node ./node_modules/.bin/webpack"
+  },
   "devDependencies": {
+    "@types/assets-webpack-plugin": "^3.5.1",
+    "@types/node": "^10.5.2",
+    "@types/webpack": "^4.4.7",
+    "assets-webpack-plugin": "^3.8.4",
     "elm-webpack-loader": "^4.5.0",
     "ts-node": "^7.0.0",
+    "typescript": "^2.9.2",
     "webpack": "^4.16.1",
     "webpack-command": "^0.4.1"
   }
