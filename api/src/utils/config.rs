@@ -7,6 +7,7 @@ pub enum AppEnv {
 }
 
 pub struct Config {
+    pub client_host: String,
     pub database_url: String,
 }
 
@@ -25,9 +26,11 @@ pub fn get() -> Config {
         AppEnv::Test => "DATABASE_URL_TEST",
     };
 
+    let client_host = env::var("CLIENT_HOST").expect("CLIENT_HOST must be set");
     let database_url = env::var(database_env_var).expect("DATABASE_URL must be set");
 
     Config {
+        client_host: client_host,
         database_url: database_url,
     }
 }

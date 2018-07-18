@@ -7,6 +7,7 @@ use rocket_contrib::Template;
 use rocket::outcome::IntoOutcome;
 use services::sign_ups;
 use models::users::User;
+use utils::config;
 
 impl<'a, 'r> FromRequest<'a, 'r> for User {
     type Error = ();
@@ -45,7 +46,10 @@ fn index() -> Template {
 
 #[get("/test")]
 fn test() -> Template {
-    let context = RootView {};
+    let configuration = config::get();
+    let mut context = HashMap::new();
+
+    context.insert("client_host", configuration.client_host);
 
     Template::render("test", &context)
 }
