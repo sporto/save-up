@@ -2,5 +2,5 @@
 
 {% block content %}
     <div id="app"></div>
-    <script src="http://localhost:8080/admin.js"></script>
+    <script src="{{ client_host }}/admin.js"></script>
 {% endblock content %}
