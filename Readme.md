@@ -1,5 +1,9 @@
 # KIC
 
+## Dev requirements
+
+- http://invoker.codemancers.com/
+
 ## Todo
 
 - On deploy webpack assets should be uploaded to S3 or similar

@@ -16,7 +16,7 @@ build:
 run: build
   cargo run
 
-watch:
+start:
   cargo watch -x run
 
 test:

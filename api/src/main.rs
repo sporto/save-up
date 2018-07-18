@@ -115,6 +115,7 @@ fn rocket() -> Rocket {
 
     let routes = routes![
         handlers::index,
+        handlers::test,
         handlers::sign_up,
         handlers::sign_up_create,
         handlers::sign_in,

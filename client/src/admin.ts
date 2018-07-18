@@ -1,5 +1,7 @@
-import Admin from "../elm-dist/admin.js";
+import App from "../elm-dist/admin.js";
+
+// console.log(App)
 
 const flags = {};
 const element = document.getElementById("app");
-const app = Admin.Main.embed(element, flags);
+const app = App.Elm.Admin.init(element, flags);
