@@ -1,3 +1,9 @@
 build:
   elm make ./src/Admin.elm --output=elm-dist/admin.js
   elm make ./src/Investor.elm --output=elm-dist/investor.js
+
+webpack:
+  yarn run build
+
+run:
+  yarn run run
