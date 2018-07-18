@@ -2,8 +2,8 @@ build:
   elm make ./src/Admin.elm --output=elm-dist/admin.js
   elm make ./src/Investor.elm --output=elm-dist/investor.js
 
-webpack:
-  yarn run build
+bundle:
+  yarn ts-node ./node_modules/.bin/webpack
 
-run:
-  yarn run run
+start:
+  yarn ts-node ./node_modules/.bin/webpack-serve ./webpack.config.ts

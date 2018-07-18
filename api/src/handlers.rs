@@ -43,6 +43,13 @@ fn index() -> Template {
     Template::render("root", &context)
 }
 
+#[get("/test")]
+fn test() -> Template {
+    let context = RootView {};
+
+    Template::render("test", &context)
+}
+
 #[derive(Serialize)]
 struct SignUpView {
     error: String,
