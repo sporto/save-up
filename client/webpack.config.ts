@@ -4,7 +4,11 @@ import * as path from "path"
 import * as webpack from "webpack"
 import * as AssetsPlugin from "assets-webpack-plugin"
 
-let assetsPluginInstance = new AssetsPlugin()
+let bundleDir = path.join(__dirname, "../api", "static", "bundles")
+
+let assetsPluginInstance = new AssetsPlugin({
+    path: bundleDir,
+})
 
 const config: webpack.Configuration = {
     entry: {
@@ -12,7 +16,7 @@ const config: webpack.Configuration = {
     },
     output: {
         filename: "[name]-[chunkhash].js",
-        path: path.resolve(__dirname, "../api/static/bundles"),
+        path: bundleDir,
     },
     module: {
         rules: [
