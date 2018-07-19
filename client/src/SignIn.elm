@@ -16,6 +16,7 @@ type alias Flags =
 type alias Model =
     { email : String
     , password : String
+    , response : RemoteData
     }
 
 
@@ -23,6 +24,20 @@ initialModel : Model
 initialModel =
     { email = ""
     , password = ""
+    , response = NotAsked
+    }
+
+
+type RemoteData
+    = NotAsked
+    | Loading
+    | Success Response
+    | Failed
+
+
+type alias Response =
+    { error : Maybe String
+    , token : Maybe String
     }
 
 
@@ -34,7 +49,7 @@ type Msg
     = ChangeEmail String
     | ChangePassword String
     | Submit
-    | SubmitResponse (Result Http.Error String)
+    | SubmitResponse (Result Http.Error Response)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -47,19 +62,23 @@ update msg model =
             ( { model | password = password }, Cmd.none )
 
         Submit ->
-            ( model
+            ( { model | response = Loading }
             , Http.send
                 SubmitResponse
                 (request model)
             )
 
         -- TODO store token and redirect
-        SubmitResponse (Ok _) ->
-            ( model, Cmd.none )
+        SubmitResponse (Ok response) ->
+            ( { model | response = Success response }, Cmd.none )
 
         -- TODO log the error
-        SubmitResponse (Err _) ->
-            ( model, Cmd.none )
+        SubmitResponse (Err err) ->
+            let
+                _ =
+                    Debug.log "Err" err
+            in
+                ( { model | response = Failed }, Cmd.none )
 
 
 
@@ -79,8 +98,11 @@ requestBody model =
         |> Http.jsonBody
 
 
+responseDecoder : Decode.Decoder Response
 responseDecoder =
-    (Decode.string)
+    Decode.map2 Response
+        (Decode.field "error" (Decode.nullable Decode.string))
+        (Decode.field "token" (Decode.nullable Decode.string))
 
 
 subscriptions model =
@@ -100,7 +122,7 @@ main =
 
 -- VIEW
 -- TODO add html validation
--- TODO show errors
+
 
 view : Model -> Browser.Document Msg
 view model =
@@ -112,7 +134,8 @@ view model =
                     [ text "Sign In" ]
                 , form
                     [ class "bg-white shadow-md rounded p-8 mt-3", onSubmit Submit ]
-                    [ p []
+                    [ maybeError model
+                    , p []
                         [ label [ class labelClasses ]
                             [ text "Email"
                             ]
@@ -132,6 +155,22 @@ view model =
             ]
         ]
     }
+
+
+maybeError model =
+    case model.response of
+        Success response ->
+            case response.error of
+                Just error ->
+                    p [ class "mb-4 text-red" ]
+                        [ text error
+                        ]
+
+                _ ->
+                    text ""
+
+        _ ->
+            text ""
 
 
 labelClasses =
