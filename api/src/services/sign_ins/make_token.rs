@@ -8,9 +8,10 @@ pub fn call(user: User) -> Result<String, frank_jwt::Error> {
     let mut header = json!({});
 
     let mut payload = json!({
-        "userId" : "1",
-        "email" : "sam@sample.com",
-        "name" : "Sam",
+        "userId" : user.id,
+        "email" : user.email,
+        "name" : user.name,
+        "role" : user.role,
     });
 
     encode(header, &secret, &payload, Algorithm::HS256)
