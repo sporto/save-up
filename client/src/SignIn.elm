@@ -1,4 +1,4 @@
-module SignIn exposing (main)
+port module SignIn exposing (main)
 
 import Browser
 import Html exposing (..)
@@ -70,7 +70,16 @@ update msg model =
 
         -- TODO store token and redirect
         SubmitResponse (Ok response) ->
-            ( { model | response = Success response }, Cmd.none )
+            let
+                cmd =
+                    case response.token of
+                        Just token ->
+                            toJsUseToken token
+
+                        Nothing ->
+                            Cmd.none
+            in
+                ( { model | response = Success response }, cmd )
 
         -- TODO log the error
         SubmitResponse (Err err) ->
@@ -107,6 +116,9 @@ responseDecoder =
 
 subscriptions model =
     Sub.none
+
+
+port toJsUseToken : String -> Cmd msg
 
 
 main : Program Flags Model Msg

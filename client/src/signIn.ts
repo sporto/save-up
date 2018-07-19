@@ -1,7 +1,16 @@
-import App from "../elm-dist/app.js";
+import * as App from "../elm-dist/app.js"
+import processToken from "./services/processToken.ts"
 
-console.log(App)
+interface SignInApp {
+    ports: {
+        toJsUseToken: {
+            subscribe(f: (t: string) => void): void,
+        },
+    },
+}
 
-const flags = {};
-const element = document.getElementById("app");
-const app = App.Elm.SignIn.init(element, flags);
+const flags = {}
+const element = document.getElementById("app")
+const app: SignInApp = App.Elm.SignIn.init(element, flags)
+
+app.ports.toJsUseToken.subscribe(processToken)
