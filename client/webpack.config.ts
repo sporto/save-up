@@ -19,12 +19,16 @@ let assetsPluginInstance = new AssetsPlugin({
 // let publicPath = "/webpack/"
 
 const ENTRY_SIGN_IN = "sign-in"
+const ENTRY_SIGN_UP = "sign-up"
 const ENTRY_ADMIN = "admin"
+const ENTRY_INVESTOR = "investor"
 
 let baseConfig: webpack.Configuration = {
     entry: {
         [ENTRY_SIGN_IN]: "./src/signIn.ts",
+        [ENTRY_SIGN_UP]: "./src/signUp.ts",
         [ENTRY_ADMIN]: "./src/admin.ts",
+        [ENTRY_INVESTOR]: "./src/investor.ts",
     },
     output: {
         filename: "[name].js",
@@ -56,15 +60,27 @@ let baseConfig: webpack.Configuration = {
     plugins: [
         assetsPluginInstance,
         new HtmlWebpackPlugin({
+            chunks: [ENTRY_SIGN_IN],
+            title: "Sign In",
+            filename: "sign-in/index.html",
+            template: "src/application.html",
+        }),
+        new HtmlWebpackPlugin({
+            chunks: [ENTRY_SIGN_UP],
+            title: "Sign Ip",
+            filename: "sign-up/index.html",
+            template: "src/application.html",
+        }),
+        new HtmlWebpackPlugin({
             chunks: [ENTRY_ADMIN],
             title: "Admin",
             filename: "admin/index.html",
             template: "src/application.html",
         }),
         new HtmlWebpackPlugin({
-            chunks: [ENTRY_SIGN_IN],
-            title: "Sign In",
-            filename: "sign-in/index.html",
+            chunks: [ENTRY_INVESTOR],
+            title: "Investor",
+            filename: "investor/index.html",
             template: "src/application.html",
         }),
     ],
