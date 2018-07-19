@@ -48,7 +48,6 @@ use rocket::response::content;
 use rocket::response::NamedFile;
 use rocket::Rocket;
 use rocket::State;
-use rocket_contrib::Template;
 use rocket_cors::{AllowedHeaders, AllowedOrigins};
 use std::path::{Path, PathBuf};
 
@@ -118,12 +117,9 @@ fn rocket() -> Rocket {
     };
 
     let routes = routes![
-        handlers::index,
-        handlers::test,
-        handlers::sign_up,
-        handlers::sign_up_create,
+        // handlers::sign_up,
         handlers::sign_in,
-        handlers::sign_out,
+        // handlers::sign_out,
         seed,
         graphiql,
         get_graphql_handler,
@@ -131,19 +127,18 @@ fn rocket() -> Rocket {
         assets
     ];
 
-    let admin_routes = routes![
-        handlers::admins,
-        handlers::admins_empty,
-    ];
+    // let admin_routes = routes![
+    //     handlers::admins,
+    //     handlers::admins_empty,
+    // ];
 
     rocket::ignite()
         .manage(pool.clone())
         .manage(graph::query_root::Context { pool: pool })
         .manage(Schema::new(query_root, mutation_root))
         .mount("/", routes)
-        .mount("/admins/", admin_routes)
+        // .mount("/admins/", admin_routes)
         .attach(options)
-        .attach(Template::fairing())
 }
 
 fn main() {

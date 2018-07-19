@@ -31,7 +31,7 @@ version = "1.0.0"
 [dependencies.rocket_contrib]
 version = "*"
 default-features = false
-features = ["json","tera_templates"]
+features = ["json"]
 
 [dev-dependencies]
 fake = "*"
