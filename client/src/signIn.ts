@@ -1,7 +1,7 @@
 import App from "../elm-dist/app.js";
 
-// console.log(App)
+console.log(App)
 
 const flags = {};
 const element = document.getElementById("app");
-const app = App.Elm.Admin.init(element, flags);
+const app = App.Elm.SignIn.init(element, flags);

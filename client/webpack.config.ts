@@ -4,27 +4,32 @@ import * as path from "path"
 import * as webpack from "webpack"
 import * as AssetsPlugin from "assets-webpack-plugin"
 import * as merge from "webpack-merge"
+import * as HtmlWebpackPlugin from "html-webpack-plugin"
 
 const DEVELOPMENT = "development"
 const PRODUCTION = "production"
 let TARGET = process.env.NODE_ENV || DEVELOPMENT
 
-let outputPath = path.join(__dirname, "../api", "static", "bundles")
+let outputPath = path.join(__dirname, "dist")
 
 let assetsPluginInstance = new AssetsPlugin({
     path: outputPath,
 })
 
-let publicPath = "/webpack/"
+// let publicPath = "/webpack/"
+
+const ENTRY_SIGN_IN = "sign-in"
+const ENTRY_ADMIN = "admin"
 
 let baseConfig: webpack.Configuration = {
     entry: {
-        admin: "./src/admin.ts",
+        [ENTRY_SIGN_IN]: "./src/signIn.ts",
+        [ENTRY_ADMIN]: "./src/admin.ts",
     },
     output: {
         filename: "[name].js",
         path: outputPath,
-        publicPath: publicPath,
+        // publicPath: publicPath,
     },
     module: {
         rules: [
@@ -41,7 +46,21 @@ let baseConfig: webpack.Configuration = {
         ],
     },
     mode: "development",
-    plugins: [assetsPluginInstance],
+    plugins: [
+        assetsPluginInstance,
+        new HtmlWebpackPlugin({
+            chunks: [ENTRY_ADMIN],
+            title: "Admin",
+            filename: "admin/index.html",
+            template: "src/application.html",
+        }),
+        new HtmlWebpackPlugin({
+            chunks: [ENTRY_SIGN_IN],
+            title: "Sign In",
+            filename: "sign-in/index.html",
+            template: "src/application.html",
+        }),
+    ],
 }
 
 let devConfig = {}
