@@ -1,6 +1,5 @@
 build:
-  elm make ./src/Admin.elm --output=elm-dist/admin.js
-  elm make ./src/Investor.elm --output=elm-dist/investor.js
+  elm make ./src/SignIn.elm ./src/Admin.elm --output=elm-dist/app.js
 
 bundle:
   yarn ts-node ./node_modules/.bin/webpack
