@@ -1,6 +1,0 @@
-{% extends "layouts/public" %}
-
-{% block content %}
-    <div id="app"></div>
-    <script src="{{ client_host }}/admin.js"></script>
-{% endblock content %}

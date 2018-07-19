@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use rocket::http::{Cookie, Cookies};
 use rocket::request::{self, FlashMessage, Form, FromRequest, Request};
 use rocket::response::{Redirect, Flash};
-use rocket_contrib::{Json,Template};
+use rocket_contrib::{Json};
 use rocket::outcome::IntoOutcome;
 use services;
 use models::users::{self,User};
@@ -34,62 +34,32 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
 }
 
 #[derive(Serialize)]
-struct RootView {
-}
-
-#[get("/")]
-fn index() -> Template {
-    let context = RootView {};
-
-    Template::render("root", &context)
-}
-
-#[get("/test")]
-fn test() -> Template {
-    let configuration = config::get();
-    let mut context = HashMap::new();
-
-    context.insert("client_host", configuration.client_host);
-
-    Template::render("test", &context)
-}
-
-#[derive(Serialize)]
 struct SignUpView {
     error: String,
 }
 
-#[get("/sign_up")]
-fn sign_up() -> Template {
-    let context = SignUpView {
-        error: "".to_string(),
-    };
+// #[post("/sign_up", data = "<sign_up_form>")]
+// fn sign_up_create(
+//     conn: db::Conn,
+//     mut cookies: Cookies,
+//     sign_up_form: Form<services::sign_ups::create::SignUp>,
+// ) -> Result<Redirect, Template> {
+//     services::sign_ups::create::call(&conn, sign_up_form.get().clone())
+//         .map(|user| {
+//             // cookies.add_private(
+//             cookies.add(
+//                 Cookie::new("user_id", user.id.to_string())
+//             );
+//             Redirect::to("/admins")
+//         })
+//         .map_err(|e| {
+//             let context = SignUpView {
+//                 error: e.to_string(),
+//             };
 
-    Template::render("sign_up", &context)
-}
-
-#[post("/sign_up", data = "<sign_up_form>")]
-fn sign_up_create(
-    conn: db::Conn,
-    mut cookies: Cookies,
-    sign_up_form: Form<services::sign_ups::create::SignUp>,
-) -> Result<Redirect, Template> {
-    services::sign_ups::create::call(&conn, sign_up_form.get().clone())
-        .map(|user| {
-            // cookies.add_private(
-            cookies.add(
-                Cookie::new("user_id", user.id.to_string())
-            );
-            Redirect::to("/admins")
-        })
-        .map_err(|e| {
-            let context = SignUpView {
-                error: e.to_string(),
-            };
-
-            Template::render("sign_up", &context)
-        })
-}
+//             Template::render("sign_up", &context)
+//         })
+// }
 
 #[derive(Deserialize)]
 struct SignIn {
@@ -141,20 +111,4 @@ fn sign_out(mut cookies: Cookies) -> Flash<Redirect> {
         Redirect::to("/"),
         "Successfully logged out.",
     )
-}
-
-// Admins
-
-#[get("/")]
-fn admins(user: User) -> Template {
-    let mut context = HashMap::new();
-
-    context.insert("user_email", user.email);
-
-    Template::render("admins/root", &context)
-}
-
-#[get("/", rank = 2)]
-fn admins_empty() -> Redirect {
-    Redirect::to("/sign_in")
 }
