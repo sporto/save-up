@@ -3,7 +3,7 @@ module SignIn exposing (main)
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (class, type_)
-import Html.Events exposing (onClick, onSubmit)
+import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -139,13 +139,13 @@ view model =
                         [ label [ class labelClasses ]
                             [ text "Email"
                             ]
-                        , input [ class inputClasses ] []
+                        , input [ class inputClasses, onInput ChangeEmail ] []
                         ]
                     , p [ class "mt-6" ]
                         [ label [ class labelClasses ]
                             [ text "Password"
                             ]
-                        , input [ class inputClasses, type_ "password" ] []
+                        , input [ class inputClasses, type_ "password", onInput ChangePassword ] []
                         ]
                     , p [ class "mt-6" ]
                         [ button [ class btnClasses ] [ text "Sign In" ]

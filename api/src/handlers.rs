@@ -105,6 +105,7 @@ struct SignInResponse {
 
 #[post("/sign-in", format = "application/json", data = "<sign_in>")]
 fn sign_in(sign_in: Json<SignIn>) -> Json<SignInResponse> {
+    // TODO get actual user
     let response = if sign_in.0.email == "sam@sample.com" && sign_in.0.password == "password" {
 
         let user = users::newUser();
