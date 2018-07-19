@@ -36,7 +36,7 @@ pub fn newUser() -> User {
     User {
         id: 1,
         client_id: 2,
-        role: "XYA".to_owned(),
+        role: ROLE_ADMIN.to_owned(),
         name: "Sam".to_owned(),
         email: "sam@sample.com".to_owned(),
         password_hash: "".to_owned(),

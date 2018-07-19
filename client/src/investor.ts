@@ -4,4 +4,4 @@ import * as App from "../elm-dist/app.js";
 
 const flags = {}
 const element = document.getElementById("app")
-const app = App.Elm.Admin.init(element, flags)
+const app = App.Elm.Investor.init(element, flags)

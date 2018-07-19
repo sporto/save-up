@@ -1,4 +1,4 @@
-module SignIn exposing (main)
+module SignUp exposing (main)
 
 import Browser
 import Html exposing (..)
