@@ -32,6 +32,18 @@ pub struct UserAttrs {
     pub timezone: String,
 }
 
+pub fn newUser() -> User {
+    User {
+        id: 1,
+        client_id: 2,
+        role: "XYA".to_owned(),
+        name: "Sam".to_owned(),
+        email: "sam@sample.com".to_owned(),
+        password_hash: "".to_owned(),
+        timezone: "Australia/Melbourne".to_owned(),
+    }
+}
+
 impl User {
     // Create
     pub fn create(conn: &PgConnection, attrs: UserAttrs) -> Result<User, Error> {
