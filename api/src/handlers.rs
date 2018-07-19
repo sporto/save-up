@@ -5,8 +5,8 @@ use rocket::request::{self, FlashMessage, Form, FromRequest, Request};
 use rocket::response::{Redirect, Flash};
 use rocket_contrib::{Json,Template};
 use rocket::outcome::IntoOutcome;
-use services::sign_ups;
-use models::users::User;
+use services;
+use models::users::{self,User};
 use utils::config;
 
 impl<'a, 'r> FromRequest<'a, 'r> for User {
@@ -72,9 +72,9 @@ fn sign_up() -> Template {
 fn sign_up_create(
     conn: db::Conn,
     mut cookies: Cookies,
-    sign_up_form: Form<sign_ups::create::SignUp>,
+    sign_up_form: Form<services::sign_ups::create::SignUp>,
 ) -> Result<Redirect, Template> {
-    sign_ups::create::call(&conn, sign_up_form.get().clone())
+    services::sign_ups::create::call(&conn, sign_up_form.get().clone())
         .map(|user| {
             // cookies.add_private(
             cookies.add(
@@ -105,17 +105,29 @@ struct SignInResponse {
 
 #[post("/sign-in", format = "application/json", data = "<sign_in>")]
 fn sign_in(sign_in: Json<SignIn>) -> Json<SignInResponse> {
-    if sign_in.0.email == "sam@sample.com" && sign_in.0.password == "password" {
-        Json(SignInResponse {
-            error: None,
-            token: Some("abc".to_owned()),
-        })
+    let response = if sign_in.0.email == "sam@sample.com" && sign_in.0.password == "password" {
+
+        let user = users::newUser();
+
+        services::sign_ins::make_token::call(user)
+            .map(|token|
+                SignInResponse {
+                    error: None,
+                    token: Some(token),
+                }
+            ).unwrap_or(SignInResponse {
+                error: Some("Unable to create JWT Token".to_owned()),
+                token: None,
+            })
+
     } else {
-        Json(SignInResponse {
+        SignInResponse {
             error: Some("Invalid email or password.".to_owned()),
             token: None,
-        })
-    }
+        }
+    };
+
+    Json(response)
 }
 
 #[post("/sign_out")]

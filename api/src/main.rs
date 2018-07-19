@@ -2,6 +2,7 @@
 #![plugin(rocket_codegen)]
 #![feature(custom_derive)]
 
+extern crate frank_jwt;
 extern crate rocket;
 extern crate rocket_contrib;
 extern crate validator;
@@ -18,6 +19,8 @@ extern crate juniper_codegen;
 extern crate juniper_rocket;
 #[macro_use]
 extern crate serde_derive;
+#[macro_use] 
+extern crate serde_json;
 #[macro_use]
 extern crate validator_derive;
 
