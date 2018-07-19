@@ -34,6 +34,13 @@ let baseConfig: webpack.Configuration = {
     module: {
         rules: [
             {
+                test: /\.ts$/,
+                exclude: [/node_modules/],
+                use: {
+                    loader: "ts-loader",
+                },
+            },
+            {
                 test: /\.elm$/,
                 exclude: [/elm-stuff/, /node_modules/],
                 use: {
