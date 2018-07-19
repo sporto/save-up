@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use rocket::http::{Cookie, Cookies};
 use rocket::request::{self, FlashMessage, Form, FromRequest, Request};
 use rocket::response::{Redirect, Flash};
-use rocket_contrib::Template;
+use rocket_contrib::{Json,Template};
 use rocket::outcome::IntoOutcome;
 use services::sign_ups;
 use models::users::User;
@@ -91,33 +91,30 @@ fn sign_up_create(
         })
 }
 
-#[get("/sign_in")]
-fn sign_in(flash: Option<FlashMessage>) -> Template {
-    let mut context = HashMap::new();
-
-    if let Some(ref msg) = flash {
-        context.insert("flash", msg.msg());
-    }
-
-    Template::render("sign_in", &context)
-}
-
-#[derive(FromForm)]
+#[derive(Deserialize)]
 struct SignIn {
     email: String,
     password: String
 }
 
-#[post("/sign_in", data = "<sign_in>")]
-fn sign_in_create(mut cookies: Cookies, sign_in: Form<SignIn>) -> Result<Redirect, Flash<Redirect>> {
-    if sign_in.get().email == "sam@sample.com" && sign_in.get().password == "password" {
-        // cookies.add_private(
-        cookies.add(
-            Cookie::new("user_id", 1.to_string())
-        );
-        Ok(Redirect::to("/admins"))
+#[derive(Serialize)]
+struct SignInResponse {
+    error: Option<String>,
+    token: Option<String>,
+}
+
+#[post("/sign-in", format = "application/json", data = "<sign_in>")]
+fn sign_in(sign_in: Json<SignIn>) -> Json<SignInResponse> {
+    if sign_in.0.email == "sam@sample.com" && sign_in.0.password == "password" {
+        Json(SignInResponse {
+            error: None,
+            token: Some("abc".to_owned()),
+        })
     } else {
-        Err(Flash::error(Redirect::to("/sign_in"), "Invalid email or password."))
+        Json(SignInResponse {
+            error: Some("Invalid email or password.".to_owned()),
+            token: None,
+        })
     }
 }
 

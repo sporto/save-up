@@ -93,8 +93,9 @@ fn rocket() -> Rocket {
     let mutation_root = graph::mutation_root::MutationRoot {};
 
     // CORS
+    // TODO: Put this in env var
     let (allowed_origins, failed_origins) =
-        AllowedOrigins::some(&["http://localhost:4020", "http://localhost:4010"]);
+        AllowedOrigins::some(&["http://localhost:8080"]);
 
     assert!(failed_origins.is_empty());
 
@@ -119,7 +120,6 @@ fn rocket() -> Rocket {
         handlers::sign_up,
         handlers::sign_up_create,
         handlers::sign_in,
-        handlers::sign_in_create,
         handlers::sign_out,
         seed,
         graphiql,
