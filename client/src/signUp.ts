@@ -1,5 +1,5 @@
 import * as App from "../elm-dist/app.js"
-import processToken from "./services/processToken.ts"
+import processNewToken from "./services/tokens/processNewToken"
 
 interface SignUpApp {
     ports: {
@@ -13,4 +13,4 @@ const flags = {}
 const element = document.getElementById("app")
 const app: SignUpApp = App.Elm.SignUp.init(element, flags)
 
-app.ports.toJsUseToken.subscribe(processToken)
+app.ports.toJsUseToken.subscribe(processNewToken)

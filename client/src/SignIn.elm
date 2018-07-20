@@ -69,7 +69,6 @@ update msg model =
                 (request model)
             )
 
-        -- TODO store token and redirect
         SubmitResponse (Ok response) ->
             let
                 cmd =
