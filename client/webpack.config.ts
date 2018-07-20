@@ -56,6 +56,9 @@ let baseConfig: webpack.Configuration = {
             },
         ],
     },
+    resolve: {
+        extensions: [".ts", ".js"]
+    },
     mode: "development",
     plugins: [
         assetsPluginInstance,

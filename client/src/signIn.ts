@@ -1,5 +1,7 @@
 import * as App from "../elm-dist/app.js"
-import processToken from "./services/processToken.ts"
+
+import checkSignedIn from "./services/tokens/checkSignedIn"
+import processNewToken from "./services/tokens/processNewToken"
 
 interface SignInApp {
     ports: {
@@ -13,4 +15,6 @@ const flags = {}
 const element = document.getElementById("app")
 const app: SignInApp = App.Elm.SignIn.init(element, flags)
 
-app.ports.toJsUseToken.subscribe(processToken)
+app.ports.toJsUseToken.subscribe(processNewToken)
+
+checkSignedIn()
