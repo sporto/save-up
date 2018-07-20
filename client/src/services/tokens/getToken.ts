@@ -1,6 +1,13 @@
 import * as Cookies from "js-cookie"
+import { Option, None, Some } from "@threestup/monads/src/main"
 import { KIC_TOKEN } from "../constants"
 
-export default function run(): string | undefined {
-    return Cookies.get(KIC_TOKEN)
+export default function run(): Option<string> {
+    let token = Cookies.get(KIC_TOKEN)
+
+    if (token == null) {
+        return None
+    } else {
+        return Some(token)
+    }
 }

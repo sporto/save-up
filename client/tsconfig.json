@@ -3,6 +3,8 @@
       "module": "commonjs",
       "noImplicitAny": false,
       "preserveConstEnums": true,
-      "sourceMap": true
+      "sourceMap": true,
+      "strictNullChecks": true,
+      "target": "ES6"
   }
 }
