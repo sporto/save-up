@@ -39,9 +39,11 @@ let baseConfig: webpack.Configuration = {
         rules: [
             {
                 test: /\.ts$/,
-                exclude: [/node_modules/],
                 use: {
                     loader: "ts-loader",
+                    options: {
+                        // logInfoToStdOut: true,
+                    },
                 },
             },
             {
@@ -98,13 +100,8 @@ let prodConfig: webpack.Configuration = {
     }
 }
 
-let config = null
-
-if (TARGET === DEVELOPMENT) {
-    config = merge(baseConfig, devConfig)
-} else {
-    config = merge(baseConfig, prodConfig)
-}
-  
+let config = TARGET === DEVELOPMENT
+    ? merge(baseConfig, devConfig)
+    : merge(baseConfig, prodConfig)
 
 export default config
