@@ -24,19 +24,25 @@ export function getEntryUrlForToken(token: Token): string {
 }
 
 export function proceedIfSignedIn(callback: (token: Token) => void): void {
-    let result = tokens.getTokenDecoded()
-        .map(callback)
+    let maybeToken = tokens.getTokenDecoded()
 
-    if (!result.isDefined()) {
+    if (maybeToken.isDefined()) {
+        maybeToken.map(callback)
+    } else {
+        console.log("No token found - redirecting")
         redirectToSignIn()
     }
 }
 
 export function proceedIfSignedOut(callback: () => void): void {
-    let result = tokens.getToken()
-        .map(token => redirectToEntry(token))
+    let maybeToken = tokens.getToken()
 
-    if (!result.isDefined()) callback()
+    if (maybeToken.isDefined()) {
+        maybeToken.map(token => redirectToEntry(token))
+    } else {
+        console.log("No token found - render page")
+        callback()
+    }
 }
 
 export function signOut() {

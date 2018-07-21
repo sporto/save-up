@@ -6,11 +6,9 @@ import { KIC_TOKEN } from "./constants"
 export function getToken(): Option<string> {
     let token = Cookies.get(KIC_TOKEN)
 
-    if (token == null) {
-        return None
-    } else {
-        return Some(token)
-    }
+    return (token == null) 
+        ? None
+        : Some(token)
 }
 
 export function getTokenDecoded(): Option<Token> {
@@ -23,11 +21,13 @@ export function decodeToken(token: string): Option<Token> {
     return Some(decoded)
 }
 
-export function removeToken(): void {
+export function removeToken(): boolean {
     Cookies.remove(KIC_TOKEN)
+    return true
 }
 
-export function storeToken(token: string): void {
+export function storeToken(token: string): boolean {
     Cookies.set(KIC_TOKEN, token)
+    return true
 }
 
