@@ -1,5 +1,5 @@
 import * as Cookies from "js-cookie"
-import { Option, None, Some } from "@threestup/monads/src/main"
+import { Option, None, Some } from "space-lift"
 import { KIC_TOKEN } from "../constants"
 
 export default function run(): Option<string> {
