@@ -1,4 +1,5 @@
-import * as App from "../elm-dist/app.js";
+//@ts-ignore
+import * as App from "./elm-out/app.js"
 
 // console.log(App)
 

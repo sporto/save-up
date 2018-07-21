@@ -23,8 +23,8 @@
     "webpack-serve": "^2.0.2"
   },
   "dependencies": {
-    "@threestup/monads": "threestup/monads",
     "js-cookie": "^2.2.0",
-    "jwt-decode": "^2.2.0"
+    "jwt-decode": "^2.2.0",
+    "space-lift": "^0.7.2"
   }
 }
