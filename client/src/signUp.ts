@@ -1,6 +1,6 @@
 //@ts-ignore
 import * as App from "./elm-out/app.js"
-import processNewToken from "./services/tokens/processNewToken"
+import * as sessions from "./services/sessions"
 
 interface SignUpApp {
     ports: {
@@ -10,8 +10,10 @@ interface SignUpApp {
     },
 }
 
-const flags = {}
-const element = document.getElementById("app")
-const app: SignUpApp = App.Elm.SignUp.init(element, flags)
-
-app.ports.toJsUseToken.subscribe(processNewToken)
+sessions.proceedIfSignedOut(function() {
+    const flags = {}
+    const element = document.getElementById("app")
+    const app: SignUpApp = App.Elm.SignUp.init(element, flags)
+    
+    app.ports.toJsUseToken.subscribe(sessions.newSession)
+})
