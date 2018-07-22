@@ -4,24 +4,22 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
+import Shared.Flags as Flags
 import Shared.Tokens as Tokens
 
 
-type alias Flags =
-    ()
-
-
 type alias Model =
-    { count : Int }
+    { flags : Flags.Flags }
 
 
-initialModel : Model
-initialModel =
-    { count = 0 }
+initialModel : Flags.Flags -> Model
+initialModel flags =
+    { flags = flags }
 
 
+init : Flags.Flags -> ( Model, Cmd Msg )
 init flags =
-    ( initialModel, Cmd.none )
+    ( initialModel flags, Cmd.none )
 
 
 type Msg
@@ -52,11 +50,14 @@ navigation : Model -> Html Msg
 navigation model =
     nav [ class "flex justify-between p-2 bg-black text-white" ]
         [ div [] [ text "KIC" ]
-        , div [] [ a [ href "javascript://", class "text-white", onClick SignOut ] [ text "Log out" ] ]
+        , div []
+            [ text model.flags.token.name
+            , a [ href "javascript://", class "text-white ml-3", onClick SignOut ] [ text "Log out" ]
+            ]
         ]
 
 
-main : Program Flags Model Msg
+main : Program Flags.Flags Model Msg
 main =
     Browser.document
         { init = init

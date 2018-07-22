@@ -8,6 +8,20 @@ type alias PublicFlags =
     }
 
 
+type alias Flags =
+    { apiHost : String
+    , token : Token
+    }
+
+
+type alias Token =
+    { name : String
+    , email : String
+    , role : String
+    }
+
+
+
 -- publicFlagsDecoder : Decode.Decoder PublicFlags
 -- publicFlagsDecoder =
 --     Decode.map PublicFlags
