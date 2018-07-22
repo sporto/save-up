@@ -65,6 +65,13 @@ impl User {
         users::table.find(user_id).first::<User>(conn)
     }
 
+    pub fn find_by_email(conn: &PgConnection, email: &str) -> Result<User, Error> {
+        users::table
+            .filter(users::email.eq(email))
+            .limit(1)
+            .first::<User>(conn)
+    }
+
     // Delete
     #[allow(dead_code)]
     pub fn delete_all(conn: &PgConnection) -> Result<usize, Error> {
