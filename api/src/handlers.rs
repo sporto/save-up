@@ -1,4 +1,4 @@
-// use db;
+use db;
 // use std::collections::HashMap;
 use rocket::http::{Cookie, Cookies};
 use rocket::request::{self, FromRequest, Request};
@@ -33,38 +33,38 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
     }
 }
 
-#[derive(Serialize)]
-struct SignUpView {
-    error: String,
+#[post("/sign-up", format = "application/json", data = "<sign_up>")]
+fn sign_up(
+    conn: db::Conn,
+    sign_up: Json<services::sign_ups::create::SignUp>,
+) -> Json<SignInResponse> {
+
+    let response = services::sign_ups::create::call(&conn, sign_up.0)
+        .map(|user| {
+            services::sign_ins::make_token::call(user)
+                .map(|token|
+                    SignInResponse {
+                        error: None,
+                        token: Some(token),
+                    }
+                ).unwrap_or(SignInResponse {
+                    error: Some("Unable to create JWT Token".to_owned()),
+                    token: None,
+                })
+        }).unwrap_or_else(|e|
+            SignInResponse {
+                error: Some(e.to_owned()),
+                token: None,
+            }
+        );
+
+    Json(response)
 }
-
-// #[post("/sign_up", data = "<sign_up_form>")]
-// fn sign_up_create(
-//     conn: db::Conn,
-//     mut cookies: Cookies,
-//     sign_up_form: Form<services::sign_ups::create::SignUp>,
-// ) -> Result<Redirect, Template> {
-//     services::sign_ups::create::call(&conn, sign_up_form.get().clone())
-//         .map(|user| {
-//             // cookies.add_private(
-//             cookies.add(
-//                 Cookie::new("user_id", user.id.to_string())
-//             );
-//             Redirect::to("/admins")
-//         })
-//         .map_err(|e| {
-//             let context = SignUpView {
-//                 error: e.to_string(),
-//             };
-
-//             Template::render("sign_up", &context)
-//         })
-// }
 
 #[derive(Deserialize)]
 struct SignIn {
     email: String,
-    password: String
+    password: String,
 }
 
 #[derive(Serialize)]

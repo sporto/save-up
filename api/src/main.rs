@@ -118,9 +118,8 @@ fn rocket() -> Rocket {
     };
 
     let routes = routes![
-        // handlers::sign_up,
+        handlers::sign_up,
         handlers::sign_in,
-        // handlers::sign_out,
         seed,
         graphiql,
         get_graphql_handler,
