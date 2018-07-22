@@ -1,6 +1,15 @@
 import * as sessions from "./services/sessions"
 
-interface SignInApp {
+interface Elm {
+    init(args: Args): PublicApp
+}
+
+interface Args {
+    node: HTMLElement | null,
+    flags: PublicFlags,
+}
+
+interface PublicApp {
     ports: {
         toJsUseToken: {
             subscribe(f: (t: string) => void): void,
@@ -8,7 +17,7 @@ interface SignInApp {
     },
 }
 
-export default function pubic(App) {
+export default function pubic(Elm: Elm) {
 
     sessions.proceedIfSignedOut(function() {
         const flags: PublicFlags = {
@@ -17,7 +26,7 @@ export default function pubic(App) {
 
         const node = document.getElementById("app")
 
-        const app: SignInApp = App.init({node, flags})
+        const app: PublicApp = Elm.init({node, flags})
 
         app.ports.toJsUseToken.subscribe(sessions.newSession)
     })
