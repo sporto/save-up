@@ -1,10 +1,5 @@
-// const elmSource = __dirname;
-
-import * as path from "path"
 import * as webpack from "webpack"
 import * as HtmlWebpackPlugin from "html-webpack-plugin"
-
-let outputPath = path.join(__dirname, "dist-dev")
 
 // let publicPath = "/webpack/"
 
@@ -20,14 +15,9 @@ let baseConfig: webpack.Configuration = {
         [ENTRY_ADMIN]: "./src/admin.ts",
         [ENTRY_INVESTOR]: "./src/investor.ts",
     },
-    output: {
-        filename: "[name].js",
-        path: outputPath,
-        // publicPath: publicPath,
-    },
     optimization: {
         splitChunks: {
-            chunks: "all",
+            chunks: "async",
         },
     },
     module: {
