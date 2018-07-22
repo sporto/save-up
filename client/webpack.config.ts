@@ -3,12 +3,11 @@
 import * as path from "path"
 import * as webpack from "webpack"
 import * as AssetsPlugin from "assets-webpack-plugin"
-import * as merge from "webpack-merge"
 import * as HtmlWebpackPlugin from "html-webpack-plugin"
 
-const DEVELOPMENT = "development"
-const PRODUCTION = "production"
-let TARGET = process.env.NODE_ENV || DEVELOPMENT
+// const DEVELOPMENT = "development"
+// const PRODUCTION = "production"
+// let TARGET = process.env.NODE_ENV || DEVELOPMENT
 
 let outputPath = path.join(__dirname, "dist")
 
@@ -61,7 +60,6 @@ let baseConfig: webpack.Configuration = {
     resolve: {
         extensions: [".ts", ".js"]
     },
-    mode: "development",
     plugins: [
         assetsPluginInstance,
         new HtmlWebpackPlugin({
@@ -91,17 +89,4 @@ let baseConfig: webpack.Configuration = {
     ],
 }
 
-let devConfig = {}
-
-let prodConfig: webpack.Configuration = {
-    mode: "production",
-    output: {
-        filename: "[name]-[hash].js",
-    }
-}
-
-let config = TARGET === DEVELOPMENT
-    ? merge(baseConfig, devConfig)
-    : merge(baseConfig, prodConfig)
-
-export default config
+export default baseConfig

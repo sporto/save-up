@@ -1,7 +1,20 @@
 import * as sessions from "./services/sessions"
 import hookCommonPorts from "./services/hookCommonPorts"
 
-export default function run(App) {
+interface Elm {
+    init(args: Args): App
+}
+
+interface Args {
+    node: HTMLElement | null,
+    flags: Flags,
+}
+
+interface App {
+    ports: CommonPorts
+}
+
+export default function run(Elm: Elm) {
 
     sessions.proceedIfSignedIn(function(token) {
 
@@ -11,7 +24,7 @@ export default function run(App) {
         }
 
         const node = document.getElementById("app")
-        const app = App.init({node, flags})
+        const app = Elm.init({node, flags})
 
         hookCommonPorts(app.ports)
     })
