@@ -100,15 +100,3 @@ fn sign_in(sign_in: Json<SignIn>) -> Json<SignInResponse> {
 
     Json(response)
 }
-
-#[post("/sign_out")]
-fn sign_out(mut cookies: Cookies) -> Flash<Redirect> {
-    cookies.remove_private(Cookie::named("user_id"));
-
-    // Redirect::to(uri!(sign_in)),
-
-    Flash::success(
-        Redirect::to("/"),
-        "Successfully logged out.",
-    )
-}

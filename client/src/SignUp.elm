@@ -16,7 +16,9 @@ type alias Flags =
 
 type alias Model =
     { email : String
+    , name : String
     , password : String
+    , timezone : String
     , response : RemoteData
     }
 
@@ -24,7 +26,9 @@ type alias Model =
 initialModel : Model
 initialModel =
     { email = ""
+    , name = ""
     , password = ""
+    , timezone = "Australia/Melbourne"
     , response = NotAsked
     }
 
@@ -48,6 +52,7 @@ init flags =
 
 type Msg
     = ChangeEmail String
+    | ChangeName String
     | ChangePassword String
     | Submit
     | SubmitResponse (Result Http.Error Response)
@@ -59,6 +64,9 @@ update msg model =
         ChangeEmail email ->
             ( { model | email = email }, Cmd.none )
 
+        ChangeName name ->
+            ( { model | name = name }, Cmd.none )
+
         ChangePassword password ->
             ( { model | password = password }, Cmd.none )
 
@@ -69,7 +77,6 @@ update msg model =
                 (request model)
             )
 
-        -- TODO store token and redirect
         SubmitResponse (Ok response) ->
             let
                 cmd =
@@ -96,14 +103,16 @@ update msg model =
 
 
 request model =
-    Http.post "http://localhost:4010/sign-in" (requestBody model) responseDecoder
+    Http.post "http://localhost:4010/sign-up" (requestBody model) responseDecoder
 
 
 requestBody : Model -> Http.Body
 requestBody model =
     Encode.object
         [ ( "email", Encode.string model.email )
+        , ( "name", Encode.string model.name )
         , ( "password", Encode.string model.password )
+        , ( "timezone", Encode.string model.timezone )
         ]
         |> Http.jsonBody
 
@@ -146,6 +155,12 @@ view model =
                     [ class "bg-white shadow-md rounded p-8 mt-3", onSubmit Submit ]
                     [ maybeError model
                     , p []
+                        [ label [ class labelClasses ]
+                            [ text "Name"
+                            ]
+                        , input [ class inputClasses, onInput ChangeName ] []
+                        ]
+                    , p [ class "mt-6" ]
                         [ label [ class labelClasses ]
                             [ text "Email"
                             ]
