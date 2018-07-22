@@ -11,9 +11,13 @@ interface SignUpApp {
 }
 
 sessions.proceedIfSignedOut(function() {
-    const flags = {}
-    const element = document.getElementById("app")
-    const app: SignUpApp = App.Elm.SignUp.init(element, flags)
-    
+    const flags: PublicFlags = {
+        apiHost: "http://localhost:4010/sign-in",
+    }
+
+    const node = document.getElementById("app")
+
+    const app: SignUpApp = App.Elm.SignUp.init({node, flags})
+
     app.ports.toJsUseToken.subscribe(sessions.newSession)
 })

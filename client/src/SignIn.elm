@@ -1,30 +1,30 @@
 module SignIn exposing (main)
 
 import Browser
+import Debug
 import Html exposing (..)
 import Html.Attributes exposing (class, href, type_)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
+import Shared.Flags as Flags
 import Shared.Tokens as Tokens
-
-
-type alias Flags =
-    ()
 
 
 type alias Model =
     { email : String
     , password : String
+    , flags : Flags.PublicFlags
     , response : RemoteData
     }
 
 
-initialModel : Model
-initialModel =
+initialModel : Flags.PublicFlags -> Model
+initialModel flags =
     { email = ""
     , password = ""
+    , flags = flags
     , response = NotAsked
     }
 
@@ -42,8 +42,9 @@ type alias Response =
     }
 
 
+init : Flags.PublicFlags -> ( Model, Cmd Msg )
 init flags =
-    ( initialModel, Cmd.none )
+    ( initialModel flags, Cmd.none )
 
 
 type Msg
@@ -90,10 +91,6 @@ update msg model =
                 ( { model | response = Failed }, Cmd.none )
 
 
-
--- TODO use flags for api
-
-
 request model =
     Http.post "http://localhost:4010/sign-in" (requestBody model) responseDecoder
 
@@ -118,7 +115,7 @@ subscriptions model =
     Sub.none
 
 
-main : Program Flags Model Msg
+main : Program Flags.PublicFlags Model Msg
 main =
     Browser.document
         { init = init

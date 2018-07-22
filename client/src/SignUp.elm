@@ -1,17 +1,15 @@
 module SignUp exposing (main)
 
 import Browser
+import Debug
 import Html exposing (..)
 import Html.Attributes exposing (class, type_)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
+import Shared.Flags as Flags
 import Shared.Tokens as Tokens
-
-
-type alias Flags =
-    ()
 
 
 type alias Model =
@@ -19,16 +17,18 @@ type alias Model =
     , name : String
     , password : String
     , timezone : String
+    , flags : Flags.PublicFlags
     , response : RemoteData
     }
 
 
-initialModel : Model
-initialModel =
+initialModel : Flags.PublicFlags -> Model
+initialModel flags =
     { email = ""
     , name = ""
     , password = ""
     , timezone = "Australia/Melbourne"
+    , flags = flags
     , response = NotAsked
     }
 
@@ -46,8 +46,9 @@ type alias Response =
     }
 
 
+init : Flags.PublicFlags -> ( Model, Cmd Msg )
 init flags =
-    ( initialModel, Cmd.none )
+    ( initialModel flags, Cmd.none )
 
 
 type Msg
@@ -128,7 +129,7 @@ subscriptions model =
     Sub.none
 
 
-main : Program Flags Model Msg
+main : Program Flags.PublicFlags Model Msg
 main =
     Browser.document
         { init = init
