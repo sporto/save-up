@@ -1,12 +1,12 @@
 use db;
 // use std::collections::HashMap;
-use rocket::http::{Cookie, Cookies};
+// use rocket::http::{Cookie, Cookies};
 use rocket::request::{self, FromRequest, Request};
-use rocket::response::{Redirect, Flash};
+// use rocket::response::{Redirect, Flash};
 use rocket_contrib::{Json};
 use rocket::outcome::IntoOutcome;
 use services;
-use models::users::{self,User};
+use models::users::{User};
 // use utils::config;
 
 impl<'a, 'r> FromRequest<'a, 'r> for User {
@@ -61,12 +61,6 @@ fn sign_up(
     Json(response)
 }
 
-#[derive(Deserialize)]
-struct SignIn {
-    email: String,
-    password: String,
-}
-
 #[derive(Serialize)]
 struct SignInResponse {
     error: Option<String>,
@@ -74,28 +68,28 @@ struct SignInResponse {
 }
 
 #[post("/sign-in", format = "application/json", data = "<sign_in>")]
-fn sign_in(sign_in: Json<SignIn>) -> Json<SignInResponse> {
-    // TODO get actual user
-    let response = if sign_in.0.email == "sam@sample.com" && sign_in.0.password == "password" {
+fn sign_in(
+    conn: db::Conn,
+    sign_in: Json<services::sign_ins::create::SignIn>
+    ) -> Json<SignInResponse> {
 
-        let user = users::newUser();
+    let token_result = services::sign_ins::create::call(&conn, sign_in.0)
+        .and_then(|user| {
 
-        services::sign_ins::make_token::call(user)
-            .map(|token|
-                SignInResponse {
-                    error: None,
-                    token: Some(token),
-                }
-            ).unwrap_or(SignInResponse {
-                error: Some("Unable to create JWT Token".to_owned()),
-                token: None,
-            })
+            services::sign_ins::make_token::call(user)
+                .map_err(|_| "Unable to create token".to_owned() )
 
-    } else {
-        SignInResponse {
-            error: Some("Invalid email or password.".to_owned()),
+        });
+
+    let response = match token_result {
+        Ok(token) => SignInResponse {
+            error: None,
+            token: Some(token),
+        },
+        Err(err) => SignInResponse {
+            error: Some(err),
             token: None,
-        }
+        },
     };
 
     Json(response)
