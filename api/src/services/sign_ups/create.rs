@@ -12,7 +12,7 @@ use models::schema::users;
 use validator::Validate;
 // use utils::tests::with_db;
 
-#[derive(FromForm, Clone)]
+#[derive(Deserialize, Clone)]
 pub struct SignUp {
     pub name: String,
     pub email: String,
