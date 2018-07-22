@@ -2,7 +2,7 @@ module SignIn exposing (main)
 
 import Browser
 import Html exposing (..)
-import Html.Attributes exposing (class, type_)
+import Html.Attributes exposing (class, href, type_)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Json.Decode as Decode
@@ -158,6 +158,9 @@ view model =
                         ]
                     , p [ class "mt-6" ]
                         [ button [ class btnClasses ] [ text "Sign In" ]
+                        ]
+                    , p [ class "mt-6" ]
+                        [ a [ href "/sign-up" ] [ text "Sign Up" ]
                         ]
                     ]
                 ]
