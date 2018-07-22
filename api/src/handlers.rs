@@ -75,10 +75,8 @@ fn sign_in(
 
     let token_result = services::sign_ins::create::call(&conn, sign_in.0)
         .and_then(|user| {
-
             services::sign_ins::make_token::call(user)
                 .map_err(|_| "Unable to create token".to_owned() )
-
         });
 
     let response = match token_result {
