@@ -1,11 +1,11 @@
-import publicPath from "./webpack.config"
+// import publicPath from "./webpack.base"
 
-let config = {
-    options: {
-        devMiddleware: {
-            publicPath,
-        }
-    }
-}
+// let config = {
+//     options: {
+//         devMiddleware: {
+//             publicPath,
+//         }
+//     }
+// }
 
-export default config
+// export default config
