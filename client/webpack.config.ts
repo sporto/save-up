@@ -2,18 +2,13 @@
 
 import * as path from "path"
 import * as webpack from "webpack"
-import * as AssetsPlugin from "assets-webpack-plugin"
 import * as HtmlWebpackPlugin from "html-webpack-plugin"
 
 // const DEVELOPMENT = "development"
 // const PRODUCTION = "production"
 // let TARGET = process.env.NODE_ENV || DEVELOPMENT
 
-let outputPath = path.join(__dirname, "dist")
-
-let assetsPluginInstance = new AssetsPlugin({
-    path: outputPath,
-})
+let outputPath = path.join(__dirname, "dist-dev")
 
 // let publicPath = "/webpack/"
 
@@ -61,7 +56,6 @@ let baseConfig: webpack.Configuration = {
         extensions: [".ts", ".js"]
     },
     plugins: [
-        assetsPluginInstance,
         new HtmlWebpackPlugin({
             chunks: [ENTRY_SIGN_IN],
             title: "Sign In",
