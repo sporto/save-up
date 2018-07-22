@@ -1,4 +1,4 @@
-use frank_jwt::{self, Algorithm, encode, decode};
+use frank_jwt::{self, Algorithm, encode};
 
 use models::users::{User};
 

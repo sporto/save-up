@@ -43,13 +43,14 @@ mod utils;
 
 // use handlers;
 use juniper::RootNode;
+use rocket_cors::{AllowedHeaders, AllowedOrigins};
 use rocket::http::Method;
 use rocket::response::content;
 use rocket::response::NamedFile;
 use rocket::Rocket;
 use rocket::State;
-use rocket_cors::{AllowedHeaders, AllowedOrigins};
 use std::path::{Path, PathBuf};
+use utils::config;
 
 type Schema = RootNode<'static, graph::query_root::QueryRoot, graph::mutation_root::MutationRoot>;
 
@@ -90,14 +91,14 @@ fn post_graphql_handler(
 }
 
 fn rocket() -> Rocket {
+    let config = config::get();
     let pool = db::init_pool();
     let query_root = graph::query_root::QueryRoot {};
     let mutation_root = graph::mutation_root::MutationRoot {};
 
     // CORS
-    // TODO: Put this in env var
     let (allowed_origins, failed_origins) =
-        AllowedOrigins::some(&["http://localhost:8080"]);
+        AllowedOrigins::some(&[&config.client_host]);
 
     assert!(failed_origins.is_empty());
 

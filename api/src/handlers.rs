@@ -1,13 +1,13 @@
-use db;
-use std::collections::HashMap;
+// use db;
+// use std::collections::HashMap;
 use rocket::http::{Cookie, Cookies};
-use rocket::request::{self, FlashMessage, Form, FromRequest, Request};
+use rocket::request::{self, FromRequest, Request};
 use rocket::response::{Redirect, Flash};
 use rocket_contrib::{Json};
 use rocket::outcome::IntoOutcome;
 use services;
 use models::users::{self,User};
-use utils::config;
+// use utils::config;
 
 impl<'a, 'r> FromRequest<'a, 'r> for User {
     type Error = ();
