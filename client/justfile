@@ -5,7 +5,7 @@ build:
   yarn ts-node ./node_modules/.bin/webpack --reporter basic --config webpack.dev.ts
 
 build-prod:
-  yarn ts-node ./node_modules/.bin/webpack --reporter basic --config webpack.prod.ts
+  yarn ts-node ./node_modules/.bin/webpack --config webpack.prod.ts
 
 start:
   yarn ts-node ./node_modules/.bin/webpack-serve ./webpack.dev.ts

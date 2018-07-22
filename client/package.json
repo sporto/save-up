@@ -5,6 +5,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/assets-webpack-plugin": "^3.5.1",
+    "@types/clean-webpack-plugin": "^0.1.2",
     "@types/html-webpack-plugin": "^2.30.4",
     "@types/invariant": "^2.2.29",
     "@types/js-cookie": "^2.1.0",
@@ -12,6 +13,7 @@
     "@types/node": "^10.5.2",
     "@types/webpack": "^4.4.7",
     "@types/webpack-merge": "^4.1.3",
+    "clean-webpack-plugin": "^0.1.19",
     "elm-webpack-loader": "^4.5.0",
     "html-webpack-plugin": "^3.2.0",
     "ts-loader": "^4.4.2",
