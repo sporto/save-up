@@ -1,6 +1,5 @@
 node_modules
 elm-stuff
-elm-out
 index.html
 dist
 dist-dev
