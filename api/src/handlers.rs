@@ -33,6 +33,11 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
     }
 }
 
+#[get("/status")]
+fn status() -> String {
+    "Ok".to_owned()
+}
+
 #[post("/sign-up", format = "application/json", data = "<sign_up>")]
 fn sign_up(
     conn: db::Conn,

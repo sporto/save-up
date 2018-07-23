@@ -54,11 +54,6 @@ use utils::config;
 
 type Schema = RootNode<'static, graph::query_root::QueryRoot, graph::mutation_root::MutationRoot>;
 
-#[get("/assets/<file..>")]
-fn assets(file: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new("assets/").join(file)).ok()
-}
-
 #[get("/seed")]
 fn seed(conn: db::Conn) -> Option<()> {
     match services::seed_db::run(conn) {
@@ -118,13 +113,13 @@ fn rocket() -> Rocket {
     };
 
     let routes = routes![
+        handlers::status,
         handlers::sign_up,
         handlers::sign_in,
         seed,
         graphiql,
         get_graphql_handler,
         post_graphql_handler,
-        assets
     ];
 
     // let admin_routes = routes![
