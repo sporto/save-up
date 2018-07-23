@@ -1,3 +1,5 @@
+declare var API_HOST: string
+
 interface Token {
     name: string,
     email: string,

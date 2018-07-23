@@ -21,7 +21,7 @@ export default function pubic(Elm: Elm) {
 
     sessions.proceedIfSignedOut(function() {
         const flags: PublicFlags = {
-            apiHost: "http://localhost:4010/sign-in",
+            apiHost: API_HOST,
         }
 
         const node = document.getElementById("app")

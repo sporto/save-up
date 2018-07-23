@@ -1,13 +1,17 @@
+import * as invariant from "invariant"
 import * as webpack from "webpack"
 import * as HtmlWebpackPlugin from "html-webpack-plugin"
 
 // let publicPath = "/webpack/"
 
+const API_HOST = process.env.API_HOST
 const ENTRY_SIGN_IN = "sign-in"
 const ENTRY_SIGN_UP = "sign-up"
 const ENTRY_ADMIN = "admin"
 const ENTRY_INVESTOR = "investor"
 const COMMON = "common"
+
+invariant(API_HOST, "API_HOST must be defined")
 
 let baseConfig: webpack.Configuration = {
     entry: {
@@ -59,30 +63,33 @@ let baseConfig: webpack.Configuration = {
         extensions: [".ts", ".js"]
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            chunks: [COMMON, ENTRY_SIGN_IN],
-            title: "Sign In",
-            filename: "sign-in/index.html",
-            template: "src/application.html",
-        }),
-        new HtmlWebpackPlugin({
-            chunks: [COMMON, ENTRY_SIGN_UP],
-            title: "Sign Ip",
-            filename: "sign-up/index.html",
-            template: "src/application.html",
-        }),
-        new HtmlWebpackPlugin({
-            chunks: [COMMON, ENTRY_ADMIN],
-            title: "Admin",
-            filename: "admin/index.html",
-            template: "src/application.html",
-        }),
-        new HtmlWebpackPlugin({
-            chunks: [COMMON, ENTRY_INVESTOR],
-            title: "Investor",
-            filename: "investor/index.html",
-            template: "src/application.html",
-        }),
+      new webpack.DefinePlugin({
+        API_HOST: JSON.stringify(API_HOST),
+      }),
+      new HtmlWebpackPlugin({
+          chunks: [COMMON, ENTRY_SIGN_IN],
+          title: "Sign In",
+          filename: "sign-in/index.html",
+          template: "src/application.html",
+      }),
+      new HtmlWebpackPlugin({
+          chunks: [COMMON, ENTRY_SIGN_UP],
+          title: "Sign Ip",
+          filename: "sign-up/index.html",
+          template: "src/application.html",
+      }),
+      new HtmlWebpackPlugin({
+          chunks: [COMMON, ENTRY_ADMIN],
+          title: "Admin",
+          filename: "admin/index.html",
+          template: "src/application.html",
+      }),
+      new HtmlWebpackPlugin({
+          chunks: [COMMON, ENTRY_INVESTOR],
+          title: "Investor",
+          filename: "investor/index.html",
+          template: "src/application.html",
+      }),
     ],
 }
 

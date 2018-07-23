@@ -19,7 +19,7 @@ export default function run(Elm: Elm) {
     sessions.proceedIfSignedIn(function(token) {
 
         const flags: Flags = {
-            apiHost: "http://localhost:4010/sign-in",
+            apiHost: API_HOST,
             token,
         }
 

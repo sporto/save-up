@@ -1,3 +1,4 @@
+export API_HOST=http://localhost:4010
 export CLIENT_HOST=http://localhost:8080
 export DATABASE_URL=postgres://postgres@localhost/inn_dev
 export DATABASE_URL_TEST=xx
