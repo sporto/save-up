@@ -1,0 +1,11 @@
+elm:
+  elm make ./src/SignIn.elm ./src/SignUp.elm ./src/Admin.elm ./src/Investor.elm --output=src/elm-out/app.js
+
+build:
+  yarn ts-node ./node_modules/.bin/webpack --config webpack.dev.ts --reporter basic 
+
+build-prod:
+  yarn ts-node ./node_modules/.bin/webpack --config webpack.prod.ts
+
+start:
+  yarn ts-node ./node_modules/.bin/webpack-serve ./webpack.dev.ts

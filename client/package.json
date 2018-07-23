@@ -1,0 +1,33 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/assets-webpack-plugin": "^3.5.1",
+    "@types/clean-webpack-plugin": "^0.1.2",
+    "@types/html-webpack-plugin": "^2.30.4",
+    "@types/invariant": "^2.2.29",
+    "@types/js-cookie": "^2.1.0",
+    "@types/jwt-decode": "^2.2.1",
+    "@types/node": "^10.5.2",
+    "@types/webpack": "^4.4.7",
+    "@types/webpack-merge": "^4.1.3",
+    "clean-webpack-plugin": "^0.1.19",
+    "elm-webpack-loader": "^4.5.0",
+    "html-webpack-plugin": "^3.2.0",
+    "ts-loader": "^4.4.2",
+    "ts-node": "^7.0.0",
+    "typescript": "^2.9.2",
+    "webpack": "^4.16.1",
+    "webpack-command": "^0.4.1",
+    "webpack-merge": "^4.1.3",
+    "webpack-serve": "^2.0.2"
+  },
+  "dependencies": {
+    "invariant": "^2.2.4",
+    "js-cookie": "^2.2.0",
+    "jwt-decode": "^2.2.0",
+    "space-lift": "^0.7.2"
+  }
+}
