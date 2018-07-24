@@ -20,9 +20,9 @@ build-release:
 
   docker run \
     -it -v "$(pwd):/usr/src/kic" kic-api \
-    cargo build --release --target=x86_64-unknown-linux-gnu
+    env OPENSSL_LIB_DIR=/usr/local/lib/ OPENSSL_INCLUDE_DIR=/usr/local/include OPENSSL_STATIC=yes cargo build --release --target=x86_64-unknown-linux-gnu
 
-  cp ./target/x86_64-unknown-linux-gnu/release/api ./bin/api
+  cp ./target/x86_64-unknown-linux-gnu/release/api ./bin/api  
 
 run: build
   cargo run

@@ -11,9 +11,3 @@ COPY Cargo.toml Cargo.lock $APP_DIR/
 
 # This is a dummy build to get the dependencies cached.
 RUN cargo build --release
-
-# Now copy in the rest of the sources
-# COPY src $APP_DIR/src/
-
-# Actual build.
-# RUN cargo build --release
