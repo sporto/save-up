@@ -15,7 +15,7 @@ This will generate a binary inside api/release
 Then push to Heroku using
 
 ```
-just deploy
+just api/deploy
 ```
 
 ## Client

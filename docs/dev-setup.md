@@ -14,8 +14,16 @@ The following tools are required:
 For deployment
 ==============
 
-  cargo install cross
+Cross compile directly from Mac (Doesn't work)
 
-On Mac the Linux toolchain is required:
+Add target
 
-  rustup toolchain add nightly-x86_64-unknown-linux-gnu
+  rustup target add x86_64-unknown-linux-musl
+
+Install musl
+
+https://www.musl-libc.org
+
+On Mac:
+
+  brew install FiloSottile/musl-cross/musl-cross

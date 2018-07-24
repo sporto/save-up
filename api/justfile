@@ -20,9 +20,12 @@ build-release:
 
   docker run \
     -it -v "$(pwd):/usr/src/kic" kic-api \
-    env OPENSSL_LIB_DIR=/usr/local/lib/ OPENSSL_INCLUDE_DIR=/usr/local/include OPENSSL_STATIC=yes cargo build --release --target=x86_64-unknown-linux-gnu
+    cargo build --release --target=x86_64-unknown-linux-musl
 
   cp ./target/x86_64-unknown-linux-gnu/release/api ./bin/api  
+
+deploy:
+  git push heroku master
 
 run: build
   cargo run
