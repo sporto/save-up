@@ -13,8 +13,12 @@ schema:
 build:
   cargo build
 
+# https://matthiasnoback.nl/2017/04/docker-build-patterns/
 build-release:
   docker build -f Dockerfile.release -t kic-api .
+  docker run \
+    -it -v "$(pwd):/usr/src/kic" kic-api cargo build --release --target=x86_64-unknown-linux-gnu
+
   # docker rm kic-api-container
   # docker create --name kic-api-container kic-api
   # docker cp kic-api-container:/usr/src/kic/Cargo.toml ./release/Cargo.toml
