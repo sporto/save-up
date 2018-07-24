@@ -1,4 +1,6 @@
-# KIC
+# Kids Investment Company (KIC)
+
+KIC is an educational application for learning about investing.
 
 ## Docs
 
