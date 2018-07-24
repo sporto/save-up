@@ -1,8 +1,9 @@
 # KIC
 
-## Dev requirements
+## Docs
 
-- http://invoker.codemancers.com/
+<./docs/dev-setup.md>
+<./docs/deployment.md>
 
 ## Todo
 

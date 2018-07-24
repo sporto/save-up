@@ -13,6 +13,9 @@ schema:
 build:
   cargo build
 
+build-release:
+  docker build -f Dockerfile.release .
+
 run: build
   cargo run
 

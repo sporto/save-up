@@ -6,3 +6,6 @@ api-run:
 
 start:
   invoker start invoker.ini
+
+deploy:
+  git push heroku master

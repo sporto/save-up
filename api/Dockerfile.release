@@ -1,0 +1,7 @@
+FROM rustlang/rust:nightly-slim
+
+ENV APP_DIR /usr/src/kic
+WORKDIR $APP_DIR
+
+ADD ./Cargo.toml $APPDIR/
+RUN cargo install
