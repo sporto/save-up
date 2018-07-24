@@ -10,9 +10,9 @@ To build a relase run:
 just api/build-release
 ```
 
-This will generate a binary inside XXX
+This will generate a binary inside api/release
 
-The push to Heroku using
+Then push to Heroku using
 
 ```
 just deploy
