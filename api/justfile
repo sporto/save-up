@@ -14,7 +14,10 @@ build:
   cargo build
 
 build-release:
-  docker build -f Dockerfile.release .
+  docker build -f Dockerfile.release -t kic-api .
+  # docker rm kic-api-container
+  # docker create --name kic-api-container kic-api
+  # docker cp kic-api-container:/usr/src/kic/Cargo.toml ./release/Cargo.toml
 
 run: build
   cargo run
