@@ -32,6 +32,10 @@ build-release:
 deploy:
   git push heroku master
 
+# Shell into the Docker release container
+sh:
+  docker run -i -t --entrypoint /bin/bash kic-api
+
 run: build
   cargo run
 
