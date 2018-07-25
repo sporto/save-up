@@ -1,1 +1,1 @@
-api: ROCKET_PORT=$PORT ROCKET_ENV=prod ./api/bin/api
+api: ROCKET_PORT=$PORT ./api/bin/api
