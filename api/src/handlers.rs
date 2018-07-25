@@ -33,6 +33,11 @@ impl<'a, 'r> FromRequest<'a, 'r> for User {
     }
 }
 
+#[get("/")]
+fn root() -> String {
+    "Hello".to_owned()
+}
+
 #[get("/status")]
 fn status() -> String {
     "Ok".to_owned()

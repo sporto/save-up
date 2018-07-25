@@ -113,6 +113,7 @@ fn rocket() -> Rocket {
     };
 
     let routes = routes![
+        handlers::root,
         handlers::status,
         handlers::sign_up,
         handlers::sign_in,
