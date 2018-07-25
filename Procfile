@@ -1,1 +1,1 @@
-api: ROCKET_PORT=$PORT ./api/bin/api
+web: ROCKET_PORT=$PORT ./api/bin/api
