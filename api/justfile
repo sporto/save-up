@@ -19,7 +19,7 @@ build-release:
     -t kic-api .
 
   docker run \
-    -it -v $PWD:/volume kic-api \
+    -it -v $PWD:/volume -v $PWD:/usr/src/kic kic-api \
     cargo build -Z unstable-options --release --out-dir /volume/bin
 
 deploy:
