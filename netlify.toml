@@ -1,4 +1,4 @@
 [build]
   base    = "client"
-  publish = "client/netlify"
-  command = "make build-client-web"
+  publish = "client/dist"
+  command = "yarn ts-node ./node_modules/.bin/webpack --config webpack.prod.ts"

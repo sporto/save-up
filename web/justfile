@@ -1,5 +1,0 @@
-start:
-  gutenberg serve
-
-build:
-  gutenberg build
