@@ -19,10 +19,12 @@ build-release:
     -t kic-api .
 
   docker run \
-    -it -v "$(pwd):/usr/src/kic" kic-api \
-    cargo build --release --target=x86_64-unknown-linux-musl
+    -it -v $PWD:/volume kic-api \
+    cargo build -Z unstable-options --release --out-dir /volume/bin
 
-  cp ./target/x86_64-unknown-linux-musl/release/api ./bin/api
+# cargo build -Z unstable-options --release --out-dir /volume/bin
+
+# cp ./target/x86_64-unknown-linux-musl/release/api ./bin/api
 
 # env OPENSSL_DIR=/usr/local/ssl OPENSSL_LIB_DIR=/usr/local/lib OPENSSL_INCLUDE_DIR=/usr/local/include \
 

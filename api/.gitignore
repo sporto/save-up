@@ -1,2 +1,4 @@
 /target
 /static/bundles/*
+build-script-build
+build-script-main
