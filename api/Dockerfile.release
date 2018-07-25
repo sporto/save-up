@@ -1,13 +1,1 @@
 FROM clux/muslrust:nightly
-
-ENV APP_DIR /usr/src/kic
-
-# Create blank project
-RUN USER=root cargo new $APP_DIR
-
-# We want dependencies cached, so copy those first.
-WORKDIR $APP_DIR
-COPY Cargo.toml Cargo.lock $APP_DIR/
-
-# This is a dummy build to get the dependencies cached.
-RUN cargo build --release
