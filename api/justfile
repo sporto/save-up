@@ -22,18 +22,6 @@ build-release:
     -it -v $PWD:/volume kic-api \
     cargo build -Z unstable-options --release --out-dir /volume/bin
 
-# cargo build -Z unstable-options --release --out-dir /volume/bin
-
-# cp ./target/x86_64-unknown-linux-musl/release/api ./bin/api
-
-# env OPENSSL_DIR=/usr/local/ssl OPENSSL_LIB_DIR=/usr/local/lib OPENSSL_INCLUDE_DIR=/usr/local/include \
-
-# cargo build --release --target=x86_64-unknown-linux-musl
-
-# docker run \
-#   -it -v "$(pwd):/usr/src/kic" kic-api \
-#   env OPENSSL_LIB_DIR=/usr/local/lib/ OPENSSL_INCLUDE_DIR=/usr/local/include OPENSSL_STATIC=yes cargo build --release --target=x86_64-unknown-linux-musl
-
 deploy:
   git push heroku master
 
