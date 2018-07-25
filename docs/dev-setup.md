@@ -10,6 +10,7 @@ The following tools are required:
 - Node + Yarn
 - Elm
 - Rust + Cargo
+- Guttenberg for the static site https://www.getgutenberg.io
 
 For deployment
 ==============
