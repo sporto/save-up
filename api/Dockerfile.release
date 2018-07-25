@@ -1,6 +1,5 @@
 FROM rustlang/rust:nightly
 
-# ENV SHELL /bin/bash
 ENV APP_DIR /usr/src/kic
 
 RUN apt-get update
@@ -16,3 +15,7 @@ COPY Cargo.toml Cargo.lock $APP_DIR/
 
 # This is a dummy build to get the dependencies cached.
 RUN cargo build --release
+
+ENV OPENSSL_DIR /usr/lib/ssl
+ENV OPENSSL_LIB_DIR /usr/lib/ssl
+ENV OPENSSL_INCLUDE_DIR /usr/include/openssl/
