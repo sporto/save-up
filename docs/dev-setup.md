@@ -14,16 +14,4 @@ The following tools are required:
 For deployment
 ==============
 
-Cross compile directly from Mac (Doesn't work)
-
-Add target
-
-  rustup target add x86_64-unknown-linux-musl
-
-Install musl
-
-https://www.musl-libc.org
-
-On Mac:
-
-  brew install FiloSottile/musl-cross/musl-cross
+Only Docker is needed. The container will compile the Rust code and generate an static linked binary.
