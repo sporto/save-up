@@ -12,9 +12,9 @@ docker run -it \
   kic-api \
   cargo build -Z unstable-options --release --out-dir /volume/bin
 
-git add -f bin/api
-git ci . -m 'Temporary Heroku-only deployment commit'
-git push heroku master --force
+# git add -f bin/api
+# git ci . -m 'Temporary Heroku-only deployment commit'
+# git push heroku master --force
 
 # Un-stage the generated files to finish
-git reset HEAD -f bin/api
+# git reset HEAD -f bin/api
