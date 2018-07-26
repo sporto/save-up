@@ -1,3 +1,5 @@
+# Dev
+
 up:
   diesel migration run
 
@@ -13,13 +15,6 @@ schema:
 build:
   cargo build
 
-deploy:
-  deploy.sh
-
-# Shell into the Docker release container
-sh:
-  docker run -i -t --entrypoint /bin/bash kic-api
-
 run: build
   cargo run
 
@@ -29,3 +24,33 @@ start:
 test:
   APP_ENV=test cargo test
 
+# Utils
+
+# Shell into the Docker release container
+sh:
+  docker run -i -t --entrypoint /bin/bash kic-api
+
+# Deployment
+
+build-release:
+  docker build \
+    -f Dockerfile.release \
+    -t kic-api .
+
+  docker run -it \
+    -v $PWD:/volume \
+    -v cargo-cache:/root/.cargo \
+    kic-api \
+    cargo build -Z unstable-options --release --out-dir /volume/bin
+
+  rm bin/build-script-build
+  rm bin/build-script-main
+
+date = `date +%Y-%m-%d-%H:%M`
+
+deploy-release:
+  aws deploy push \
+    --application-name KicApi \
+    --description "Update" \
+    --s3-location s3://kic-api-deploys/kic-{{date}}.zip \
+    --source bin
