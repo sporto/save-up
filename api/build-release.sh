@@ -18,3 +18,11 @@ docker run -it \
 
 # Un-stage the generated files to finish
 # git reset HEAD -f bin/api
+
+rm bin/build-script-build
+rm bin/build-script-main
+
+aws deploy push \
+  --application-name KicApi \
+  --s3-location s3://kic-api-deploys/kic.zip \
+  --source bin
