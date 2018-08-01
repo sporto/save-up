@@ -20,44 +20,18 @@ module.exports = function (env) {
             module: {
                 rules: [
                     {
-                        test: /\.js$/,
+                        test: /\.ts$/,
                         use: [
                             {
-                                loader: 'babel-loader',
-                                options: {
-                                    presets: ['es2015'],
-                                    plugins: ["transform-async-to-generator"],
-                                    compact: false,
-                                    babelrc: false
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        test: /\.ts(x?)$/,
-                        use: [
-                            {
-                                loader: 'babel-loader',
-                                options: {
-                                    presets: ['es2015'],
-                                    plugins: ["transform-async-to-generator"],
-                                    compact: false,
-                                    babelrc: false
-                                }
+                                loader: 'ts-loader',
+                                options: {}
                             },
-                            'ts-loader'
-                        ]
-                    },
-                    {
-                        test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.wav$|\.mp3$/,
-                        use: [
-                            'file-loader'
                         ]
                     }
                 ]
             },
             resolve: {
-                extensions: ['.ts', '.tsx', '.js']
+                extensions: ['.ts', '.js']
             },
             optimization: {
                 minimize: false,

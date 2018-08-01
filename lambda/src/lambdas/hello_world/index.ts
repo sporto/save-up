@@ -1,9 +1,4 @@
-
-
-let response;
-
-
-exports.lambda_handler = (event, context, callback) => {
+export const handler = (event, context, callback) => {
     // try {
     //     const ret = await axios(url);
     //     response = {
@@ -27,4 +22,4 @@ exports.lambda_handler = (event, context, callback) => {
     }
 
     callback(null, response)
-};
+}
