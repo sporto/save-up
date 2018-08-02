@@ -1,0 +1,5 @@
+build:
+  just hello/build
+
+start:
+  sam local start-api -p 4000
