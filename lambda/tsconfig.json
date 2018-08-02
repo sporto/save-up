@@ -1,9 +1,15 @@
 {
-  "compileOnSave": false,
   "compilerOptions": {
+    "sourceMap": true,
+    "noImplicitAny": false,
     "module": "commonjs",
     "target": "es5",
-    "noImplicitAny": false,
-    "sourceMap": false
-  }
+    "skipLibCheck": true
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "lib": [
+    "esnext",
+  ],
 }
