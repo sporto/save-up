@@ -8,6 +8,7 @@ extern crate serde;
 extern crate serde_json;
 
 use juniper::{FieldResult, Variables, EmptyMutation};
+use lambda::event::apigw::ApiGatewayProxyRequest;
 
 #[derive(Serialize)]
 struct Response {
@@ -72,18 +73,24 @@ fn main() {
 
     let schema = &Schema::new(Query, EmptyMutation::new());
 
-    let (res, _errors) = juniper::execute(
-        "query { client { name } }",
-        None,
-        &schema,
-        &Variables::new(),
-        &ctx,
-    ).unwrap();
+    // let (res, _errors) = juniper::execute(
+    //     "query { client { name } }",
+    //     None,
+    //     &schema,
+    //     &Variables::new(),
+    //     &ctx,
+    // ).unwrap();
 
     // start the runtime, and return a greeting every time we are invoked
-    lambda::start(|()| {
+    lambda::start(|request: ApiGatewayProxyRequest| {
         Ok(Response {
-            body: "Hello".to_owned(),
+            body: request.path.unwrap_or("N/A".to_owned()),
         })
     })
+
+    // lambda::start(|()| {
+    //     Ok(Response {
+    //         body: "N/A".to_owned(),
+    //     })
+    // })
 }

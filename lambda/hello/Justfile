@@ -6,3 +6,6 @@ build:
     -v cargo-cache:/root/.cargo \
     clux/muslrust:nightly \
     cargo build --release --out-dir /volume/bin -Z unstable-options
+
+test:
+  curl http://127.0.0.1:4000/hello
