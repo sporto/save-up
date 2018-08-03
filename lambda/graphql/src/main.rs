@@ -81,16 +81,14 @@ fn main() {
 
             juniper_result
                 .map_err(|_| format_err!("Failed to execture query"))
-                .map(|(value, errors)| Response {
-                    body: "".to_owned(),
+                .and_then(|res| {
+                    serde_json::to_string(&res)
+                    .map_err(|_| format_err!("Failed to serialize response"))
+                    .map(|serializedBody| Response {
+                        body: serializedBody,
+                    })
                 })
         })
-
     })
 
-    // lambda::start(|()| {
-    //     Ok(Response {
-    //         body: "N/A".to_owned(),
-    //     })
-    // })
 }

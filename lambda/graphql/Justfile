@@ -11,5 +11,5 @@ test:
   curl \
     --request POST \
     --header "Content-Type: application/json" \
-    --data '{"username":"xyz","password":"xyz"}' \
+    --data '{__schema{types{name}}}' \
     http://127.0.0.1:4000/graphql
