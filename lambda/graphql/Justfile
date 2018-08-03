@@ -8,4 +8,8 @@ build:
     cargo build --release --out-dir /volume/bin -Z unstable-options
 
 test:
-  curl http://127.0.0.1:4000/hello
+  curl \
+    --request POST \
+    --header "Content-Type: application/json" \
+    --data '{"username":"xyz","password":"xyz"}' \
+    http://127.0.0.1:4000/graphql

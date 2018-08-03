@@ -285,7 +285,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "hello"
+name = "graphql"
 version = "0.1.0"
 dependencies = [
  "aws_lambda 0.1.0 (git+https://github.com/srijs/rust-aws-lambda)",
