@@ -1,4 +1,6 @@
 #[macro_use]
+extern crate failure;
+#[macro_use]
 extern crate juniper;
 #[macro_use]
 extern crate serde_derive;
@@ -7,8 +9,9 @@ extern crate aws_lambda as lambda;
 extern crate serde;
 extern crate serde_json;
 
-use juniper::{FieldResult, Variables, EmptyMutation};
+use juniper::{EmptyMutation, FieldResult, Variables};
 use lambda::event::apigw::ApiGatewayProxyRequest;
+use failure::Error;
 
 #[derive(Serialize)]
 struct Response {
@@ -58,13 +61,12 @@ graphql_object!(Query: Context |&self| {
 
 // graphql_object!(Mutation: Context |&self| {
 
-    // field createHuman(&executor, new_human: NewHuman) -> FieldResult<Human> {
-    //     let db = executor.context().pool.get_connection()?;
-    //     let human: Human = db.insert_human(&new_human)?;
-    //     Ok(human)
-    // }
+// field createHuman(&executor, new_human: NewHuman) -> FieldResult<Human> {
+//     let db = executor.context().pool.get_connection()?;
+//     let human: Human = db.insert_human(&new_human)?;
+//     Ok(human)
+// }
 // });
-
 
 type Schema = juniper::RootNode<'static, Query, EmptyMutation<Context>>;
 
@@ -81,11 +83,19 @@ fn main() {
     //     &ctx,
     // ).unwrap();
 
-    // start the runtime, and return a greeting every time we are invoked
     lambda::start(|request: ApiGatewayProxyRequest| {
-        Ok(Response {
-            body: request.path.unwrap_or("N/A".to_owned()),
-        })
+        request
+            .body
+            .ok_or(format_err!("No body"))
+            .map(|b| Response {
+                body: b,
+            })
+
+        // .map_err(|_| "Err")
+
+        // Ok(Response {
+        //     body: request.path.unwrap_or("N/A".to_owned()),
+        // })
     })
 
     // lambda::start(|()| {
