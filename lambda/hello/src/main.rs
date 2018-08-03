@@ -7,7 +7,7 @@ extern crate aws_lambda as lambda;
 extern crate serde;
 extern crate serde_json;
 
-use juniper::FieldResult;
+use juniper::{FieldResult, Variables, EmptyMutation};
 
 #[derive(Serialize)]
 struct Response {
@@ -53,21 +53,33 @@ graphql_object!(Query: Context |&self| {
     }
 });
 
-struct Mutation;
+// struct Mutation;
 
-graphql_object!(Mutation: Context |&self| {
+// graphql_object!(Mutation: Context |&self| {
 
     // field createHuman(&executor, new_human: NewHuman) -> FieldResult<Human> {
     //     let db = executor.context().pool.get_connection()?;
     //     let human: Human = db.insert_human(&new_human)?;
     //     Ok(human)
     // }
-});
+// });
 
 
-type Schema = juniper::RootNode<'static, Query, Mutation>;
+type Schema = juniper::RootNode<'static, Query, EmptyMutation<Context>>;
 
 fn main() {
+    let ctx = Context {};
+
+    let schema = &Schema::new(Query, EmptyMutation::new());
+
+    let (res, _errors) = juniper::execute(
+        "query { client { name } }",
+        None,
+        &schema,
+        &Variables::new(),
+        &ctx,
+    ).unwrap();
+
     // start the runtime, and return a greeting every time we are invoked
     lambda::start(|()| {
         Ok(Response {
