@@ -71,31 +71,21 @@ graphql_object!(Query: Context |&self| {
 type Schema = juniper::RootNode<'static, Query, EmptyMutation<Context>>;
 
 fn main() {
-    let ctx = Context {};
-
-    let schema = &Schema::new(Query, EmptyMutation::new());
-
-    // let (res, _errors) = juniper::execute(
-    //     "query { client { name } }",
-    //     None,
-    //     &schema,
-    //     &Variables::new(),
-    //     &ctx,
-    // ).unwrap();
-
     lambda::start(|request: ApiGatewayProxyRequest| {
-        request
-            .body
-            .ok_or(format_err!("No body"))
-            .map(|b| Response {
-                body: b,
-            })
+        let ctx = Context {};
 
-        // .map_err(|_| "Err")
+        let schema = &Schema::new(Query, EmptyMutation::new());
 
-        // Ok(Response {
-        //     body: request.path.unwrap_or("N/A".to_owned()),
-        // })
+        request.body.ok_or(format_err!("No body")).and_then(|b| {
+            let juniper_result = juniper::execute(&b, None, &schema, &Variables::new(), &ctx);
+
+            juniper_result
+                .map_err(|_| format_err!("Failed to execture query"))
+                .map(|(value, errors)| Response {
+                    body: "".to_owned(),
+                })
+        })
+
     })
 
     // lambda::start(|()| {
