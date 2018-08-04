@@ -1,6 +1,0 @@
-[global]
-template_dir = "templates/"
-
-[development]
-address = "127.0.0.1"
-port = 4010
