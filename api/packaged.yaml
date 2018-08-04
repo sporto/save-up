@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'lambda
+
+  Sample SAM Template for lambda
+
+  '
+Globals:
+  Function:
+    Timeout: 3
+Outputs:
+  GraphQlApi:
+    Description: API Gateway endpoint URL for Prod stage for GraphQl function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/prod/graphql/
+  GraphQlFunction:
+    Description: GraphQl Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - GraphQlFunction
+      - Arn
+  GraphQlFunctionIamRole:
+    Description: Implicit IAM Role created for GraphQl function
+    Value:
+      Fn::GetAtt:
+      - GraphQlFunctionRole
+      - Arn
+Resources:
+  GraphQlFunction:
+    Properties:
+      CodeUri: s3://kic-api/8358a3d2c1f49833a901db53447b3dad
+      Environment:
+        Variables:
+          DATABASE_URL: null
+      Events:
+        GraphQl:
+          Properties:
+            Method: post
+            Path: /graphql
+          Type: Api
+      Handler: graphql
+      Runtime: go1.x
+    Type: AWS::Serverless::Function
+Transform: AWS::Serverless-2016-10-31

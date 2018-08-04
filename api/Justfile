@@ -1,6 +1,12 @@
 build:
-  just hello/build
+  just graphql/build
 
 start:
   DATABASE_URL=$DATABASE_URL sam local start-api -p 4010
+
+package:
+   sam package \
+    --template-file template.yaml \
+    --s3-bucket kic-api \
+    --output-template-file packaged.yaml
 

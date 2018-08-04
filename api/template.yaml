@@ -12,9 +12,8 @@ Globals:
 
 
 Resources:
-
     GraphQlFunction:
-        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Type: AWS::Serverless::Function
         Properties:
             CodeUri: graphql/bin/
             Handler: graphql
@@ -24,7 +23,7 @@ Resources:
                     DATABASE_URL:
             Events:
                 GraphQl:
-                    Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                    Type: Api
                     Properties:
                         Path: /graphql
                         Method: post
@@ -32,14 +31,14 @@ Resources:
 
 Outputs:
 
-    HelloWorldApi:
-      Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+    GraphQlApi:
+      Description: "API Gateway endpoint URL for Prod stage for GraphQl function"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/prod/graphql/"
 
-    HelloWorldFunction:
-      Description: "Hello World Lambda Function ARN"
-      Value: !GetAtt HelloWorldFunction.Arn
+    GraphQlFunction:
+      Description: "GraphQl Lambda Function ARN"
+      Value: !GetAtt GraphQlFunction.Arn
 
-    HelloWorldFunctionIamRole:
-      Description: "Implicit IAM Role created for Hello World function"
-      Value: !GetAtt HelloWorldFunctionRole.Arn
+    GraphQlFunctionIamRole:
+      Description: "Implicit IAM Role created for GraphQl function"
+      Value: !GetAtt GraphQlFunctionRole.Arn
