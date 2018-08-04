@@ -10,3 +10,9 @@ package:
     --s3-bucket kic-api \
     --output-template-file packaged.yaml
 
+deploy:
+  sam deploy \
+    --template-file ./packaged.yaml \
+    --stack-name kic-api \
+    --capabilities CAPABILITY_IAM
+

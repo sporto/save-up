@@ -18,6 +18,8 @@ Resources:
             CodeUri: graphql/bin/
             Handler: graphql
             Runtime: go1.x
+            FunctionName: GraphQlApi
+            Description: "KIC GraphQl API"
             Environment:
                 Variables:
                     DATABASE_URL:
@@ -33,7 +35,7 @@ Outputs:
 
     GraphQlApi:
       Description: "API Gateway endpoint URL for Prod stage for GraphQl function"
-      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/prod/graphql/"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/graphql/"
 
     GraphQlFunction:
       Description: "GraphQl Lambda Function ARN"
