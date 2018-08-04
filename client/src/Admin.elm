@@ -1,6 +1,5 @@
 module Admin exposing (main)
 
-import Browser
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
@@ -37,13 +36,9 @@ subscriptions model =
     Sub.none
 
 
-view : Model -> Browser.Document Msg
+view : Model -> Html Msg
 view model =
-    { title = "KIC Admin"
-    , body =
-        [ navigation model
-        ]
-    }
+    navigation model
 
 
 navigation : Model -> Html Msg
@@ -59,7 +54,7 @@ navigation model =
 
 main : Program Flags.Flags Model Msg
 main =
-    Browser.document
+    Html.programWithFlags
         { init = init
         , subscriptions = subscriptions
         , update = update

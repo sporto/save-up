@@ -1,6 +1,5 @@
 module SignIn exposing (main)
 
-import Browser
 import Debug
 import Html exposing (..)
 import Html.Attributes exposing (class, href, type_)
@@ -117,7 +116,7 @@ subscriptions model =
 
 main : Program Flags.PublicFlags Model Msg
 main =
-    Browser.document
+    Html.programWithFlags
         { init = init
         , subscriptions = subscriptions
         , update = update
@@ -130,40 +129,36 @@ main =
 -- TODO add html validation
 
 
-view : Model -> Browser.Document Msg
+view : Model -> Html Msg
 view model =
-    { title = "KIC Admin"
-    , body =
-        [ div [ class "flex items-center justify-center pt-16" ]
-            [ div []
-                [ h1 []
-                    [ text "Sign In" ]
-                , form
-                    [ class "bg-white shadow-md rounded p-8 mt-3", onSubmit Submit ]
-                    [ maybeError model
-                    , p []
-                        [ label [ class labelClasses ]
-                            [ text "Email"
-                            ]
-                        , input [ class inputClasses, onInput ChangeEmail ] []
+    div [ class "flex items-center justify-center pt-16" ]
+        [ div []
+            [ h1 []
+                [ text "Sign In" ]
+            , form
+                [ class "bg-white shadow-md rounded p-8 mt-3", onSubmit Submit ]
+                [ maybeError model
+                , p []
+                    [ label [ class labelClasses ]
+                        [ text "Email"
                         ]
-                    , p [ class "mt-6" ]
-                        [ label [ class labelClasses ]
-                            [ text "Password"
-                            ]
-                        , input [ class inputClasses, type_ "password", onInput ChangePassword ] []
+                    , input [ class inputClasses, onInput ChangeEmail ] []
+                    ]
+                , p [ class "mt-6" ]
+                    [ label [ class labelClasses ]
+                        [ text "Password"
                         ]
-                    , p [ class "mt-6" ]
-                        [ button [ class btnClasses ] [ text "Sign In" ]
-                        ]
-                    , p [ class "mt-6" ]
-                        [ a [ href "/sign-up" ] [ text "Sign Up" ]
-                        ]
+                    , input [ class inputClasses, type_ "password", onInput ChangePassword ] []
+                    ]
+                , p [ class "mt-6" ]
+                    [ button [ class btnClasses ] [ text "Sign In" ]
+                    ]
+                , p [ class "mt-6" ]
+                    [ a [ href "/sign-up" ] [ text "Sign Up" ]
                     ]
                 ]
             ]
         ]
-    }
 
 
 maybeError model =
