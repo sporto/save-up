@@ -5,7 +5,7 @@ start:
   DATABASE_URL=$DATABASE_URL sam local start-api -p 4010
 
 package:
-   sam package \
+  sam package \
     --template-file template.yaml \
     --s3-bucket kic-api \
     --output-template-file packaged.yaml
@@ -15,4 +15,3 @@ deploy:
     --template-file ./packaged.yaml \
     --stack-name kic-api \
     --capabilities CAPABILITY_IAM
-

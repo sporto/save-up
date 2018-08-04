@@ -1,28 +1,27 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-    lambda
+    KIC
 
-    Sample SAM Template for lambda
-    
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+
 Globals:
     Function:
         Timeout: 3
 
 
 Resources:
+
     GraphQlFunction:
         Type: AWS::Serverless::Function
         Properties:
             CodeUri: graphql/bin/
             Handler: graphql
             Runtime: go1.x
-            FunctionName: GraphQlApi
-            Description: "KIC GraphQl API"
+            FunctionName: KicGraphQl
+            Description: "KIC GraphQl Server"
             Environment:
                 Variables:
-                    DATABASE_URL: url
+                    DATABASE_URL:
             Events:
                 GraphQl:
                     Type: Api
@@ -33,14 +32,14 @@ Resources:
 
 Outputs:
 
-    GraphQlApi:
-      Description: "API Gateway endpoint URL for Prod stage for GraphQl function"
+    KicGraphQlApi:
+      Description: "API Gateway endpoint URL for Prod stage for KIC GraphQl function"
       Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/graphql/"
 
-    GraphQlFunction:
-      Description: "GraphQl Lambda Function ARN"
-      Value: !GetAtt GraphQlFunction.Arn
+    KicGraphQlFunction:
+      Description: "KIC GraphQl Lambda Function ARN"
+      Value: !GetAtt KicGraphQlFunction.Arn
 
-    GraphQlFunctionIamRole:
-      Description: "Implicit IAM Role created for GraphQl function"
-      Value: !GetAtt GraphQlFunctionRole.Arn
+    KicGraphQlFunctionIamRole:
+      Description: "Implicit IAM Role created for KIC GraphQl function"
+      Value: !GetAtt KicGraphQlFunctionRole.Arn
