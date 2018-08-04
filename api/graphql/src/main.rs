@@ -22,7 +22,9 @@ extern crate validator;
 use failure::Error;
 use juniper::RootNode;
 use juniper::{EmptyMutation, FieldResult, Variables};
+use juniper::http::GraphQLRequest;
 use lambda::event::apigw::ApiGatewayProxyRequest;
+use serde_json::{Value};
 use utils::config;
 
 mod db;
@@ -48,6 +50,14 @@ fn main() {
     })
 }
 
+#[derive(Serialize, Deserialize)]
+struct Query {
+    query: String,
+    age: u8,
+    phones: Vec<String>,
+}
+
+
 fn run(request: ApiGatewayProxyRequest) -> Result<String, Error> {
     let conn = db::establish_connection()?;
 
@@ -61,8 +71,12 @@ fn run(request: ApiGatewayProxyRequest) -> Result<String, Error> {
 
     let body = request.body.ok_or(format_err!("Body not found"))?;
 
-    let juniper_result = juniper::execute(&body, None, &schema, &Variables::new(), &context)
-        .map_err(|e| format_err!("Failed to execute query"))?;
+    let request: GraphQLRequest = serde_json::from_str(&body)?;
 
-    serde_json::to_string(&juniper_result).map_err(|_| format_err!("Failed to serialize response"))
+    let juniper_result = request.execute(
+        &schema,
+        &context,
+    );
+
+    serde_json::to_string(&juniper_result).map_err(|e| format_err!("{}", e.to_string()))
 }
