@@ -22,7 +22,7 @@ Resources:
             Description: "KIC GraphQl API"
             Environment:
                 Variables:
-                    DATABASE_URL:
+                    DATABASE_URL: url
             Events:
                 GraphQl:
                     Type: Api
