@@ -7,9 +7,15 @@ build:
     clux/muslrust:nightly \
     cargo build --release --out-dir /volume/bin -Z unstable-options
 
-test:
+try:
   curl \
     --request POST \
     --header "Content-Type: application/json" \
     --data '{__schema{types{name}}}' \
     http://127.0.0.1:4010/graphql
+
+migration-up:
+  diesel migration run
+
+schema:
+  diesel print-schema > src/models/schema.rs
