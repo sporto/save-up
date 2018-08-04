@@ -32,7 +32,7 @@ pub struct UserAttrs {
     pub timezone: String,
 }
 
-pub fn newUser() -> User {
+pub fn new_user() -> User {
     User {
         id: 1,
         client_id: 2,

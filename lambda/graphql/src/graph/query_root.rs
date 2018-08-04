@@ -1,7 +1,5 @@
 use diesel::pg::PgConnection;
 use juniper::{Context as JuniperContext, FieldError, FieldResult};
-// use r2d2;
-// use r2d2_diesel;
 
 use chrono_tz::America;
 use chrono_tz::Australia;
