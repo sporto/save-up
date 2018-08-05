@@ -18,6 +18,19 @@ newSignUp =
     }
 
 
+type alias SignIn =
+    { email : String
+    , password : String
+    }
+
+
+newSignIn : SignIn
+newSignIn =
+    { email = ""
+    , password = ""
+    }
+
+
 
 -- port toJsUseToken : String -> Cmd msg
 

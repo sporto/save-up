@@ -8,37 +8,54 @@ import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Shared.Flags as Flags
-import Shared.Tokens as Tokens
+import Shared.Sessions as Sessions exposing (SignIn)
 
 
 type alias Model =
-    { email : String
-    , password : String
-    , flags : Flags.PublicFlags
-    , response : RemoteData
+    { flags : Flags.PublicFlags
+    , signIn : SignIn
+    , stage : Stage
     }
 
 
 initialModel : Flags.PublicFlags -> Model
 initialModel flags =
-    { email = ""
-    , password = ""
-    , flags = flags
-    , response = NotAsked
+    { flags = flags
+    , signIn = Sessions.newSignIn
+    , stage = Stage_Initial
     }
 
 
-type RemoteData
-    = NotAsked
-    | Loading
-    | Success Response
-    | Failed
+type Stage
+    = Stage_Initial
+    | Stage_Processing
 
 
-type alias Response =
-    { error : Maybe String
-    , token : Maybe String
-    }
+asEmailInSignIn : SignIn -> String -> SignIn
+asEmailInSignIn signUp email =
+    { signUp | email = email }
+
+
+asPasswordInSignIn : SignIn -> String -> SignIn
+asPasswordInSignIn signIn password =
+    { signIn | password = password }
+
+
+asSignInInModel : Model -> SignIn -> Model
+asSignInInModel model signIn =
+    { model | signIn = signIn }
+
+
+
+-- type RemoteData
+--     = NotAsked
+--     | Loading
+--     | Success Response
+--     | Failed
+-- type alias Response =
+--     { error : Maybe String
+--     , token : Maybe String
+--     }
 
 
 init : Flags.PublicFlags -> ( Model, Cmd Msg )
@@ -50,64 +67,69 @@ type Msg
     = ChangeEmail String
     | ChangePassword String
     | Submit
-    | SubmitResponse (Result Http.Error Response)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ChangeEmail email ->
-            ( { model | email = email }, Cmd.none )
-
-        ChangePassword password ->
-            ( { model | password = password }, Cmd.none )
-
-        Submit ->
-            ( { model | response = Loading }
-            , Http.send
-                SubmitResponse
-                (request model)
+            ( email
+                |> asEmailInSignIn model.signIn
+                |> asSignInInModel model
+            , Cmd.none
             )
 
-        SubmitResponse (Ok response) ->
-            let
-                cmd =
-                    case response.token of
-                        Just token ->
-                            Tokens.toJsUseToken token
+        ChangePassword password ->
+            ( password
+                |> asPasswordInSignIn model.signIn
+                |> asSignInInModel model
+            , Cmd.none
+            )
 
-                        Nothing ->
-                            Cmd.none
-            in
-                ( { model | response = Success response }, cmd )
-
-        -- TODO log the error
-        SubmitResponse (Err err) ->
-            let
-                _ =
-                    Debug.log "Err" err
-            in
-                ( { model | response = Failed }, Cmd.none )
+        Submit ->
+            ( { model | stage = Stage_Processing }
+            , Cmd.none
+            )
 
 
-request model =
-    Http.post "http://localhost:4010/sign-in" (requestBody model) responseDecoder
+
+-- SubmitResponse (Ok response) ->
+--     let
+--         cmd =
+--             case response.token of
+--                 Just token ->
+--                     Tokens.toJsUseToken token
+--                 Nothing ->
+--                     Cmd.none
+--     in
+--         ( { model | response = Success response }, cmd )
+-- -- TODO log the error
+-- SubmitResponse (Err err) ->
+--     let
+--         _ =
+--             Debug.log "Err" err
+--     in
+--         ( { model | response = Failed }, Cmd.none )
 
 
-requestBody : Model -> Http.Body
-requestBody model =
-    Encode.object
-        [ ( "email", Encode.string model.email )
-        , ( "password", Encode.string model.password )
-        ]
-        |> Http.jsonBody
+-- request model =
+--     Http.post "http://localhost:4010/sign-in" (requestBody model) responseDecoder
 
 
-responseDecoder : Decode.Decoder Response
-responseDecoder =
-    Decode.map2 Response
-        (Decode.field "error" (Decode.nullable Decode.string))
-        (Decode.field "token" (Decode.nullable Decode.string))
+-- requestBody : Model -> Http.Body
+-- requestBody model =
+--     Encode.object
+--         [ ( "email", Encode.string model.email )
+--         , ( "password", Encode.string model.password )
+--         ]
+--         |> Http.jsonBody
+
+
+-- responseDecoder : Decode.Decoder Response
+-- responseDecoder =
+--     Decode.map2 Response
+--         (Decode.field "error" (Decode.nullable Decode.string))
+--         (Decode.field "token" (Decode.nullable Decode.string))
 
 
 subscriptions model =
@@ -162,19 +184,20 @@ view model =
 
 
 maybeError model =
-    case model.response of
-        Success response ->
-            case response.error of
-                Just error ->
-                    p [ class "mb-4 text-red" ]
-                        [ text error
-                        ]
+    text ""
+    -- case model.response of
+    --     Success response ->
+    --         case response.error of
+    --             Just error ->
+    --                 p [ class "mb-4 text-red" ]
+    --                     [ text error
+    --                     ]
 
-                _ ->
-                    text ""
+    --             _ ->
+    --                 text ""
 
-        _ ->
-            text ""
+    --     _ ->
+    --         text ""
 
 
 labelClasses =
