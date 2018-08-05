@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Shared.Flags as Flags
-import Shared.Tokens as Tokens
+import Shared.Sessions as Sessions
 
 
 type alias Model =
@@ -29,7 +29,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         SignOut ->
-            ( model, Tokens.toJsSignOut () )
+            ( model, Sessions.toJsSignOut () )
 
 
 subscriptions model =

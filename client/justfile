@@ -2,7 +2,7 @@ graph:
   yarn graphqelm $API_HOST/graphql --base Api
 
 build:
-  yarn ts-node ./node_modules/.bin/webpack --config webpack.dev.ts --reporter basic 
+  yarn ts-node ./node_modules/.bin/webpack --config webpack.dev.ts
 
 build-prod:
   yarn ts-node ./node_modules/.bin/webpack --config webpack.prod.ts

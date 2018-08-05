@@ -3,7 +3,7 @@ import { SIGN_IN_PATH } from "./constants"
 import getConfig from "./config"
 import Amplify, { Auth } from "aws-amplify"
 
-function getAmplifyClient() {
+function configureAmplifyClient() {
 	let config = getConfig()
 
 	Amplify.configure({
@@ -52,12 +52,15 @@ function getAmplifyClient() {
 }
 
 export function signUp(signUp: SignUp): void {
+	configureAmplifyClient()
+
 	Auth.signUp({
-		email: signUp.email,
+		username: signUp.email,
 		password: signUp.password,
 		attributes: {
+			email: signUp.email,
 			name: signUp.name,
-			timezone: signUp.timezone,
+			zoneinfo: signUp.timezone,
 		}
 	})
 	.then(data => console.log(data))

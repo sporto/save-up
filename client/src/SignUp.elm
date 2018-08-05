@@ -175,7 +175,7 @@ view model =
                     [ label [ class labelClasses ]
                         [ text "Email"
                         ]
-                    , input [ class inputClasses, onInput ChangeEmail ] []
+                    , input [ class inputClasses, type_ "email", onInput ChangeEmail ] []
                     ]
                 , p [ class "mt-6" ]
                     [ label [ class labelClasses ]
