@@ -26,6 +26,7 @@
     "webpack-serve": "^2.0.2"
   },
   "dependencies": {
+    "aws-amplify": "^1.0.4",
     "invariant": "^2.2.4",
     "js-cookie": "^2.2.0",
     "jwt-decode": "^2.2.0",

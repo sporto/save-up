@@ -1,5 +1,5 @@
 //@ts-ignore
-import * as App from "./elm-out/app.js"
+import Elm from "./Main.elm"
 import publicApp from "./public"
 
-publicApp(App.Elm.SignUp)
+publicApp(Elm.SignUp)

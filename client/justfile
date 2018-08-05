@@ -1,9 +1,6 @@
 graph:
   yarn graphqelm $API_HOST/graphql --base Api
 
-elm:
-  elm make ./src/SignIn.elm ./src/SignUp.elm ./src/Admin.elm ./src/Investor.elm --output=src/elm-out/app.js
-
 build:
   yarn ts-node ./node_modules/.bin/webpack --config webpack.dev.ts --reporter basic 
 

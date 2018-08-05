@@ -9,14 +9,10 @@ indent_style = space
 indent_size = 2
 
 [*.rs]
-indent_style = space
+indent_style = tab
 indent_size = 4
 
 [*.yaml]
-indent_style = space
-indent_size = 4
-
-[*.tera]
 indent_style = space
 indent_size = 4
 
@@ -24,13 +20,9 @@ indent_size = 4
 indent_style = space
 indent_size = 4
 
-[*.ex]
-indent_style = space
-indent_size = 2
-
 [*.ts]
-indent_style = space
-indent_size = 2
+indent_style = tab
+indent_size = 4
 
 [Makefile]
 indent_style = tab

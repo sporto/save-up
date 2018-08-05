@@ -1,5 +1,5 @@
 //@ts-ignore
-import * as App from "./elm-out/app.js"
+import Elm from "./Main.elm"
 import app from "./app"
 
-app(App.Elm.Admin)
+app(Elm.Admin)
