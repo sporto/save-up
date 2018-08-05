@@ -3,6 +3,7 @@ use db;
 // use models::users::{User, UserAttrs};
 use utils::config;
 
+#[allow(dead_code)]
 pub fn run(conn: db::Conn) -> bool {
     let app_env = config::app_env();
 
@@ -19,6 +20,7 @@ pub fn run(conn: db::Conn) -> bool {
     }
 }
 
+#[allow(dead_code)]
 fn seed(_conn: db::Conn) -> Result<String, String> {
     // let _ = User::delete_all(&conn);
     // let _ = Client::delete_all(&conn);
