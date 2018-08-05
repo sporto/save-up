@@ -1,7 +1,5 @@
 //@ts-ignore
-import Elm from "./Main.elm"
-import publicApp from "./public"
+import * as Elm from "./Main.elm"
+import auth from "./auth"
 
-console.log("HEllo")
-
-publicApp(Elm.SignIn)
+auth(Elm.SignIn)

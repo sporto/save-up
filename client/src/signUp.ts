@@ -1,5 +1,5 @@
 //@ts-ignore
-import Elm from "./Main.elm"
-import publicApp from "./public"
+import * as Elm from "./Main.elm"
+import auth from "./auth"
 
-publicApp(Elm.SignUp)
+auth(Elm.SignUp)

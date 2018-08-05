@@ -98,14 +98,15 @@ export function proceedIfSignedIn(callback: (token: Token) => void): void {
 }
 
 export function proceedIfSignedOut(callback: () => void): void {
-	let maybeToken = tokens.getToken()
+	callback()
+	// let maybeToken = tokens.getToken()
 
-	if (maybeToken.isDefined()) {
-		maybeToken.map(token => redirectToEntry(token))
-	} else {
-		console.log("No token found - render page")
-		callback()
-	}
+	// if (maybeToken.isDefined()) {
+	// 	maybeToken.map(token => redirectToEntry(token))
+	// } else {
+	// 	console.log("No token found - render page")
+	// 	callback()
+	// }
 }
 
 export function signOut() {

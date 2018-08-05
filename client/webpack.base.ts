@@ -59,6 +59,7 @@ let baseConfig: webpack.Configuration = {
 				use: {
 					loader: "elm-webpack-loader",
 					options: {
+						cwd: __dirname,
 						files: [
 							path.resolve(__dirname, "src/Main.elm"),
 							path.resolve(__dirname, "src/Admin.elm"),
@@ -78,6 +79,7 @@ let baseConfig: webpack.Configuration = {
 	  new webpack.DefinePlugin({
 		API_HOST: JSON.stringify(API_HOST),
 		COGNITO_APP_CLIENT_ID: JSON.stringify(COGNITO_APP_CLIENT_ID),
+		COGNITO_REGION: JSON.stringify(COGNITO_REGION),
 		COGNITO_USER_POOL_ID: JSON.stringify(COGNITO_USER_POOL_ID),
 	  }),
 	  new HtmlWebpackPlugin({

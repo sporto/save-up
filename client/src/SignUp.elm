@@ -8,41 +8,54 @@ import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Shared.Flags as Flags
-import Shared.Tokens as Tokens
+import Shared.Sessions as Sessions exposing (SignUp)
 
 
 type alias Model =
-    { email : String
-    , name : String
-    , password : String
-    , timezone : String
-    , flags : Flags.PublicFlags
-    , response : RemoteData
+    { flags : Flags.PublicFlags
+    , signUp : SignUp
+    , stage : Stage
     }
 
 
 initialModel : Flags.PublicFlags -> Model
 initialModel flags =
-    { email = ""
-    , name = ""
-    , password = ""
-    , timezone = "Australia/Melbourne"
-    , flags = flags
-    , response = NotAsked
+    { flags = flags
+    , signUp = Sessions.newSignUp
+    , stage = Stage_Initial
     }
 
 
-type RemoteData
-    = NotAsked
-    | Loading
-    | Success Response
-    | Failed
+asEmailInSignUp : SignUp -> String -> SignUp
+asEmailInSignUp signUp email =
+    { signUp | email = email }
 
 
-type alias Response =
-    { error : Maybe String
-    , token : Maybe String
-    }
+asNameInSignUp : SignUp -> String -> SignUp
+asNameInSignUp signUp name =
+    { signUp | name = name }
+
+
+asPasswordInSignUp : SignUp -> String -> SignUp
+asPasswordInSignUp signUp password =
+    { signUp | password = password }
+
+
+asSignUpInModel : Model -> SignUp -> Model
+asSignUpInModel model signUp =
+    { model | signUp = signUp }
+
+
+type Stage
+    = Stage_Initial
+    | Stage_Processing
+
+
+
+-- type alias Response =
+--     { error : Maybe String
+--     , token : Maybe String
+--     }
 
 
 init : Flags.PublicFlags -> ( Model, Cmd Msg )
@@ -55,73 +68,73 @@ type Msg
     | ChangeName String
     | ChangePassword String
     | Submit
-    | SubmitResponse (Result Http.Error Response)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ChangeEmail email ->
-            ( { model | email = email }, Cmd.none )
-
-        ChangeName name ->
-            ( { model | name = name }, Cmd.none )
-
-        ChangePassword password ->
-            ( { model | password = password }, Cmd.none )
-
-        Submit ->
-            ( { model | response = Loading }
-            , Http.send
-                SubmitResponse
-                (request model)
+            ( email
+                |> asEmailInSignUp model.signUp
+                |> asSignUpInModel model
+            , Cmd.none
             )
 
-        SubmitResponse (Ok response) ->
-            let
-                cmd =
-                    case response.token of
-                        Just token ->
-                            Tokens.toJsUseToken token
+        ChangeName name ->
+            ( name
+                |> asNameInSignUp model.signUp
+                |> asSignUpInModel model
+            , Cmd.none
+            )
 
-                        Nothing ->
-                            Cmd.none
-            in
-                ( { model | response = Success response }, cmd )
+        ChangePassword password ->
+            ( password
+                |> asPasswordInSignUp model.signUp
+                |> asSignUpInModel model
+            , Cmd.none
+            )
 
-        -- TODO log the error
-        SubmitResponse (Err err) ->
-            let
-                _ =
-                    Debug.log "Err" err
-            in
-                ( { model | response = Failed }, Cmd.none )
-
+        Submit ->
+            ( { model | stage = Stage_Processing }
+            , Sessions.toJsSignUp model.signUp
+            )
 
 
+
+-- SubmitResponse (Ok response) ->
+--     let
+--         cmd =
+--             case response.token of
+--                 Just token ->
+--                     Tokens.toJsUseToken token
+--                 Nothing ->
+--                     Cmd.none
+--     in
+--         ( { model | response = Success response }, cmd )
+-- -- TODO log the error
+-- SubmitResponse (Err err) ->
+--     let
+--         _ =
+--             Debug.log "Err" err
+--     in
+--         ( { model | response = Failed }, Cmd.none )
 -- TODO use flags for api
-
-
-request model =
-    Http.post "http://localhost:4010/sign-up" (requestBody model) responseDecoder
-
-
-requestBody : Model -> Http.Body
-requestBody model =
-    Encode.object
-        [ ( "email", Encode.string model.email )
-        , ( "name", Encode.string model.name )
-        , ( "password", Encode.string model.password )
-        , ( "timezone", Encode.string model.timezone )
-        ]
-        |> Http.jsonBody
-
-
-responseDecoder : Decode.Decoder Response
-responseDecoder =
-    Decode.map2 Response
-        (Decode.field "error" (Decode.nullable Decode.string))
-        (Decode.field "token" (Decode.nullable Decode.string))
+-- request model =
+--     Http.post "http://localhost:4010/sign-up" (requestBody model) responseDecoder
+-- requestBody : Model -> Http.Body
+-- requestBody model =
+--     Encode.object
+--         [ ( "email", Encode.string model.email )
+--         , ( "name", Encode.string model.name )
+--         , ( "password", Encode.string model.password )
+--         , ( "timezone", Encode.string model.timezone )
+--         ]
+--         |> Http.jsonBody
+-- responseDecoder : Decode.Decoder Response
+-- responseDecoder =
+--     Decode.map2 Response
+--         (Decode.field "error" (Decode.nullable Decode.string))
+--         (Decode.field "token" (Decode.nullable Decode.string))
 
 
 subscriptions model =
@@ -148,7 +161,7 @@ view model =
     div [ class "flex items-center justify-center pt-16" ]
         [ div []
             [ h1 []
-                [ text "Sign In" ]
+                [ text "Sign Up" ]
             , form
                 [ class "bg-white shadow-md rounded p-8 mt-3", onSubmit Submit ]
                 [ maybeError model
@@ -171,27 +184,38 @@ view model =
                     , input [ class inputClasses, type_ "password", onInput ChangePassword ] []
                     ]
                 , p [ class "mt-6" ]
-                    [ button [ class btnClasses ] [ text "Sign In" ]
+                    [ submit model
                     ]
                 ]
             ]
         ]
 
 
+submit model =
+    case model.stage of
+        Stage_Initial ->
+            button [ class btnClasses ] [ text "Sign In" ]
+
+        Stage_Processing ->
+            text "..."
+
+
 maybeError model =
-    case model.response of
-        Success response ->
-            case response.error of
-                Just error ->
-                    p [ class "mb-4 text-red" ]
-                        [ text error
-                        ]
+    text ""
 
-                _ ->
-                    text ""
 
-        _ ->
-            text ""
+
+-- case model.response of
+--     Success response ->
+--         case response.error of
+--             Just error ->
+--                 p [ class "mb-4 text-red" ]
+--                     [ text error
+--                     ]
+--             _ ->
+--                 text ""
+--     _ ->
+--         text ""
 
 
 labelClasses =

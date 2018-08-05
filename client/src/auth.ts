@@ -2,12 +2,7 @@ import * as sessions from "./services/sessions"
 import getConfig from "./services/config"
 
 interface Elm {
-	init(args: Args): PublicApp
-}
-
-interface Args {
-	node: HTMLElement | null,
-	flags: PublicFlags,
+	embed(node: HTMLElement | null, flags: PublicFlags): PublicApp
 }
 
 interface PublicApp {
@@ -18,7 +13,7 @@ interface PublicApp {
 	},
 }
 
-export default function pubic(Elm: Elm) {
+export default function auth(Elm: Elm) {
 	sessions.proceedIfSignedOut(function() {
 		let config = getConfig()
 
@@ -28,7 +23,7 @@ export default function pubic(Elm: Elm) {
 
 		const node = document.getElementById("app")
 
-		const app: PublicApp = Elm.init({node, flags})
+		const app: PublicApp = Elm.embed(node, flags)
 
 		app.ports.toJsUseToken.subscribe(sessions.newSession)
 	})
