@@ -1,8 +1,28 @@
+migration-up:
+  diesel migration run
+
+schema:
+  diesel print-schema > src/models/schema.rs
+
 build:
-  just graphql/build
+  docker run \
+    --rm \
+    -it \
+    -v $PWD:/volume \
+    -v cargo-cache:/root/.cargo \
+    clux/muslrust:nightly \
+    cargo build --release --out-dir /volume/bin -Z unstable-options
+  rm bin/build-*
 
 start:
   DATABASE_URL=$DATABASE_URL sam local start-api -p 4010
+
+try:
+  curl \
+    --request POST \
+    --header "Content-Type: application/json" \
+    --data '{"query": "{__schema{types{name}}}", "variables": {}, "operationName": null}' \
+    http://127.0.0.1:4010/graphql
 
 package:
   sam package \

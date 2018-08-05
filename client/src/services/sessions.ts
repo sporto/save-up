@@ -63,8 +63,8 @@ export function signUp(signUp: SignUp): void {
 			zoneinfo: signUp.timezone,
 		}
 	})
-	.then(data => console.log(data))
-	.catch(err => console.log(err))
+	.then(data => console.log("data", data))
+	.catch(err => console.log("err", err))
 }
 
 export function newSession(token: string): void {

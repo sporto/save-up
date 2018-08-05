@@ -1,5 +1,2 @@
 target/
 bin/
-packaged.yaml
-env.dev.json
-env.prod.json

@@ -1,5 +1,7 @@
 port module Shared.Sessions exposing (..)
 
+import Json.Decode as Decode
+
 
 type alias SignUp =
     { email : String
@@ -36,6 +38,11 @@ newSignIn =
 
 
 port toJsSignUp : SignUp -> Cmd msg
+
+
+port toElmSignUpError : (Decode.Value -> msg) -> Sub msg
+
+-- onSignUpError
 
 
 port toJsSignOut : () -> Cmd msg
