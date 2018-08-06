@@ -7,14 +7,16 @@ import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
+import RemoteData
 import Shared.Flags as Flags
 import Shared.Sessions as Sessions exposing (SignUp)
+import Shared.GraphQl exposing (GraphData, MutationError)
 
 
 type alias Model =
     { flags : Flags.PublicFlags
     , signUp : SignUp
-    , stage : Stage
+    , response : GraphData SignUpResponse
     }
 
 
@@ -22,7 +24,14 @@ initialModel : Flags.PublicFlags -> Model
 initialModel flags =
     { flags = flags
     , signUp = Sessions.newSignUp
-    , stage = Stage_Initial
+    , response = RemoteData.NotAsked
+    }
+
+
+type alias SignUpResponse =
+    { success : Bool
+    , errors : List MutationError
+    , token : Maybe String
     }
 
 
@@ -44,18 +53,6 @@ asPasswordInSignUp signUp password =
 asSignUpInModel : Model -> SignUp -> Model
 asSignUpInModel model signUp =
     { model | signUp = signUp }
-
-
-type Stage
-    = Stage_Initial
-    | Stage_Processing
-
-
-
--- type alias Response =
---     { error : Maybe String
---     , token : Maybe String
---     }
 
 
 init : Flags.PublicFlags -> ( Model, Cmd Msg )
@@ -95,46 +92,9 @@ update msg model =
             )
 
         Submit ->
-            ( { model | stage = Stage_Processing }
+            ( { model | response = RemoteData.Loading }
             , Sessions.toJsSignUp model.signUp
             )
-
-
-
--- SubmitResponse (Ok response) ->
---     let
---         cmd =
---             case response.token of
---                 Just token ->
---                     Tokens.toJsUseToken token
---                 Nothing ->
---                     Cmd.none
---     in
---         ( { model | response = Success response }, cmd )
--- -- TODO log the error
--- SubmitResponse (Err err) ->
---     let
---         _ =
---             Debug.log "Err" err
---     in
---         ( { model | response = Failed }, Cmd.none )
--- TODO use flags for api
--- request model =
---     Http.post "http://localhost:4010/sign-up" (requestBody model) responseDecoder
--- requestBody : Model -> Http.Body
--- requestBody model =
---     Encode.object
---         [ ( "email", Encode.string model.email )
---         , ( "name", Encode.string model.name )
---         , ( "password", Encode.string model.password )
---         , ( "timezone", Encode.string model.timezone )
---         ]
---         |> Http.jsonBody
--- responseDecoder : Decode.Decoder Response
--- responseDecoder =
---     Decode.map2 Response
---         (Decode.field "error" (Decode.nullable Decode.string))
---         (Decode.field "token" (Decode.nullable Decode.string))
 
 
 subscriptions model =
@@ -164,7 +124,7 @@ view model =
                 [ text "Sign Up" ]
             , form
                 [ class "bg-white shadow-md rounded p-8 mt-3", onSubmit Submit ]
-                [ maybeError model
+                [ maybeErrors model
                 , p []
                     [ label [ class labelClasses ]
                         [ text "Name"
@@ -191,31 +151,28 @@ view model =
         ]
 
 
+submit : Model -> Html Msg
 submit model =
-    case model.stage of
-        Stage_Initial ->
-            button [ class btnClasses ] [ text "Sign In" ]
-
-        Stage_Processing ->
+    case model.response of
+        RemoteData.Loading ->
             text "..."
 
-
-maybeError model =
-    text ""
-
+        _ ->
+            button [ class btnClasses ] [ text "Sign In" ]
 
 
--- case model.response of
---     Success response ->
---         case response.error of
---             Just error ->
---                 p [ class "mb-4 text-red" ]
---                     [ text error
---                     ]
---             _ ->
---                 text ""
---     _ ->
---         text ""
+maybeErrors model =
+    case model.response of
+        RemoteData.Success response ->
+            if List.isEmpty response.errors then
+                text ""
+            else
+                p [ class "mb-4 text-red" ]
+                    [ text (toString response.errors)
+                    ]
+
+        _ ->
+            text ""
 
 
 labelClasses =
