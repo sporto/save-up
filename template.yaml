@@ -25,7 +25,7 @@ Resources:
             Handler: corsOptions.handler
             Runtime: nodejs6.10
             FunctionName: !Sub "${paramEnvironment}${paramFeatureBranch}_${paramServiceName}_corsOptions"
-            CodeUri: dist
+            CodeUri: api/cors
             Timeout: 30
             Events:
                 loginOptions: # This block must be repeated for each endpoint that needs CORS support in SAM Local
