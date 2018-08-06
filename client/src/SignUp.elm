@@ -14,8 +14,9 @@ import Json.Encode as Encode
 import RemoteData
 import Shared.Context exposing (PublicContext)
 import Shared.Flags as Flags
-import Shared.Sessions as Sessions exposing (SignUp)
 import Shared.GraphQl exposing (GraphResponse, GraphData, MutationError, mutationErrorSelection, sendPublicMutation)
+import Shared.Sessions as Sessions exposing (SignUp)
+import UI.Flash as Flash
 
 
 type alias Model =
@@ -192,15 +193,20 @@ submit model =
             button [ class btnClasses ] [ text "Sign In" ]
 
 
+maybeErrors : Model -> Html msg
 maybeErrors model =
     case model.response of
         RemoteData.Success response ->
             if List.isEmpty response.errors then
                 text ""
             else
-                p [ class "mb-4 text-red" ]
-                    [ text (toString response.errors)
-                    ]
+                response.errors
+                    |> List.concatMap .messages
+                    |> String.join ", "
+                    |> Flash.error
+
+        RemoteData.Failure err ->
+            Flash.error (toString err)
 
         _ ->
             text ""
