@@ -12,9 +12,10 @@ import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
 import RemoteData
+import Shared.Context exposing (Context)
 import Shared.Flags as Flags
 import Shared.Sessions as Sessions exposing (SignUp)
-import Shared.GraphQl exposing (GraphData, MutationError, mutationErrorSelection)
+import Shared.GraphQl exposing (GraphResponse, GraphData, MutationError, mutationErrorSelection, sendMutation)
 
 
 type alias Model =
@@ -69,6 +70,7 @@ type Msg
     | ChangeName String
     | ChangePassword String
     | Submit
+    | OnSubmitResponse (GraphResponse SignUpResponse)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -99,6 +101,9 @@ update msg model =
             ( { model | response = RemoteData.Loading }
             , Sessions.toJsSignUp model.signUp
             )
+
+        OnSubmitResponse _ ->
+            (model, Cmd.none)
 
 
 subscriptions model =
@@ -193,6 +198,15 @@ btnClasses =
 
 
 -- GraphQL data
+
+
+sendCreateSignUpMutation : Context -> SignUp -> Cmd Msg
+sendCreateSignUpMutation context signUp =
+    sendMutation
+        context
+        "create-sign-up"
+        (createSignUpMutation signUp)
+        OnSubmitResponse
 
 
 createSignUpMutation : SignUp -> SelectionSet SignUpResponse RootMutation

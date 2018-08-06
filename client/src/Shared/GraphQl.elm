@@ -3,12 +3,17 @@ module Shared.GraphQl exposing (..)
 import Api.Object
 import Api.Object.MutationError
 import Graphqelm.Http
+import Graphqelm.Operation exposing (RootQuery, RootMutation)
 import Graphqelm.SelectionSet exposing (SelectionSet, with)
 import RemoteData
+import Shared.Context exposing (Context)
 
 
 type alias GraphData a =
     RemoteData.RemoteData (Graphqelm.Http.Error a) a
+
+type alias GraphResponse a =
+    Result (Graphqelm.Http.Error a) a
 
 
 type alias MutationError =
@@ -22,3 +27,20 @@ mutationErrorSelection =
     Api.Object.MutationError.selection MutationError
         |> with Api.Object.MutationError.key
         |> with Api.Object.MutationError.messages
+
+
+apiEndPoint : Context -> String -> String
+apiEndPoint context id =
+    context.flags.apiHost ++ "/graphql?id=" ++ id
+
+
+sendMutation :
+    Context
+    -> String
+    -> SelectionSet response RootMutation
+    -> (GraphResponse response -> msg)
+    -> Cmd msg
+sendMutation context mutationId mutation onResponse =
+    mutation
+        |> Graphqelm.Http.mutationRequest (apiEndPoint context mutationId)
+        |> Graphqelm.Http.send onResponse
