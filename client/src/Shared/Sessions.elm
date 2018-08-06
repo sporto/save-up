@@ -30,18 +30,10 @@ newSignIn =
     }
 
 
-
--- port toJsUseToken : String -> Cmd msg
-
-
-port toJsSignUp : SignUp -> Cmd msg
+port toJsUseToken : String -> Cmd msg
 
 
 port toElmSignUpError : (Decode.Value -> msg) -> Sub msg
-
-
-
--- onSignUpError
 
 
 port toJsSignOut : () -> Cmd msg

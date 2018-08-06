@@ -6,7 +6,7 @@ import Graphqelm.Http
 import Graphqelm.Operation exposing (RootQuery, RootMutation)
 import Graphqelm.SelectionSet exposing (SelectionSet, with)
 import RemoteData
-import Shared.Context exposing (Context)
+import Shared.Context exposing (PublicContext)
 
 
 type alias GraphData a =
@@ -29,18 +29,18 @@ mutationErrorSelection =
         |> with Api.Object.MutationError.messages
 
 
-apiEndPoint : Context -> String -> String
-apiEndPoint context id =
+apiEndPointPublic : PublicContext -> String -> String
+apiEndPointPublic context id =
     context.flags.apiHost ++ "/graphql?id=" ++ id
 
 
-sendMutation :
-    Context
+sendPublicMutation :
+    PublicContext
     -> String
     -> SelectionSet response RootMutation
     -> (GraphResponse response -> msg)
     -> Cmd msg
-sendMutation context mutationId mutation onResponse =
+sendPublicMutation context mutationId mutation onResponse =
     mutation
-        |> Graphqelm.Http.mutationRequest (apiEndPoint context mutationId)
+        |> Graphqelm.Http.mutationRequest (apiEndPointPublic context mutationId)
         |> Graphqelm.Http.send onResponse

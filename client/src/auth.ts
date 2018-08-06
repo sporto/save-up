@@ -7,9 +7,6 @@ interface Elm {
 
 interface PublicApp {
 	ports: {
-		toJsSignUp: {
-			subscribe(f: (signUp: SignUp) => void): void,
-		},
 		toJsUseToken: {
 			subscribe(f: (t: string) => void): void,
 		},
@@ -28,7 +25,6 @@ export default function auth(Elm: Elm) {
 
 		const app: PublicApp = Elm.embed(node, flags)
 
-		app.ports.toJsSignUp.subscribe(sessions.signUp)
-		// app.ports.toJsUseToken.subscribe(sessions.newSession)
+		app.ports.toJsUseToken.subscribe(sessions.newSessionWithToken)
 	})
 }

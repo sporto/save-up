@@ -12,10 +12,10 @@ import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
 import RemoteData
-import Shared.Context exposing (Context)
+import Shared.Context exposing (PublicContext)
 import Shared.Flags as Flags
 import Shared.Sessions as Sessions exposing (SignUp)
-import Shared.GraphQl exposing (GraphResponse, GraphData, MutationError, mutationErrorSelection, sendMutation)
+import Shared.GraphQl exposing (GraphResponse, GraphData, MutationError, mutationErrorSelection, sendPublicMutation)
 
 
 type alias Model =
@@ -75,47 +75,57 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        ChangeEmail email ->
-            ( email
-                |> asEmailInSignUp model.signUp
-                |> asSignUpInModel model
-            , Cmd.none
-            )
+    let
+        context : PublicContext
+        context =
+            { flags = model.flags
+            }
+    in
+        case msg of
+            ChangeEmail email ->
+                ( email
+                    |> asEmailInSignUp model.signUp
+                    |> asSignUpInModel model
+                , Cmd.none
+                )
 
-        ChangeName name ->
-            ( name
-                |> asNameInSignUp model.signUp
-                |> asSignUpInModel model
-            , Cmd.none
-            )
+            ChangeName name ->
+                ( name
+                    |> asNameInSignUp model.signUp
+                    |> asSignUpInModel model
+                , Cmd.none
+                )
 
-        ChangePassword password ->
-            ( password
-                |> asPasswordInSignUp model.signUp
-                |> asSignUpInModel model
-            , Cmd.none
-            )
+            ChangePassword password ->
+                ( password
+                    |> asPasswordInSignUp model.signUp
+                    |> asSignUpInModel model
+                , Cmd.none
+                )
 
-        Submit ->
-            ( { model | response = RemoteData.Loading }
-            , Sessions.toJsSignUp model.signUp
-            )
+            Submit ->
+                ( { model | response = RemoteData.Loading }
+                , sendCreateSignUpMutation context model.signUp
+                )
 
-        OnSubmitResponse result ->
-            case result of
-                Err e ->
-                    Debug.log
-                        (toString e)
-                        ( { model | response = RemoteData.Failure e }, Cmd.none )
+            OnSubmitResponse result ->
+                case result of
+                    Err e ->
+                        Debug.log
+                            (toString e)
+                            ( { model | response = RemoteData.Failure e }, Cmd.none )
 
-                Ok response ->
-                    case response.token of
-                        Just token ->
-                            ( { model | response = RemoteData.Success response }, Cmd.none )
+                    Ok response ->
+                        case response.token of
+                            Just token ->
+                                ( { model | response = RemoteData.Success response }
+                                , Sessions.toJsUseToken token
+                                )
 
-                        Nothing ->
-                            ( { model | response = RemoteData.Success response }, Cmd.none )
+                            Nothing ->
+                                ( { model | response = RemoteData.Success response }
+                                , Cmd.none
+                                )
 
 
 subscriptions model =
@@ -212,9 +222,9 @@ btnClasses =
 -- GraphQL data
 
 
-sendCreateSignUpMutation : Context -> SignUp -> Cmd Msg
+sendCreateSignUpMutation : PublicContext -> SignUp -> Cmd Msg
 sendCreateSignUpMutation context signUp =
-    sendMutation
+    sendPublicMutation
         context
         "create-sign-up"
         (createSignUpMutation signUp)
