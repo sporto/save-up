@@ -6,9 +6,9 @@ exports.handler = (event, context, callback) => {
   callback(null, {
     statusCode: 200,
     headers: {
-      "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key",
-      "Access-Control-Allow-Methods": "POST, GET, PUT, DELETE",
-      "Access-Control-Allow-Origin": "*"
+      "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
+      "Access-Control-Allow-Methods": "POST,GET,PUT,DELETE",
+      "Access-Control-Allow-Origin": "http://localhost:8080",
     },
     body: ""
   });

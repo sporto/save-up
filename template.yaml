@@ -28,7 +28,7 @@ Resources:
             CodeUri: api/cors
             Timeout: 30
             Events:
-                loginOptions: # This block must be repeated for each endpoint that needs CORS support in SAM Local
+                optionsForGraphQl:
                     Type: Api
                     Properties:
                         RestApiId: !Ref GraphQlFunction

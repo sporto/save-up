@@ -48,7 +48,7 @@ struct SignUpResponse {
 
 graphql_object!(MutationRoot: Context | &self | {
 
-	field sign_up(&executor, sign_up: SignUp) -> FieldResult<SignUpResponse> {
+	field signUp(&executor, sign_up: SignUp) -> FieldResult<SignUpResponse> {
 
 		fn other_error(message: String) -> SignUpResponse {
 			let mutation_error = MutationError { key: "other".to_owned(), messages: vec![message] };

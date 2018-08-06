@@ -23,9 +23,10 @@ use failure::Error;
 use juniper::RootNode;
 use juniper::{EmptyMutation, FieldResult, Variables};
 use juniper::http::GraphQLRequest;
-use lambda::event::apigw::ApiGatewayProxyRequest;
+use lambda::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
 use serde_json::{Value};
 use utils::config;
+use std::collections::HashMap;
 
 mod db;
 mod graph;
@@ -33,19 +34,23 @@ mod models;
 mod services;
 mod utils;
 
-#[derive(Serialize)]
-struct Response {
-    body: String,
-    status: u16,
-}
-
 type Schema = RootNode<'static, graph::query_root::QueryRoot, graph::mutation_root::MutationRoot>;
 
 fn main() {
     lambda::start(|request: ApiGatewayProxyRequest| {
-        run(request).map(|value| Response {
-            body: value,
-            status: 200,
+		let mut headers = HashMap::new();
+
+		// TODO this shouldn't be here, needs to be in api gateway
+		headers.insert(
+			"Access-Control-Allow-Origin".to_string(),
+			"*".to_string(),
+		);
+
+        run(request).map(|value| ApiGatewayProxyResponse {
+            body: Some(value),
+            status_code: 200,
+			headers: headers,
+			is_base64_encoded: None,
         })
     })
 }
