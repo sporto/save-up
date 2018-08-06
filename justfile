@@ -1,8 +1,5 @@
-api-build:
-  cd api && cargo build
-
-api-run:
-  cd api && cargo run
+api:
+	DATABASE_URL=$DATABASE_URL sam local start-api -p 4010
 
 start:
-  invoker start invoker.ini
+	invoker start invoker.ini

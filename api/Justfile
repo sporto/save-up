@@ -1,37 +1,34 @@
 migration-up:
-  diesel migration run
+	diesel migration run
 
 schema:
-  diesel print-schema > src/models/schema.rs
+	diesel print-schema > src/models/schema.rs
 
 build:
-  docker run \
-    --rm \
-    -it \
-    -v $PWD:/volume \
-    -v cargo-cache:/root/.cargo \
-    clux/muslrust:nightly \
-    cargo build --release --out-dir /volume/bin -Z unstable-options
-  rm bin/build-*
-
-start:
-  DATABASE_URL=$DATABASE_URL sam local start-api -p 4010
+	docker run \
+		--rm \
+		-it \
+		-v $PWD:/volume \
+		-v cargo-cache:/root/.cargo \
+		clux/muslrust:nightly \
+		cargo build --release --out-dir /volume/bin -Z unstable-options
+	rm bin/build-*
 
 try:
-  curl \
-    --request POST \
-    --header "Content-Type: application/json" \
-    --data '{"query": "{__schema{types{name}}}", "variables": {}, "operationName": null}' \
-    http://127.0.0.1:4010/graphql
+	curl \
+		--request POST \
+		--header "Content-Type: application/json" \
+		--data '{"query": "{__schema{types{name}}}", "variables": {}, "operationName": null}' \
+		http://127.0.0.1:4010/graphql
 
 package:
-  sam package \
-    --template-file template.yaml \
-    --s3-bucket kic-api \
-    --output-template-file packaged.yaml
+	sam package \
+		--template-file template.yaml \
+		--s3-bucket kic-api \
+		--output-template-file packaged.yaml
 
 deploy:
-  sam deploy \
-    --template-file ./packaged.yaml \
-    --stack-name kic-api \
-    --capabilities CAPABILITY_IAM
+	sam deploy \
+		--template-file ./packaged.yaml \
+		--stack-name kic-api \
+		--capabilities CAPABILITY_IAM
