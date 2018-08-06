@@ -102,8 +102,20 @@ update msg model =
             , Sessions.toJsSignUp model.signUp
             )
 
-        OnSubmitResponse _ ->
-            (model, Cmd.none)
+        OnSubmitResponse result ->
+            case result of
+                Err e ->
+                    Debug.log
+                        (toString e)
+                        ( { model | response = RemoteData.Failure e }, Cmd.none )
+
+                Ok response ->
+                    case response.token of
+                        Just token ->
+                            ( { model | response = RemoteData.Success response }, Cmd.none )
+
+                        Nothing ->
+                            ( { model | response = RemoteData.Success response }, Cmd.none )
 
 
 subscriptions model =
