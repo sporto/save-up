@@ -9,5 +9,9 @@ type Client
     = Client
 
 
+type SignUpResponse
+    = SignUpResponse
+
+
 type User
     = User

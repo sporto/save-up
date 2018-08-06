@@ -4,7 +4,37 @@
 
 module Api.InputObject exposing (..)
 
+import Api.Interface
+import Api.Object
+import Api.Scalar
+import Api.Union
+import Graphqelm.Field as Field exposing (Field)
+import Graphqelm.Internal.Builder.Argument as Argument exposing (Argument)
+import Graphqelm.Internal.Builder.Object as Object
+import Graphqelm.Internal.Encode as Encode exposing (Value)
+import Graphqelm.OptionalArgument exposing (OptionalArgument(Absent))
+import Graphqelm.SelectionSet exposing (SelectionSet)
+import Json.Decode as Decode
 
-placeholder : String
-placeholder =
-    ""
+
+buildSignUp : SignUpRequiredFields -> SignUp
+buildSignUp required =
+    { name = required.name, email = required.email, password = required.password, timezone = required.timezone }
+
+
+type alias SignUpRequiredFields =
+    { name : String, email : String, password : String, timezone : String }
+
+
+{-| Type for the SignUp input object.
+-}
+type alias SignUp =
+    { name : String, email : String, password : String, timezone : String }
+
+
+{-| Encode a SignUp into a value that can be used as an argument.
+-}
+encodeSignUp : SignUp -> Value
+encodeSignUp input =
+    Encode.maybeObject
+        [ ( "name", Encode.string input.name |> Just ), ( "email", Encode.string input.email |> Just ), ( "password", Encode.string input.password |> Just ), ( "timezone", Encode.string input.timezone |> Just ) ]

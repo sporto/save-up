@@ -25,3 +25,12 @@ functions from `Graphqelm.Http`.
 selection : (a -> constructor) -> SelectionSet (a -> constructor) RootMutation
 selection constructor =
     Object.selection constructor
+
+
+type alias SignUpRequiredArguments =
+    { signUp : Api.InputObject.SignUp }
+
+
+signUp : SignUpRequiredArguments -> SelectionSet decodesTo Api.Object.SignUpResponse -> Field decodesTo RootMutation
+signUp requiredArgs object =
+    Object.selectionField "signUp" [ Argument.required "signUp" requiredArgs.signUp Api.InputObject.encodeSignUp ] object identity
