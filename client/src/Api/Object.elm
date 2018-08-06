@@ -9,6 +9,10 @@ type Client
     = Client
 
 
+type MutationError
+    = MutationError
+
+
 type SignUpResponse
     = SignUpResponse
 

@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/graphqelm
 
 
-module Api.Object.SignUpResponse exposing (..)
+module Api.Object.MutationError exposing (..)
 
 import Api.InputObject
 import Api.Interface
@@ -20,21 +20,16 @@ import Json.Decode as Decode
 
 {-| Select fields to build up a SelectionSet for this object.
 -}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.SignUpResponse
+selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.MutationError
 selection constructor =
     Object.selection constructor
 
 
-success : Field Bool Api.Object.SignUpResponse
-success =
-    Object.fieldDecoder "success" [] Decode.bool
+key : Field String Api.Object.MutationError
+key =
+    Object.fieldDecoder "key" [] Decode.string
 
 
-errors : SelectionSet decodesTo Api.Object.MutationError -> Field (List decodesTo) Api.Object.SignUpResponse
-errors object =
-    Object.selectionField "errors" [] object (identity >> Decode.list)
-
-
-token : Field (Maybe String) Api.Object.SignUpResponse
-token =
-    Object.fieldDecoder "token" [] (Decode.string |> Decode.nullable)
+messages : Field (List String) Api.Object.MutationError
+messages =
+    Object.fieldDecoder "messages" [] (Decode.string |> Decode.list)

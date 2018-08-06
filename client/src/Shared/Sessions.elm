@@ -1,14 +1,11 @@
 port module Shared.Sessions exposing (..)
 
+import Api.InputObject
 import Json.Decode as Decode
 
 
 type alias SignUp =
-    { email : String
-    , name : String
-    , password : String
-    , timezone : String
-    }
+    Api.InputObject.SignUp
 
 
 newSignUp : SignUp
@@ -41,6 +38,8 @@ port toJsSignUp : SignUp -> Cmd msg
 
 
 port toElmSignUpError : (Decode.Value -> msg) -> Sub msg
+
+
 
 -- onSignUpError
 

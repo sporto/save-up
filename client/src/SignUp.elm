@@ -1,6 +1,10 @@
 module SignUp exposing (main)
 
-import Debug
+import Api.Mutation
+import Api.Object
+import Api.Object.SignUpResponse
+import Graphqelm.Operation exposing (RootQuery, RootMutation)
+import Graphqelm.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, type_)
 import Html.Events exposing (onClick, onInput, onSubmit)
@@ -10,7 +14,7 @@ import Json.Encode as Encode
 import RemoteData
 import Shared.Flags as Flags
 import Shared.Sessions as Sessions exposing (SignUp)
-import Shared.GraphQl exposing (GraphData, MutationError)
+import Shared.GraphQl exposing (GraphData, MutationError, mutationErrorSelection)
 
 
 type alias Model =
@@ -185,3 +189,25 @@ inputClasses =
 
 btnClasses =
     "bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded"
+
+
+
+-- GraphQL data
+
+
+createSignUpMutation : SignUp -> SelectionSet SignUpResponse RootMutation
+createSignUpMutation signUp =
+    Api.Mutation.selection identity
+        |> with
+            (Api.Mutation.signUp
+                { signUp = signUp }
+                signUpResponseSelection
+            )
+
+
+signUpResponseSelection : SelectionSet SignUpResponse Api.Object.SignUpResponse
+signUpResponseSelection =
+    Api.Object.SignUpResponse.selection SignUpResponse
+        |> with (Api.Object.SignUpResponse.success)
+        |> with (Api.Object.SignUpResponse.errors mutationErrorSelection)
+        |> with (Api.Object.SignUpResponse.token)

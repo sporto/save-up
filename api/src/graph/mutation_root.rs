@@ -3,8 +3,8 @@ use juniper::{FieldError, FieldResult};
 use validator::{ValidationError, ValidationErrors};
 
 // use models::errors::UpdateResult;
-use services;
 use models::sign_ups::SignUp;
+use services;
 
 pub struct MutationRoot;
 
@@ -41,7 +41,9 @@ fn to_mutation_error_messages(errors: Vec<ValidationError>) -> Vec<String> {
 
 #[derive(GraphQLObject, Clone)]
 struct SignUpResponse {
-	token: String,
+	success: bool,
+	errors: Vec<MutationError>,
+	token: Option<String>,
 }
 
 graphql_object!(MutationRoot: Context | &self | {
@@ -61,7 +63,9 @@ graphql_object!(MutationRoot: Context | &self | {
 			.map_err(|_| "Failed to make JWT Token".to_owned() )?;
 
 		let response = SignUpResponse {
-			token: token,
+			success: true,
+			errors: vec![],
+			token: Some(token),
 		};
 
 		Ok(response)
