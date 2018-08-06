@@ -8,8 +8,32 @@ Globals:
     Function:
         Timeout: 3
 
+    Api:
+        # enable CORS; to make more specific, change the origin wildcard
+        # to a particular domain name, e.g. "'www.example.com'"
+        Cors:
+            AllowMethods: "'*'"
+            AllowHeaders: "'*'"
+            AllowOrigin: "'*'"
+
 
 Resources:
+
+    resLambdaLocalCorsStub:
+        Type: AWS::Serverless::Function
+        Properties:
+            Handler: corsOptions.handler
+            Runtime: nodejs6.10
+            FunctionName: !Sub "${paramEnvironment}${paramFeatureBranch}_${paramServiceName}_corsOptions"
+            CodeUri: dist
+            Timeout: 30
+            Events:
+                loginOptions: # This block must be repeated for each endpoint that needs CORS support in SAM Local
+                    Type: Api
+                    Properties:
+                        RestApiId: !Ref GraphQlFunction
+                        Path: /graphql
+                        Method: OPTIONS
 
     GraphQlFunction:
         Type: AWS::Serverless::Function
@@ -33,13 +57,13 @@ Resources:
 Outputs:
 
     KicGraphQlApi:
-      Description: "API Gateway endpoint URL for Prod stage for KIC GraphQl function"
-      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/graphql/"
+        Description: "API Gateway endpoint URL for Prod stage for KIC GraphQl function"
+        Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/graphql/"
 
     KicGraphQlFunction:
-      Description: "KIC GraphQl Lambda Function ARN"
-      Value: !GetAtt KicGraphQlFunction.Arn
+        Description: "KIC GraphQl Lambda Function ARN"
+        Value: !GetAtt KicGraphQlFunction.Arn
 
     KicGraphQlFunctionIamRole:
-      Description: "Implicit IAM Role created for KIC GraphQl function"
-      Value: !GetAtt KicGraphQlFunctionRole.Arn
+        Description: "Implicit IAM Role created for KIC GraphQl function"
+        Value: !GetAtt KicGraphQlFunctionRole.Arn
