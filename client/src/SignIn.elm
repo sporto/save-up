@@ -17,6 +17,7 @@ import Shared.Context exposing (PublicContext)
 import Shared.Flags as Flags
 import Shared.GraphQl exposing (GraphResponse, GraphData, MutationError, mutationErrorSelection, sendPublicMutation)
 import Shared.Sessions as Sessions exposing (SignIn)
+import UI.Flash as Flash
 
 
 type alias Model =
@@ -140,10 +141,10 @@ view model =
     div [ class "flex items-center justify-center pt-16" ]
         [ div []
             [ h1 []
-                [ text "Sign In" ]
+                [ text "Sign in" ]
             , form
                 [ class "bg-white shadow-md rounded p-8 mt-3", onSubmit Submit ]
-                [ maybeError model
+                [ maybeErrors model
                 , p []
                     [ label [ class labelClasses ]
                         [ text "Email"
@@ -156,9 +157,9 @@ view model =
                         ]
                     , input [ class inputClasses, type_ "password", onInput ChangePassword ] []
                     ]
-                , submit model
-                , links
+                , p [ class "mt-6" ] [ submit model ]
                 ]
+            , links
             ]
         ]
 
@@ -179,8 +180,23 @@ links =
         ]
 
 
-maybeError model =
-    text ""
+maybeErrors : Model -> Html msg
+maybeErrors model =
+    case model.response of
+        RemoteData.Success response ->
+            if List.isEmpty response.errors then
+                text ""
+            else
+                response.errors
+                    |> List.concatMap .messages
+                    |> String.join ", "
+                    |> Flash.error
+
+        RemoteData.Failure err ->
+            Flash.error (toString err)
+
+        _ ->
+            text ""
 
 
 labelClasses =

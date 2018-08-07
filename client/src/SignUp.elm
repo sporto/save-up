@@ -153,7 +153,7 @@ view model =
     div [ class "flex items-center justify-center pt-16" ]
         [ div []
             [ h1 []
-                [ text "Sign Up" ]
+                [ text "Sign up" ]
             , form
                 [ class "bg-white shadow-md rounded p-8 mt-3", onSubmit Submit ]
                 [ maybeErrors model
