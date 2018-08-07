@@ -7,7 +7,7 @@ import Graphqelm.Operation exposing (RootQuery, RootMutation)
 import Graphqelm.SelectionSet exposing (SelectionSet, with)
 import Debug
 import Html exposing (..)
-import Html.Attributes exposing (class, href, type_)
+import Html.Attributes exposing (class, href, name, type_)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Json.Decode as Decode
@@ -150,13 +150,25 @@ view model =
                     [ label [ class labelClasses ]
                         [ text "Email"
                         ]
-                    , input [ class inputClasses, onInput ChangeEmail ] []
+                    , input
+                        [ class inputClasses
+                        , type_ "email"
+                        , name "email"
+                        , onInput ChangeEmail
+                        ]
+                        []
                     ]
                 , p [ class "mt-6" ]
                     [ label [ class labelClasses ]
                         [ text "Password"
                         ]
-                    , input [ class inputClasses, type_ "password", onInput ChangePassword ] []
+                    , input
+                        [ class inputClasses
+                        , type_ "password"
+                        , name "password"
+                        , onInput ChangePassword
+                        ]
+                        []
                     ]
                 , p [ class "mt-6" ] [ submit model ]
                 ]

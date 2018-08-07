@@ -17,6 +17,7 @@ import Shared.Flags as Flags
 import Shared.GraphQl exposing (GraphResponse, GraphData, MutationError, mutationErrorSelection, sendPublicMutation)
 import Shared.Sessions as Sessions exposing (SignUp)
 import UI.Flash as Flash
+import UI.Forms as Forms
 
 
 type alias Model =
@@ -221,10 +222,9 @@ maybeErrors model =
             if List.isEmpty response.errors then
                 text ""
             else
-                response.errors
-                    |> List.concatMap .messages
-                    |> String.join ", "
-                    |> Flash.error
+                Forms.mutationError
+                    "other"
+                    response.errors
 
         RemoteData.Failure err ->
             Flash.error (toString err)
@@ -246,7 +246,7 @@ btnClasses =
 
 
 links =
-    p [ class "mt-6"]
+    p [ class "mt-6" ]
         [ text "Already signed up? "
         , a [ href "/sign-in" ] [ text "sign in" ]
         ]
