@@ -18,6 +18,7 @@ import Shared.Flags as Flags
 import Shared.GraphQl exposing (GraphResponse, GraphData, MutationError, mutationErrorSelection, sendPublicMutation)
 import Shared.Sessions as Sessions exposing (SignIn)
 import UI.Flash as Flash
+import UI.Forms as Forms
 
 
 type alias Model =
@@ -184,13 +185,9 @@ maybeErrors : Model -> Html msg
 maybeErrors model =
     case model.response of
         RemoteData.Success response ->
-            if List.isEmpty response.errors then
-                text ""
-            else
+            Forms.mutationError
+                "other"
                 response.errors
-                    |> List.concatMap .messages
-                    |> String.join ", "
-                    |> Flash.error
 
         RemoteData.Failure err ->
             Flash.error (toString err)
