@@ -18,9 +18,7 @@ newSignUp =
 
 
 type alias SignIn =
-    { email : String
-    , password : String
-    }
+    Api.InputObject.SignIn
 
 
 newSignIn : SignIn
@@ -31,9 +29,6 @@ newSignIn =
 
 
 port toJsUseToken : String -> Cmd msg
-
-
-port toElmSignUpError : (Decode.Value -> msg) -> Sub msg
 
 
 port toJsSignOut : () -> Cmd msg

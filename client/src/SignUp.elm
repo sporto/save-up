@@ -211,7 +211,7 @@ submit model =
             text "..."
 
         _ ->
-            button [ class btnClasses ] [ text "Sign In" ]
+            button [ class btnClasses ] [ text "Sign up" ]
 
 
 maybeErrors : Model -> Html msg

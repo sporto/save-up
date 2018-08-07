@@ -1,5 +1,10 @@
 module SignIn exposing (main)
 
+import Api.Mutation
+import Api.Object
+import Api.Object.SignInResponse
+import Graphqelm.Operation exposing (RootQuery, RootMutation)
+import Graphqelm.SelectionSet exposing (SelectionSet, with)
 import Debug
 import Html exposing (..)
 import Html.Attributes exposing (class, href, type_)
@@ -7,14 +12,17 @@ import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
+import RemoteData
+import Shared.Context exposing (PublicContext)
 import Shared.Flags as Flags
+import Shared.GraphQl exposing (GraphResponse, GraphData, MutationError, mutationErrorSelection, sendPublicMutation)
 import Shared.Sessions as Sessions exposing (SignIn)
 
 
 type alias Model =
     { flags : Flags.PublicFlags
     , signIn : SignIn
-    , stage : Stage
+    , response : GraphData SignInResponse
     }
 
 
@@ -22,13 +30,15 @@ initialModel : Flags.PublicFlags -> Model
 initialModel flags =
     { flags = flags
     , signIn = Sessions.newSignIn
-    , stage = Stage_Initial
+    , response = RemoteData.NotAsked
     }
 
 
-type Stage
-    = Stage_Initial
-    | Stage_Processing
+type alias SignInResponse =
+    { success : Bool
+    , errors : List MutationError
+    , token : Maybe String
+    }
 
 
 asEmailInSignIn : SignIn -> String -> SignIn
@@ -46,18 +56,6 @@ asSignInInModel model signIn =
     { model | signIn = signIn }
 
 
-
--- type RemoteData
---     = NotAsked
---     | Loading
---     | Success Response
---     | Failed
--- type alias Response =
---     { error : Maybe String
---     , token : Maybe String
---     }
-
-
 init : Flags.PublicFlags -> ( Model, Cmd Msg )
 init flags =
     ( initialModel flags, Cmd.none )
@@ -67,63 +65,55 @@ type Msg
     = ChangeEmail String
     | ChangePassword String
     | Submit
+    | OnSubmitResponse (GraphResponse SignInResponse)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        ChangeEmail email ->
-            ( email
-                |> asEmailInSignIn model.signIn
-                |> asSignInInModel model
-            , Cmd.none
-            )
+    let
+        context : PublicContext
+        context =
+            { flags = model.flags
+            }
+    in
+        case msg of
+            ChangeEmail email ->
+                ( email
+                    |> asEmailInSignIn model.signIn
+                    |> asSignInInModel model
+                , Cmd.none
+                )
 
-        ChangePassword password ->
-            ( password
-                |> asPasswordInSignIn model.signIn
-                |> asSignInInModel model
-            , Cmd.none
-            )
+            ChangePassword password ->
+                ( password
+                    |> asPasswordInSignIn model.signIn
+                    |> asSignInInModel model
+                , Cmd.none
+                )
 
-        Submit ->
-            ( { model | stage = Stage_Processing }
-            , Cmd.none
-            )
+            Submit ->
+                ( { model | response = RemoteData.Loading }
+                , sendCreateSignInMutation context model.signIn
+                )
 
+            OnSubmitResponse result ->
+                case result of
+                    Err e ->
+                        Debug.log
+                            (toString e)
+                            ( { model | response = RemoteData.Failure e }, Cmd.none )
 
+                    Ok response ->
+                        case response.token of
+                            Just token ->
+                                ( { model | response = RemoteData.Success response }
+                                , Sessions.toJsUseToken token
+                                )
 
--- SubmitResponse (Ok response) ->
---     let
---         cmd =
---             case response.token of
---                 Just token ->
---                     Tokens.toJsUseToken token
---                 Nothing ->
---                     Cmd.none
---     in
---         ( { model | response = Success response }, cmd )
--- -- TODO log the error
--- SubmitResponse (Err err) ->
---     let
---         _ =
---             Debug.log "Err" err
---     in
---         ( { model | response = Failed }, Cmd.none )
--- request model =
---     Http.post "http://localhost:4010/sign-in" (requestBody model) responseDecoder
--- requestBody : Model -> Http.Body
--- requestBody model =
---     Encode.object
---         [ ( "email", Encode.string model.email )
---         , ( "password", Encode.string model.password )
---         ]
---         |> Http.jsonBody
--- responseDecoder : Decode.Decoder Response
--- responseDecoder =
---     Decode.map2 Response
---         (Decode.field "error" (Decode.nullable Decode.string))
---         (Decode.field "token" (Decode.nullable Decode.string))
+                            Nothing ->
+                                ( { model | response = RemoteData.Success response }
+                                , Cmd.none
+                                )
 
 
 subscriptions model =
@@ -166,13 +156,21 @@ view model =
                         ]
                     , input [ class inputClasses, type_ "password", onInput ChangePassword ] []
                     ]
-                , p [ class "mt-6" ]
-                    [ button [ class btnClasses ] [ text "Sign In" ]
-                    ]
+                , submit model
                 , links
                 ]
             ]
         ]
+
+
+submit : Model -> Html Msg
+submit model =
+    case model.response of
+        RemoteData.Loading ->
+            text "..."
+
+        _ ->
+            button [ class btnClasses ] [ text "Sign in" ]
 
 
 links =
@@ -185,20 +183,6 @@ maybeError model =
     text ""
 
 
-
--- case model.response of
---     Success response ->
---         case response.error of
---             Just error ->
---                 p [ class "mb-4 text-red" ]
---                     [ text error
---                     ]
---             _ ->
---                 text ""
---     _ ->
---         text ""
-
-
 labelClasses =
     "blocktext-sm font-bold"
 
@@ -209,3 +193,34 @@ inputClasses =
 
 btnClasses =
     "bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded"
+
+
+
+-- GraphQl data
+
+
+sendCreateSignInMutation : PublicContext -> SignIn -> Cmd Msg
+sendCreateSignInMutation context signUp =
+    sendPublicMutation
+        context
+        "create-sign-in"
+        (createSignInMutation signUp)
+        OnSubmitResponse
+
+
+createSignInMutation : SignIn -> SelectionSet SignInResponse RootMutation
+createSignInMutation signIn =
+    Api.Mutation.selection identity
+        |> with
+            (Api.Mutation.signIn
+                { signIn = signIn }
+                signInResponseSelection
+            )
+
+
+signInResponseSelection : SelectionSet SignInResponse Api.Object.SignInResponse
+signInResponseSelection =
+    Api.Object.SignInResponse.selection SignInResponse
+        |> with (Api.Object.SignInResponse.success)
+        |> with (Api.Object.SignInResponse.errors mutationErrorSelection)
+        |> with (Api.Object.SignInResponse.token)
