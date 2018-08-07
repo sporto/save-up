@@ -1,7 +1,4 @@
 export API_HOST=http://localhost:4010
 export CLIENT_HOST=http://localhost:8080
-export COGNITO_APP_CLIENT_ID=abc
-export COGNITO_REGION=ap-southeast-2
-export COGNITO_USER_POOL_ID=abc
 export DATABASE_URL_TEST=xx
 export DATABASE_URL=postgres://postgres@localhost/db_name

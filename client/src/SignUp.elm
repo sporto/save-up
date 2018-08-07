@@ -6,7 +6,7 @@ import Api.Object.SignUpResponse
 import Graphqelm.Operation exposing (RootQuery, RootMutation)
 import Graphqelm.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
-import Html.Attributes exposing (class, type_)
+import Html.Attributes exposing (class, href, name, type_)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Json.Decode as Decode
@@ -158,28 +158,49 @@ view model =
                 [ class "bg-white shadow-md rounded p-8 mt-3", onSubmit Submit ]
                 [ maybeErrors model
                 , p []
-                    [ label [ class labelClasses ]
+                    [ label
+                        [ class labelClasses ]
                         [ text "Name"
                         ]
-                    , input [ class inputClasses, onInput ChangeName ] []
+                    , input
+                        [ class inputClasses
+                        , onInput ChangeName
+                        , name "name"
+                        ]
+                        []
                     ]
                 , p [ class "mt-6" ]
-                    [ label [ class labelClasses ]
+                    [ label
+                        [ class labelClasses ]
                         [ text "Email"
                         ]
-                    , input [ class inputClasses, type_ "email", onInput ChangeEmail ] []
+                    , input
+                        [ class inputClasses
+                        , type_ "email"
+                        , onInput ChangeEmail
+                        , name "email"
+                        ]
+                        []
                     ]
                 , p [ class "mt-6" ]
-                    [ label [ class labelClasses ]
+                    [ label
+                        [ class labelClasses ]
                         [ text "Password"
                         ]
-                    , input [ class inputClasses, type_ "password", onInput ChangePassword ] []
+                    , input
+                        [ class inputClasses
+                        , type_ "password"
+                        , onInput ChangePassword
+                        , name "password"
+                        ]
+                        []
                     ]
                 , p [ class "mt-6" ]
                     [ submit model
                     ]
                 ]
             ]
+        , links
         ]
 
 
@@ -222,6 +243,13 @@ inputClasses =
 
 btnClasses =
     "bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded"
+
+
+links =
+    p []
+        [ text "Already signed up? "
+        , a [ href "/sign-in" ] [ text "sign in" ]
+        ]
 
 
 

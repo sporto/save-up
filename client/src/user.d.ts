@@ -1,13 +1,7 @@
 declare var API_HOST: string
-declare var COGNITO_APP_CLIENT_ID: string
-declare var COGNITO_REGION: string
-declare var COGNITO_USER_POOL_ID: string
 
 interface Config {
 	apiHost: string,
-	cognitoUserPoolId: string,
-	cognitoRegion: string,
-	cognitoClientId: string,
 }
 
 interface Token {
