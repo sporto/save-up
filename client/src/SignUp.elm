@@ -199,8 +199,8 @@ view model =
                     [ submit model
                     ]
                 ]
+            , links
             ]
-        , links
         ]
 
 
@@ -246,7 +246,7 @@ btnClasses =
 
 
 links =
-    p []
+    p [ class "mt-6"]
         [ text "Already signed up? "
         , a [ href "/sign-in" ] [ text "sign in" ]
         ]

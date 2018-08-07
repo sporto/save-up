@@ -34,3 +34,12 @@ type alias SignUpRequiredArguments =
 signUp : SignUpRequiredArguments -> SelectionSet decodesTo Api.Object.SignUpResponse -> Field decodesTo RootMutation
 signUp requiredArgs object =
     Object.selectionField "signUp" [ Argument.required "signUp" requiredArgs.signUp Api.InputObject.encodeSignUp ] object identity
+
+
+type alias SignInRequiredArguments =
+    { signIn : Api.InputObject.SignIn }
+
+
+signIn : SignInRequiredArguments -> SelectionSet decodesTo Api.Object.SignInResponse -> Field decodesTo RootMutation
+signIn requiredArgs object =
+    Object.selectionField "signIn" [ Argument.required "signIn" requiredArgs.signIn Api.InputObject.encodeSignIn ] object identity

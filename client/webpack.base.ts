@@ -62,13 +62,6 @@ let baseConfig: webpack.Configuration = {
 					loader: "elm-webpack-loader",
 					options: {
 						cwd: __dirname,
-						files: [
-							path.resolve(__dirname, "src/Main.elm"),
-							path.resolve(__dirname, "src/Admin.elm"),
-							path.resolve(__dirname, "src/Investor.elm"),
-							path.resolve(__dirname, "src/SignIn.elm"),
-							path.resolve(__dirname, "src/SignUp.elm"),
-						]
 					},
 				},
 			},

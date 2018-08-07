@@ -1,12 +1,7 @@
 use bcrypt::{verify};
 use models::users::{User};
+use models::sign_ins::SignIn;
 use diesel::pg::PgConnection;
-
-#[derive(Clone,Deserialize)]
-pub struct SignIn {
-    email: String,
-    password: String,
-}
 
 pub fn call(conn: &PgConnection, sign_in: SignIn) -> Result<User, String> {
 

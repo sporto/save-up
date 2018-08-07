@@ -5,9 +5,9 @@ use models::users::{User};
 pub fn call(user: User) -> Result<String, frank_jwt::Error> {
 	let secret = "secret123".to_string();
 
-	let mut header = json!({});
+	let header = json!({});
 
-	let mut payload = json!({
+	let payload = json!({
 		"userId" : user.id,
 		"email" : user.email,
 		"name" : user.name,

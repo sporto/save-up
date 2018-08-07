@@ -13,6 +13,10 @@ type MutationError
     = MutationError
 
 
+type SignInResponse
+    = SignInResponse
+
+
 type SignUpResponse
     = SignUpResponse
 

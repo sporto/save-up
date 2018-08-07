@@ -110,12 +110,8 @@ update msg model =
 --             Debug.log "Err" err
 --     in
 --         ( { model | response = Failed }, Cmd.none )
-
-
 -- request model =
 --     Http.post "http://localhost:4010/sign-in" (requestBody model) responseDecoder
-
-
 -- requestBody : Model -> Http.Body
 -- requestBody model =
 --     Encode.object
@@ -123,8 +119,6 @@ update msg model =
 --         , ( "password", Encode.string model.password )
 --         ]
 --         |> Http.jsonBody
-
-
 -- responseDecoder : Decode.Decoder Response
 -- responseDecoder =
 --     Decode.map2 Response
@@ -175,29 +169,34 @@ view model =
                 , p [ class "mt-6" ]
                     [ button [ class btnClasses ] [ text "Sign In" ]
                     ]
-                , p [ class "mt-6" ]
-                    [ a [ href "/sign-up" ] [ text "Sign Up" ]
-                    ]
+                , links
                 ]
             ]
         ]
 
 
+links =
+    p [ class "mt-6" ]
+        [ a [ href "/sign-up" ] [ text "Sign up" ]
+        ]
+
+
 maybeError model =
     text ""
-    -- case model.response of
-    --     Success response ->
-    --         case response.error of
-    --             Just error ->
-    --                 p [ class "mb-4 text-red" ]
-    --                     [ text error
-    --                     ]
 
-    --             _ ->
-    --                 text ""
 
-    --     _ ->
-    --         text ""
+
+-- case model.response of
+--     Success response ->
+--         case response.error of
+--             Just error ->
+--                 p [ class "mb-4 text-red" ]
+--                     [ text error
+--                     ]
+--             _ ->
+--                 text ""
+--     _ ->
+--         text ""
 
 
 labelClasses =

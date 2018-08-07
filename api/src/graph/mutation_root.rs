@@ -4,6 +4,7 @@ use validator::{ValidationError, ValidationErrors};
 
 // use models::errors::UpdateResult;
 use models::sign_ups::SignUp;
+use models::sign_ins::SignIn;
 use services;
 
 pub struct MutationRoot;
@@ -46,12 +47,22 @@ struct SignUpResponse {
 	token: Option<String>,
 }
 
+#[derive(GraphQLObject, Clone)]
+struct SignInResponse {
+	success: bool,
+	errors: Vec<MutationError>,
+	token: Option<String>,
+}
+
 graphql_object!(MutationRoot: Context | &self | {
 
 	field signUp(&executor, sign_up: SignUp) -> FieldResult<SignUpResponse> {
 
 		fn other_error(message: String) -> SignUpResponse {
-			let mutation_error = MutationError { key: "other".to_owned(), messages: vec![message] };
+			let mutation_error = MutationError { 
+				key: "other".to_owned(),
+				messages: vec![message]
+			};
 
 			SignUpResponse {
 				success: false,
@@ -88,6 +99,58 @@ graphql_object!(MutationRoot: Context | &self | {
 		};
 
 		let response = SignUpResponse {
+			success: true,
+			errors: vec![],
+			token: Some(token),
+		};
+
+		Ok(response)
+	}
+
+	field signIn(&executor, sign_in: SignIn) -> FieldResult<SignInResponse> {
+
+		fn other_error(message: String) -> SignInResponse {
+			let mutation_error = MutationError {
+				key: "other".to_owned(),
+				messages: vec![message]
+			};
+
+			SignInResponse {
+				success: false,
+				errors: vec![ mutation_error],
+				token: None,
+			}
+		}
+
+		let context = executor.context();
+
+		let user_result = services
+			::sign_ins
+			::create
+			::call(&context.conn, sign_in);
+
+		let user = match user_result {
+			Ok(user) =>
+				user,
+			Err(e) =>
+				return Ok(other_error(e))
+		};
+
+
+		let token_result = services
+			::users
+			::make_token
+			::call(user)
+			.map_err(|_| "Failed to make JWT Token".to_owned() );
+
+		let token = match token_result {
+			Ok(token) =>
+				token,
+			Err(e) =>
+				return Ok(other_error(e))
+		};
+
+		let response = SignInResponse {
 			success: true,
 			errors: vec![],
 			token: Some(token),

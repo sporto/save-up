@@ -17,6 +17,29 @@ import Graphqelm.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
 
 
+buildSignIn : SignInRequiredFields -> SignIn
+buildSignIn required =
+    { email = required.email, password = required.password }
+
+
+type alias SignInRequiredFields =
+    { email : String, password : String }
+
+
+{-| Type for the SignIn input object.
+-}
+type alias SignIn =
+    { email : String, password : String }
+
+
+{-| Encode a SignIn into a value that can be used as an argument.
+-}
+encodeSignIn : SignIn -> Value
+encodeSignIn input =
+    Encode.maybeObject
+        [ ( "email", Encode.string input.email |> Just ), ( "password", Encode.string input.password |> Just ) ]
+
+
 buildSignUp : SignUpRequiredFields -> SignUp
 buildSignUp required =
     { name = required.name, email = required.email, password = required.password, timezone = required.timezone }
