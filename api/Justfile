@@ -13,7 +13,7 @@ build:
 		-it \
 		-v $PWD:/volume \
 		-v cargo-cache:/root/.cargo \
-		clux/muslrust:nightly \
+		clux/muslrust \
 		cargo build --release --out-dir /volume/bin -Z unstable-options
 	rm bin/build-*
 

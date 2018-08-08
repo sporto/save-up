@@ -11,14 +11,14 @@ use diesel::Connection;
 
 pub fn with_db<F>(f: F) -> ()
 where
-    F: Fn(&PgConnection) -> (),
+	F: Fn(&PgConnection) -> (),
 {
-    let conn = db::get_test_connection();
+	let conn = db::get_test_connection();
 
-    conn.test_transaction::<_, Error, _>(|| {
-        f(&conn);
-        Ok(())
-    });
+	conn.test_transaction::<_, Error, _>(|| {
+		f(&conn);
+		Ok(())
+	});
 }
 
 // Client
