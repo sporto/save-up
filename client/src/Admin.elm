@@ -1,7 +1,10 @@
 module Admin exposing (main)
 
-import Admin.Routes as Routes exposing (Route)
 import Admin.AppLocation as AppLocation exposing (AppLocation)
+import Admin.Navigation as Navigation
+import Admin.Pages.Home as Home
+import Admin.Pages.Invite as Invite
+import Admin.Routes as Routes exposing (Route)
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
@@ -13,6 +16,7 @@ import Shared.Sessions as Sessions
 type alias Model =
     { flags : Flags.Flags
     , currentLocation : AppLocation
+    , page : Page
     }
 
 
@@ -20,6 +24,7 @@ initialModel : Flags.Flags -> Location -> Model
 initialModel flags location =
     { flags = flags
     , currentLocation = AppLocation.navigationLocationToAppLocation location
+    , page = Page_Home
     }
 
 
@@ -28,11 +33,18 @@ init flags location =
     ( initialModel flags location
     , Cmd.none
     )
+        |> initCurrentPage
 
 
 type Msg
     = SignOut
     | OnLocationChange Location
+    | NavigateTo Routes.Route
+
+
+type Page
+    = Page_Home
+    | Page_Invite
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -42,9 +54,37 @@ update msg model =
             ( model, Sessions.toJsSignOut () )
 
         OnLocationChange location ->
-            ( { model | currentLocation = AppLocation.navigationLocationToAppLocation location }
-            , Cmd.none
-            )
+            let
+                _ =
+                    Debug.log "location" location.pathname
+
+                newLocation =
+                    AppLocation.navigationLocationToAppLocation location
+            in
+                ( { model | currentLocation = newLocation }
+                , Cmd.none
+                )
+                    |> initCurrentPage
+
+        NavigateTo route ->
+            ( model, Navigation.setRoute route )
+
+
+initCurrentPage : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+initCurrentPage ( model, cmds ) =
+    let
+        ( newPage, newCmd ) =
+            case model.currentLocation.route of
+                Routes.Route_Home ->
+                    ( Page_Home, Cmd.none )
+
+                Routes.Route_Invite ->
+                    ( Page_Invite, Cmd.none )
+
+                Routes.Route_NotFound ->
+                    ( Page_Home, Cmd.none )
+    in
+        ( { model | page = newPage }, Cmd.batch [ cmds, newCmd ] )
 
 
 subscriptions model =
@@ -53,18 +93,55 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-    navigation model
+    section []
+        [ navigation model
+        , currentPage model
+        ]
 
 
 navigation : Model -> Html Msg
 navigation model =
     nav [ class "flex justify-between p-4 bg-black text-white" ]
-        [ div [] [ text "KIC" ]
+        [ div []
+            [ text "KIC" ]
+        , div
+            []
+            [ navigationLink Routes.Route_Home "Home"
+            , navigationLink Routes.Route_Invite "Invite"
+            ]
         , div []
             [ text model.flags.token.name
             , a [ href "javascript://", class "text-white ml-3", onClick SignOut ] [ text "Log out" ]
             ]
         ]
+
+
+navigationLink : Route -> String -> Html Msg
+navigationLink route label =
+    a
+        [ href "javascript://"
+        , onClick (NavigateTo route)
+        , class "text-white mr-4"
+        ]
+        [ text label ]
+
+
+currentPage : Model -> Html Msg
+currentPage model =
+    let
+        page =
+            case model.page of
+                Page_Home ->
+                    Home.view
+
+                Page_Invite ->
+                    Invite.view
+    in
+        section [ class "p-4" ]
+            [ page
+            , text (toString model.currentLocation.route)
+            , text (toString model.page)
+            ]
 
 
 main : Program Flags.Flags Model Msg

@@ -6,22 +6,24 @@ interface Elm {
 }
 
 interface App {
-    ports: CommonPorts
+	ports: CommonPorts
 }
 
 export default function run(Elm: Elm) {
 
-    sessions.proceedIfSignedIn(function(token) {
+	sessions.proceedIfSignedIn(function(token) {
 
-        const flags: Flags = {
-            apiHost: API_HOST,
-            token,
-        }
+		const flags: Flags = {
+			apiHost: API_HOST,
+			token,
+		}
+		
+		console.log(flags)
 
-        const node = document.getElementById("app")
-        const app = Elm.embed(node, flags)
+		const node = document.getElementById("app")
+		const app = Elm.embed(node, flags)
 
-        hookCommonPorts(app.ports)
-    })
+		hookCommonPorts(app.ports)
+	})
 
 }

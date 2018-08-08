@@ -4,18 +4,26 @@ import Navigation exposing (Location)
 import UrlParser exposing (..)
 
 
+namespace =
+    "admin"
+
+namespaceAbs =
+    "/" ++ namespace
+
+
 type Route
-    = RouteHome
-    | RouteInvite
-    | RouteNotFound
+    = Route_Home
+    | Route_Invite
+    | Route_NotFound
 
 
 matchers : Parser (Route -> a) a
 matchers =
-    oneOf
-        [ map RouteHome top
-        , map RouteInvite (s "invite")
-        ]
+    s namespace
+        </> oneOf
+                [ map Route_Home top
+                , map Route_Invite (s "invite")
+                ]
 
 
 parseLocation : Location -> Route
@@ -25,4 +33,17 @@ parseLocation location =
             route
 
         Nothing ->
-            RouteNotFound
+            Route_NotFound
+
+
+pathFor : Route -> String
+pathFor route =
+    case route of
+        Route_Home ->
+            namespaceAbs ++ "/"
+
+        Route_Invite ->
+            namespaceAbs ++ "/invite"
+
+        Route_NotFound ->
+            namespaceAbs ++ "/"

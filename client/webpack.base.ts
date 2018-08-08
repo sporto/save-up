@@ -62,6 +62,8 @@ let baseConfig: webpack.Configuration = {
 					loader: "elm-webpack-loader",
 					options: {
 						cwd: __dirname,
+						// debug: true,
+						// warn: true,
 					},
 				},
 			},
