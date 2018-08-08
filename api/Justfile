@@ -4,6 +4,9 @@ migration-up:
 schema:
 	diesel print-schema > src/models/schema.rs
 
+test:
+	APP_ENV=test cargo test
+
 build:
 	docker run \
 		--rm \

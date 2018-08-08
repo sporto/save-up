@@ -82,8 +82,7 @@ mod tests {
 
 			assert_eq!(user.name, "Sam".to_owned());
 			assert_eq!(user.email, "sam@sample.com".to_owned());
-			assert_eq!(user.role, "parent".to_owned());
-			assert_ne!(user.password_hash, "password".to_owned());
+			assert_eq!(user.role, ROLE_ADMIN.to_owned());
 		})
 	}
 
