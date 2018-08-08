@@ -23,8 +23,8 @@ pub fn app_env() -> AppEnv {
 
 pub fn get() -> Result<Config, Error> {
 	let database_env_var = match app_env() {
-	    AppEnv::Dev => "DATABASE_URL",
-	    AppEnv::Test => "DATABASE_URL_TEST",
+		AppEnv::Dev => "DATABASE_URL",
+		AppEnv::Test => "DATABASE_URL_TEST",
 	};
 
 	// let client_host = env::var("CLIENT_HOST")?;
