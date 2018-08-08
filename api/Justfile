@@ -14,8 +14,8 @@ build:
 		-v $PWD:/volume \
 		-v cargo-cache:/root/.cargo \
 		clux/muslrust:stable \
-		cargo build --release --out-dir /volume/bin -Z unstable-options
-	rm bin/build-*
+		cargo build --release
+	cp target/x86_64-unknown-linux-musl/release/graphql bin/
 
 try:
 	curl \
