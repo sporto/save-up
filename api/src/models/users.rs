@@ -6,6 +6,7 @@ use diesel::result::Error;
 use validator::Validate;
 
 pub const ROLE_ADMIN: &str = "admin";
+#[allow(dead_code)]
 pub const ROLE_INVESTOR: &str = "investor";
 
 #[derive(Queryable, GraphQLObject, Debug)]

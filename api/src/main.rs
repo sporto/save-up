@@ -20,12 +20,9 @@ extern crate serde;
 extern crate validator;
 
 use failure::Error;
-use juniper::RootNode;
-use juniper::{EmptyMutation, FieldResult, Variables};
 use juniper::http::GraphQLRequest;
+use juniper::RootNode;
 use lambda::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
-use serde_json::{Value};
-use utils::config;
 use std::collections::HashMap;
 
 mod db;
@@ -37,51 +34,44 @@ mod utils;
 type Schema = RootNode<'static, graph::query_root::QueryRoot, graph::mutation_root::MutationRoot>;
 
 fn main() {
-    lambda::start(|request: ApiGatewayProxyRequest| {
+	lambda::start(|request: ApiGatewayProxyRequest| {
 		let mut headers = HashMap::new();
 
 		// TODO this shouldn't be here, needs to be in api gateway
-		headers.insert(
-			"Access-Control-Allow-Origin".to_string(),
-			"*".to_string(),
-		);
+		headers.insert("Access-Control-Allow-Origin".to_string(), "*".to_string());
 
-        run(request).map(|value| ApiGatewayProxyResponse {
-            body: Some(value),
-            status_code: 200,
+		run(request).map(|value| ApiGatewayProxyResponse {
+			body: Some(value),
+			status_code: 200,
 			headers: headers,
 			is_base64_encoded: None,
-        })
-    })
+		})
+	})
 }
 
 #[derive(Serialize, Deserialize)]
 struct Query {
-    query: String,
-    age: u8,
-    phones: Vec<String>,
+	query: String,
+	age: u8,
+	phones: Vec<String>,
 }
 
-
 fn run(request: ApiGatewayProxyRequest) -> Result<String, Error> {
-    let conn = db::establish_connection()?;
+	let conn = db::establish_connection()?;
 
-    let context = graph::query_root::Context { conn: conn };
+	let context = graph::query_root::Context { conn: conn };
 
-    let query_root = graph::query_root::QueryRoot {};
+	let query_root = graph::query_root::QueryRoot {};
 
-    let mutation_root = graph::mutation_root::MutationRoot {};
+	let mutation_root = graph::mutation_root::MutationRoot {};
 
-    let schema = Schema::new(query_root, mutation_root);
+	let schema = Schema::new(query_root, mutation_root);
 
-    let body = request.body.ok_or(format_err!("Body not found"))?;
+	let body = request.body.ok_or(format_err!("Body not found"))?;
 
-    let request: GraphQLRequest = serde_json::from_str(&body)?;
+	let request: GraphQLRequest = serde_json::from_str(&body)?;
 
-    let juniper_result = request.execute(
-        &schema,
-        &context,
-    );
+	let juniper_result = request.execute(&schema, &context);
 
-    serde_json::to_string(&juniper_result).map_err(|e| format_err!("{}", e.to_string()))
+	serde_json::to_string(&juniper_result).map_err(|e| format_err!("{}", e.to_string()))
 }

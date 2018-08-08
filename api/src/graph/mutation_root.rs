@@ -1,5 +1,5 @@
 use graph::query_root::Context;
-use juniper::{FieldError, FieldResult};
+use juniper::{FieldResult};
 use validator::{ValidationError, ValidationErrors};
 
 // use models::errors::UpdateResult;
