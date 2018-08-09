@@ -13,9 +13,6 @@ pub fn establish_connection() -> Result<PgConnection, Error> {
 }
 
 #[cfg(test)]
-use diesel::prelude::*;
-
-#[cfg(test)]
 pub fn get_test_connection() -> PgConnection {
 	let app_env = config::app_env();
 

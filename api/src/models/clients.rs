@@ -8,15 +8,27 @@ use diesel::pg::PgConnection;
 #[allow(dead_code)]
 const RESOURCE_KIND: &'static str = "client";
 
-#[derive(Queryable, GraphQLObject)]
-pub struct Client {
-	pub id: i32,
-	pub name: String,
-}
-
 #[derive(Insertable)]
 #[table_name = "clients"]
 pub struct ClientAttrs {
+	pub name: String,
+}
+
+pub fn client() -> ClientAttrs {
+	ClientAttrs {
+		name: "Client".to_owned(),
+	}
+}
+
+impl ClientAttrs {
+	pub fn save(self, conn: &PgConnection) -> Client {
+		Client::create(conn, self).unwrap()
+	}
+}
+
+#[derive(Queryable, GraphQLObject)]
+pub struct Client {
+	pub id: i32,
 	pub name: String,
 }
 

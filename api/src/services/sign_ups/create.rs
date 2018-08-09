@@ -1,23 +1,24 @@
-use bcrypt::{hash, DEFAULT_COST};
 use diesel::dsl::exists;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::select;
 use models::clients::{Client, ClientAttrs};
-use models::users::{User, UserAttrs, ROLE_ADMIN};
 use models::schema::users;
 use models::sign_ups::SignUp;
+use models::users::{User, UserAttrs, ROLE_ADMIN};
+use services::passwords;
 use validator::Validate;
-// use utils::tests::with_db;
 
 pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, String> {
+	let password_hash = passwords::encrypt::call(&sign_up.password)?;
+
 	// Validate the user attrs
 	let temp_user_attrs = UserAttrs {
-		client_id: 1,
+		client_id: 1, // Just to validate
 		role: ROLE_ADMIN.to_string(),
 		name: sign_up.name.clone(),
 		email: sign_up.email.clone(),
-		password_hash: "abc".to_owned(),
+		password_hash: password_hash.clone(),
 		timezone: sign_up.timezone.clone(),
 	};
 
@@ -35,8 +36,6 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, String> {
 			let client_attrs = ClientAttrs {
 				name: sign_up.name.clone(),
 			};
-
-			let password_hash = hash(&sign_up.password, DEFAULT_COST).map_err(|e| e.to_string())?;
 
 			// Create client and then user
 			Client::create(conn, client_attrs)

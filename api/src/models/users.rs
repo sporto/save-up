@@ -4,6 +4,7 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
 use validator::Validate;
+use models::clients::Client;
 
 pub const ROLE_ADMIN: &str = "admin";
 #[allow(dead_code)]
@@ -31,6 +32,28 @@ pub struct UserAttrs {
 	pub email: String,
 	pub password_hash: String,
 	pub timezone: String,
+}
+
+pub fn user(client: &Client) -> UserAttrs {
+	UserAttrs {
+		client_id: client.id,
+		role: ROLE_ADMIN.to_owned(),
+		name: "Sam".to_owned(),
+		email: "sam@sample.com".to_owned(),
+		password_hash: "abc".to_owned(),
+		timezone: "Australia/Melbourne".to_owned(),
+	}
+}
+
+impl UserAttrs {
+	pub fn save(self, conn: &PgConnection) -> User {
+		User::create(conn, self).unwrap()
+	}
+
+	pub fn password_hash(mut self, ph: &str) -> Self {
+		self.password_hash = ph.to_owned();
+		self
+	}
 }
 
 #[allow(dead_code)]
