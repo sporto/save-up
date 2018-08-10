@@ -5,14 +5,19 @@ use models::users::User;
 use services::passwords;
 
 pub fn call(conn: &PgConnection, sign_in: SignIn) -> Result<User, String> {
-	User::find_by_email(conn, &sign_in.email)
-		.map_err(|_| "User not found".to_owned())
-		.and_then(|user| {
-			verify(&sign_in.password, &user.password_hash)
-				.map_err(|_| "Invalid password".to_owned())
-				.map(|_| user)
-		})
-		.map_err(|_| "Invalid email or password".to_owned())
+	let user = User::find_by_email(conn, &sign_in.email)
+		.map_err(|_| "User not found".to_owned())?;
+
+	let invalid = "Invalid email or password".to_owned();
+
+	let valid = verify(&sign_in.password, &user.password_hash)
+		.map_err(|_| invalid.clone())?;
+
+	if valid {
+		Ok(user)
+	} else {
+		Err(invalid)
+	}
 }
 
 #[cfg(test)]
@@ -28,8 +33,7 @@ mod tests {
 
 			let password_hash = passwords::encrypt::call(&password).unwrap();
 
-			let client = models::clients::client()
-				.save(conn);
+			let client = models::clients::client().save(conn);
 
 			let user = models::users::user(&client)
 				.password_hash(&password_hash)
@@ -47,6 +51,30 @@ mod tests {
 			let returned_user = result.unwrap();
 
 			assert_eq!(returned_user.email, user.email);
+		})
+	}
+
+	#[test]
+	fn it_cant_sign_in_with_wrong_password() {
+		tests::with_db(|conn| {
+			let password = "password".to_string();
+
+			let password_hash = passwords::encrypt::call(&password).unwrap();
+
+			let client = models::clients::client().save(conn);
+
+			let user = models::users::user(&client)
+				.password_hash(&password_hash)
+				.save(conn);
+
+			let sign_in = SignIn {
+				email: user.email.clone(),
+				password: "other".to_owned(),
+			};
+
+			let result = call(&conn, sign_in);
+
+			assert!(result.is_err());
 		})
 	}
 }
