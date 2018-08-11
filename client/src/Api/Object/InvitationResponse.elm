@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/graphqelm
 
 
-module Api.Object.Client exposing (..)
+module Api.Object.InvitationResponse exposing (..)
 
 import Api.InputObject
 import Api.Interface
@@ -20,21 +20,16 @@ import Json.Decode as Decode
 
 {-| Select fields to build up a SelectionSet for this object.
 -}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.Client
+selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.InvitationResponse
 selection constructor =
     Object.selection constructor
 
 
-id : Field Int Api.Object.Client
-id =
-    Object.fieldDecoder "id" [] Decode.int
+success : Field Bool Api.Object.InvitationResponse
+success =
+    Object.fieldDecoder "success" [] Decode.bool
 
 
-createdAt : Field Api.Scalar.NaiveDateTime Api.Object.Client
-createdAt =
-    Object.fieldDecoder "createdAt" [] (Decode.oneOf [ Decode.string, Decode.float |> Decode.map toString, Decode.int |> Decode.map toString, Decode.bool |> Decode.map toString ] |> Decode.map Api.Scalar.NaiveDateTime)
-
-
-name : Field String Api.Object.Client
-name =
-    Object.fieldDecoder "name" [] Decode.string
+errors : SelectionSet decodesTo Api.Object.MutationError -> Field (List decodesTo) Api.Object.InvitationResponse
+errors object =
+    Object.selectionField "errors" [] object (identity >> Decode.list)

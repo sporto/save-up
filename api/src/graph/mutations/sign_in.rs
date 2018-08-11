@@ -2,7 +2,7 @@ use models::sign_ins::SignIn;
 use juniper::{Executor, FieldResult};
 use graph::mutation_root::MutationError;
 use services;
-use graph::query_root::Context;
+use graph::context::Context;
 
 #[derive(GraphQLObject, Clone)]
 pub struct SignInResponse {

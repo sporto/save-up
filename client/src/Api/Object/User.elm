@@ -30,19 +30,14 @@ id =
     Object.fieldDecoder "id" [] Decode.int
 
 
+createdAt : Field Api.Scalar.NaiveDateTime Api.Object.User
+createdAt =
+    Object.fieldDecoder "createdAt" [] (Decode.oneOf [ Decode.string, Decode.float |> Decode.map toString, Decode.int |> Decode.map toString, Decode.bool |> Decode.map toString ] |> Decode.map Api.Scalar.NaiveDateTime)
+
+
 clientId : Field Int Api.Object.User
 clientId =
     Object.fieldDecoder "clientId" [] Decode.int
-
-
-role : Field String Api.Object.User
-role =
-    Object.fieldDecoder "role" [] Decode.string
-
-
-name : Field String Api.Object.User
-name =
-    Object.fieldDecoder "name" [] Decode.string
 
 
 email : Field String Api.Object.User
@@ -55,6 +50,21 @@ passwordHash =
     Object.fieldDecoder "passwordHash" [] Decode.string
 
 
-timezone : Field String Api.Object.User
-timezone =
-    Object.fieldDecoder "timezone" [] Decode.string
+name : Field String Api.Object.User
+name =
+    Object.fieldDecoder "name" [] Decode.string
+
+
+role : Field String Api.Object.User
+role =
+    Object.fieldDecoder "role" [] Decode.string
+
+
+emailConfirmationToken : Field (Maybe String) Api.Object.User
+emailConfirmationToken =
+    Object.fieldDecoder "emailConfirmationToken" [] (Decode.string |> Decode.nullable)
+
+
+emailConfirmedAt : Field (Maybe Api.Scalar.NaiveDateTime) Api.Object.User
+emailConfirmedAt =
+    Object.fieldDecoder "emailConfirmedAt" [] (Decode.oneOf [ Decode.string, Decode.float |> Decode.map toString, Decode.int |> Decode.map toString, Decode.bool |> Decode.map toString ] |> Decode.map Api.Scalar.NaiveDateTime |> Decode.nullable)

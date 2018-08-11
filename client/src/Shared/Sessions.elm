@@ -13,7 +13,6 @@ newSignUp =
     { email = ""
     , name = ""
     , password = ""
-    , timezone = "Australia/Melbourne"
     }
 
 

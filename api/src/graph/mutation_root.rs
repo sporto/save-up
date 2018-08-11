@@ -1,10 +1,10 @@
-use graph::query_root::Context;
 use juniper::{FieldResult};
 use validator::{ValidationError, ValidationErrors};
 
 use models::sign_ups::SignUp;
 use models::sign_ins::SignIn;
 use graph::mutations;
+use graph::context::Context;
 
 pub struct MutationRoot;
 
@@ -47,6 +47,10 @@ graphql_object!(MutationRoot: Context | &self | {
 
 	field signIn(&executor, sign_in: SignIn) -> FieldResult<mutations::sign_in::SignInResponse> {
 		mutations::sign_in::call(executor, sign_in)
+	}
+
+	field invite(&executor, attrs: mutations::invite::InvitationInput) -> FieldResult<mutations::invite::InvitationResponse> {
+		mutations::invite::call(executor, attrs)
 	}
 
 });

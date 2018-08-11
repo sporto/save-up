@@ -5,6 +5,5 @@
 module Api.Scalar exposing (..)
 
 
-placeholder : String
-placeholder =
-    ""
+type NaiveDateTime
+    = NaiveDateTime String

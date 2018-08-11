@@ -17,6 +17,29 @@ import Graphqelm.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
 
 
+buildInvitationInput : InvitationInputRequiredFields -> InvitationInput
+buildInvitationInput required =
+    { email = required.email }
+
+
+type alias InvitationInputRequiredFields =
+    { email : String }
+
+
+{-| Type for the InvitationInput input object.
+-}
+type alias InvitationInput =
+    { email : String }
+
+
+{-| Encode a InvitationInput into a value that can be used as an argument.
+-}
+encodeInvitationInput : InvitationInput -> Value
+encodeInvitationInput input =
+    Encode.maybeObject
+        [ ( "email", Encode.string input.email |> Just ) ]
+
+
 buildSignIn : SignInRequiredFields -> SignIn
 buildSignIn required =
     { email = required.email, password = required.password }
@@ -42,17 +65,17 @@ encodeSignIn input =
 
 buildSignUp : SignUpRequiredFields -> SignUp
 buildSignUp required =
-    { name = required.name, email = required.email, password = required.password, timezone = required.timezone }
+    { name = required.name, email = required.email, password = required.password }
 
 
 type alias SignUpRequiredFields =
-    { name : String, email : String, password : String, timezone : String }
+    { name : String, email : String, password : String }
 
 
 {-| Type for the SignUp input object.
 -}
 type alias SignUp =
-    { name : String, email : String, password : String, timezone : String }
+    { name : String, email : String, password : String }
 
 
 {-| Encode a SignUp into a value that can be used as an argument.
@@ -60,4 +83,4 @@ type alias SignUp =
 encodeSignUp : SignUp -> Value
 encodeSignUp input =
     Encode.maybeObject
-        [ ( "name", Encode.string input.name |> Just ), ( "email", Encode.string input.email |> Just ), ( "password", Encode.string input.password |> Just ), ( "timezone", Encode.string input.timezone |> Just ) ]
+        [ ( "name", Encode.string input.name |> Just ), ( "email", Encode.string input.email |> Just ), ( "password", Encode.string input.password |> Just ) ]

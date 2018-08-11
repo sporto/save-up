@@ -1,17 +1,11 @@
-use diesel::pg::PgConnection;
-use juniper::{Context as JuniperContext, FieldError, FieldResult};
+use juniper::{FieldError, FieldResult};
 
 use chrono_tz::America;
 use chrono_tz::Australia;
 
 use models::clients::*;
 use models::users::*;
-
-pub struct Context {
-	pub conn: PgConnection,
-}
-
-impl JuniperContext for Context {}
+use graph::context::Context;
 
 pub struct QueryRoot;
 

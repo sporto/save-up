@@ -13,8 +13,8 @@ extern crate validator_derive;
 
 extern crate aws_lambda as lambda;
 extern crate bcrypt;
-extern crate chrono_tz;
 extern crate chrono;
+extern crate chrono_tz;
 extern crate frank_jwt;
 extern crate serde;
 extern crate uuid;
@@ -60,7 +60,10 @@ struct Query {
 fn run(request: ApiGatewayProxyRequest) -> Result<String, Error> {
 	let conn = db::establish_connection()?;
 
-	let context = graph::query_root::Context { conn: conn };
+	let context = graph::context::Context {
+		conn: conn,
+		user: None,
+	};
 
 	let query_root = graph::query_root::QueryRoot {};
 
