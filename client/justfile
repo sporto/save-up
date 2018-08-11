@@ -4,6 +4,9 @@ graph:
 build:
   yarn ts-node ./node_modules/.bin/webpack --config webpack.dev.ts --reporter basic
 
+watch:
+  yarn ts-node ./node_modules/.bin/webpack --config webpack.dev.ts --watch
+
 build-prod:
   yarn ts-node ./node_modules/.bin/webpack --config webpack.prod.ts
 

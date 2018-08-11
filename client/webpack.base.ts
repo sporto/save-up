@@ -13,16 +13,20 @@ const ENTRY_SIGN_IN = "sign-in"
 const ENTRY_SIGN_UP = "sign-up"
 const COMMON = "common"
 const STYLES = "styles"
+const ASSETS_PATH = "/app"
 
 invariant(API_HOST, "API_HOST must be defined")
 
 let baseConfig: webpack.Configuration = {
 	entry: {
-		[STYLES]: "./src/styles.css",
+		// [STYLES]: "./src/styles.css",
 		[ENTRY_SIGN_IN]: "./src/signIn.ts",
 		[ENTRY_SIGN_UP]: "./src/signUp.ts",
 		[ENTRY_ADMIN]: "./src/admin.ts",
 		[ENTRY_INVESTOR]: "./src/investor.ts",
+	},
+	output: {
+		publicPath: ASSETS_PATH,
 	},
 	optimization: {
 		splitChunks: {
@@ -71,10 +75,10 @@ let baseConfig: webpack.Configuration = {
 			{
 				test: /\.css$/,
 				use: ExtractTextPlugin.extract({
-				  fallback: 'style-loader',
+				  fallback: "style-loader",
 				  use: [
-					{ loader: 'css-loader', options: { importLoaders: 1 } },
-					'postcss-loader'
+					{ loader: "css-loader", options: { importLoaders: 1 } },
+					"postcss-loader"
 					]
 				})
 			}

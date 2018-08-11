@@ -4,7 +4,7 @@ import * as CleanWebpackPlugin from "clean-webpack-plugin"
 import * as path from "path"
 import common from "./webpack.base"
 
-let outputPath = path.join(__dirname, "dist-dev")
+let outputPath = path.join(__dirname, "dist-dev", "app")
 
 let devConfig: webpack.Configuration = {
     mode: "development",

@@ -4,7 +4,7 @@ import * as merge from "webpack-merge"
 import * as CleanWebpackPlugin from "clean-webpack-plugin"
 import common from "./webpack.base"
 
-let outputPath = path.join(__dirname, "dist")
+let outputPath = path.join(__dirname, "dist", "app")
 
 let prodConfig: webpack.Configuration = {
     mode: "production",
