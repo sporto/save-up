@@ -92,7 +92,9 @@ let baseConfig: webpack.Configuration = {
 	  new webpack.DefinePlugin({
 		API_HOST: JSON.stringify(API_HOST),
 		}),
-		new MiniCssExtractPlugin({filename: "[name].css",}),
+		new MiniCssExtractPlugin({
+			filename: DEV_MODE ? "[name].css" :  "[name].[hash].css",
+		}),
 		new HtmlWebpackPlugin({
 			chunks: [COMMON, ENTRY_SIGN_IN],
 			title: "Sign In",

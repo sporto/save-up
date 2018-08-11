@@ -8,7 +8,7 @@ watch:
   yarn ts-node ./node_modules/.bin/webpack --config webpack.dev.ts --watch
 
 build-prod:
-  yarn ts-node ./node_modules/.bin/webpack --config webpack.prod.ts
+  NODE_ENV=production yarn ts-node ./node_modules/.bin/webpack --config webpack.prod.ts
 
 start:
   yarn ts-node ./node_modules/.bin/webpack-serve ./webpack.dev.ts
