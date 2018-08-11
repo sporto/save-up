@@ -13,10 +13,11 @@ extern crate validator_derive;
 
 extern crate aws_lambda as lambda;
 extern crate bcrypt;
-extern crate chrono;
 extern crate chrono_tz;
+extern crate chrono;
 extern crate frank_jwt;
 extern crate serde;
+extern crate uuid;
 extern crate validator;
 
 use failure::Error;

@@ -5,7 +5,6 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
 use validator::Validate;
-use models::clients::Client;
 
 pub const ROLE_ADMIN: &str = "admin";
 #[allow(dead_code)]
@@ -38,6 +37,10 @@ pub struct UserAttrs {
 	pub email_confirmed_at: Option<NaiveDateTime>,
 }
 
+#[cfg(test)]
+use models::clients::Client;
+
+#[cfg(test)]
 pub fn user_attrs(client: &Client) -> UserAttrs {
 	UserAttrs {
 		client_id: client.id,
@@ -60,18 +63,6 @@ impl UserAttrs {
 		self
 	}
 }
-
-// #[allow(dead_code)]
-// pub fn new_user() -> User {
-// 	User {
-// 		id: 1,
-// 		client_id: 2,
-// 		email: "sam@sample.com".to_owned(),
-// 		password_hash: "".to_owned(),
-// 		name: "Sam".to_owned(),
-// 		role: ROLE_ADMIN.to_owned(),
-// 	}
-// }
 
 impl User {
 	// Create

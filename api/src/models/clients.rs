@@ -15,7 +15,8 @@ pub struct ClientAttrs {
 	pub name: String,
 }
 
-pub fn client() -> ClientAttrs {
+#[cfg(test)]
+pub fn client_attrs() -> ClientAttrs {
 	ClientAttrs {
 		name: "Client".to_owned(),
 	}

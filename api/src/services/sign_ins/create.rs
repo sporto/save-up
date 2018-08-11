@@ -2,7 +2,6 @@ use bcrypt::verify;
 use diesel::pg::PgConnection;
 use models::sign_ins::SignIn;
 use models::users::User;
-use services::passwords;
 
 pub fn call(conn: &PgConnection, sign_in: SignIn) -> Result<User, String> {
 	let user = User::find_by_email(conn, &sign_in.email)
@@ -25,6 +24,7 @@ mod tests {
 	use super::*;
 	use models;
 	use utils::tests;
+	use services::passwords;
 
 	#[test]
 	fn it_can_sign_in() {
@@ -33,7 +33,7 @@ mod tests {
 
 			let password_hash = passwords::encrypt::call(&password).unwrap();
 
-			let client = models::clients::client().save(conn);
+			let client = models::clients::client_attrs().save(conn);
 
 			let user = models::users::user_attrs(&client)
 				.password_hash(&password_hash)
@@ -61,7 +61,7 @@ mod tests {
 
 			let password_hash = passwords::encrypt::call(&password).unwrap();
 
-			let client = models::clients::client().save(conn);
+			let client = models::clients::client_attrs().save(conn);
 
 			let user = models::users::user_attrs(&client)
 				.password_hash(&password_hash)

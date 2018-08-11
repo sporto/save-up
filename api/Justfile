@@ -1,6 +1,9 @@
 dp-setup:
 	DATABASE_URL=$DATABASE_URL_LOCAL diesel setup
 
+db-gen name:
+	diesel migration generate {{name}}
+
 db-up:
 	DATABASE_URL=$DATABASE_URL_LOCAL diesel migration run
 

@@ -7,6 +7,18 @@ table! {
 }
 
 table! {
+    invitations (id) {
+        id -> Int4,
+        created_at -> Timestamp,
+        user_id -> Int4,
+        email -> Varchar,
+        role -> Varchar,
+        token -> Varchar,
+        used_at -> Nullable<Timestamp>,
+    }
+}
+
+table! {
     users (id) {
         id -> Int4,
         created_at -> Timestamp,
@@ -21,3 +33,4 @@ table! {
 }
 
 joinable!(users -> clients (client_id));
+joinable!(invitations -> users (user_id));
