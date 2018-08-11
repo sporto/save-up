@@ -35,7 +35,7 @@ mod tests {
 
 			let client = models::clients::client().save(conn);
 
-			let user = models::users::user(&client)
+			let user = models::users::user_attrs(&client)
 				.password_hash(&password_hash)
 				.save(conn);
 
@@ -63,7 +63,7 @@ mod tests {
 
 			let client = models::clients::client().save(conn);
 
-			let user = models::users::user(&client)
+			let user = models::users::user_attrs(&client)
 				.password_hash(&password_hash)
 				.save(conn);
 

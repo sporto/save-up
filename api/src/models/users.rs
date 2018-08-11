@@ -1,4 +1,5 @@
 use super::schema::users;
+use chrono::{NaiveDateTime};
 use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
@@ -13,35 +14,39 @@ pub const ROLE_INVESTOR: &str = "investor";
 #[derive(Queryable, GraphQLObject, Debug)]
 pub struct User {
 	pub id: i32,
+	pub created_at: NaiveDateTime,
 	pub client_id: i32,
-	pub role: String,
-	pub name: String,
 	pub email: String,
 	pub password_hash: String,
-	pub timezone: String,
+	pub name: String,
+	pub role: String,
+	pub email_confirmation_token: Option<String>,
+	pub email_confirmed_at: Option<NaiveDateTime>,
 }
 
 #[derive(Insertable, Validate)]
 #[table_name = "users"]
 pub struct UserAttrs {
 	pub client_id: i32,
-	pub role: String,
-	#[validate(length(min = "1"))]
-	pub name: String,
 	#[validate(email)]
 	pub email: String,
 	pub password_hash: String,
-	pub timezone: String,
+	#[validate(length(min = "1"))]
+	pub name: String,
+	pub role: String,
+	pub email_confirmation_token: Option<String>,
+	pub email_confirmed_at: Option<NaiveDateTime>,
 }
 
-pub fn user(client: &Client) -> UserAttrs {
+pub fn user_attrs(client: &Client) -> UserAttrs {
 	UserAttrs {
 		client_id: client.id,
-		role: ROLE_ADMIN.to_owned(),
-		name: "Sam".to_owned(),
 		email: "sam@sample.com".to_owned(),
 		password_hash: "abc".to_owned(),
-		timezone: "Australia/Melbourne".to_owned(),
+		name: "Sam".to_owned(),
+		role: ROLE_ADMIN.to_owned(),
+		email_confirmation_token: None,
+		email_confirmed_at: None,
 	}
 }
 
@@ -56,18 +61,17 @@ impl UserAttrs {
 	}
 }
 
-#[allow(dead_code)]
-pub fn new_user() -> User {
-	User {
-		id: 1,
-		client_id: 2,
-		role: ROLE_ADMIN.to_owned(),
-		name: "Sam".to_owned(),
-		email: "sam@sample.com".to_owned(),
-		password_hash: "".to_owned(),
-		timezone: "Australia/Melbourne".to_owned(),
-	}
-}
+// #[allow(dead_code)]
+// pub fn new_user() -> User {
+// 	User {
+// 		id: 1,
+// 		client_id: 2,
+// 		email: "sam@sample.com".to_owned(),
+// 		password_hash: "".to_owned(),
+// 		name: "Sam".to_owned(),
+// 		role: ROLE_ADMIN.to_owned(),
+// 	}
+// }
 
 impl User {
 	// Create

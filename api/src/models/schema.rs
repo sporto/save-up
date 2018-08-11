@@ -1,6 +1,7 @@
 table! {
     clients (id) {
         id -> Int4,
+        created_at -> Timestamp,
         name -> Varchar,
     }
 }
@@ -8,12 +9,14 @@ table! {
 table! {
     users (id) {
         id -> Int4,
+        created_at -> Timestamp,
         client_id -> Int4,
-        role -> Varchar,
-        name -> Varchar,
         email -> Varchar,
         password_hash -> Varchar,
-        timezone -> Varchar,
+        name -> Varchar,
+        role -> Varchar,
+        email_confirmation_token -> Nullable<Varchar>,
+        email_confirmed_at -> Nullable<Timestamp>,
     }
 }
 

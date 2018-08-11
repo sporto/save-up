@@ -1,4 +1,5 @@
 use super::schema::clients;
+use chrono::{NaiveDateTime};
 use diesel;
 use diesel::prelude::*;
 use diesel::result::Error;
@@ -29,6 +30,7 @@ impl ClientAttrs {
 #[derive(Queryable, GraphQLObject)]
 pub struct Client {
 	pub id: i32,
+	pub created_at: NaiveDateTime,
 	pub name: String,
 }
 

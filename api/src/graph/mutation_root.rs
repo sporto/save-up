@@ -2,10 +2,8 @@ use graph::query_root::Context;
 use juniper::{FieldResult};
 use validator::{ValidationError, ValidationErrors};
 
-// use models::errors::UpdateResult;
 use models::sign_ups::SignUp;
 use models::sign_ins::SignIn;
-use services;
 use graph::mutations;
 
 pub struct MutationRoot;

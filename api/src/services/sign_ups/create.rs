@@ -19,7 +19,8 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, String> {
 		name: sign_up.name.clone(),
 		email: sign_up.email.clone(),
 		password_hash: password_hash.clone(),
-		timezone: sign_up.timezone.clone(),
+		email_confirmation_token: None,
+		email_confirmed_at: None,
 	};
 
 	temp_user_attrs.validate().map_err(|e| e.to_string())?;
@@ -46,7 +47,8 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, String> {
 						name: sign_up.name,
 						email: sign_up.email,
 						password_hash: password_hash,
-						timezone: sign_up.timezone,
+						email_confirmation_token: None,
+						email_confirmed_at: None,
 					};
 
 					User::create(conn, user_attrs)
@@ -69,7 +71,6 @@ mod tests {
 				name: "Sam".to_string(),
 				email: "sam@sample.com".to_string(),
 				password: "password".to_string(),
-				timezone: "TZ".to_string(),
 			};
 
 			let result = call(conn, attrs);
@@ -92,7 +93,6 @@ mod tests {
 				name: "Sam".to_string(),
 				email: "flamingo".to_string(),
 				password: "password".to_string(),
-				timezone: "TZ".to_string(),
 			};
 
 			let result = call(conn, attrs);
