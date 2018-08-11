@@ -1,4 +1,4 @@
 CREATE TABLE clients (
   id SERIAL PRIMARY KEY,
-  name VARCHAR NOT NULL
+  created_at TIMESTAMP DEFAULT current_timestamp NOT NULL
 )

@@ -1,5 +1,14 @@
 migration-up:
-	diesel migration run
+	DATABASE_URL=$DATABASE_URL_LOCAL diesel migration run
+
+migration-down:
+	DATABASE_URL=$DATABASE_URL_LOCAL diesel migration revert
+
+dp-test-create:
+	DATABASE_URL=$DATABASE_URL_TEST diesel setup
+
+migration-test-down:
+	DATABASE_URL=$DATABASE_URL_TEST diesel migration revert
 
 schema:
 	diesel print-schema > src/models/schema.rs
