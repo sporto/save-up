@@ -13,6 +13,7 @@ import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
 import RemoteData
+import Shared.Css exposing (molecules)
 import Shared.Context exposing (PublicContext)
 import Shared.Flags as Flags
 import Shared.GraphQl exposing (GraphResponse, GraphData, MutationError, mutationErrorSelection, sendPublicMutation)
@@ -147,11 +148,11 @@ view model =
                 [ class "bg-white shadow-md rounded p-8 mt-3", onSubmit Submit ]
                 [ maybeErrors model
                 , p []
-                    [ label [ class labelClasses ]
+                    [ label [ class molecules.form.label ]
                         [ text "Email"
                         ]
                     , input
-                        [ class inputClasses
+                        [ class molecules.form.input
                         , type_ "email"
                         , name "email"
                         , onInput ChangeEmail
@@ -159,11 +160,11 @@ view model =
                         []
                     ]
                 , p [ class "mt-6" ]
-                    [ label [ class labelClasses ]
+                    [ label [ class molecules.form.label ]
                         [ text "Password"
                         ]
                     , input
-                        [ class inputClasses
+                        [ class molecules.form.input
                         , type_ "password"
                         , name "password"
                         , onInput ChangePassword
@@ -184,7 +185,7 @@ submit model =
             text "..."
 
         _ ->
-            button [ class btnClasses ] [ text "Sign in" ]
+            button [ class molecules.form.submit ] [ text "Sign in" ]
 
 
 links =
@@ -206,18 +207,6 @@ maybeErrors model =
 
         _ ->
             text ""
-
-
-labelClasses =
-    "blocktext-sm font-bold"
-
-
-inputClasses =
-    "appearance-none border w-full py-2 px-3 text-grey-darker leading-tight mt-1"
-
-
-btnClasses =
-    "bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded"
 
 
 

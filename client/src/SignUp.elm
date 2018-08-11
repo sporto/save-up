@@ -12,6 +12,7 @@ import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
 import RemoteData
+import Shared.Css exposing (molecules)
 import Shared.Context exposing (PublicContext)
 import Shared.Flags as Flags
 import Shared.GraphQl exposing (GraphResponse, GraphData, MutationError, mutationErrorSelection, sendPublicMutation)
@@ -160,11 +161,11 @@ view model =
                 [ maybeErrors model
                 , p []
                     [ label
-                        [ class labelClasses ]
+                        [ class molecules.form.label ]
                         [ text "Name"
                         ]
                     , input
-                        [ class inputClasses
+                        [ class molecules.form.input
                         , onInput ChangeName
                         , name "name"
                         ]
@@ -172,11 +173,11 @@ view model =
                     ]
                 , p [ class "mt-6" ]
                     [ label
-                        [ class labelClasses ]
+                        [ class molecules.form.label ]
                         [ text "Email"
                         ]
                     , input
-                        [ class inputClasses
+                        [ class molecules.form.input
                         , type_ "email"
                         , onInput ChangeEmail
                         , name "email"
@@ -185,11 +186,11 @@ view model =
                     ]
                 , p [ class "mt-6" ]
                     [ label
-                        [ class labelClasses ]
+                        [ class molecules.form.label ]
                         [ text "Password"
                         ]
                     , input
-                        [ class inputClasses
+                        [ class molecules.form.input
                         , type_ "password"
                         , onInput ChangePassword
                         , name "password"
@@ -212,7 +213,7 @@ submit model =
             text "..."
 
         _ ->
-            button [ class btnClasses ] [ text "Sign up" ]
+            button [ class molecules.form.submit ] [ text "Sign up" ]
 
 
 maybeErrors : Model -> Html msg
@@ -231,18 +232,6 @@ maybeErrors model =
 
         _ ->
             text ""
-
-
-labelClasses =
-    "blocktext-sm font-bold"
-
-
-inputClasses =
-    "appearance-none border w-full py-2 px-3 text-grey-darker leading-tight mt-1"
-
-
-btnClasses =
-    "bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded"
 
 
 links =
