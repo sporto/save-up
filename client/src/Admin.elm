@@ -106,8 +106,20 @@ initCurrentPage ( model, cmds ) =
         ( { model | page = newPage }, Cmd.batch [ cmds, newCmd ] )
 
 
+subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    let
+        pageSub =
+            case model.page of
+                Page_Home ->
+                    Sub.none
+
+                Page_Invite pageModel ->
+                    Sub.map PageInviteMsg (Invite.subscriptions pageModel)
+    in
+        Sub.batch
+            [ pageSub
+            ]
 
 
 view : Model -> Html Msg
