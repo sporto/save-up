@@ -38,13 +38,14 @@ init flags location =
 
 type Msg
     = SignOut
-    | OnLocationChange Location
     | NavigateTo Routes.Route
+    | OnLocationChange Location
+    | PageInviteMsg Invite.Msg
 
 
 type Page
     = Page_Home
-    | Page_Invite
+    | Page_Invite Invite.Model
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -52,6 +53,9 @@ update msg model =
     case msg of
         SignOut ->
             ( model, Sessions.toJsSignOut () )
+
+        NavigateTo route ->
+            ( model, Navigation.setRoute route )
 
         OnLocationChange location ->
             let
@@ -66,8 +70,19 @@ update msg model =
                 )
                     |> initCurrentPage
 
-        NavigateTo route ->
-            ( model, Navigation.setRoute route )
+        PageInviteMsg sub ->
+            case model.page of
+                Page_Invite pageModel ->
+                    let
+                        ( newPageModel, pageCmd ) =
+                            Invite.update sub pageModel
+                    in
+                        ( { model | page = Page_Invite newPageModel }
+                        , Cmd.map PageInviteMsg pageCmd
+                        )
+
+                _ ->
+                    ( model, Cmd.none )
 
 
 initCurrentPage : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
@@ -79,7 +94,11 @@ initCurrentPage ( model, cmds ) =
                     ( Page_Home, Cmd.none )
 
                 Routes.Route_Invite ->
-                    ( Page_Invite, Cmd.none )
+                    let
+                        ( pageModel, pageCmd ) =
+                            Invite.init
+                    in
+                        ( Page_Invite pageModel, Cmd.map PageInviteMsg pageCmd )
 
                 Routes.Route_NotFound ->
                     ( Page_Home, Cmd.none )
@@ -134,8 +153,9 @@ currentPage model =
                 Page_Home ->
                     Home.view
 
-                Page_Invite ->
-                    Invite.view
+                Page_Invite pageModel ->
+                    Invite.view pageModel
+                        |> map PageInviteMsg
     in
         section [ class "p-4" ]
             [ page

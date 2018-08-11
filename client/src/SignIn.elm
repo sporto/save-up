@@ -67,8 +67,8 @@ init flags =
 type Msg
     = ChangeEmail String
     | ChangePassword String
-    | Submit
     | OnSubmitResponse (GraphResponse SignInResponse)
+    | Submit
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
