@@ -1,7 +1,7 @@
 import * as invariant from "invariant"
 import * as webpack from "webpack"
 // @ts-ignore
-import * as ExtractTextPlugin from "extract-text-webpack-plugin"
+import * as MiniCssExtractPlugin from "mini-css-extract-plugin"
 import * as HtmlWebpackPlugin from "html-webpack-plugin"
 import * as path from "path"
 
@@ -14,12 +14,12 @@ const ENTRY_SIGN_UP = "sign-up"
 const COMMON = "common"
 const STYLES = "styles"
 const ASSETS_PATH = "/app"
+const DEV_MODE = process.env.NODE_ENV !== "production"
 
 invariant(API_HOST, "API_HOST must be defined")
 
 let baseConfig: webpack.Configuration = {
 	entry: {
-		// [STYLES]: "./src/styles.css",
 		[ENTRY_SIGN_IN]: "./src/signIn.ts",
 		[ENTRY_SIGN_UP]: "./src/signUp.ts",
 		[ENTRY_ADMIN]: "./src/admin.ts",
@@ -42,7 +42,7 @@ let baseConfig: webpack.Configuration = {
 					test: /\.css$/,
 					chunks: "all",
 					enforce: true,
-				}
+				},
 			},
 		},
 	},
@@ -74,13 +74,13 @@ let baseConfig: webpack.Configuration = {
 
 			{
 				test: /\.css$/,
-				use: ExtractTextPlugin.extract({
-				  fallback: "style-loader",
-				  use: [
-					{ loader: "css-loader", options: { importLoaders: 1 } },
-					"postcss-loader"
-					]
-				})
+				use: [
+					{
+						loader: MiniCssExtractPlugin.loader,
+					},
+					"css-loader",
+					"postcss-loader",
+				]
 			}
 
 		],
@@ -92,9 +92,9 @@ let baseConfig: webpack.Configuration = {
 	  new webpack.DefinePlugin({
 		API_HOST: JSON.stringify(API_HOST),
 		}),
-		new ExtractTextPlugin("styles.css"),
+		new MiniCssExtractPlugin({filename: "[name].css",}),
 		new HtmlWebpackPlugin({
-			chunks: [COMMON, ENTRY_SIGN_IN, "styles"],
+			chunks: [COMMON, ENTRY_SIGN_IN],
 			title: "Sign In",
 			filename: "sign-in/index.html",
 			template: "src/application.html",
