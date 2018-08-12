@@ -38,7 +38,7 @@ Resources:
     GraphQlFunction:
         Type: AWS::Serverless::Function
         Properties:
-            CodeUri: api/bin/
+            CodeUri: bin/
             Handler: graphql
             Runtime: go1.x
             FunctionName: KicGraphQl
