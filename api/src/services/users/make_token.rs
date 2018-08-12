@@ -12,7 +12,7 @@ pub fn call(user: User) -> Result<String, Error> {
 	let header = &Header::default();
 
 	let data = TokenData {
-		userId : user.id,
+		user_id : user.id,
 		email : user.email,
 		name : user.name,
 		role : user.role,

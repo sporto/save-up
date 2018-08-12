@@ -29,7 +29,9 @@ pub fn get() -> Result<Config, Error> {
 	};
 
 	// let client_host = env::var("CLIENT_HOST")?;
-	let api_secret = env::var("API_SECRET")?;
+	let api_secret = env::var("API_SECRET")
+		.map_err(|_| format_err!("API_SECRET not found"))?;
+
 	let database_url = env::var(database_env_var)?;
 
 	let config = Config {

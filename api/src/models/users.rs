@@ -39,7 +39,7 @@ pub struct UserAttrs {
 
 #[derive(Serialize,Deserialize)]
 pub struct TokenData {
-	pub userId: i32,
+	pub user_id: i32,
 	pub email: String,
 	pub name: String,
 	pub role: String,

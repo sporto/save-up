@@ -96,16 +96,22 @@ fn run_public(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
 }
 
 fn run_private(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
-	// Find the authorisation token
-	let token = request
+	// Find the authorisation header
+	let header = request
 		.headers.get("Authorization")
-		.ok_or(format_err!("No Authorization found"))?;
+		.ok_or(format_err!("No Authorization header found"))?;
 
-	let tokenData = services::users::decode_token::call(token)?;
+	// Get the jwt from the header
+	// e.g. Bearer abc123...
+	// We don't need the Bearer part, 
+	// So get whatever is after an index of 7
+    let token = &header[7..];
+
+	let token_data = services::users::decode_token::call(token)?;
 
 	let conn = db::establish_connection()?;
 
-	let user = models::users::User::find(&conn, tokenData.userId)?;
+	let user = models::users::User::find(&conn, token_data.user_id)?;
 
 	let context = graph::context::Context {
 		conn: conn,

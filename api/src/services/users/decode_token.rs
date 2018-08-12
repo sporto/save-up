@@ -9,6 +9,6 @@ pub fn call(token: &str) -> Result<TokenData, Error> {
 	let secret = config.api_secret;
 
 	decode::<TokenData>(&token, secret.as_ref(), &Validation::default())
-		.map_err(|_| format_err!("Failed to decode token"))
+		.map_err(|_| format_err!("Failed to decode token {}", &token))
 		.map(|t| t.claims )
 }
