@@ -25,7 +25,7 @@ Resources:
             Handler: corsOptions.handler
             Runtime: nodejs6.10
             FunctionName: !Sub "${paramEnvironment}${paramFeatureBranch}_${paramServiceName}_corsOptions"
-            CodeUri: api/cors
+            CodeUri: cors
             Timeout: 30
             Events:
                 optionsForGraphQlPub:

@@ -8,12 +8,15 @@ module.exports = {
       htmlAcceptHeaders: ['text/html', 'application/xhtml+xml'],
       rewrites: [
         { 
-          from: /\/admin.*/,
-          to: '/admin/index.html'
+          from: /\/app\/admin.*/,
+          to: '/app/admin/index.html'
         }
       ]
     }
 
     app.use(convert(history(historyOptions)))
-  }
+  },
+  devMiddleware: {
+	publicPath: "/app",
+  },
 }
