@@ -1,8 +1,8 @@
 module SignUp exposing (main)
 
-import Api.Mutation
-import Api.Object
-import Api.Object.SignUpResponse
+import ApiPub.Mutation
+import ApiPub.Object
+import ApiPub.Object.SignUpResponse
 import Graphqelm.Operation exposing (RootQuery, RootMutation)
 import Graphqelm.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
@@ -15,7 +15,7 @@ import RemoteData
 import Shared.Css exposing (molecules)
 import Shared.Context exposing (PublicContext)
 import Shared.Flags as Flags
-import Shared.GraphQl exposing (GraphResponse, GraphData, MutationError, mutationErrorSelection, sendPublicMutation)
+import Shared.GraphQl exposing (GraphResponse, GraphData, MutationError, mutationErrorPublicSelection, sendPublicMutation)
 import Shared.Sessions as Sessions exposing (SignUp)
 import UI.Flash as Flash
 import UI.Forms as Forms
@@ -256,17 +256,17 @@ sendCreateSignUpMutation context signUp =
 
 createSignUpMutation : SignUp -> SelectionSet SignUpResponse RootMutation
 createSignUpMutation signUp =
-    Api.Mutation.selection identity
+    ApiPub.Mutation.selection identity
         |> with
-            (Api.Mutation.signUp
+            (ApiPub.Mutation.signUp
                 { signUp = signUp }
                 signUpResponseSelection
             )
 
 
-signUpResponseSelection : SelectionSet SignUpResponse Api.Object.SignUpResponse
+signUpResponseSelection : SelectionSet SignUpResponse ApiPub.Object.SignUpResponse
 signUpResponseSelection =
-    Api.Object.SignUpResponse.selection SignUpResponse
-        |> with (Api.Object.SignUpResponse.success)
-        |> with (Api.Object.SignUpResponse.errors mutationErrorSelection)
-        |> with (Api.Object.SignUpResponse.token)
+    ApiPub.Object.SignUpResponse.selection SignUpResponse
+        |> with (ApiPub.Object.SignUpResponse.success)
+        |> with (ApiPub.Object.SignUpResponse.errors mutationErrorPublicSelection)
+        |> with (ApiPub.Object.SignUpResponse.token)

@@ -1,11 +1,11 @@
 port module Shared.Sessions exposing (..)
 
-import Api.InputObject
+import ApiPub.InputObject
 import Json.Decode as Decode
 
 
 type alias SignUp =
-    Api.InputObject.SignUp
+    ApiPub.InputObject.SignUp
 
 
 newSignUp : SignUp
@@ -17,7 +17,7 @@ newSignUp =
 
 
 type alias SignIn =
-    Api.InputObject.SignIn
+    ApiPub.InputObject.SignIn
 
 
 newSignIn : SignIn
