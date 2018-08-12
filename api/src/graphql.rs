@@ -63,15 +63,15 @@ struct Query {
 }
 
 fn run(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
-	match request.path {
+	match request.resource {
 		Some(ref path) => {
 			if path == PUBLIC_PATH {
 				run_public(request)
 			} else {
 				run_private(request)
 			}
-		},
-		_ => Err(format_err!("Unknown path")),
+		}
+		_ => Err(format_err!("Unknown resource path")),
 	}
 }
 
@@ -96,25 +96,20 @@ fn run_public(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
 }
 
 fn run_private(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
-	// Find the authorisation header
-	// let header = request
-	// 	.headers.get("Authorization")
-	// 	.ok_or(format_err!("No Authorization header found"))?;
+	// GEt user id
+	let user_id_val = request
+		.request_context
+		.authorizer
+		.get("userId")
+		.ok_or(format_err!("Failed to get userId"))?;
 
-	// Get the jwt from the header
-	// e.g. Bearer abc123...
-	// We don't need the Bearer part, 
-	// So get whatever is after an index of 7
-    // let token = &header[7..];
-
-	// let token_data = services::users::decode_token::call(token)?;
-
-	// TODO we need to check if already authorised
+	let user_id = user_id_val
+		.as_i64()
+		.ok_or(format_err!("Failed to parse {}", user_id_val))
+		.map(|n| n as i32)?;
 
 	let conn = db::establish_connection()?;
 
-	// GEt user id from some header or context
-	let user_id = 1;
 	let user = models::users::User::find(&conn, user_id)?;
 
 	let context = graph::context::Context {
