@@ -28,21 +28,45 @@ Resources:
             CodeUri: api/cors
             Timeout: 30
             Events:
-                optionsForGraphQl:
+                optionsForGraphQlPub:
                     Type: Api
                     Properties:
-                        RestApiId: !Ref GraphQlFunction
+                        RestApiId: !Ref GraphQlPubFunction
+                        Path: /graphql-pub
+                        Method: OPTIONS
+                optionsForGraphQlPriv:
+                    Type: Api
+                    Properties:
+                        RestApiId: !Ref GraphQlPrivFunction
                         Path: /graphql
                         Method: OPTIONS
 
-    GraphQlFunction:
+    GraphQlPubFunction:
         Type: AWS::Serverless::Function
         Properties:
             CodeUri: bin/
             Handler: graphql
             Runtime: go1.x
             FunctionName: KicGraphQl
-            Description: "KIC GraphQl Server"
+            Description: "KIC GraphQl Public Server"
+            Environment:
+                Variables:
+                    DATABASE_URL:
+            Events:
+                GraphQl:
+                    Type: Api
+                    Properties:
+                        Path: /graphql-pub
+                        Method: post
+
+    GraphQlPrivFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: bin/
+            Handler: graphql
+            Runtime: go1.x
+            FunctionName: KicGraphQl
+            Description: "KIC GraphQl Private Server"
             Environment:
                 Variables:
                     DATABASE_URL:

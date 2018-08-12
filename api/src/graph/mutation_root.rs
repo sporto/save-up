@@ -4,8 +4,9 @@ use validator::{ValidationError, ValidationErrors};
 use models::sign_ups::SignUp;
 use models::sign_ins::SignIn;
 use graph::mutations;
-use graph::context::Context;
+use graph::context::{PublicContext,Context};
 
+pub struct PublicMutationRoot;
 pub struct MutationRoot;
 
 #[derive(GraphQLObject, Clone)]
@@ -39,7 +40,7 @@ fn to_mutation_error_messages(errors: Vec<ValidationError>) -> Vec<String> {
 		.collect()
 }
 
-graphql_object!(MutationRoot: Context | &self | {
+graphql_object!(PublicMutationRoot: PublicContext | &self | {
 
 	field signUp(&executor, sign_up: SignUp) -> FieldResult<mutations::sign_up::SignUpResponse> {
 		mutations::sign_up::call(executor, sign_up)
@@ -48,6 +49,10 @@ graphql_object!(MutationRoot: Context | &self | {
 	field signIn(&executor, sign_in: SignIn) -> FieldResult<mutations::sign_in::SignInResponse> {
 		mutations::sign_in::call(executor, sign_in)
 	}
+
+});
+
+graphql_object!(MutationRoot: Context | &self | {
 
 	field invite(&executor, attrs: mutations::invite::InvitationInput) -> FieldResult<mutations::invite::InvitationResponse> {
 		mutations::invite::call(executor, attrs)

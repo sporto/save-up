@@ -2,7 +2,7 @@ use models::sign_ins::SignIn;
 use juniper::{Executor, FieldResult};
 use graph::mutation_root::MutationError;
 use services;
-use graph::context::Context;
+use graph::context::PublicContext;
 
 #[derive(GraphQLObject, Clone)]
 pub struct SignInResponse {
@@ -11,7 +11,7 @@ pub struct SignInResponse {
 	token: Option<String>,
 }
 
-pub fn call(executor: &Executor<Context>, sign_in: SignIn) -> FieldResult<SignInResponse> {
+pub fn call(executor: &Executor<PublicContext>, sign_in: SignIn) -> FieldResult<SignInResponse> {
 	fn other_error(message: String) -> SignInResponse {
 		let mutation_error = MutationError {
 			key: "other".to_owned(),

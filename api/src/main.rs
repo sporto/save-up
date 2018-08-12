@@ -32,6 +32,11 @@ mod models;
 mod services;
 mod utils;
 
+const PUBLIC_PATH: &'static str = "/graphql-pub";
+// const PRIVATE_PATH: &'static str = "/graphql";
+
+type PublicSchema =
+	RootNode<'static, graph::query_root::PublicQueryRoot, graph::mutation_root::PublicMutationRoot>;
 type Schema = RootNode<'static, graph::query_root::QueryRoot, graph::mutation_root::MutationRoot>;
 
 fn main() {
@@ -41,7 +46,7 @@ fn main() {
 		// TODO this shouldn't be here, needs to be in api gateway
 		headers.insert("Access-Control-Allow-Origin".to_string(), "*".to_string());
 
-		run(request).map(|value| ApiGatewayProxyResponse {
+		run(&request).map(|value| ApiGatewayProxyResponse {
 			body: Some(value),
 			status_code: 200,
 			headers: headers,
@@ -57,7 +62,40 @@ struct Query {
 	phones: Vec<String>,
 }
 
-fn run(request: ApiGatewayProxyRequest) -> Result<String, Error> {
+fn run(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
+	match request.path {
+		Some(ref path) => {
+			if path == PUBLIC_PATH {
+				run_public(request)
+			} else {
+				run_private(request)
+			}
+		},
+		_ => Err(format_err!("Unknown path")),
+	}
+}
+
+fn run_public(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
+	let conn = db::establish_connection()?;
+
+	let context = graph::context::PublicContext { conn: conn };
+
+	let query_root = graph::query_root::PublicQueryRoot {};
+
+	let mutation_root = graph::mutation_root::PublicMutationRoot {};
+
+	let schema = PublicSchema::new(query_root, mutation_root);
+
+	let body = request.body.clone().ok_or(format_err!("Body not found"))?;
+
+	let request: GraphQLRequest = serde_json::from_str(&body)?;
+
+	let juniper_result = request.execute(&schema, &context);
+
+	serde_json::to_string(&juniper_result).map_err(|e| format_err!("{}", e.to_string()))
+}
+
+fn run_private(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
 	let conn = db::establish_connection()?;
 
 	let context = graph::context::Context {
@@ -71,7 +109,7 @@ fn run(request: ApiGatewayProxyRequest) -> Result<String, Error> {
 
 	let schema = Schema::new(query_root, mutation_root);
 
-	let body = request.body.ok_or(format_err!("Body not found"))?;
+	let body = request.body.clone().ok_or(format_err!("Body not found"))?;
 
 	let request: GraphQLRequest = serde_json::from_str(&body)?;
 

@@ -5,9 +5,16 @@ use chrono_tz::Australia;
 
 use models::clients::*;
 use models::users::*;
-use graph::context::Context;
+use graph::context::{PublicContext, Context};
 
+pub struct PublicQueryRoot;
 pub struct QueryRoot;
+
+graphql_object!(PublicQueryRoot: PublicContext |&self| {
+	field apiVersion() -> &str {
+		"1.0"
+	}
+});
 
 graphql_object!(QueryRoot: Context |&self| {
 

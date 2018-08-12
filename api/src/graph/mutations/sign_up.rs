@@ -2,7 +2,7 @@ use models::sign_ups::SignUp;
 use juniper::{Executor, FieldResult};
 use graph::mutation_root::MutationError;
 use services;
-use graph::context::Context;
+use graph::context::PublicContext;
 
 #[derive(GraphQLObject, Clone)]
 pub struct SignUpResponse {
@@ -11,7 +11,7 @@ pub struct SignUpResponse {
 	token: Option<String>,
 }
 
-pub fn call(executor: &Executor<Context>, sign_up: SignUp) -> FieldResult<SignUpResponse> {
+pub fn call(executor: &Executor<PublicContext>, sign_up: SignUp) -> FieldResult<SignUpResponse> {
 
 	fn other_error(message: String) -> SignUpResponse {
 		let mutation_error = MutationError { 
