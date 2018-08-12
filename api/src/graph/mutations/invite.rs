@@ -1,4 +1,4 @@
-use juniper::{Executor, FieldResult, FieldError};
+use juniper::{Executor, FieldResult};
 use graph::mutation_root::MutationError;
 use graph::context::Context;
 use services;
@@ -17,15 +17,10 @@ pub struct InvitationResponse {
 pub fn call(executor: &Executor<Context>, input: InvitationInput) -> FieldResult<InvitationResponse> {
 	let context = executor.context();
 
-	let user = match context.user {
-		Some(ref user) => user,
-		None => return Err(FieldError::from("No user".to_string())),
-	};
-
 	let invitation_result = services
 		::invitations
 		::create
-		::call(&context.conn, &user, &input.email);
+		::call(&context.conn, &context.user, &input.email);
 
 	match invitation_result {
 		Ok(invitation) => invitation,

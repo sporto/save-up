@@ -15,7 +15,7 @@ extern crate aws_lambda as lambda;
 extern crate bcrypt;
 extern crate chrono;
 extern crate chrono_tz;
-extern crate frank_jwt;
+extern crate jsonwebtoken as jwt;
 extern crate serde;
 extern crate uuid;
 extern crate validator;
@@ -96,11 +96,20 @@ fn run_public(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
 }
 
 fn run_private(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
+	// Find the authorisation token
+	let token = request
+		.headers.get("Authorization")
+		.ok_or(format_err!("No Authorization found"))?;
+
+	let tokenData = services::users::decode_token::call(token)?;
+
 	let conn = db::establish_connection()?;
+
+	let user = models::users::User::find(&conn, tokenData.userId)?;
 
 	let context = graph::context::Context {
 		conn: conn,
-		user: None,
+		user: user,
 	};
 
 	let query_root = graph::query_root::QueryRoot {};

@@ -37,6 +37,14 @@ pub struct UserAttrs {
 	pub email_confirmed_at: Option<NaiveDateTime>,
 }
 
+#[derive(Serialize,Deserialize)]
+pub struct TokenData {
+	pub userId: i32,
+	pub email: String,
+	pub name: String,
+	pub role: String,
+}
+
 #[cfg(test)]
 use models::clients::Client;
 
