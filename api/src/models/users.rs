@@ -39,6 +39,7 @@ pub struct UserAttrs {
 
 #[derive(Serialize,Deserialize)]
 pub struct TokenData {
+	#[serde(rename = "userId")]
 	pub user_id: i32,
 	pub email: String,
 	pub name: String,
