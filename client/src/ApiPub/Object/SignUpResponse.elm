@@ -2,13 +2,13 @@
 -- https://github.com/dillonkearns/graphqelm
 
 
-module Api.Object.SignUpResponse exposing (..)
+module ApiPub.Object.SignUpResponse exposing (..)
 
-import Api.InputObject
-import Api.Interface
-import Api.Object
-import Api.Scalar
-import Api.Union
+import ApiPub.InputObject
+import ApiPub.Interface
+import ApiPub.Object
+import ApiPub.Scalar
+import ApiPub.Union
 import Graphqelm.Field as Field exposing (Field)
 import Graphqelm.Internal.Builder.Argument as Argument exposing (Argument)
 import Graphqelm.Internal.Builder.Object as Object
@@ -20,21 +20,21 @@ import Json.Decode as Decode
 
 {-| Select fields to build up a SelectionSet for this object.
 -}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.SignUpResponse
+selection : (a -> constructor) -> SelectionSet (a -> constructor) ApiPub.Object.SignUpResponse
 selection constructor =
     Object.selection constructor
 
 
-success : Field Bool Api.Object.SignUpResponse
+success : Field Bool ApiPub.Object.SignUpResponse
 success =
     Object.fieldDecoder "success" [] Decode.bool
 
 
-errors : SelectionSet decodesTo Api.Object.MutationError -> Field (List decodesTo) Api.Object.SignUpResponse
+errors : SelectionSet decodesTo ApiPub.Object.MutationError -> Field (List decodesTo) ApiPub.Object.SignUpResponse
 errors object =
     Object.selectionField "errors" [] object (identity >> Decode.list)
 
 
-token : Field (Maybe String) Api.Object.SignUpResponse
+token : Field (Maybe String) ApiPub.Object.SignUpResponse
 token =
     Object.fieldDecoder "token" [] (Decode.string |> Decode.nullable)

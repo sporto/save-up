@@ -1,6 +1,9 @@
 graph:
   yarn graphqelm $API_HOST/graphql --base Api
 
+graph-pub:
+  yarn graphqelm $API_HOST/graphql-pub --base ApiPub
+
 build:
   yarn ts-node ./node_modules/.bin/webpack --config webpack.dev.ts --reporter basic
 

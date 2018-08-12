@@ -2,20 +2,16 @@
 -- https://github.com/dillonkearns/graphqelm
 
 
-module Api.Object exposing (..)
-
-
-type Client
-    = Client
-
-
-type InvitationResponse
-    = InvitationResponse
+module ApiPub.Object exposing (..)
 
 
 type MutationError
     = MutationError
 
 
-type User
-    = User
+type SignInResponse
+    = SignInResponse
+
+
+type SignUpResponse
+    = SignUpResponse
