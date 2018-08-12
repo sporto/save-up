@@ -1,4 +1,5 @@
 export API_HOST=http://localhost:4010
+export API_SECRET=abc
 export CLIENT_HOST=http://localhost:8080
 export DATABASE_URL_TEST=xx
 export DATABASE_URL=postgres://postgres@localhost/db_name

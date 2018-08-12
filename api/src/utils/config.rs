@@ -9,6 +9,7 @@ pub enum AppEnv {
 
 pub struct Config {
 	// pub client_host: String,
+	pub api_secret: String,
 	pub database_url: String,
 }
 
@@ -28,10 +29,12 @@ pub fn get() -> Result<Config, Error> {
 	};
 
 	// let client_host = env::var("CLIENT_HOST")?;
+	let api_secret = env::var("API_SECRET")?;
 	let database_url = env::var(database_env_var)?;
 
 	let config = Config {
 		// client_host: client_host,
+		api_secret: api_secret,
 		database_url: database_url,
 	};
 
