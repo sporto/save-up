@@ -40,7 +40,7 @@ view : Model -> Html Msg
 view model =
     section []
         [ h1 [] [ text "Invite" ]
-        , form []
+        , form [ class "mt-2" ]
             [ p []
                 [ label
                     [ class molecules.form.label

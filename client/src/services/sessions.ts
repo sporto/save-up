@@ -20,8 +20,8 @@ export function redirectToSignIn() {
 
 export function getEntryUrlForToken(token: Token): string {
 	return token.role == "admin"
-		? "/admin"
-		: "/investor"
+		? "/app/admin"
+		: "/app/investor"
 }
 
 export function proceedIfSignedIn(callback: (token: Token) => void): void {

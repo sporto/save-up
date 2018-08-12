@@ -5,7 +5,8 @@ import UrlParser exposing (..)
 
 
 namespace =
-    "admin"
+    "app/admin"
+
 
 namespaceAbs =
     "/" ++ namespace
@@ -19,7 +20,8 @@ type Route
 
 matchers : Parser (Route -> a) a
 matchers =
-    s namespace
+    s "app"
+        </> s "admin"
         </> oneOf
                 [ map Route_Home top
                 , map Route_Invite (s "invite")
