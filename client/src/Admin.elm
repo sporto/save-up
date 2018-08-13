@@ -151,7 +151,7 @@ navigation model =
             , navigationLink Routes.Route_Invite "Invite"
             ]
         , div []
-            [ text model.flags.token.name
+            [ text model.flags.tokenData.name
             , a [ href "javascript://", class "text-white ml-3", onClick SignOut ] [ text "Log out" ]
             ]
         ]

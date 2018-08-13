@@ -11,14 +11,16 @@ export function getToken(): Option<string> {
         : Some(token)
 }
 
-export function getTokenDecoded(): Option<Token> {
+export function getTokenDecoded(): Option<TokenAndData> {
     return getToken()
-        .flatMap(decodeToken)
+		.map(
+			(token: string) => ({ token, data: decodeToken(token) })
+		)
 }
 
-export function decodeToken(token: string): Option<Token> {
-    let decoded: Token = jwtDecode(token)
-    return Some(decoded)
+export function decodeToken(token: string): TokenData {
+    let decoded: TokenData = jwtDecode(token)
+    return decoded
 }
 
 export function removeToken(): boolean {

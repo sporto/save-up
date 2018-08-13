@@ -70,4 +70,5 @@ sendMutation :
 sendMutation context mutationId mutation onResponse =
     mutation
         |> Graphqelm.Http.mutationRequest (apiEndPoint context mutationId)
+        |> Graphqelm.Http.withHeader "Authorization" ("Bearer " ++ context.flags.token)
         |> Graphqelm.Http.send onResponse

@@ -4,10 +4,15 @@ interface Config {
 	apiHost: string,
 }
 
-interface Token {
+interface TokenData {
 	name: string,
 	email: string,
 	role: string,
+}
+
+interface TokenAndData {
+	token: string,
+	data: TokenData,
 }
 
 interface PublicFlags {
@@ -16,7 +21,8 @@ interface PublicFlags {
 
 interface Flags {
 	apiHost: string,
-	token: Token,
+	token: string,
+	tokenData: TokenData,
 }
 
 interface CommonPorts {

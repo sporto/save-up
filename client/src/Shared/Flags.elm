@@ -1,7 +1,5 @@
 module Shared.Flags exposing (..)
 
-import Json.Decode as Decode
-
 
 type alias PublicFlags =
     { apiHost : String
@@ -10,19 +8,13 @@ type alias PublicFlags =
 
 type alias Flags =
     { apiHost : String
-    , token : Token
+    , tokenData : TokenData
+    , token : String
     }
 
 
-type alias Token =
+type alias TokenData =
     { name : String
     , email : String
     , role : String
     }
-
-
-
--- publicFlagsDecoder : Decode.Decoder PublicFlags
--- publicFlagsDecoder =
---     Decode.map PublicFlags
---         (Decode.field "apiHost" Decode.string)

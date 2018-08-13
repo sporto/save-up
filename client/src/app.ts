@@ -11,11 +11,12 @@ interface App {
 
 export default function run(Elm: Elm) {
 
-	sessions.proceedIfSignedIn(function(token) {
+	sessions.proceedIfSignedIn(function(tokenAndData: TokenAndData) {
 
 		const flags: Flags = {
 			apiHost: API_HOST,
-			token,
+			token: tokenAndData.token,
+			tokenData: tokenAndData.data,
 		}
 		
 		console.log(flags)

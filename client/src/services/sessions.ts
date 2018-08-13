@@ -18,21 +18,24 @@ export function redirectToSignIn() {
 	window.location.href = SIGN_IN_PATH
 }
 
-export function getEntryUrlForToken(token: Token): string {
-	return token.role == "admin"
+export function getEntryUrlForToken(tokenData: TokenData): string {
+	return tokenData.role == "admin"
 		? "/app/admin"
 		: "/app/investor"
 }
 
-export function proceedIfSignedIn(callback: (token: Token) => void): void {
-	let maybeToken = tokens.getTokenDecoded()
-
-	if (maybeToken.isDefined()) {
-		maybeToken.map(callback)
-	} else {
-		console.log("No token found - redirecting")
-		redirectToSignIn()
-	}
+export function proceedIfSignedIn(callback: (tokenAndData: TokenAndData) => void): void {
+	tokens
+		.getTokenDecoded()
+		.fold(
+			() => {
+				console.log("No token found - redirecting")
+				redirectToSignIn()
+			},
+			(tokenAndData: TokenAndData) => {
+				callback(tokenAndData)
+			}
+		)
 }
 
 export function proceedIfSignedOut(callback: () => void): void {
