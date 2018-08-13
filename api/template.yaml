@@ -53,6 +53,7 @@ Resources:
                 Variables:
                     API_SECRET:
                     DATABASE_URL:
+                    SYSTEM_JWT:
             Events:
                 GraphQl:
                     Type: Api
@@ -72,6 +73,7 @@ Resources:
                 Variables:
                     API_SECRET:
                     DATABASE_URL:
+                    SYSTEM_JWT:
             Events:
                 GraphQl:
                     Type: Api

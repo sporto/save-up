@@ -1,5 +1,5 @@
 graph:
-  yarn graphqelm $API_HOST/graphql --base Api --header 'Authorization: Bearer abc'
+  yarn graphqelm $API_HOST/graphql --base Api --header "Authorization: Bearer $SYSTEM_JWT"
 
 graph-pub:
   yarn graphqelm $API_HOST/graphql-pub --base ApiPub

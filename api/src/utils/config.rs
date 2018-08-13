@@ -11,6 +11,7 @@ pub struct Config {
 	// pub client_host: String,
 	pub api_secret: String,
 	pub database_url: String,
+	pub system_jwt: String,
 }
 
 pub fn app_env() -> AppEnv {
@@ -34,10 +35,14 @@ pub fn get() -> Result<Config, Error> {
 
 	let database_url = env::var(database_env_var)?;
 
+	let system_jwt = env::var("SYSTEM_JWT")
+		.map_err(|_| format_err!("SYSTEM_JWT not found"))?;
+
 	let config = Config {
 		// client_host: client_host,
 		api_secret: api_secret,
 		database_url: database_url,
+		system_jwt: system_jwt,
 	};
 
 	Ok(config)

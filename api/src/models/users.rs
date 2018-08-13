@@ -1,5 +1,5 @@
 use super::schema::users;
-use chrono::{NaiveDateTime};
+use chrono::NaiveDateTime;
 use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
@@ -37,7 +37,7 @@ pub struct UserAttrs {
 	pub email_confirmed_at: Option<NaiveDateTime>,
 }
 
-#[derive(Serialize,Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct TokenData {
 	#[serde(rename = "userId")]
 	pub user_id: i32,
@@ -56,6 +56,22 @@ pub fn user_attrs(client: &Client) -> UserAttrs {
 		email: "sam@sample.com".to_owned(),
 		password_hash: "abc".to_owned(),
 		name: "Sam".to_owned(),
+		role: ROLE_ADMIN.to_owned(),
+		email_confirmation_token: None,
+		email_confirmed_at: None,
+	}
+}
+
+pub fn system_user() -> User {
+	let created_at = NaiveDateTime::from_timestamp(1_000_000_000, 0);
+
+	User {
+		id: 0,
+		created_at: created_at,
+		email: "app@kicinv.co".to_owned(),
+		client_id: 0,
+		password_hash: "".to_owned(),
+		name: "SYSTEM".to_owned(),
 		role: ROLE_ADMIN.to_owned(),
 		email_confirmation_token: None,
 		email_confirmed_at: None,

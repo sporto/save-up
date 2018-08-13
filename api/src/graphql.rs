@@ -20,6 +20,7 @@ extern crate serde;
 extern crate uuid;
 extern crate validator;
 
+use diesel::pg::PgConnection;
 use failure::Error;
 use juniper::http::GraphQLRequest;
 use juniper::RootNode;
@@ -96,21 +97,38 @@ fn run_public(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
 }
 
 fn run_private(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
-	// GEt user id
-	let user_id_val = request
-		.request_context
-		.authorizer
-		.get("userId")
-		.ok_or(format_err!("Failed to get userId"))?;
+	// We are supposed to use a lambda function as authoriser
+	// But SAM doesn't support this flow when working locally yet
+	// So I don't know how to wire this
+	// For now do all the work here
 
-	let user_id = user_id_val
-		.as_i64()
-		.ok_or(format_err!("Failed to parse {}", user_id_val))
-		.map(|n| n as i32)?;
+	// Get user id
+	// let user_id_val = request
+	// 	.request_context
+	// 	.authorizer
+	// 	.get("userId")
+	// 	.ok_or(format_err!("Failed to get userId"))?;
+
+	// let user_id = user_id_val
+	// 	.as_i64()
+	// 	.ok_or(format_err!("Failed to parse {}", user_id_val))
+	// 	.map(|n| n as i32)?;
+
+	// Find the authorisation header
+	let header = request
+		.headers
+		.get("Authorization")
+		.ok_or(format_err!("No Authorization header found"))?;
+
+	// Get the jwt from the header
+	// e.g. Bearer abc123...
+	// We don't need the Bearer part,
+	// So get whatever is after an index of 7
+	let token = &header[7..];
 
 	let conn = db::establish_connection()?;
 
-	let user = models::users::User::find(&conn, user_id)?;
+	let user = get_user(&conn, token)?;
 
 	let context = graph::context::Context {
 		conn: conn,
@@ -130,4 +148,19 @@ fn run_private(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
 	let juniper_result = request.execute(&schema, &context);
 
 	serde_json::to_string(&juniper_result).map_err(|e| format_err!("{}", e.to_string()))
+}
+
+fn get_user(conn: &PgConnection, token: &str) -> Result<models::users::User, Error> {
+	let config = utils::config::get()?;
+
+	if token == config.system_jwt {
+		return Ok(models::users::system_user());
+	}
+
+	let token_data = services::users::decode_token::call(token)?;
+
+	let user_id = token_data.user_id;
+
+	models::users::User::find(&conn, user_id)
+		.map_err(|_| format_err!("User not found"))
 }
