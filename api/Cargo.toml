@@ -7,9 +7,9 @@ authors = ["Sebastian Porto <s@porto5.com>"]
 name = "graphql"
 path = "src/graphql.rs"
 
-[[bin]]
-name = "authoriser"
-path = "src/authoriser.rs"
+# [[bin]]
+# name = "authorise"
+# path = "src/authoriser.rs"
 
 [dependencies]
 aws_lambda = { git = "https://github.com/srijs/rust-aws-lambda" }
