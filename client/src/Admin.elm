@@ -9,6 +9,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Navigation exposing (Location)
+import Shared.Context exposing (Context)
 import Shared.Flags as Flags
 import Shared.Sessions as Sessions
 
@@ -50,39 +51,48 @@ type Page
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        SignOut ->
-            ( model, Sessions.toJsSignOut () )
+    let
+        context : Context
+        context =
+            { flags = model.flags
+            }
+    in
+        case msg of
+            SignOut ->
+                ( model, Sessions.toJsSignOut () )
 
-        NavigateTo route ->
-            ( model, Navigation.setRoute route )
+            NavigateTo route ->
+                ( model, Navigation.setRoute route )
 
-        OnLocationChange location ->
-            let
-                _ =
-                    Debug.log "location" location.pathname
+            OnLocationChange location ->
+                let
+                    _ =
+                        Debug.log "location" location.pathname
 
-                newLocation =
-                    AppLocation.navigationLocationToAppLocation location
-            in
-                ( { model | currentLocation = newLocation }
-                , Cmd.none
-                )
-                    |> initCurrentPage
+                    newLocation =
+                        AppLocation.navigationLocationToAppLocation location
+                in
+                    ( { model | currentLocation = newLocation }
+                    , Cmd.none
+                    )
+                        |> initCurrentPage
 
-        PageInviteMsg sub ->
-            case model.page of
-                Page_Invite pageModel ->
-                    let
-                        ( newPageModel, pageCmd ) =
-                            Invite.update sub pageModel
-                    in
-                        ( { model | page = Page_Invite newPageModel }
-                        , Cmd.map PageInviteMsg pageCmd
-                        )
+            PageInviteMsg sub ->
+                case model.page of
+                    Page_Invite pageModel ->
+                        let
+                            ( newPageModel, pageCmd ) =
+                                Invite.update
+                                    context
+                                    sub
+                                    pageModel
+                        in
+                            ( { model | page = Page_Invite newPageModel }
+                            , Cmd.map PageInviteMsg pageCmd
+                            )
 
-                _ ->
-                    ( model, Cmd.none )
+                    _ ->
+                        ( model, Cmd.none )
 
 
 initCurrentPage : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )

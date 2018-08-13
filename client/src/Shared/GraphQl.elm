@@ -59,3 +59,15 @@ sendPublicMutation context mutationId mutation onResponse =
     mutation
         |> Graphqelm.Http.mutationRequest (apiEndPointPublic context mutationId)
         |> Graphqelm.Http.send onResponse
+
+
+sendMutation :
+    Context
+    -> String
+    -> SelectionSet response RootMutation
+    -> (GraphResponse response -> msg)
+    -> Cmd msg
+sendMutation context mutationId mutation onResponse =
+    mutation
+        |> Graphqelm.Http.mutationRequest (apiEndPoint context mutationId)
+        |> Graphqelm.Http.send onResponse
