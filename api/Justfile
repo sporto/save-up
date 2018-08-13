@@ -37,8 +37,9 @@ build:
 		clux/muslrust:stable \
 		cargo build --release
 	mkdir -p bin/
-	cp target/x86_64-unknown-linux-musl/release/authoriser bin/
 	cp target/x86_64-unknown-linux-musl/release/graphql bin/
+
+# cp target/x86_64-unknown-linux-musl/release/authorise bin/
 
 try:
 	curl \

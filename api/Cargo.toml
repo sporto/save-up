@@ -7,6 +7,10 @@ authors = ["Sebastian Porto <s@porto5.com>"]
 name = "graphql"
 path = "src/graphql.rs"
 
+[[bin]]
+name = "migrate"
+path = "src/migrate.rs"
+
 # [[bin]]
 # name = "authorise"
 # path = "src/authoriser.rs"
