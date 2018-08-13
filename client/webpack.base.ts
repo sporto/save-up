@@ -11,6 +11,7 @@ const ENTRY_ADMIN = "admin"
 const ENTRY_INVESTOR = "investor"
 const ENTRY_SIGN_IN = "sign-in"
 const ENTRY_SIGN_UP = "sign-up"
+const ENTRY_GRAPHIQL = "graphiql"
 const COMMON = "common"
 const STYLES = "styles"
 const ASSETS_PATH = "/app"
@@ -20,6 +21,7 @@ invariant(API_HOST, "API_HOST must be defined")
 
 let baseConfig: webpack.Configuration = {
 	entry: {
+		[ENTRY_GRAPHIQL]: "./src/graphiql.ts",
 		[ENTRY_SIGN_IN]: "./src/signIn.ts",
 		[ENTRY_SIGN_UP]: "./src/signUp.ts",
 		[ENTRY_ADMIN]: "./src/admin.ts",
@@ -96,27 +98,33 @@ let baseConfig: webpack.Configuration = {
 			filename: DEV_MODE ? "[name].css" :  "[name].[hash].css",
 		}),
 		new HtmlWebpackPlugin({
+			chunks: [COMMON, ENTRY_GRAPHIQL],
+			title: "Sign In",
+			filename: ENTRY_GRAPHIQL + "/index.html",
+			template: "src/graphiql.html",
+		}),
+		new HtmlWebpackPlugin({
 			chunks: [COMMON, ENTRY_SIGN_IN],
 			title: "Sign In",
-			filename: "sign-in/index.html",
+			filename: ENTRY_SIGN_IN + "/index.html",
 			template: "src/application.html",
 		}),
 		new HtmlWebpackPlugin({
 			chunks: [COMMON, ENTRY_SIGN_UP],
 			title: "Sign Ip",
-			filename: "sign-up/index.html",
+			filename: ENTRY_SIGN_UP + "/index.html",
 			template: "src/application.html",
 		}),
 		new HtmlWebpackPlugin({
 			chunks: [COMMON, ENTRY_ADMIN],
 			title: "Admin",
-			filename: "admin/index.html",
+			filename: ENTRY_ADMIN + "/index.html",
 			template: "src/application.html",
 		}),
 		new HtmlWebpackPlugin({
 			chunks: [COMMON, ENTRY_INVESTOR],
 			title: "Investor",
-			filename: "investor/index.html",
+			filename: ENTRY_INVESTOR + "/index.html",
 			template: "src/application.html",
 		}),
 	],
