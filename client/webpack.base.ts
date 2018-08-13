@@ -54,7 +54,7 @@ let baseConfig: webpack.Configuration = {
 				use: {
 					loader: "ts-loader",
 					options: {
-						// logInfoToStdOut: true,
+						// allowTsInNodeModules: false,
 					},
 				},
 			},

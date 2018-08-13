@@ -8,17 +8,16 @@ export function newSessionWithToken(token: string): void {
 }
 
 export function redirectToEntry(token: string): void {
-	tokens.decodeToken(token)
-		.map(
-			decoded => window.location.href = getEntryUrlForToken(decoded)
-		)
+	let tokenData = tokens.decodeToken(token)
+
+	window.location.href = getEntryUrlForTokenData(tokenData)
 }
 
 export function redirectToSignIn() {
 	window.location.href = SIGN_IN_PATH
 }
 
-export function getEntryUrlForToken(tokenData: TokenData): string {
+export function getEntryUrlForTokenData(tokenData: TokenData): string {
 	return tokenData.role == "admin"
 		? "/app/admin"
 		: "/app/investor"
@@ -37,7 +36,7 @@ export function proceedIfSignedIn(callback: (tokenAndData: TokenAndData) => void
 			}
 		)
 }
-
+	
 export function proceedIfSignedOut(callback: () => void): void {
 	let maybeToken = tokens.getToken()
 
