@@ -1,10 +1,12 @@
 use diesel::pg::PgConnection;
+use failure::Error;
 use models::invitations::{Invitation, InvitationAttrs};
 use models::users::{User, ROLE_INVESTOR};
+use services::invitations;
 use uuid::Uuid;
 use validator::Validate;
 
-pub fn call(conn: &PgConnection, user: &User, email: &str) -> Result<Invitation, String> {
+pub fn call(conn: &PgConnection, user: &User, email: &str) -> Result<Invitation, Error> {
 	let token = Uuid::new_v4();
 
 	let invitation_attrs = InvitationAttrs {
@@ -15,9 +17,14 @@ pub fn call(conn: &PgConnection, user: &User, email: &str) -> Result<Invitation,
 		used_at: None,
 	};
 
-	invitation_attrs.validate().map_err(|e| e.to_string())?;
+	invitation_attrs
+		.validate()
+		.map_err(|e| format_err!("{}", e.to_string()))?;
 
-	let invitation = Invitation::create(conn, invitation_attrs).map_err(|e| e.to_string())?;
+	let invitation =
+		Invitation::create(conn, invitation_attrs).map_err(|e| format_err!("{}", e.to_string()))?;
+
+	invitations::send_email::call(&user, &invitation)?;
 
 	Ok(invitation)
 }
