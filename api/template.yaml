@@ -81,6 +81,27 @@ Resources:
                         Path: /graphql
                         Method: post
 
+    GraphQlPrivFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: bin/
+            Handler: migrate
+            Runtime: go1.x
+            FunctionName: KicMigrate
+            Description: "KIC GraphQl DB migrate"
+            Environment:
+                Variables:
+                    API_SECRET:
+                    DATABASE_URL:
+                    SYSTEM_JWT:
+            Events:
+                GraphQl:
+                    Type: Api
+                    Properties:
+                        Path: /migrate
+                        Method: post
+
+
 
 Outputs:
 
