@@ -1,6 +1,9 @@
-use bcrypt::{hash, DEFAULT_COST};
+use libreauth::pass::HashBuilder;
 
 pub fn call(password: &str) -> Result<String, String> {
-	hash(&password, DEFAULT_COST)
-		.map_err(|e| e.to_string())
+	let hasher = HashBuilder::new().finalize()
+		.map_err(|_| "Failed to create hasher".to_owned())?;
+
+	hasher.hash(&password.to_owned())
+		.map_err(|_| "Failed to encrypt password".to_owned())
 }

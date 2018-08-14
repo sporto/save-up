@@ -1,7 +1,7 @@
-use bcrypt::verify;
 use diesel::pg::PgConnection;
 use models::sign_ins::SignIn;
 use models::users::User;
+use services;
 
 pub fn call(conn: &PgConnection, sign_in: SignIn) -> Result<User, String> {
 	let user = User::find_by_email(conn, &sign_in.email)
@@ -9,7 +9,7 @@ pub fn call(conn: &PgConnection, sign_in: SignIn) -> Result<User, String> {
 
 	let invalid = "Invalid email or password".to_owned();
 
-	let valid = verify(&sign_in.password, &user.password_hash)
+	let valid = services::passwords::verify::call(&sign_in.password, &user.password_hash)
 		.map_err(|_| invalid.clone())?;
 
 	if valid {
