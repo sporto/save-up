@@ -1,5 +1,7 @@
+// @ts-ignore
 import * as mjml2html from "mjml"
 import * as nunjucks from "nunjucks"
+import * as path from "path"
 
 let data = {
 	name: "Sam",
@@ -19,7 +21,8 @@ var template  = `
 </mjml>
 `
 
-var res = nunjucks.renderString(template, data);
+let tem = path.join(__dirname, "templates", "invite.mjml")
+var res = nunjucks.render(tem, data);
 
 console.log(res)
 
