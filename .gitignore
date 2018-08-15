@@ -4,3 +4,4 @@ deps/
 .envrc
 netlify/
 packaged.yaml
+node_modules/
