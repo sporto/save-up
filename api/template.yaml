@@ -108,6 +108,7 @@ Resources:
             CodeUri: mail/
             Handler: app.handler
             Runtime: nodejs8.10
+            Timeout: 10
             Environment:
                 Variables:
                     PARAM1: VALUE
