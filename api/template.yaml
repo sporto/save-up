@@ -102,6 +102,21 @@ Resources:
                         Method: post
 
 
+    Mail:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: mail/src/
+            Handler: app.lambda_handler
+            Runtime: nodejs8.10
+            Environment:
+                Variables:
+                    PARAM1: VALUE
+            Events:
+                Mail:
+                    Type: Api
+                    Properties:
+                        Path: /mail
+                        Method: get
 
 Outputs:
 

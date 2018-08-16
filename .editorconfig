@@ -12,6 +12,9 @@ indent_size = 2
 indent_style = tab
 indent_size = 4
 
+[Makefile]
+indent_style = tab
+
 [*.rs]
 indent_style = tab
 indent_size = 4
@@ -32,5 +35,7 @@ indent_size = 4
 indent_style = tab
 indent_size = 4
 
-[Makefile]
+[*.mjml]
 indent_style = tab
+indent_size = 4
+

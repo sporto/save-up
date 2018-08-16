@@ -1,14 +1,14 @@
 <mjml>
-  <mj-body>
-    <mj-section>
-      <mj-column>
+	<mj-body>
+		<mj-section>
+			<mj-column>
 
-        <mj-text font-size="20px" font-family="helvetica">
-          Hello, {{name}} wants to invite you to KicInv.co.
-          Click here to sign up.
-        </mj-text>
+				<mj-text font-size="20px" font-family="helvetica">
+					Hello, {{name}} wants to invite you to KicInv.co.
+					Click here to sign up.
+				</mj-text>
 
-      </mj-column>
-    </mj-section>
-  </mj-body>
+			</mj-column>
+		</mj-section>
+	</mj-body>
 </mjml>

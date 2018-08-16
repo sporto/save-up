@@ -16,6 +16,9 @@ try:
 		--data '{"query": "{__schema{types{name}}}", "variables": {}, "operationName": null}' \
 		http://127.0.0.1:4010/graphql
 
+try-mail:
+	sam local invoke "Mail" --event fixtures/mail-event.json
+
 invoke-migration:
 	curl \
 		--request POST \

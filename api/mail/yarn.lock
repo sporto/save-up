@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+"@types/aws-lambda@^8.10.11":
+  version "8.10.11"
+  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.11.tgz#2c51a7dacb1abf880d35778aca68ed1075d0b300"
+
 "@types/mjml@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/mjml/-/mjml-4.0.0.tgz#c22d7a6fbaf471356d3089073a4656cea22a662e"
