@@ -3,7 +3,7 @@ import * as mjml2html from "mjml"
 import * as nunjucks from "nunjucks"
 import * as path from "path"
 
-exports.lambda_handler = async (event: AWSLambda.APIGatewayEvent, context: AWSLambda.Context, callback: AWSLambda.Callback) => {
+exports.handler = async (event: AWSLambda.APIGatewayEvent, context: AWSLambda.Context, callback: AWSLambda.Callback) => {
 	let data = {
 		name: "Sam",
 	}

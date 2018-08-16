@@ -105,8 +105,8 @@ Resources:
     Mail:
         Type: AWS::Serverless::Function
         Properties:
-            CodeUri: mail/src/
-            Handler: app.lambda_handler
+            CodeUri: mail/
+            Handler: app.handler
             Runtime: nodejs8.10
             Environment:
                 Variables:
