@@ -111,7 +111,7 @@ Resources:
             Timeout: 10
             Environment:
                 Variables:
-                    PARAM1: VALUE
+                    SYSTEM_EMAIL: VALUE
             Events:
                 Mail:
                     Type: Api
