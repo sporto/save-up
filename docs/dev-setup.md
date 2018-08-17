@@ -11,6 +11,7 @@ The following tools are required:
 - Elm
 - Rust + Cargo
 - Guttenberg for the static site https://www.getgutenberg.io
+- Netlify CLI https://github.com/netlify/netlifyctl/blob/master/README.md
 
 For deployment
 ==============

@@ -21,3 +21,6 @@ start:
 
 open-stats:
   yarn webpack-bundle-analyzer dist/app/stats.json
+
+
+
