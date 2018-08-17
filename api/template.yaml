@@ -16,6 +16,10 @@ Globals:
             AllowHeaders: "'*'"
             AllowOrigin: "'*'"
 
+Parameters:
+    SystemEmail:
+        Type: 'AWS::SSM::Parameter::Value<String>'
+        Default: kic.prod.system-email
 
 Resources:
 
@@ -111,7 +115,7 @@ Resources:
             Timeout: 10
             Environment:
                 Variables:
-                    SYSTEM_EMAIL: kic.prod.system-email
+                    SYSTEM_EMAIL: !Ref SystemEmail
             Events:
                 Mail:
                     Type: Api
