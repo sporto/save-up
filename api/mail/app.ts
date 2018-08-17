@@ -26,7 +26,7 @@ exports.handler = (event: AWSLambda.APIGatewayEvent, context: AWSLambda.Context,
 				},
 			},
 		},
-		Source: "hello@kidsinv.co"
+		Source: process.env.SYSTEM_EMAIL || "",
 	}
 
 	console.log("Sending")

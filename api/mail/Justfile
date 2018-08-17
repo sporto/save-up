@@ -1,2 +1,2 @@
 build:
-	tsc -p ./
+	yarn tsc -p ./
