@@ -111,7 +111,7 @@ Resources:
             Timeout: 10
             Environment:
                 Variables:
-                    SYSTEM_EMAIL: VALUE
+                    SYSTEM_EMAIL: kic.prod.system-email
             Events:
                 Mail:
                     Type: Api
