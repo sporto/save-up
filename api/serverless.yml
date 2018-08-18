@@ -62,29 +62,30 @@ plugins:
   - serverless-sam
 
 package:
+  individually: true
   exclude:
     - ./**
-  include:
-    - ./bin/**
 
 functions:
   hello:
     runtime: go1.x
-    handler: bin/hello
+    handler: bin/hello/hello
     package:
-        include:
-          - ./bin/hello/**
+      exclude:
+        - ./**
+      include:
+        - ./bin/hello/**
     events:
       - http:
           path: hello
           method: get
   migrate:
     runtime: go1.x
-    handler: bin/migrate
+    handler: bin/migrate/migrate
     timeout: 10
     package:
-        include:
-          - ./bin/migrate/**
+      include:
+        - ./bin/migrate/**
     events:
       - http:
           path: migrate

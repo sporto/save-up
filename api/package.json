@@ -1,5 +1,6 @@
 {
   "devDependencies": {
-    "serverless-sam": "^0.1.0"
+    "serverless-sam": "^0.1.0",
+    "serverless-webpack": "^5.2.0"
   }
 }
