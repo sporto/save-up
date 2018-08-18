@@ -1,147 +1,231 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-    KIC
+  KIC
 
 
 Globals:
-    Function:
-        Timeout: 3
+  Function:
+    Timeout: 3
 
-    Api:
-        # enable CORS; to make more specific, change the origin wildcard
-        # to a particular domain name, e.g. "'www.example.com'"
-        Cors:
-            AllowMethods: "'*'"
-            AllowHeaders: "'*'"
-            AllowOrigin: "'*'"
+  Api:
+    # enable CORS; to make more specific, change the origin wildcard
+    # to a particular domain name, e.g. "'www.example.com'"
+    Cors:
+      AllowMethods: "'*'"
+      AllowHeaders: "'*'"
+      AllowOrigin: "'*'"
 
 Parameters:
-    ApiSecret:
-        Type: 'AWS::SSM::Parameter::Value<String>'
-        Default: kic.prod.api-secret
-    DatabaseUrl:
-        Type: 'AWS::SSM::Parameter::Value<String>'
-        Default: kic.prod.db-url
-    SystemEmail:
-        Type: 'AWS::SSM::Parameter::Value<String>'
-        Default: kic.prod.system-email
-    SystemJWT:
-        Type: 'AWS::SSM::Parameter::Value<String>'
-        Default: kic.prod.system-jwt
+  ApiSecret:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: kic.prod.api-secret
+  DatabaseUrl:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: kic.prod.db-url
+  SystemEmail:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: kic.prod.system-email
+  SystemJWT:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: kic.prod.system-jwt
 
 Resources:
 
-    resLambdaLocalCorsStub:
-        Type: AWS::Serverless::Function
-        Properties:
-            Handler: corsOptions.handler
-            Runtime: nodejs6.10
-            FunctionName: !Sub "${paramEnvironment}${paramFeatureBranch}_${paramServiceName}_corsOptions"
-            CodeUri: cors
-            Timeout: 30
-            Events:
-                optionsForGraphQlPub:
-                    Type: Api
-                    Properties:
-                        RestApiId: !Ref GraphQlPubFunction
-                        Path: /graphql-pub
-                        Method: OPTIONS
-                optionsForGraphQlPriv:
-                    Type: Api
-                    Properties:
-                        RestApiId: !Ref GraphQlPrivFunction
-                        Path: /graphql
-                        Method: OPTIONS
+  # resLambdaLocalCorsStub:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Handler: corsOptions.handler
+  #     Runtime: nodejs6.10
+  #     FunctionName: !Sub "${paramEnvironment}${paramFeatureBranch}_${paramServiceName}_corsOptions"
+  #     CodeUri: cors
+  #     Timeout: 30
+  #     Events:
+  #       optionsForGraphQlPub:
+  #         Type: Api
+  #         Properties:
+  #           RestApiId: !Ref KicApi
+  #           Path: /graphql-pub
+  #           Method: OPTIONS
+  #       optionsForGraphQlPriv:
+  #         Type: Api
+  #         Properties:
+  #           RestApiId: !Ref KicApi
+  #           Path: /graphql
+  #           Method: OPTIONS
 
-    GraphQlPubFunction:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: bin/
-            Handler: graphql
-            Runtime: go1.x
-            FunctionName: KicGraphQl
-            Description: "KIC GraphQl Public Server"
-            Environment:
-                Variables:
-                    API_SECRET: !Ref ApiSecret
-                    DATABASE_URL: !Ref DatabaseUrl
-                    SYSTEM_JWT: !Ref SystemJWT
-            Events:
-                GraphQl:
-                    Type: Api
-                    Properties:
-                        Path: /graphql-pub
-                        Method: post
-
-    GraphQlPrivFunction:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: bin/
-            Handler: graphql
-            Runtime: go1.x
-            FunctionName: KicGraphQl
-            Description: "KIC GraphQl Private Server"
-            Environment:
-                Variables:
-                    API_SECRET: !Ref ApiSecret
-                    DATABASE_URL: !Ref DatabaseUrl
-                    SYSTEM_JWT: !Ref SystemJWT
-            Events:
-                GraphQl:
-                    Type: Api
-                    Properties:
-                        Path: /graphql
-                        Method: post
+  GraphQlPubFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: bin/
+      Handler: graphql
+      Runtime: go1.x
+      FunctionName: KicGraphQl
+      Description: "KIC GraphQl Public Server"
+      Environment:
+        Variables:
+          API_SECRET: !Ref ApiSecret
+          DATABASE_URL: !Ref DatabaseUrl
+          SYSTEM_JWT: !Ref SystemJWT
+      Events:
+        GraphQl:
+          Type: Api
+          Properties:
+            # RestApiId: !Ref KicApi
+            Path: /graphql-pub
+            Method: post
 
     GraphQlPrivFunction:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: bin/
-            Handler: migrate
-            Runtime: go1.x
-            FunctionName: KicMigrate
-            Description: "KIC GraphQl DB migrate"
-            Environment:
-                Variables:
-                    API_SECRET: !Ref ApiSecret
-                    DATABASE_URL: !Ref DatabaseUrl
-                    SYSTEM_JWT: !Ref SystemJWT
-            Events:
-                GraphQl:
-                    Type: Api
-                    Properties:
-                        Path: /migrate
-                        Method: post
+      Type: AWS::Serverless::Function
+      Properties:
+        CodeUri: bin/
+        Handler: graphql
+        Runtime: go1.x
+        FunctionName: KicGraphQl
+        Description: "KIC GraphQl Private Server"
+        Environment:
+          Variables:
+            API_SECRET: !Ref ApiSecret
+            DATABASE_URL: !Ref DatabaseUrl
+            SYSTEM_JWT: !Ref SystemJWT
+        Events:
+          GraphQl:
+            Type: Api
+            Properties:
+              # RestApiId: !Ref KicApi
+              Path: /graphql
+              Method: post
+
+  GraphQlPrivFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: bin/
+      Handler: migrate
+      Runtime: go1.x
+      FunctionName: KicMigrate
+      Description: "KIC GraphQl DB migrate"
+      Environment:
+        Variables:
+          API_SECRET: !Ref ApiSecret
+          DATABASE_URL: !Ref DatabaseUrl
+          SYSTEM_JWT: !Ref SystemJWT
+      Events:
+        GraphQl:
+          Type: Api
+          Properties:
+            # RestApiId: !Ref KicApi
+            Path: /migrate
+            Method: post
+
+  # KicApi:
+  #   Type: 'AWS::Serverless::Api'
+  #   Properties:
+  #     StageName: dev
+  #     DefinitionBody:
+  #       swagger: '2.0'
+  #       info:
+  #       version: '1.0'
+  #       schemes:
+  #         - 'https'
+  #       produces:
+  #         - 'application/json'
+  #       paths:
+  #         /graphql:
+  #             options:
+  #                 x-amazon-apigateway-integration:
+  #                     type: mock
+  #                     requestTemplates:
+  #                     application/json: '{ "statusCode" : 200 }'
+  #                     httpMethod: OPTIONS
+  #                     responses:
+  #                     default:
+  #                         statusCode: 200
+  #                         responseParameters:
+  #                             method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+  #                             method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+  #                             method.response.header.Access-Control-Allow-Origin: "'*'"
+  #                         responseTemplates:
+  #                             application/json: '{}'
+  #                 responses:
+  #                     '200':
+  #                     headers:
+  #                         Access-Control-Allow-Headers:
+  #                         type: string
+  #                         Access-Control-Allow-Methods:
+  #                         type: string
+  #                         Access-Control-Allow-Origin:
+  #                         type: string
+  #             post:
+  #                 summary: 'GraphQL'
+  #                 description: 'For Login Page'
+  #                 parameters:
+  #                     - name: 'user'
+  #                         in: 'body'
+  #                         description: 'The person to log in.'
+  #                         schema:
+  #                             required:
+  #                             - 'email'
+  #                             - 'password'
+  #                             properties:
+  #                             email:
+  #                                 type: 'string'
+  #                             password:
+  #                                 type: 'string'
+  #                 x-amazon-apigateway-integration:
+  #                     httpMethod: POST
+  #                     type: aws_proxy
+  #                     uri:
+  #                     'Fn::Sub': >-
+  #                         arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Login.Arn}/invocations
+  #                     responses:
+  #                     default:
+  #                         statusCode: 200
+  #                         responseParameters:
+  #                         method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+  #                         method.response.header.Access-Control-Allow-Methods: "'post'"
+  #                         method.response.header.Access-Control-Allow-Origin: "'*'"
+  #                         responseTemplates:
+  #                         application/json: '{}'
+  #                 responses:
+  #                     '200':
+  #                     headers:
+  #                         Access-Control-Allow-Headers:
+  #                         type: string
+  #                         Access-Control-Allow-Methods:
+  #                         type: string
+  #                         Access-Control-Allow-Origin:
+  #                         type: string
+  #                     400:
+  #                     description: 'Something went wrong'
 
 
-    Mail:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: mail/
-            Handler: app.handler
-            Runtime: nodejs8.10
-            Timeout: 10
-            Environment:
-                Variables:
-                    SYSTEM_EMAIL: !Ref SystemEmail
-            Events:
-                Mail:
-                    Type: Api
-                    Properties:
-                        Path: /mail
-                        Method: get
+    # Mail:
+    #     Type: AWS::Serverless::Function
+    #     Properties:
+    #         CodeUri: mail/
+    #         Handler: app.handler
+    #         Runtime: nodejs8.10
+    #         Timeout: 10
+    #         Environment:
+    #             Variables:
+    #                 SYSTEM_EMAIL: !Ref SystemEmail
+    #         Events:
+    #             Mail:
+    #                 Type: Api
+    #                 Properties:
+    #                     Path: /mail
+    #                     Method: get
 
 Outputs:
 
-    KicGraphQlApi:
-        Description: "API Gateway endpoint URL for Prod stage for KIC GraphQl function"
-        Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/graphql/"
+  KicGraphQlApi:
+    Description: "API Gateway endpoint URL for Prod stage for KIC GraphQl function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/graphql/"
 
-    KicGraphQlFunction:
-        Description: "KIC GraphQl Lambda Function ARN"
-        Value: !GetAtt KicGraphQlFunction.Arn
+  KicGraphQlFunction:
+    Description: "KIC GraphQl Lambda Function ARN"
+    Value: !GetAtt KicGraphQlFunction.Arn
 
-    KicGraphQlFunctionIamRole:
-        Description: "Implicit IAM Role created for KIC GraphQl function"
-        Value: !GetAtt KicGraphQlFunctionRole.Arn
+  KicGraphQlFunctionIamRole:
+    Description: "Implicit IAM Role created for KIC GraphQl function"
+    Value: !GetAtt KicGraphQlFunctionRole.Arn
