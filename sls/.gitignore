@@ -1,0 +1,6 @@
+# Serverless directories
+.serverless
+target/
+
+# output binary directory
+bin
