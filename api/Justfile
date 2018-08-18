@@ -5,9 +5,12 @@ start:
 	DATABASE_URL=$DATABASE_URL sam local start-api -p 4010 --skip-pull-image
 
 build:
+	just hello/build
 	just graphql/build
 
-# cp target/x86_64-unknown-linux-musl/release/authorise bin/
+# Generate SAM template.yml, so we can test this locally
+gen-sam:
+	sls sam export --output ./template.yml
 
 try:
 	curl \
