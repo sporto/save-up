@@ -27,8 +27,8 @@ provider:
   apiName: kic-api
 
 # you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
+stage: staging
+region: ap-southeast-2
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -46,9 +46,17 @@ provider:
 #            - "Ref" : "ServerlessDeploymentBucket"
 #            - "/*"
 
+custom:
+  dbUserName: ${ssm:kic.prod.db-user}
+  dbPassword: ${ssm:kic.prod.db-pass}
+
 # you can define service wide environment variables here
-#  environment:
-#    variable1: value1
+environment:
+  DATABASE_URL: postgresql://kic_postgraphql:${self:custom.dbUserName}@pgEndpoint:5432/kic
+  SYSTEM_JWT: ${ssm:kic.prod.system-jwt}
+
+plugins:
+  - serverless-sam
 
 package:
  exclude:
@@ -64,9 +72,15 @@ functions:
       - http:
           path: hello
           method: get
+    migrate:
+      runtime: go1.x
+      handler: bin/migrate
+      events:
+        - http:
+            path: migrate
+            method: post
 
-plugins:
-  - serverless-sam
+
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
@@ -102,14 +116,37 @@ plugins:
 #    environment:
 #      variable2: value2
 
-# you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"
+resources:
+  Resources:
+    pgSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: Acess to DB
+        SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '5432'
+          ToPort: '5432'
+          CidrIp: 0.0.0.0/0
+
+    pgDB:
+      Type: "AWS::RDS::DBInstance"
+      Properties:
+        DBName: "kic"
+        AllocatedStorage: 5
+        DBInstanceClass: "db.t2.micro"
+        Engine: "postgres"
+        EngineVersion: "10.5"
+        MasterUsername: ${self:custom.dbUserName}
+        MasterUserPassword: ${self:custom.dbPassword}
+        VPCSecurityGroups:
+        - Fn::GetAtt:
+          - pgSecurityGroup
+          - GroupId
+      DeletionPolicy: "Snapshot"
+  Outputs:
+      pgEndpoint:
+        Description: "Connection string for database"
+        Value:
+          Fn::GetAtt:
+            - pgDB
+            - Endpoint.Address
