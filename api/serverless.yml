@@ -50,13 +50,18 @@ provider:
 #            - "/*"
 
 custom:
+  apiSecret: ${ssm:/kic/prod/api-secret}
   dbUserName: ${ssm:/kic/prod/db-user}
   dbPassword: ${ssm:/kic/prod/db-pass}
+  systemEmail: ${ssm:/kic/prod/system-email}
+  systemJWT: ${ssm:/kic/prod/system-jwt}
 
 # you can define service wide environment variables here
 environment:
+  API_SECRET: ${self.custom.apiSecret}
   DATABASE_URL: postgresql://kic_postgraphql:${self:custom.dbUserName}@pgEndpoint:5432/kic
-  SYSTEM_JWT: ${ssm:kic.prod.system-jwt}
+  SYSTEM_EMAIL: ${self.custom.systemEmail}
+  SYSTEM_JWT: ${self.custom.systemJWT}
 
 plugins:
   - serverless-sam
