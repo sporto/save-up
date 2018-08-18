@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "serverless-sam": "^0.1.0"
+  }
+}

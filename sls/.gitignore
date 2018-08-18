@@ -4,3 +4,4 @@ target/
 
 # output binary directory
 bin
+sam.yml

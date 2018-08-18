@@ -1,0 +1,2 @@
+gen-sam:
+	sls sam export --output ./sam.yml
