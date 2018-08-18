@@ -17,9 +17,18 @@ Globals:
             AllowOrigin: "'*'"
 
 Parameters:
+    ApiSecret:
+        Type: 'AWS::SSM::Parameter::Value<String>'
+        Default: kic.prod.api-secret
+    DatabaseUrl:
+        Type: 'AWS::SSM::Parameter::Value<String>'
+        Default: kic.prod.db-url
     SystemEmail:
         Type: 'AWS::SSM::Parameter::Value<String>'
         Default: kic.prod.system-email
+    SystemJWT:
+        Type: 'AWS::SSM::Parameter::Value<String>'
+        Default: kic.prod.system-jwt
 
 Resources:
 
@@ -55,9 +64,9 @@ Resources:
             Description: "KIC GraphQl Public Server"
             Environment:
                 Variables:
-                    API_SECRET:
-                    DATABASE_URL:
-                    SYSTEM_JWT:
+                    API_SECRET: !Ref ApiSecret
+                    DATABASE_URL: !Ref DatabaseUrl
+                    SYSTEM_JWT: !Ref SystemJWT
             Events:
                 GraphQl:
                     Type: Api
@@ -75,9 +84,9 @@ Resources:
             Description: "KIC GraphQl Private Server"
             Environment:
                 Variables:
-                    API_SECRET:
-                    DATABASE_URL:
-                    SYSTEM_JWT:
+                    API_SECRET: !Ref ApiSecret
+                    DATABASE_URL: !Ref DatabaseUrl
+                    SYSTEM_JWT: !Ref SystemJWT
             Events:
                 GraphQl:
                     Type: Api
@@ -95,9 +104,9 @@ Resources:
             Description: "KIC GraphQl DB migrate"
             Environment:
                 Variables:
-                    API_SECRET:
-                    DATABASE_URL:
-                    SYSTEM_JWT:
+                    API_SECRET: !Ref ApiSecret
+                    DATABASE_URL: !Ref DatabaseUrl
+                    SYSTEM_JWT: !Ref SystemJWT
             Events:
                 GraphQl:
                     Type: Api
