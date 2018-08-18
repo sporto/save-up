@@ -1,2 +1,12 @@
 gen-sam:
 	sls sam export --output ./sam.yml
+
+
+sam-up:
+	sam local start-api --template sam.yml
+
+invoke:
+	sam local invoke "Hello" --event fixtures/empty.json --template sam.yml
+
+try-hello:
+	curl http://127.0.0.1:3000/hello
