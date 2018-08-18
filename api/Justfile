@@ -27,14 +27,17 @@ invoke-migration:
 		--request POST \
 		http://127.0.0.1:4010/migrate
 
-package:
-	sam package \
-		--template-file template.yaml \
-		--s3-bucket kic-api \
-		--output-template-file packaged.yaml
+# package:
+# 	sam package \
+# 		--template-file template.yaml \
+# 		--s3-bucket kic-api \
+# 		--output-template-file packaged.yaml
+
+# deploy:
+# 	sam deploy \
+# 		--template-file ./packaged.yaml \
+# 		--stack-name kic-api \
+# 		--capabilities CAPABILITY_IAM
 
 deploy:
-	sam deploy \
-		--template-file ./packaged.yaml \
-		--stack-name kic-api \
-		--capabilities CAPABILITY_IAM
+	sls deploy
