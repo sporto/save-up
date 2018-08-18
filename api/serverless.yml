@@ -28,6 +28,8 @@ provider:
   stackName: kic-api
   region: ap-southeast-2
   stage: staging
+  deploymentBucket:
+    name: kic-api.sls.${self:provider.stage}
 
 # you can overwrite defaults here
 
