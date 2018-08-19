@@ -1,7 +1,20 @@
-const slsw = require('serverless-webpack');
+const path = require("path")
+const slsw = require("serverless-webpack")
 
 module.exports = {
-	entry: slsw.lib.entries,
+	entry: {
+		mail: "./mail.app.ts",
+	},
+	resolve: {
+		extensions: [
+			".ts",
+		],
+	},
+	output: {
+		libraryTarget: "commonjs",
+		path: path.join(__dirname, ".webpack"),
+		filename: "[name].js"
+	},
 	target: "node",
 	module: {
 		rules: [
@@ -9,11 +22,8 @@ module.exports = {
 				test: /\.ts$/,
 				use: {
 					loader: "ts-loader",
-					options: {
-						// allowTsInNodeModules: false,
-					},
 				},
 			},
 		]
 	}
-};
+}
