@@ -34,6 +34,10 @@ provider:
     API_SECRET: ${ssm:/kic/prod/api-secret}
     DATABASE_URL:
       "Fn::Join": [":", ["Fn::GetAtt": [PgDB, Endpoint.Address], "Fn::GetAtt": [PgDB, Endpoint.Port]]]
+    DATABASE_END_POINT:
+      "Fn::Join": [":", ["Fn::GetAtt": [PgDB, Endpoint.Address], "Fn::GetAtt": [PgDB, Endpoint.Port]]]
+    DATABASE_USER: ${ssm:/kic/prod/db-user}
+    DATABASE_PASS: ${ssm:/kic/prod/db-pass}
     SYSTEM_EMAIL: ${ssm:/kic/prod/system-email}
     SYSTEM_JWT: ${ssm:/kic/prod/system-jwt}
 
