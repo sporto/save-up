@@ -101,13 +101,13 @@ functions:
       - http:
           path: migrate
           method: post
-  mail:
-    runtime: nodejs:8
-    handler: mail/app.handler
-    events:
-        - http:
-          path: mail
-          method: get
+  # mail:
+  #   runtime: nodejs:8
+  #   handler: mail/app.handler
+  #   events:
+  #       - http:
+  #         path: mail
+  #         method: get
 
 
 
