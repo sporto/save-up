@@ -1,9 +1,9 @@
 # Welcome to Serverless!
 #
 # This file is the main config file for your service.
-# It's very minimal at this point and uses default values.
+# It"s very minimal at this point and uses default values.
 # You can always add more config options for more control.
-# We've included some commented out config examples here.
+# We"ve included some commented out config examples here.
 # Just uncomment any of them to get that config option.
 #
 # For full config options, check the docs:
@@ -32,13 +32,14 @@ provider:
     name: kic-api
   environment:
     API_SECRET: ${ssm:/kic/prod/api-secret}
-    DATABASE_URL: postgres://kic_postgraphql:${self:custom.dbUserName}@pgEndpoint:5432/kic
+    DATABASE_URL:
+      "Fn::Join": [":", ["Fn::GetAtt": [PgDB, Endpoint.Address], "Fn::GetAtt": [PgDB, Endpoint.Port]]]
     SYSTEM_EMAIL: ${ssm:/kic/prod/system-email}
     SYSTEM_JWT: ${ssm:/kic/prod/system-jwt}
 
 # you can overwrite defaults here
 
-# you can add statements to the Lambda function's IAM Role here
+# you can add statements to the Lambda function"s IAM Role here
 #  iamRoleStatements:
 #    - Effect: "Allow"
 #      Action:
@@ -60,9 +61,14 @@ custom:
   dbPassword: ${ssm:/kic/prod/db-pass}
   systemEmail: ${ssm:/kic/prod/system-email}
   systemJWT: ${ssm:/kic/prod/system-jwt}
+  webpack:
+    webpackConfig: "webpack.config.js"
+    includeModules: false
+    packager: "npm"
 
 plugins:
   - serverless-sam
+  - serverless-webpack
 
 package:
   individually: true
@@ -111,7 +117,7 @@ functions:
 #      - alexaSkill: amzn1.ask.skill.xx-xx-xx-xx
 #      - alexaSmartHome: amzn1.ask.skill.xx-xx-xx-xx
 #      - iot:
-#          sql: "SELECT * FROM 'some_topic'"
+#          sql: "SELECT * FROM "some_topic""
 #      - cloudwatchEvent:
 #          event:
 #            source:
@@ -121,7 +127,7 @@ functions:
 #            detail:
 #              state:
 #                - pending
-#      - cloudwatchLog: '/aws/lambda/hello'
+#      - cloudwatchLog: "/aws/lambda/hello"
 #      - cognitoUserPool:
 #          pool: MyUserPool
 #          trigger: PreSignUp
@@ -132,17 +138,17 @@ functions:
 
 resources:
   Resources:
-    pgSecurityGroup:
+    PgSecurityGroup:
       Type: AWS::EC2::SecurityGroup
       Properties:
         GroupDescription: Acess to DB
         SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: '5432'
-          ToPort: '5432'
+          FromPort: "5432"
+          ToPort: "5432"
           CidrIp: 0.0.0.0/0
 
-    pgDB:
+    PgDB:
       Type: "AWS::RDS::DBInstance"
       Properties:
         DBName: "kic"
@@ -155,7 +161,7 @@ resources:
         MasterUserPassword: ${self:custom.dbPassword}
         VPCSecurityGroups:
         - Fn::GetAtt:
-          - pgSecurityGroup
+          - PgSecurityGroup
           - GroupId
       DeletionPolicy: "Snapshot"
   Outputs:
@@ -163,5 +169,5 @@ resources:
         Description: "Connection string for database"
         Value:
           Fn::GetAtt:
-            - pgDB
+            - PgDB
             - Endpoint.Address
