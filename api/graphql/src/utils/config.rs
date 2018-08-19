@@ -24,16 +24,23 @@ pub fn app_env() -> AppEnv {
 }
 
 pub fn get() -> Result<Config, Error> {
-	let database_env_var = match app_env() {
-		AppEnv::Dev => "DATABASE_URL",
-		AppEnv::Test => "DATABASE_URL_TEST",
-	};
+	// let database_env_var = match app_env() {
+	// 	AppEnv::Dev => "DATABASE_URL",
+	// 	AppEnv::Test => "DATABASE_URL_TEST",
+	// };
 
 	// let client_host = env::var("CLIENT_HOST")?;
 	let api_secret = env::var("API_SECRET")
 		.map_err(|_| format_err!("API_SECRET not found"))?;
 
-	let database_url = env::var(database_env_var)?;
+	let db_name = env::var("DATABASE_NAME")?;
+	let db_end_point = env::var("DATABASE_END_POINT")?;
+	let db_user = env::var("DATABASE_USER")?;
+	let db_pass = env::var("DATABASE_PASS")?;
+
+	// e.g. postgres://user:password@host:3333/db_name
+	let database_url =
+		format!("postgres://{}:{}@{}/{}", db_user, db_pass, db_end_point, db_name);
 
 	let system_jwt = env::var("SYSTEM_JWT")
 		.map_err(|_| format_err!("SYSTEM_JWT not found"))?;
