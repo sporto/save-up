@@ -33,14 +33,29 @@ provider:
   environment:
     API_SECRET: ${ssm:/kic/prod/api-secret}
     DATABASE_NAME: kic
-    DATABASE_URL:
-      "Fn::Join": [":", ["Fn::GetAtt": [PgDB, Endpoint.Address], "Fn::GetAtt": [PgDB, Endpoint.Port]]]
     DATABASE_END_POINT:
       "Fn::Join": [":", ["Fn::GetAtt": [PgDB, Endpoint.Address], "Fn::GetAtt": [PgDB, Endpoint.Port]]]
     DATABASE_USER: ${ssm:/kic/prod/db-user}
     DATABASE_PASS: ${ssm:/kic/prod/db-pass}
     SYSTEM_EMAIL: ${ssm:/kic/prod/system-email}
     SYSTEM_JWT: ${ssm:/kic/prod/system-jwt}
+
+    # DATABASE_URL:
+    #   "Fn::Join": [
+    #     "",
+    #     [
+    #       "postgres://",
+    #       ${ssm:/kic/prod/db-user},
+    #       ":",
+    #       ${ssm:/kic/prod/db-pass},
+    #       "@",
+    #       "Fn::GetAtt": [PgDB, Endpoint.Address],
+    #       ":",
+    #       "Fn::GetAtt": [PgDB, Endpoint.Port],
+    #       "/",
+    #       "Ref": DBName
+    #     ]
+    #   ]
 
 # you can overwrite defaults here
 
