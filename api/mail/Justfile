@@ -1,0 +1,10 @@
+build:
+	docker run \
+		--rm \
+		-it \
+		-v $PWD:/volume \
+		-v cargo-cache:/root/.cargo \
+		clux/muslrust:stable \
+		cargo build --release
+	mkdir -p ../bin/mail/
+	cp target/x86_64-unknown-linux-musl/release/mail ../bin/mail/

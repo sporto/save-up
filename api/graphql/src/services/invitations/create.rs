@@ -24,7 +24,8 @@ pub fn call(conn: &PgConnection, user: &User, email: &str) -> Result<Invitation,
 	let invitation =
 		Invitation::create(conn, invitation_attrs).map_err(|e| format_err!("{}", e.to_string()))?;
 
-	invitations::send_email::call(&user, &invitation)?;
+	// TODO send to the mail lambda
+	// invitations::send_email::call(&user, &invitation)?;
 
 	Ok(invitation)
 }

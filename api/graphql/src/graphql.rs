@@ -16,8 +16,6 @@ extern crate chrono_tz;
 extern crate chrono;
 extern crate jsonwebtoken as jwt;
 extern crate libreauth;
-extern crate rusoto_core;
-extern crate rusoto_ses;
 extern crate serde;
 extern crate uuid;
 extern crate validator;

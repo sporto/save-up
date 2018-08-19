@@ -1,15 +1,48 @@
+#[macro_use]
+extern crate failure;
+extern crate rusoto_core;
+extern crate rusoto_ses;
+extern crate aws_lambda as lambda;
+
+use lambda::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
 use rusoto_core::Region;
 use rusoto_ses::{SesClient,Ses,Destination,Message,SendEmailRequest, Body, Content};
 use std::default::Default;
 use std::time::Duration;
-use models::users::User;
-use models::invitations::Invitation;
 use failure::Error;
+use std::collections::HashMap;
 
-pub fn call(_user: &User, invitation: &Invitation) -> Result<(), Error> {
+fn main() {
+	lambda::start(|request: ApiGatewayProxyRequest| {
+		let body = "Hello".to_owned();
+		
+		let mut headers = HashMap::new();
+
+		headers
+			.insert(
+				"Content-Type".to_owned(),
+				"application/json".to_owned()
+			); 
+
+		let email = "sebasporto@gmail.com".to_string();
+		let invitation_token = "abc".to_owned();
+		send_email(&email, &invitation_token);
+
+		Ok(
+			ApiGatewayProxyResponse {
+				body: Some(body),
+				status_code: 200,
+				headers: headers,
+				is_base64_encoded: None,
+			}
+		)
+	})
+}
+
+pub fn send_email(email: &str, invitation_token: &str) -> Result<(), Error> {
 
 	let from = "hello@kidinv.co".to_owned();
-	let to = vec!(invitation.email.clone());
+	let to = vec!(email.clone().to_owned());
 	let subject = "You have been invited".to_owned();
 	let body_data = "You have been invited".to_owned();
 

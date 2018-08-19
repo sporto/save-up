@@ -1,7 +1,10 @@
 [package]
-name = "mail"
+name = "hello"
 version = "0.1.0"
 authors = ["Sebastian Porto <s@porto5.com>"]
 
 [dependencies]
 aws_lambda = { git = "https://github.com/srijs/rust-aws-lambda" }
+rusoto_core = "0.33"
+rusoto_ses = "0.33"
+failure = "0.1"
