@@ -32,7 +32,7 @@ provider:
     name: kic-api
   environment:
     API_SECRET: ${ssm:/kic/prod/api-secret}
-    DATABASE_URL: postgresql://kic_postgraphql:${self:custom.dbUserName}@pgEndpoint:5432/kic
+    DATABASE_URL: postgres://kic_postgraphql:${self:custom.dbUserName}@pgEndpoint:5432/kic
     SYSTEM_EMAIL: ${ssm:/kic/prod/system-email}
     SYSTEM_JWT: ${ssm:/kic/prod/system-jwt}
 
@@ -147,6 +147,7 @@ resources:
       Properties:
         DBName: "kic"
         AllocatedStorage: 5
+        DBInstanceIdentifier: "kic"
         DBInstanceClass: "db.t2.micro"
         Engine: "postgres"
         EngineVersion: "10.4"
