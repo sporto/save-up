@@ -3,6 +3,10 @@ extern crate failure;
 extern crate rusoto_core;
 extern crate rusoto_ses;
 extern crate aws_lambda as lambda;
+#[macro_use]
+extern crate tera;
+#[macro_use]
+extern crate lazy_static;
 
 use lambda::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
 use rusoto_core::Region;
@@ -11,6 +15,16 @@ use std::default::Default;
 use std::time::Duration;
 use failure::Error;
 use std::collections::HashMap;
+use tera::{Tera,Context};
+use std::env;
+
+lazy_static! {
+	pub static ref TERA: Tera = {
+		let mut tera = compile_templates!("templates/**/*");
+		tera.autoescape_on(vec!["mjml"]);
+		tera
+	};
+}
 
 fn main() {
 	lambda::start(|request: ApiGatewayProxyRequest| {
@@ -24,9 +38,10 @@ fn main() {
 				"application/json".to_owned()
 			); 
 
+		let inviter = "Sam".to_string();
 		let email = "sebasporto@gmail.com".to_string();
 		let invitation_token = "abc".to_owned();
-		send_email(&email, &invitation_token);
+		send_email(&inviter, &email, &invitation_token);
 
 		Ok(
 			ApiGatewayProxyResponse {
@@ -39,12 +54,21 @@ fn main() {
 	})
 }
 
-pub fn send_email(email: &str, invitation_token: &str) -> Result<(), Error> {
+pub fn send_email(inviter: &str, email: &str, invitation_token: &str) -> Result<(), Error> {
 
-	let from = "hello@kidinv.co".to_owned();
+	let system_email = env::var("SYSTEM_EMAIL")
+		.map_err(|_| format_err!("SYSTEM_EMAIL not found"))?;
+
+	let mut context = Context::new();
+	context.add("inviter", &inviter);
+	context.add("invitation_token", &invitation_token);
+
+	let from = system_email.to_owned();
 	let to = vec!(email.clone().to_owned());
 	let subject = "You have been invited".to_owned();
-	let body_data = "You have been invited".to_owned();
+
+	let body_data = TERA.render("invite.html", &context)
+		.map_err(|_| format_err!("Failed to render"))?;
 
 	let client = SesClient::new(Region::ApSoutheast1);
 

@@ -101,13 +101,17 @@ functions:
       - http:
           path: migrate
           method: post
-  # mail:
-  #   runtime: nodejs:8
-  #   handler: mail/app.handler
-  #   events:
-  #       - http:
-  #         path: mail
-  #         method: get
+  mail:
+    runtime: go1.x
+    handler: bin/mail/mail
+    timeout: 10
+    package:
+      include:
+        - ./bin/mail/**
+    events:
+        - http:
+          path: mail
+          method: post
 
 
 
