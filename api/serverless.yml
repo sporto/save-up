@@ -70,7 +70,6 @@ custom:
 
 plugins:
   - serverless-sam
-  - serverless-webpack
 
 package:
   individually: true
