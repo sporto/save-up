@@ -8,7 +8,7 @@ extern crate tera;
 #[macro_use]
 extern crate lazy_static;
 
-use lambda::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
+use lambda::event::sns::{SnsEvent};
 use rusoto_core::Region;
 use rusoto_ses::{SesClient,Ses,Destination,Message,SendEmailRequest, Body, Content};
 use std::default::Default;
@@ -26,10 +26,14 @@ lazy_static! {
 	};
 }
 
+// https://github.com/srijs/rust-aws-lambda/blob/88904328b9f6a6ad016645a73a7acb41c08000cd/aws_lambda_events/src/generated/fixtures/example-sns-event.json
+// https://github.com/srijs/rust-aws-lambda/blob/739e46049651576e366fadd9073c2e269d11baa2/aws_lambda_events/src/generated/sns.rs
 fn main() {
-	lambda::start(|request: ApiGatewayProxyRequest| {
-		let body = "Hello".to_owned();
-		
+	lambda::start(|event: SnsEvent| {
+		let task = get_task(&event)?;
+
+		let body = "Done".to_owned();
+
 		let mut headers = HashMap::new();
 
 		headers
@@ -41,20 +45,44 @@ fn main() {
 		let inviter = "Sam".to_string();
 		let email = "sebasporto@gmail.com".to_string();
 		let invitation_token = "abc".to_owned();
-		send_email(&inviter, &email, &invitation_token);
 
-		Ok(
-			ApiGatewayProxyResponse {
-				body: Some(body),
-				status_code: 200,
-				headers: headers,
-				is_base64_encoded: None,
-			}
-		)
+		send_email(&inviter, &email, &invitation_token)?;
+
+		// Ok(
+		// 	ApiGatewayProxyResponse {
+		// 		body: Some(body),
+		// 		status_code: 200,
+		// 		headers: headers,
+		// 		is_base64_encoded: None,
+		// 	}
+		// )
+		Ok("Foo")
 	})
 }
 
-pub fn send_email(inviter: &str, email: &str, invitation_token: &str) -> Result<(), Error> {
+enum Task {
+	Invite { inviter: String, email: String, invitation_token: String }
+}
+
+fn get_task(event: &SnsEvent) -> Result<Task, Error> {
+	let record = event.records.first()
+		.ok_or(format_err!("Failed to get first record"))?;
+
+	Ok(Task::Invite{
+		inviter: "Sam".to_string(),
+		email: "sebasporto@gmail.com".to_string(),
+		invitation_token: "abc".to_owned(),
+	})
+}
+
+// pub fn get_record(event: &SnsEvent) -> Result<SnsEventRecord, Error> {
+// 	match events.records {
+// 		[] => Err(format_err!("No record found")),
+// 		r::xx => Ok(r),
+// 	}
+// }
+
+fn send_email(inviter: &str, email: &str, invitation_token: &str) -> Result<(), Error> {
 
 	let system_email = env::var("SYSTEM_EMAIL")
 		.map_err(|_| format_err!("SYSTEM_EMAIL not found"))?;
