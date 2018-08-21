@@ -58,7 +58,6 @@ fn main() {
 }
 
 #[derive(Debug,PartialEq,Deserialize)]
-#[serde(tag = "type")]
 enum Task {
 	Invite {
 		inviter: String,
