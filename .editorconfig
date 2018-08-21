@@ -35,6 +35,10 @@ indent_size = 4
 indent_style = tab
 indent_size = 4
 
+[*.json]
+indent_style = tab
+indent_size = 4
+
 [*.mjml]
 indent_style = tab
 indent_size = 4

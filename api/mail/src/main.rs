@@ -1,22 +1,27 @@
 #[macro_use]
 extern crate failure;
+extern crate aws_lambda as lambda;
 extern crate rusoto_core;
 extern crate rusoto_ses;
-extern crate aws_lambda as lambda;
 #[macro_use]
 extern crate tera;
 #[macro_use]
 extern crate lazy_static;
+extern crate chrono;
+extern crate serde;
+extern crate serde_json;
+#[macro_use]
+extern crate serde_derive;
 
+use failure::Error;
 use lambda::event::sns::{SnsEvent};
 use rusoto_core::Region;
-use rusoto_ses::{SesClient,Ses,Destination,Message,SendEmailRequest, Body, Content};
-use std::default::Default;
-use std::time::Duration;
-use failure::Error;
+use rusoto_ses::{Body, Content, Destination, Message, SendEmailRequest, Ses, SesClient};
 use std::collections::HashMap;
-use tera::{Tera,Context};
+use std::default::Default;
 use std::env;
+use std::time::Duration;
+use tera::{Context, Tera};
 
 lazy_static! {
 	pub static ref TERA: Tera = {
@@ -34,13 +39,13 @@ fn main() {
 
 		let body = "Done".to_owned();
 
-		let mut headers = HashMap::new();
+		let mut headers: HashMap<String, String> = HashMap::new();
 
-		headers
-			.insert(
-				"Content-Type".to_owned(),
-				"application/json".to_owned()
-			); 
+		// headers
+		// 	.insert(
+		// 		"Content-Type".to_owned(),
+		// 		"application/json".to_owned()
+		// 	);
 
 		let inviter = "Sam".to_string();
 		let email = "sebasporto@gmail.com".to_string();
@@ -48,54 +53,50 @@ fn main() {
 
 		send_email(&inviter, &email, &invitation_token)?;
 
-		// Ok(
-		// 	ApiGatewayProxyResponse {
-		// 		body: Some(body),
-		// 		status_code: 200,
-		// 		headers: headers,
-		// 		is_base64_encoded: None,
-		// 	}
-		// )
-		Ok("Foo")
+		Ok("Done")
 	})
 }
 
+#[derive(Debug,PartialEq,Deserialize)]
+#[serde(tag = "type")]
 enum Task {
-	Invite { inviter: String, email: String, invitation_token: String }
+	Invite {
+		inviter: String,
+		email: String,
+		invitation_token: String,
+	},
 }
 
 fn get_task(event: &SnsEvent) -> Result<Task, Error> {
-	let record = event.records.first()
+	let record = event
+		.records
+		.first()
 		.ok_or(format_err!("Failed to get first record"))?;
 
-	Ok(Task::Invite{
-		inviter: "Sam".to_string(),
-		email: "sebasporto@gmail.com".to_string(),
-		invitation_token: "abc".to_owned(),
-	})
+	let message = record
+		.clone()
+		.sns
+		.message
+		.ok_or(format_err!("No message found"))?;
+
+	let task: Task = serde_json::from_str(&message)?;
+
+	Ok(task)
 }
 
-// pub fn get_record(event: &SnsEvent) -> Result<SnsEventRecord, Error> {
-// 	match events.records {
-// 		[] => Err(format_err!("No record found")),
-// 		r::xx => Ok(r),
-// 	}
-// }
-
 fn send_email(inviter: &str, email: &str, invitation_token: &str) -> Result<(), Error> {
-
-	let system_email = env::var("SYSTEM_EMAIL")
-		.map_err(|_| format_err!("SYSTEM_EMAIL not found"))?;
+	let system_email = env::var("SYSTEM_EMAIL").map_err(|_| format_err!("SYSTEM_EMAIL not found"))?;
 
 	let mut context = Context::new();
 	context.add("inviter", &inviter);
 	context.add("invitation_token", &invitation_token);
 
 	let from = system_email.to_owned();
-	let to = vec!(email.clone().to_owned());
+	let to = vec![email.clone().to_owned()];
 	let subject = "You have been invited".to_owned();
 
-	let body_data = TERA.render("invite.html", &context)
+	let body_data = TERA
+		.render("invite.html", &context)
 		.map_err(|_| format_err!("Failed to render"))?;
 
 	let client = SesClient::new(Region::ApSoutheast1);
@@ -134,4 +135,57 @@ fn send_email(inviter: &str, email: &str, invitation_token: &str) -> Result<(), 
 		.sync()
 		.map_err(|_| format_err!("Failed to send email"))
 		.map(|_response| ())
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use chrono::prelude::*;
+	use lambda::event::sns::{SnsEvent,SnsEventRecord,SnsEntity};
+
+	fn build_event(message: &str) -> SnsEvent {
+		let message_attributes = HashMap::new();
+		let timestamp = Utc::now();
+
+		let record = SnsEventRecord {
+			event_source: None,
+			event_subscription_arn: None,
+			event_version: None,
+			sns: SnsEntity {
+				signature: None,
+				message_id: None,
+				message: Some(message.to_owned()),
+				message_attributes: message_attributes,
+				signature_version: None,
+				signing_cert_url: None,
+				subject: None,
+				timestamp: timestamp,
+				topic_arn: None,
+				type_: None,
+				unsubscribe_url: None,
+			}
+		};
+
+		SnsEvent {
+			records: vec![record],
+		}
+	}
+
+	#[test]
+	fn it_gets_and_invite() {
+		let bytes = include_bytes!("fixtures/invite.json");
+		let json = String::from_utf8_lossy(bytes);
+
+		let event = build_event(&json);
+
+		let task = get_task(&event).unwrap();
+
+		let expected = Task::Invite {
+			inviter: "sam@sample.com".to_owned(),
+			email: "sally@sample.com".to_owned(),
+			invitation_token: "abc".to_owned(),
+		};
+
+		assert_eq!(task, expected);
+	}
 }
