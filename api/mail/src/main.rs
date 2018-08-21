@@ -4,14 +4,14 @@ extern crate aws_lambda as lambda;
 extern crate rusoto_core;
 extern crate rusoto_ses;
 #[macro_use]
-extern crate tera;
-#[macro_use]
 extern crate lazy_static;
 extern crate chrono;
 extern crate serde;
 extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
+#[macro_use]
+extern crate askama; 
 
 use failure::Error;
 use lambda::event::sns::{SnsEvent};
@@ -21,14 +21,13 @@ use std::collections::HashMap;
 use std::default::Default;
 use std::env;
 use std::time::Duration;
-use tera::{Context, Tera};
+use askama::Template; 
 
-lazy_static! {
-	pub static ref TERA: Tera = {
-		let mut tera = compile_templates!("templates/**/*");
-		tera.autoescape_on(vec!["mjml"]);
-		tera
-	};
+#[derive(Template)]
+#[template(path = "invite.mjml")]
+struct InviteTemplate<'a> {
+	inviter: &'a str,
+	invitation_token: &'a str,
 }
 
 // https://github.com/srijs/rust-aws-lambda/blob/88904328b9f6a6ad016645a73a7acb41c08000cd/aws_lambda_events/src/generated/fixtures/example-sns-event.json
@@ -39,7 +38,7 @@ fn main() {
 
 		let body = "Done".to_owned();
 
-		let mut headers: HashMap<String, String> = HashMap::new();
+		let headers: HashMap<String, String> = HashMap::new();
 
 		// headers
 		// 	.insert(
@@ -48,7 +47,9 @@ fn main() {
 		// 	);
 
 		let inviter = "Sam".to_string();
+
 		let email = "sebasporto@gmail.com".to_string();
+
 		let invitation_token = "abc".to_owned();
 
 		send_email(&inviter, &email, &invitation_token)?;
@@ -57,7 +58,7 @@ fn main() {
 	})
 }
 
-#[derive(Debug,PartialEq,Deserialize)]
+#[derive(Debug,PartialEq,Serialize,Deserialize)]
 enum Task {
 	Invite {
 		inviter: String,
@@ -83,20 +84,27 @@ fn get_task(event: &SnsEvent) -> Result<Task, Error> {
 	Ok(task)
 }
 
+fn generate_mjml(task: &Task) -> Result<String, Error> {
+	let template = match task {
+		Task::Invite{inviter, invitation_token, ..} =>
+			InviteTemplate {
+				inviter: inviter,
+				invitation_token: invitation_token,
+			}
+	};
+
+	template.render()
+		.map_err(|e| format_err!("{}", e))
+}
+
 fn send_email(inviter: &str, email: &str, invitation_token: &str) -> Result<(), Error> {
 	let system_email = env::var("SYSTEM_EMAIL").map_err(|_| format_err!("SYSTEM_EMAIL not found"))?;
-
-	let mut context = Context::new();
-	context.add("inviter", &inviter);
-	context.add("invitation_token", &invitation_token);
 
 	let from = system_email.to_owned();
 	let to = vec![email.clone().to_owned()];
 	let subject = "You have been invited".to_owned();
 
-	let body_data = TERA
-		.render("invite.html", &context)
-		.map_err(|_| format_err!("Failed to render"))?;
+	let body_data = "Foos".to_owned();
 
 	let client = SesClient::new(Region::ApSoutheast1);
 
@@ -186,5 +194,16 @@ mod tests {
 		};
 
 		assert_eq!(task, expected);
+	}
+
+	#[test]
+	fn it_builds_mjml() {
+		let task = Task::Invite {
+			inviter: "sam@sample.com".to_owned(),
+			email: "sally@sample.com".to_owned(),
+			invitation_token: "abc".to_owned(),
+		};
+
+		let result = generate_mjml(&task).unwrap();
 	}
 }
