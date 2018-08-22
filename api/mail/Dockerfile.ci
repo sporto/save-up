@@ -7,4 +7,3 @@ COPY Cargo.lock .
 COPY src .
 COPY templates .
 
-RUN cargo install

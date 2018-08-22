@@ -1,5 +1,6 @@
 - type: parallel
   name: kic
   steps:
-    - service: mail
-    - command: cargo test
+    - name: Test mail
+      service: mail
+      command: cargo test
