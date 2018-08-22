@@ -4,5 +4,5 @@ mail:
     dockerfile: Dockerfile.ci
   environment:
     SYSTEM_EMAIL: hello@sample.com
-  volumes_from:
-    cargo-cache:/root/.cargo
+  volumes:
+    - ./cargo-cache:/root/.cargo
