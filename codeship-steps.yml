@@ -2,3 +2,4 @@
   name: kic
   steps:
     - service: mail
+    - command: cargo test
