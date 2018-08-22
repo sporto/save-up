@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <AssemblyName>FsharpHandlers</AssemblyName>
-    <PackageId>aws-fsharp2</PackageId>
+    <PackageId>hello</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

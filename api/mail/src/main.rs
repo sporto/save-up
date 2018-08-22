@@ -14,17 +14,17 @@ extern crate serde_derive;
 extern crate askama;
 extern crate reqwest;
 
+use askama::Template;
 use failure::Error;
-use lambda::event::sns::{SnsEvent};
+use lambda::event::sns::SnsEvent;
+use reqwest::header::{Authorization, Basic};
+use reqwest::StatusCode;
 use rusoto_core::Region;
 use rusoto_ses::{Body, Content, Destination, Message, SendEmailRequest, Ses, SesClient};
 use std::collections::HashMap;
 use std::default::Default;
 use std::env;
 use std::time::Duration;
-use askama::Template; 
-use reqwest::StatusCode;
-use reqwest::header::{Authorization, Basic};
 
 #[derive(Template)]
 #[template(path = "invite.mjml")]
@@ -39,13 +39,15 @@ fn main() {
 	lambda::start(|event: SnsEvent| {
 		let task = get_task(&event)?;
 
-		let mjml = generate_mjml(&task)?;
+		generate_mjml(&task)
+			.and_then(|mjml| generate_html(&mjml))
+			.and_then(|html| send_email(&task, &html))
 
-		// get body
+		// let mjml = generate_mjml(&task)?;
 
-		let body = "Done".to_owned();
+		// let body = generate_html(&mjml)?;
 
-		let headers: HashMap<String, String> = HashMap::new();
+		// let headers: HashMap<String, String> = HashMap::new();
 
 		// headers
 		// 	.insert(
@@ -53,19 +55,19 @@ fn main() {
 		// 		"application/json".to_owned()
 		// 	);
 
-		let inviter = "Sam".to_string();
+		// let inviter = "Sam".to_string();
 
-		let email = "sebasporto@gmail.com".to_string();
+		// let email = "sebasporto@gmail.com".to_string();
 
-		let invitation_token = "abc".to_owned();
+		// let invitation_token = "abc".to_owned();
 
-		send_email(&inviter, &email, &invitation_token)?;
+		// send_email(&inviter, &email, &invitation_token)?;
 
-		Ok("Done")
+		// Ok("Done")
 	})
 }
 
-#[derive(Debug,PartialEq,Serialize,Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 enum Task {
 	Invite {
 		inviter: String,
@@ -93,15 +95,17 @@ fn get_task(event: &SnsEvent) -> Result<Task, Error> {
 
 fn generate_mjml(task: &Task) -> Result<String, Error> {
 	let template = match task {
-		Task::Invite{inviter, invitation_token, ..} =>
-			InviteTemplate {
-				inviter: inviter,
-				invitation_token: invitation_token,
-			}
+		Task::Invite {
+			inviter,
+			invitation_token,
+			..
+		} => InviteTemplate {
+			inviter: inviter,
+			invitation_token: invitation_token,
+		},
 	};
 
-	template.render()
-		.map_err(|e| format_err!("{}", e))
+	template.render().map_err(|e| format_err!("{}", e))
 }
 
 #[derive(Deserialize)]
@@ -110,51 +114,49 @@ struct MjmlResponse {
 }
 
 fn generate_html(mjml: &str) -> Result<String, Error> {
-	let api_url = "https://api.mjml.io/v1";
+	// let api_url = "https://api.mjml.io/v1";
 
-	let client = reqwest::Client::new();
+	// let client = reqwest::Client::new();
 
-	let mut params = HashMap::new();
+	// let mut params = HashMap::new();
 
-	params.insert("mjml", mjml);
+	// params.insert("mjml", mjml);
 
-	let credentials = Basic {
-		username: "user".to_string(),
-		password: Some("passwd".to_string()),
-	};
+	// let credentials = Basic {
+	// 	username: "user".to_string(),
+	// 	password: Some("passwd".to_string()),
+	// };
 
-	let mut response = client
-		.post(api_url)
-		.header(Authorization(credentials))
-		.json(&params)
-		.send()?;
+	// let mut response = client
+	// 	.post(api_url)
+	// 	.header(Authorization(credentials))
+	// 	.json(&params)
+	// 	.send()?;
 
-	match response.status() {
-		StatusCode::Ok => {
-			let resp:MjmlResponse = response.json()?;
-			Ok(resp.html)
-		},
-		s => Err(format_err!("Mjml api responded with {}", s))
-	}
-
-
+	// match response.status() {
+	// 	StatusCode::Ok => {
+	// 		let resp:MjmlResponse = response.json()?;
+	// 		Ok(resp.html)
+	// 	},
+	// 	s => Err(format_err!("Mjml api responded with {}", s))
+	// }
+	Ok(mjml.to_owned())
 }
 
-fn send_email(inviter: &str, email: &str, invitation_token: &str) -> Result<(), Error> {
-	let system_email = env::var("SYSTEM_EMAIL").map_err(|_| format_err!("SYSTEM_EMAIL not found"))?;
+fn send_email(task: &Task, html: &str) -> Result<(), Error> {
+	let config = get_config()?;
 
-	let from = system_email.to_owned();
-	let to = vec![email.clone().to_owned()];
-	let subject = "You have been invited".to_owned();
-
-	let body_data = "Foos".to_owned();
+	let email = email_for_task(task);
+	let from = config.system_email.to_owned();
+	let to = vec![email.to_owned()];
+	let subject = subject_for_task(task);
 
 	let client = SesClient::new(Region::ApSoutheast1);
 
 	let body = Body {
 		html: Some(Content {
 			charset: Some(String::from("UTF-8")),
-			data: body_data,
+			data: html.to_owned(),
 		}),
 		text: None,
 	};
@@ -187,11 +189,36 @@ fn send_email(inviter: &str, email: &str, invitation_token: &str) -> Result<(), 
 		.map(|_response| ())
 }
 
+fn email_for_task(task: &Task) -> String {
+	match task {
+		Task::Invite{email,..} => email.to_owned(),
+	}
+}
+
+fn subject_for_task(task: &Task) -> String {
+	match task {
+		Task::Invite{..} => "You have been invited".to_owned(),
+	}
+}
+
+
+struct Config {
+	system_email: String,
+}
+
+fn get_config() -> Result<Config, Error> {
+	let system_email = env::var("SYSTEM_EMAIL").map_err(|_| format_err!("SYSTEM_EMAIL not found"))?;
+
+	Ok(Config {
+		system_email: system_email,
+	})
+}
+
 #[cfg(test)]
 mod tests {
 	use super::*;
 	use chrono::prelude::*;
-	use lambda::event::sns::{SnsEvent,SnsEventRecord,SnsEntity};
+	use lambda::event::sns::{SnsEntity, SnsEvent, SnsEventRecord};
 
 	fn build_event(message: &str) -> SnsEvent {
 		let message_attributes = HashMap::new();
@@ -213,7 +240,7 @@ mod tests {
 				topic_arn: None,
 				type_: None,
 				unsubscribe_url: None,
-			}
+			},
 		};
 
 		SnsEvent {
@@ -255,6 +282,6 @@ mod tests {
 		let mjml = "<mjml>Hello</mjml>";
 		let result = generate_html(mjml).unwrap();
 
-		assert_eq!(result, "<html>")
+		assert_eq!(result, mjml)
 	}
 }
