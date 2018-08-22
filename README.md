@@ -1,6 +1,6 @@
-# Kids Investment Company (KIC)
+# SaveUp
 
-KIC is an educational application for learning about investing.
+SaveUp is an educational application for learning about investing.
 
 ## Docs
 
