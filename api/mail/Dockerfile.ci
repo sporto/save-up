@@ -7,4 +7,4 @@ COPY Cargo.lock .
 COPY src .
 COPY templates .
 
-CMD ["cargo test"]
+RUN cargo install
