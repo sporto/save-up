@@ -11,7 +11,8 @@ extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
 #[macro_use]
-extern crate askama; 
+extern crate askama;
+extern crate reqwest;
 
 use failure::Error;
 use lambda::event::sns::{SnsEvent};
@@ -22,6 +23,8 @@ use std::default::Default;
 use std::env;
 use std::time::Duration;
 use askama::Template; 
+use reqwest::StatusCode;
+use reqwest::header::{Authorization, Basic};
 
 #[derive(Template)]
 #[template(path = "invite.mjml")]
@@ -35,6 +38,10 @@ struct InviteTemplate<'a> {
 fn main() {
 	lambda::start(|event: SnsEvent| {
 		let task = get_task(&event)?;
+
+		let mjml = generate_mjml(&task)?;
+
+		// get body
 
 		let body = "Done".to_owned();
 
@@ -95,6 +102,42 @@ fn generate_mjml(task: &Task) -> Result<String, Error> {
 
 	template.render()
 		.map_err(|e| format_err!("{}", e))
+}
+
+#[derive(Deserialize)]
+struct MjmlResponse {
+	html: String,
+}
+
+fn generate_html(mjml: &str) -> Result<String, Error> {
+	let api_url = "https://api.mjml.io/v1";
+
+	let client = reqwest::Client::new();
+
+	let mut params = HashMap::new();
+
+	params.insert("mjml", mjml);
+
+	let credentials = Basic {
+		username: "user".to_string(),
+		password: Some("passwd".to_string()),
+	};
+
+	let mut response = client
+		.post(api_url)
+		.header(Authorization(credentials))
+		.json(&params)
+		.send()?;
+
+	match response.status() {
+		StatusCode::Ok => {
+			let resp:MjmlResponse = response.json()?;
+			Ok(resp.html)
+		},
+		s => Err(format_err!("Mlml api responded with {}", s))
+	}
+
+
 }
 
 fn send_email(inviter: &str, email: &str, invitation_token: &str) -> Result<(), Error> {
@@ -205,5 +248,13 @@ mod tests {
 		};
 
 		let result = generate_mjml(&task).unwrap();
+	}
+
+	#[test]
+	fn it_generates_html() {
+		let mjml = "<mjml>Hello</mjml>";
+		let result = generate_html(mjml).unwrap();
+
+		assert_eq!(result, "<html>")
 	}
 }
