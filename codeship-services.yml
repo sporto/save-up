@@ -1,0 +1,8 @@
+mail:
+  build:
+    context: api/mail
+    dockerfile: Dockerfile.ci
+  environment:
+    SYSTEM_EMAIL: hello@sample.com
+  volumes_from:
+    cargo-cache:/root/.cargo
