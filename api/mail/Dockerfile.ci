@@ -2,8 +2,8 @@ FROM clux/muslrust:stable
 
 WORKDIR /volume
 
-COPY Cargo.toml .
-COPY Cargo.lock .
-COPY src .
-COPY templates .
+COPY Cargo.toml ./Cargo.toml
+COPY Cargo.lock ./Cargo.lock
+COPY src ./src
+COPY templates ./templates
 
