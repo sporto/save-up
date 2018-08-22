@@ -27,7 +27,7 @@ use std::env;
 use std::time::Duration;
 
 #[derive(Template)]
-#[template(path = "invite.mjml")]
+#[template(path = "invite.html")]
 struct InviteTemplate<'a> {
 	inviter: &'a str,
 	invitation_token: &'a str,
@@ -39,31 +39,9 @@ fn main() {
 	lambda::start(|event: SnsEvent| {
 		let task = get_task(&event)?;
 
-		generate_mjml(&task)
-			.and_then(|mjml| generate_html(&mjml))
+		generate_intermidiate(&task)
+			.and_then(|intermediate| generate_html(&intermediate))
 			.and_then(|html| send_email(&task, &html))
-
-		// let mjml = generate_mjml(&task)?;
-
-		// let body = generate_html(&mjml)?;
-
-		// let headers: HashMap<String, String> = HashMap::new();
-
-		// headers
-		// 	.insert(
-		// 		"Content-Type".to_owned(),
-		// 		"application/json".to_owned()
-		// 	);
-
-		// let inviter = "Sam".to_string();
-
-		// let email = "sebasporto@gmail.com".to_string();
-
-		// let invitation_token = "abc".to_owned();
-
-		// send_email(&inviter, &email, &invitation_token)?;
-
-		// Ok("Done")
 	})
 }
 
@@ -93,7 +71,7 @@ fn get_task(event: &SnsEvent) -> Result<Task, Error> {
 	Ok(task)
 }
 
-fn generate_mjml(task: &Task) -> Result<String, Error> {
+fn generate_intermidiate(task: &Task) -> Result<String, Error> {
 	let template = match task {
 		Task::Invite {
 			inviter,
@@ -109,18 +87,18 @@ fn generate_mjml(task: &Task) -> Result<String, Error> {
 }
 
 #[derive(Deserialize)]
-struct MjmlResponse {
+struct intermediateResponse {
 	html: String,
 }
 
-fn generate_html(mjml: &str) -> Result<String, Error> {
-	// let api_url = "https://api.mjml.io/v1";
+fn generate_html(intermediate: &str) -> Result<String, Error> {
+	// let api_url = "https://api.intermediate.io/v1";
 
 	// let client = reqwest::Client::new();
 
 	// let mut params = HashMap::new();
 
-	// params.insert("mjml", mjml);
+	// params.insert("intermediate", intermediate);
 
 	// let credentials = Basic {
 	// 	username: "user".to_string(),
@@ -135,12 +113,12 @@ fn generate_html(mjml: &str) -> Result<String, Error> {
 
 	// match response.status() {
 	// 	StatusCode::Ok => {
-	// 		let resp:MjmlResponse = response.json()?;
+	// 		let resp:intermediateResponse = response.json()?;
 	// 		Ok(resp.html)
 	// 	},
-	// 	s => Err(format_err!("Mjml api responded with {}", s))
+	// 	s => Err(format_err!("intermediate api responded with {}", s))
 	// }
-	Ok(mjml.to_owned())
+	Ok(intermediate.to_owned())
 }
 
 fn send_email(task: &Task, html: &str) -> Result<(), Error> {
@@ -267,21 +245,21 @@ mod tests {
 	}
 
 	#[test]
-	fn it_builds_mjml() {
+	fn it_builds_intermediate() {
 		let task = Task::Invite {
 			inviter: "sam@sample.com".to_owned(),
 			email: "sally@sample.com".to_owned(),
 			invitation_token: "abc".to_owned(),
 		};
 
-		let result = generate_mjml(&task).unwrap();
+		let result = generate_intermidiate(&task).unwrap();
 	}
 
 	#[test]
 	fn it_generates_html() {
-		let mjml = "<mjml>Hello</mjml>";
-		let result = generate_html(mjml).unwrap();
+		let intermediate = "<intermediate>Hello</intermediate>";
+		let result = generate_html(intermediate).unwrap();
 
-		assert_eq!(result, mjml)
+		assert_eq!(result, intermediate)
 	}
 }
