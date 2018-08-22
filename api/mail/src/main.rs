@@ -134,7 +134,7 @@ fn generate_html(mjml: &str) -> Result<String, Error> {
 			let resp:MjmlResponse = response.json()?;
 			Ok(resp.html)
 		},
-		s => Err(format_err!("Mlml api responded with {}", s))
+		s => Err(format_err!("Mjml api responded with {}", s))
 	}
 
 
