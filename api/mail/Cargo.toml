@@ -8,6 +8,7 @@ aws_lambda = { git = "https://github.com/srijs/rust-aws-lambda" }
 askama = "0.7"
 chrono = "*"
 failure = "0.1"
+openssl-probe = "0.1.2"
 rusoto_core = "0.33"
 rusoto_ses = "0.33"
 serde = "*"

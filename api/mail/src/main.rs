@@ -10,6 +10,7 @@ extern crate serde_json;
 extern crate serde_derive;
 #[macro_use]
 extern crate askama;
+extern crate openssl_probe;
 
 use askama::Template;
 use failure::Error;
@@ -30,6 +31,8 @@ struct InviteTemplate<'a> {
 // https://github.com/srijs/rust-aws-lambda/blob/88904328b9f6a6ad016645a73a7acb41c08000cd/aws_lambda_events/src/generated/fixtures/example-sns-event.json
 // https://github.com/srijs/rust-aws-lambda/blob/739e46049651576e366fadd9073c2e269d11baa2/aws_lambda_events/src/generated/sns.rs
 fn main() {
+	openssl_probe::init_ssl_cert_env_vars();
+
 	lambda::start(|event: SnsEvent| {
 		let task = get_task(&event)?;
 
