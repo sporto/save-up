@@ -22,6 +22,9 @@ db-test-up:
 schema:
 	DATABASE_URL=$DATABASE_URL_LOCAL diesel print-schema > src/models/schema.rs
 
+test:
+	APP_ENV=test cargo test
+
 build:
 	docker run \
 		--rm \

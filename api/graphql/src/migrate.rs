@@ -6,6 +6,7 @@ extern crate diesel_migrations;
 extern crate failure;
 
 extern crate aws_lambda as lambda;
+extern crate url;
 
 use failure::Error;
 use lambda::event::apigw::{ApiGatewayProxyRequest,ApiGatewayProxyResponse};

@@ -18,6 +18,7 @@ extern crate jsonwebtoken as jwt;
 extern crate libreauth;
 extern crate serde;
 extern crate uuid;
+extern crate url;
 extern crate validator;
 
 use diesel::pg::PgConnection;

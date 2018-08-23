@@ -1,6 +1,3 @@
-test:
-	APP_ENV=test cargo test
-
 start:
 	DATABASE_URL=$DATABASE_URL sam local start-api -p 4010 --skip-pull-image
 
