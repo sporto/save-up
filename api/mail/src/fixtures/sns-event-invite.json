@@ -22,7 +22,7 @@
 				"SignatureVersion": "1", 
 				"Timestamp": "2015-06-03T17:43:27.123Z", 
 				"SigningCertUrl": "EXAMPLE", 
-				"Message": "Hello from SNS!", 
+				"Message": "{\"Invite\":{\"inviter\":\"sam@sample.com\",\"email\":\"sebasporto@gmail.com\",\"invitation_token\":\"abc\"}}", 
 				"UnsubscribeUrl": "EXAMPLE", 
 				"Subject": "TestInvoke"
 			}

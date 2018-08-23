@@ -3,8 +3,6 @@ extern crate failure;
 extern crate aws_lambda as lambda;
 extern crate rusoto_core;
 extern crate rusoto_ses;
-#[macro_use]
-extern crate lazy_static;
 extern crate chrono;
 extern crate serde;
 extern crate serde_json;
@@ -12,16 +10,12 @@ extern crate serde_json;
 extern crate serde_derive;
 #[macro_use]
 extern crate askama;
-extern crate reqwest;
 
 use askama::Template;
 use failure::Error;
 use lambda::event::sns::SnsEvent;
-use reqwest::header::{Authorization, Basic};
-use reqwest::StatusCode;
 use rusoto_core::Region;
 use rusoto_ses::{Body, Content, Destination, Message, SendEmailRequest, Ses, SesClient};
-use std::collections::HashMap;
 use std::default::Default;
 use std::env;
 use std::time::Duration;
@@ -41,7 +35,9 @@ fn main() {
 
 		generate_intermidiate(&task)
 			.and_then(|intermediate| generate_html(&intermediate))
-			.and_then(|html| send_email(&task, &html))
+			.and_then(|html| send_email(&task, &html))?;
+
+		Ok("Success")
 	})
 }
 
@@ -86,38 +82,7 @@ fn generate_intermidiate(task: &Task) -> Result<String, Error> {
 	template.render().map_err(|e| format_err!("{}", e))
 }
 
-#[derive(Deserialize)]
-struct intermediateResponse {
-	html: String,
-}
-
 fn generate_html(intermediate: &str) -> Result<String, Error> {
-	// let api_url = "https://api.intermediate.io/v1";
-
-	// let client = reqwest::Client::new();
-
-	// let mut params = HashMap::new();
-
-	// params.insert("intermediate", intermediate);
-
-	// let credentials = Basic {
-	// 	username: "user".to_string(),
-	// 	password: Some("passwd".to_string()),
-	// };
-
-	// let mut response = client
-	// 	.post(api_url)
-	// 	.header(Authorization(credentials))
-	// 	.json(&params)
-	// 	.send()?;
-
-	// match response.status() {
-	// 	StatusCode::Ok => {
-	// 		let resp:intermediateResponse = response.json()?;
-	// 		Ok(resp.html)
-	// 	},
-	// 	s => Err(format_err!("intermediate api responded with {}", s))
-	// }
 	Ok(intermediate.to_owned())
 }
 
@@ -163,7 +128,7 @@ fn send_email(task: &Task, html: &str) -> Result<(), Error> {
 		.send_email(email)
 		.with_timeout(Duration::from_secs(20))
 		.sync()
-		.map_err(|_| format_err!("Failed to send email"))
+		.map_err(|e| format_err!("{}", e))
 		.map(|_response| ())
 }
 
