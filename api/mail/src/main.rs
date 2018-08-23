@@ -94,7 +94,7 @@ fn send_email(task: &Task, html: &str) -> Result<(), Error> {
 	let to = vec![email.to_owned()];
 	let subject = subject_for_task(task);
 
-	let client = SesClient::new(Region::ApSoutheast1);
+	let client = SesClient::new(Region::UsEast1);
 
 	let body = Body {
 		html: Some(Content {
