@@ -162,6 +162,7 @@ mod tests {
 	use super::*;
 	use chrono::prelude::*;
 	use lambda::event::sns::{SnsEntity, SnsEvent, SnsEventRecord};
+	use std::collections::HashMap;
 
 	fn build_event(message: &str) -> SnsEvent {
 		let message_attributes = HashMap::new();
@@ -217,7 +218,7 @@ mod tests {
 			invitation_token: "abc".to_owned(),
 		};
 
-		let result = generate_intermidiate(&task).unwrap();
+		let _result = generate_intermidiate(&task).unwrap();
 	}
 
 	#[test]

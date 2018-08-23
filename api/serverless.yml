@@ -103,7 +103,7 @@ functions:
   mail:
     runtime: go1.x
     handler: bin/mail/mail
-    timeout: 10
+    timeout: 30
     package:
       include:
         - ./bin/mail/**
