@@ -109,8 +109,8 @@ functions:
         - ./bin/mail/**
     events:
         - http:
-          path: mail
-          method: post
+            path: mail
+            method: post
 
 
 
