@@ -1,4 +1,4 @@
-use models::sign_ins::SignIn;
+use models::sign_in::SignIn;
 use juniper::{Executor, FieldResult};
 use graph::mutation_root::MutationError;
 use services;

@@ -3,10 +3,10 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::select;
 use failure::Error;
-use models::clients::{Client, ClientAttrs};
+use models::client::{Client, ClientAttrs};
 use models::schema::users;
-use models::sign_ups::SignUp;
-use models::users::{User, UserAttrs, ROLE_ADMIN};
+use models::sign_up::SignUp;
+use models::user::{User, UserAttrs, ROLE_ADMIN};
 use services;
 use validator::Validate;
 

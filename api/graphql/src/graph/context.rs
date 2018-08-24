@@ -1,6 +1,6 @@
 use diesel::pg::PgConnection;
 use juniper::{Context as JuniperContext};
-use models::users::{User};
+use models::user::{User};
 
 pub struct PublicContext {
 	pub conn: PgConnection,

@@ -3,8 +3,8 @@ use juniper::{FieldError, FieldResult};
 use chrono_tz::America;
 use chrono_tz::Australia;
 
-use models::clients::*;
-use models::users::*;
+use models::client::*;
+use models::user::*;
 use graph::context::{PublicContext, Context};
 
 pub struct PublicQueryRoot;

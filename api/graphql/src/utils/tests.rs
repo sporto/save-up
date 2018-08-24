@@ -4,7 +4,7 @@ use diesel::pg::PgConnection;
 use diesel::result::Error;
 use diesel::Connection;
 // use models::bookings::{Booking, BookingAttrs};
-// use models::clients::{Client, ClientAttrs};
+// use models::client::{Client, ClientAttrs};
 // use models::room_bookings::{RoomBooking, RoomBookingAttrs};
 // use models::rooms::{Room, RoomAttrs};
 // use models::venues::{Venue, VenueAttrs};

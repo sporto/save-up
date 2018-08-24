@@ -150,17 +150,17 @@ fn run_private(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
 	serde_json::to_string(&juniper_result).map_err(|e| format_err!("{}", e.to_string()))
 }
 
-fn get_user(conn: &PgConnection, token: &str) -> Result<models::users::User, Error> {
+fn get_user(conn: &PgConnection, token: &str) -> Result<models::user::User, Error> {
 	let config = utils::config::get()?;
 
 	if token == config.system_jwt {
-		return Ok(models::users::system_user());
+		return Ok(models::user::system_user());
 	}
 
 	let token_data = services::users::decode_token::call(token)?;
 
 	let user_id = token_data.user_id;
 
-	models::users::User::find(&conn, user_id)
+	models::user::User::find(&conn, user_id)
 		.map_err(|_| format_err!("User not found"))
 }

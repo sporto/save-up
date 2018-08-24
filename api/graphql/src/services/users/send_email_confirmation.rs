@@ -1,5 +1,5 @@
 use failure::Error;
-use models::users::{User};
+use models::user::{User};
 
 pub fn call(user: &User) -> Result<(), Error> {
 	Ok(())

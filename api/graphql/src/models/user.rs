@@ -47,7 +47,7 @@ pub struct TokenData {
 }
 
 #[cfg(test)]
-use models::clients::Client;
+use models::client::Client;
 
 #[cfg(test)]
 pub fn user_attrs(client: &Client) -> UserAttrs {

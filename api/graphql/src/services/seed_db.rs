@@ -1,6 +1,6 @@
 use db;
-// use models::clients::{Client, ClientAttrs};
-// use models::users::{User, UserAttrs};
+// use models::client::{Client, ClientAttrs};
+// use models::user::{User, UserAttrs};
 use utils::config;
 
 #[allow(dead_code)]

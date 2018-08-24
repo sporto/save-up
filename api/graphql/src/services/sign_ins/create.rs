@@ -1,6 +1,6 @@
 use diesel::pg::PgConnection;
-use models::sign_ins::SignIn;
-use models::users::User;
+use models::sign_in::SignIn;
+use models::user::User;
 use services;
 
 pub fn call(conn: &PgConnection, sign_in: SignIn) -> Result<User, String> {
@@ -33,9 +33,9 @@ mod tests {
 
 			let password_hash = passwords::encrypt::call(&password).unwrap();
 
-			let client = models::clients::client_attrs().save(conn);
+			let client = models::client::client_attrs().save(conn);
 
-			let user = models::users::user_attrs(&client)
+			let user = models::user::user_attrs(&client)
 				.password_hash(&password_hash)
 				.save(conn);
 
@@ -61,9 +61,9 @@ mod tests {
 
 			let password_hash = passwords::encrypt::call(&password).unwrap();
 
-			let client = models::clients::client_attrs().save(conn);
+			let client = models::client::client_attrs().save(conn);
 
-			let user = models::users::user_attrs(&client)
+			let user = models::user::user_attrs(&client)
 				.password_hash(&password_hash)
 				.save(conn);
 

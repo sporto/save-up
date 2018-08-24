@@ -2,7 +2,7 @@ use jwt::{encode, Header};
 use serde_json;
 
 use failure::Error;
-use models::users::{TokenData, User};
+use models::user::{TokenData, User};
 use utils::config;
 
 pub fn call(user: User) -> Result<String, Error> {

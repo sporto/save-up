@@ -1,7 +1,7 @@
-pub mod clients;
-pub mod errors;
-pub mod invitations;
+pub mod client;
+pub mod error;
+pub mod invitation;
 pub mod schema;
-pub mod sign_ins;
-pub mod sign_ups;
-pub mod users;
+pub mod sign_in;
+pub mod sign_up;
+pub mod user;

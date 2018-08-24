@@ -1,8 +1,8 @@
 use juniper::{FieldResult};
 use validator::{ValidationError, ValidationErrors};
 
-use models::sign_ups::SignUp;
-use models::sign_ins::SignIn;
+use models::sign_up::SignUp;
+use models::sign_in::SignIn;
 use graph::mutations;
 use graph::context::{PublicContext,Context};
 

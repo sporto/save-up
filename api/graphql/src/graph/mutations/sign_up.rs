@@ -2,7 +2,7 @@ use failure::Error;
 use graph::context::PublicContext;
 use graph::mutation_root::MutationError;
 use juniper::{Executor, FieldResult};
-use models::sign_ups::SignUp;
+use models::sign_up::SignUp;
 use services;
 
 #[derive(GraphQLObject, Clone)]

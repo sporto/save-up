@@ -1,6 +1,6 @@
 use jwt::{decode, Validation};
 
-use models::users::{TokenData};
+use models::user::{TokenData};
 use utils::config;
 use failure::Error;
 
