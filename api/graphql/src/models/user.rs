@@ -10,7 +10,7 @@ pub const ROLE_ADMIN: &str = "admin";
 #[allow(dead_code)]
 pub const ROLE_INVESTOR: &str = "investor";
 
-#[derive(Queryable, GraphQLObject, Debug)]
+#[derive(Queryable,GraphQLObject,Debug,Clone)]
 pub struct User {
 	pub id: i32,
 	pub created_at: NaiveDateTime,

@@ -8,6 +8,7 @@ use models::schema::users;
 use models::sign_up::SignUp;
 use models::user::{User, UserAttrs, ROLE_ADMIN};
 use services;
+use uuid::Uuid;
 use validator::Validate;
 
 pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
@@ -45,13 +46,15 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 	// Create client and then user
 	let user = Client::create(conn, client_attrs)
 		.and_then(|client| {
+			let confirmation_token = Uuid::new_v4().to_string();
+
 			let user_attrs = UserAttrs {
 				client_id: client.id,
 				role: ROLE_ADMIN.to_string(),
 				name: sign_up.name,
 				email: sign_up.email,
 				password_hash: password_hash,
-				email_confirmation_token: None,
+				email_confirmation_token: Some(confirmation_token),
 				email_confirmed_at: None,
 			};
 

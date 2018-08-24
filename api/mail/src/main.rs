@@ -1,22 +1,22 @@
 #[macro_use]
 extern crate failure;
 extern crate aws_lambda as lambda;
+extern crate chrono;
 extern crate rusoto_core;
 extern crate rusoto_ses;
-extern crate chrono;
 extern crate serde;
 extern crate serde_json;
 #[macro_use]
-extern crate serde_derive;
-#[macro_use]
 extern crate askama;
 extern crate openssl_probe;
+extern crate shared;
 
 use askama::Template;
 use failure::Error;
 use lambda::event::sns::SnsEvent;
 use rusoto_core::Region;
 use rusoto_ses::{Body, Content, Destination, Message, SendEmailRequest, Ses, SesClient};
+use shared::email_kinds::EmailKind;
 use std::default::Default;
 use std::env;
 use std::time::Duration;
@@ -28,32 +28,29 @@ struct InviteTemplate<'a> {
 	invitation_token: &'a str,
 }
 
+#[derive(Template)]
+#[template(path = "confirm_email.html")]
+struct ConfirmEmailTemplate<'a> {
+	confirmation_token: &'a str,
+}
+
 // https://github.com/srijs/rust-aws-lambda/blob/88904328b9f6a6ad016645a73a7acb41c08000cd/aws_lambda_events/src/generated/fixtures/example-sns-event.json
 // https://github.com/srijs/rust-aws-lambda/blob/739e46049651576e366fadd9073c2e269d11baa2/aws_lambda_events/src/generated/sns.rs
 fn main() {
 	openssl_probe::init_ssl_cert_env_vars();
 
 	lambda::start(|event: SnsEvent| {
-		let task = get_task(&event)?;
+		let email_kind = get_email_kind(&event)?;
 
-		generate_intermidiate(&task)
+		generate_intermidiate(&email_kind)
 			.and_then(|intermediate| generate_html(&intermediate))
-			.and_then(|html| send_email(&task, &html))?;
+			.and_then(|html| send_email(&email_kind, &html))?;
 
 		Ok("Success")
 	})
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
-enum Task {
-	Invite {
-		inviter: String,
-		email: String,
-		invitation_token: String,
-	},
-}
-
-fn get_task(event: &SnsEvent) -> Result<Task, Error> {
+fn get_email_kind(event: &SnsEvent) -> Result<EmailKind, Error> {
 	let record = event
 		.records
 		.first()
@@ -65,37 +62,43 @@ fn get_task(event: &SnsEvent) -> Result<Task, Error> {
 		.message
 		.ok_or(format_err!("No message found"))?;
 
-	let task: Task = serde_json::from_str(&message)?;
+	let email_kind: EmailKind = serde_json::from_str(&message)?;
 
-	Ok(task)
+	Ok(email_kind)
 }
 
-fn generate_intermidiate(task: &Task) -> Result<String, Error> {
-	let template = match task {
-		Task::Invite {
+fn generate_intermidiate(email_kind: &EmailKind) -> Result<String, Error> {
+	let result = match email_kind {
+		EmailKind::ConfirmEmail {
+			confirmation_token, ..
+		} => ConfirmEmailTemplate {
+			confirmation_token: confirmation_token,
+		}.render(),
+
+		EmailKind::Invite {
 			inviter,
 			invitation_token,
 			..
 		} => InviteTemplate {
 			inviter: inviter,
 			invitation_token: invitation_token,
-		},
+		}.render(),
 	};
 
-	template.render().map_err(|e| format_err!("{}", e))
+	result.map_err(|e| format_err!("{}", e))
 }
 
 fn generate_html(intermediate: &str) -> Result<String, Error> {
 	Ok(intermediate.to_owned())
 }
 
-fn send_email(task: &Task, html: &str) -> Result<(), Error> {
+fn send_email(email_kind: &EmailKind, html: &str) -> Result<(), Error> {
 	let config = get_config()?;
 
-	let email = email_for_task(task);
+	let email = email_for_email_kind(email_kind);
 	let from = config.system_email.to_owned();
 	let to = vec![email.to_owned()];
-	let subject = subject_for_task(task);
+	let subject = subject_for_email_kind(email_kind);
 
 	let client = SesClient::new(Region::UsEast1);
 
@@ -135,18 +138,19 @@ fn send_email(task: &Task, html: &str) -> Result<(), Error> {
 		.map(|_response| ())
 }
 
-fn email_for_task(task: &Task) -> String {
-	match task {
-		Task::Invite{email,..} => email.to_owned(),
+fn email_for_email_kind(email_kind: &EmailKind) -> String {
+	match email_kind {
+		EmailKind::ConfirmEmail { email, .. } => email.to_owned(),
+		EmailKind::Invite { email, .. } => email.to_owned(),
 	}
 }
 
-fn subject_for_task(task: &Task) -> String {
-	match task {
-		Task::Invite{..} => "You have been invited".to_owned(),
+fn subject_for_email_kind(email_kind: &EmailKind) -> String {
+	match email_kind {
+		EmailKind::ConfirmEmail { .. } => "Confirm your email".to_owned(),
+		EmailKind::Invite { .. } => "You have been invited".to_owned(),
 	}
 }
-
 
 struct Config {
 	system_email: String,
@@ -202,26 +206,26 @@ mod tests {
 
 		let event = build_event(&json);
 
-		let task = get_task(&event).unwrap();
+		let email_kind = get_email_kind(&event).unwrap();
 
-		let expected = Task::Invite {
+		let expected = EmailKind::Invite {
 			inviter: "sam@sample.com".to_owned(),
 			email: "sally@sample.com".to_owned(),
 			invitation_token: "abc".to_owned(),
 		};
 
-		assert_eq!(task, expected);
+		assert_eq!(email_kind, expected);
 	}
 
 	#[test]
 	fn it_builds_intermediate() {
-		let task = Task::Invite {
+		let email_kind = EmailKind::Invite {
 			inviter: "sam@sample.com".to_owned(),
 			email: "sally@sample.com".to_owned(),
 			invitation_token: "abc".to_owned(),
 		};
 
-		let _result = generate_intermidiate(&task).unwrap();
+		let _result = generate_intermidiate(&email_kind).unwrap();
 	}
 
 	#[test]

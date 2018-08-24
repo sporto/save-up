@@ -6,10 +6,12 @@ extern crate failure;
 extern crate juniper;
 #[macro_use]
 extern crate serde_derive;
+#[macro_use]
 extern crate serde_json;
 #[macro_use]
 extern crate validator_derive;
-
+extern crate rusoto_core;
+extern crate rusoto_sns;
 extern crate aws_lambda as lambda;
 extern crate chrono_tz;
 extern crate chrono;
@@ -19,6 +21,7 @@ extern crate serde;
 extern crate uuid;
 extern crate url;
 extern crate validator;
+extern crate shared;
 
 use diesel::pg::PgConnection;
 use failure::Error;
