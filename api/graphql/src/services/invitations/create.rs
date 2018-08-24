@@ -2,7 +2,6 @@ use diesel::pg::PgConnection;
 use failure::Error;
 use models::invitations::{Invitation, InvitationAttrs};
 use models::users::{User, ROLE_INVESTOR};
-use services::invitations;
 use uuid::Uuid;
 use validator::Validate;
 

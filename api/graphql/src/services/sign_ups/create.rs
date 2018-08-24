@@ -7,12 +7,12 @@ use models::clients::{Client, ClientAttrs};
 use models::schema::users;
 use models::sign_ups::SignUp;
 use models::users::{User, UserAttrs, ROLE_ADMIN};
-use services::passwords;
+use services;
 use validator::Validate;
 
 pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
-	let password_hash = passwords::encrypt::call(&sign_up.password)
-		.map_err(|e| format_err!("{}", e))?;
+	let password_hash =
+		services::passwords::encrypt::call(&sign_up.password).map_err(|e| format_err!("{}", e))?;
 
 	// Validate the user attrs
 	let temp_user_attrs = UserAttrs {
@@ -25,7 +25,9 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 		email_confirmed_at: None,
 	};
 
-	temp_user_attrs.validate().map_err(|e| format_err!("{}", e))?;
+	temp_user_attrs
+		.validate()
+		.map_err(|e| format_err!("{}", e))?;
 
 	// Check if we have a user with this email already
 	let filter = users::table.filter(users::email.eq(sign_up.email.clone()));
@@ -41,7 +43,7 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 	};
 
 	// Create client and then user
-	Client::create(conn, client_attrs)
+	let user = Client::create(conn, client_attrs)
 		.and_then(|client| {
 			let user_attrs = UserAttrs {
 				client_id: client.id,
@@ -55,7 +57,11 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 
 			User::create(conn, user_attrs)
 		})
-		.map_err(|e| format_err!("{}", e))
+		.map_err(|e| format_err!("{}", e))?;
+
+	services::users::send_email_confirmation::call(&user)?;
+
+	Ok(user)
 }
 
 #[cfg(test)]
