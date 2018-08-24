@@ -2,6 +2,7 @@ use diesel::dsl::exists;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::select;
+use failure::Error;
 use models::clients::{Client, ClientAttrs};
 use models::schema::users;
 use models::sign_ups::SignUp;
@@ -9,8 +10,9 @@ use models::users::{User, UserAttrs, ROLE_ADMIN};
 use services::passwords;
 use validator::Validate;
 
-pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, String> {
-	let password_hash = passwords::encrypt::call(&sign_up.password)?;
+pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
+	let password_hash = passwords::encrypt::call(&sign_up.password)
+		.map_err(|e| format_err!("{}", e))?;
 
 	// Validate the user attrs
 	let temp_user_attrs = UserAttrs {
@@ -23,40 +25,37 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, String> {
 		email_confirmed_at: None,
 	};
 
-	temp_user_attrs.validate().map_err(|e| e.to_string())?;
+	temp_user_attrs.validate().map_err(|e| format_err!("{}", e))?;
 
 	// Check if we have a user with this email already
 	let filter = users::table.filter(users::email.eq(sign_up.email.clone()));
 
-	let existing = select(exists(filter)).get_result(conn);
+	let existing = select(exists(filter)).get_result(conn)?;
 
-	match existing {
-		Ok(true) => Err("Already taken".to_owned()),
+	if existing {
+		return Err(format_err!("Already taken"));
+	}
 
-		Ok(false) => {
-			let client_attrs = ClientAttrs {
-				name: sign_up.name.clone(),
+	let client_attrs = ClientAttrs {
+		name: sign_up.name.clone(),
+	};
+
+	// Create client and then user
+	Client::create(conn, client_attrs)
+		.and_then(|client| {
+			let user_attrs = UserAttrs {
+				client_id: client.id,
+				role: ROLE_ADMIN.to_string(),
+				name: sign_up.name,
+				email: sign_up.email,
+				password_hash: password_hash,
+				email_confirmation_token: None,
+				email_confirmed_at: None,
 			};
 
-			// Create client and then user
-			Client::create(conn, client_attrs)
-				.and_then(|client| {
-					let user_attrs = UserAttrs {
-						client_id: client.id,
-						role: ROLE_ADMIN.to_string(),
-						name: sign_up.name,
-						email: sign_up.email,
-						password_hash: password_hash,
-						email_confirmation_token: None,
-						email_confirmed_at: None,
-					};
-
-					User::create(conn, user_attrs)
-				})
-				.map_err(|e| e.to_string())
-		}
-		Err(e) => Err(e.to_string()),
-	}
+			User::create(conn, user_attrs)
+		})
+		.map_err(|e| format_err!("{}", e))
 }
 
 #[cfg(test)]

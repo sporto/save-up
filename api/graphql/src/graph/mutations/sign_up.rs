@@ -1,3 +1,4 @@
+use failure::Error;
 use models::sign_ups::SignUp;
 use juniper::{Executor, FieldResult};
 use graph::mutation_root::MutationError;
@@ -13,10 +14,10 @@ pub struct SignUpResponse {
 
 pub fn call(executor: &Executor<PublicContext>, sign_up: SignUp) -> FieldResult<SignUpResponse> {
 
-	fn other_error(message: String) -> SignUpResponse {
+	fn other_error(error: Error) -> SignUpResponse {
 		let mutation_error = MutationError { 
 			key: "other".to_owned(),
-			messages: vec![message]
+			messages: vec![error.to_string()]
 		};
 
 		SignUpResponse {
@@ -43,8 +44,7 @@ pub fn call(executor: &Executor<PublicContext>, sign_up: SignUp) -> FieldResult<
 	let token_result = services
 		::users
 		::make_token
-		::call(user)
-		.map_err(|_| "Failed to make JWT Token".to_owned() );
+		::call(user);
 
 	let token = match token_result {
 		Ok(token) =>

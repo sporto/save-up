@@ -21,5 +21,5 @@ pub fn call(user: User) -> Result<String, Error> {
 	let json = serde_json::to_value(&data)?;
 
 	encode(header, &json, secret.as_ref())
-		.map_err(|_| format_err!("Failed to encode token"))
+		.map_err(|e| format_err!("{}", e))
 }
