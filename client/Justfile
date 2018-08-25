@@ -1,26 +1,27 @@
 graph:
-  yarn graphqelm $API_HOST/graphql --base Api --header "Authorization: Bearer $SYSTEM_JWT"
+	yarn elm-graphql $API_HOST/graphql --base Api \
+		--header "Authorization: Bearer $SYSTEM_JWT"
 
 graph-pub:
-  yarn graphqelm $API_HOST/graphql-pub --base ApiPub
+	yarn elm-graphql $API_HOST/graphql-pub --base ApiPub
 
 test:
-  yarn elm-test
+	yarn elm-test
 
 build:
-  yarn ts-node ./node_modules/.bin/webpack --config webpack.dev.ts --reporter basic
+	yarn ts-node ./node_modules/.bin/webpack --config webpack.dev.ts --reporter basic
 
 watch:
-  yarn ts-node ./node_modules/.bin/webpack --config webpack.dev.ts --watch
+	yarn ts-node ./node_modules/.bin/webpack --config webpack.dev.ts --watch
 
 build-prod:
-  NODE_ENV=production yarn ts-node ./node_modules/.bin/webpack --config webpack.prod.ts
+	NODE_ENV=production yarn ts-node ./node_modules/.bin/webpack --config webpack.prod.ts
 
 start:
-  yarn ts-node ./node_modules/.bin/webpack-serve ./webpack.dev.ts
+	yarn ts-node ./node_modules/.bin/webpack-serve ./webpack.dev.ts
 
 open-stats:
-  yarn webpack-bundle-analyzer dist/app/stats.json
+	yarn webpack-bundle-analyzer dist/app/stats.json
 
 
 

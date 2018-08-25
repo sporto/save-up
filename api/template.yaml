@@ -1,0 +1,145 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  KIC
+
+Globals:
+  Function:
+    Timeout: 3
+
+  Api:
+    # enable CORS; to make more specific, change the origin wildcard
+    # to a particular domain name, e.g. "'www.example.com'"
+    Cors:
+      AllowMethods: "'*'"
+      AllowHeaders: "'*'"
+      AllowOrigin: "'*'"
+
+Resources:
+  resLambdaLocalCorsStub:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: corsOptions.handler
+      Runtime: nodejs6.10
+      FunctionName: !Sub "${paramEnvironment}${paramFeatureBranch}_${paramServiceName}_corsOptions"
+      CodeUri: cors
+      Timeout: 30
+      Events:
+        optionsForGraphQlPub:
+          Type: Api
+          Properties:
+            # RestApiId: !Ref KicApi
+            Path: /graphql-pub
+            Method: OPTIONS
+        optionsForGraphQlPriv:
+          Type: Api
+          Properties:
+            # RestApiId: !Ref KicApi
+            Path: /graphql
+            Method: OPTIONS
+
+  HelloFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: bin/hello/
+      Handler: hello
+      Runtime: go1.x
+      FunctionName: KicGraphQl
+      Description: "KIC GraphQl Public Server"
+      Environment:
+        Variables:
+          API_SECRET:
+          SYSTEM_JWT:
+      Events:
+        GraphQl:
+          Type: Api
+          Properties:
+            # RestApiId: !Ref KicApi
+            Path: /hello
+            Method: get
+
+  GraphQlPubFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: bin/graphql_pub/
+      Handler: graphql_pub
+      Runtime: go1.x
+      FunctionName: KicGraphQl
+      Description: "KIC GraphQl Public Server"
+      Environment:
+        Variables:
+          API_SECRET:
+          DATABASE_HOST:
+          DATABASE_NAME:
+          DATABASE_USER:
+          DATABASE_PASS:
+          SYSTEM_JWT:
+      Events:
+        GraphQl:
+          Type: Api
+          Properties:
+            # RestApiId: !Ref KicApi
+            Path: /graphql-pub
+            Method: get
+
+    GraphQlPrivFunction:
+      Type: AWS::Serverless::Function
+      Properties:
+        CodeUri: bin/graphql/
+        Handler: graphql
+        Runtime: go1.x
+        FunctionName: KicGraphQl
+        Description: "KIC GraphQl Private Server"
+        Environment:
+          Variables:
+            API_SECRET:
+            DATABASE_HOST:
+            DATABASE_NAME:
+            DATABASE_USER:
+            DATABASE_PASS:
+            SYSTEM_JWT:
+        Events:
+          GraphQl:
+            Type: Api
+            Properties:
+              # RestApiId: !Ref KicApi
+              Path: /graphql
+              Method: post
+
+  MigrateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: bin/migrate/
+      Handler: migrate
+      Runtime: go1.x
+      FunctionName: KicMigrate
+      Description: "KIC GraphQl DB migrate"
+      Environment:
+        Variables:
+          API_SECRET:
+          DATABASE_HOST:
+          DATABASE_NAME:
+          DATABASE_USER:
+          DATABASE_PASS:
+          SYSTEM_JWT:
+      Events:
+        GraphQl:
+          Type: Api
+          Properties:
+            # RestApiId: !Ref KicApi
+            Path: /migrate
+            Method: post
+
+Outputs:
+
+  KicGraphQlApi:
+    Description: "API Gateway endpoint URL for Prod stage for KIC GraphQl function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/graphql/"
+
+  KicGraphQlFunction:
+    Description: "KIC GraphQl Lambda Function ARN"
+    Value: !GetAtt KicGraphQlFunction.Arn
+
+  KicGraphQlFunctionIamRole:
+    Description: "Implicit IAM Role created for KIC GraphQl function"
+    Value: !GetAtt KicGraphQlFunctionRole.Arn

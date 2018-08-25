@@ -40,7 +40,7 @@ provider:
   environment:
     API_SECRET: ${ssm:/kic/prod/api-secret}
     DATABASE_NAME: kic
-    DATABASE_END_POINT:
+    DATABASE_HOST:
       "Fn::Join": [":", ["Fn::GetAtt": [PgDB, Endpoint.Address], "Fn::GetAtt": [PgDB, Endpoint.Port]]]
     DATABASE_USER: ${ssm:/kic/prod/db-user}
     DATABASE_PASS: ${ssm:/kic/prod/db-pass}

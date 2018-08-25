@@ -35,13 +35,13 @@ fn variable_names() -> VariableNames {
 	match app_env() {
 		AppEnv::Dev => VariableNames {
 			database_name: "DATABASE_NAME".into(),
-			database_end_point: "DATABASE_END_POINT".into(),
+			database_end_point: "DATABASE_HOST".into(),
 			database_user: "DATABASE_USER".into(),
 			database_pass: "DATABASE_PASS".into(),
 		},
 		AppEnv::Test => VariableNames {
 			database_name: "DATABASE_NAME_TEST".into(),
-			database_end_point: "DATABASE_END_POINT_TEST".into(),
+			database_end_point: "DATABASE_HOST_TEST".into(),
 			database_user: "DATABASE_USER_TEST".into(),
 			database_pass: "DATABASE_PASS_TEST".into(),
 		}

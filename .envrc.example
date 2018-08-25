@@ -1,8 +1,8 @@
 export API_HOST=http://localhost:4010
 export API_SECRET=abc
 export CLIENT_HOST=http://localhost:8080
-export DATABASE_END_POINT_TEST=localhost
-export DATABASE_END_POINT=localhost
+export DATABASE_HOST_TEST=localhost
+export DATABASE_HOST=localhost
 export DATABASE_NAME_TEST=db_name_test
 export DATABASE_NAME=db_name
 export DATABASE_PASS_TEST=

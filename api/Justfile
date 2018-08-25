@@ -25,16 +25,16 @@ build-mail:
 	just copy-binary mail mail
 
 # Generate SAM template.yml, so we can test this locally
+# THIS DOESN'T VALIDATE
 generate-sam:
 	sls sam export --output ./sam.yml
 
 sam-validate:
-	sam validate -t sam.yml
+	sam validate -t template.yaml
 
 sam-local:
-	DATABASE_URL=$DATABASE_URL \
-		sam local start-api \
-		-t sam.yml \
+	sam local start-api \
+		-t template.yaml \
 		-p 4010 \
 		--skip-pull-image
 
