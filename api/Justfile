@@ -1,9 +1,31 @@
 start:
 	DATABASE_URL=$DATABASE_URL sam local start-api -p 4010 --skip-pull-image
 
-build:
-	just hello/build
-	just graphql/build
+# In order to have the shared folder during compilation
+# We need to compile from the parent directory
+build-directory directory:
+	docker run \
+		--rm \
+		-it \
+		-v $PWD/{{directory}}:/volume/{{directory}} \
+		-v $PWD/shared:/volume/shared \
+		-v cargo-cache:/root/.cargo \
+		clux/muslrust:stable \
+		cargo build --release --manifest-path ./{{directory}}/Cargo.toml
+
+copy-binary directory bin_name:
+	mkdir -p ./bin/{{bin_name}}/
+	cp {{directory}}/target/x86_64-unknown-linux-musl/release/{{bin_name}} ./bin/{{bin_name}}/
+
+build-graphql:
+	just build-directory graphql
+	just copy-binary graphql graphql
+	just copy-binary graphql graphql_pub
+	just copy-binary graphql migrate
+
+build-mail:
+	just build-directory mail
+	just copy-binary mail mail
 
 # Generate SAM template.yml, so we can test this locally
 gen-sam:

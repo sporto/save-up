@@ -60,49 +60,15 @@ fn main() {
 }
 
 fn run(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
-	// We are supposed to use a lambda function as authoriser
-	// But SAM doesn't support this flow when working locally yet
-	// So I don't know how to wire this
-	// For now do all the work here
-
-	// Get user id
-	// let user_id_val = request
-	// 	.request_context
-	// 	.authorizer
-	// 	.get("userId")
-	// 	.ok_or(format_err!("Failed to get userId"))?;
-
-	// let user_id = user_id_val
-	// 	.as_i64()
-	// 	.ok_or(format_err!("Failed to parse {}", user_id_val))
-	// 	.map(|n| n as i32)?;
-
-	// Find the authorisation header
-	let header = request
-		.headers
-		.get("Authorization")
-		.ok_or(format_err!("No Authorization header found"))?;
-
-	// Get the jwt from the header
-	// e.g. Bearer abc123...
-	// We don't need the Bearer part,
-	// So get whatever is after an index of 7
-	let token = &header[7..];
-
 	let conn = db::establish_connection()?;
 
-	let user = get_user(&conn, token)?;
+	let context = graph::context::PublicContext { conn: conn };
 
-	let context = graph::context::Context {
-		conn: conn,
-		user: user,
-	};
+	let query_root = graph::query_root::PublicQueryRoot {};
 
-	let query_root = graph::query_root::QueryRoot {};
+	let mutation_root = graph::mutation_root::PublicMutationRoot {};
 
-	let mutation_root = graph::mutation_root::MutationRoot {};
-
-	let schema = Schema::new(query_root, mutation_root);
+	let schema = PublicSchema::new(query_root, mutation_root);
 
 	let body = request.body.clone().ok_or(format_err!("Body not found"))?;
 
@@ -111,19 +77,4 @@ fn run(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
 	let juniper_result = request.execute(&schema, &context);
 
 	serde_json::to_string(&juniper_result).map_err(|e| format_err!("{}", e.to_string()))
-}
-
-fn get_user(conn: &PgConnection, token: &str) -> Result<models::user::User, Error> {
-	let config = utils::config::get()?;
-
-	if token == config.system_jwt {
-		return Ok(models::user::system_user());
-	}
-
-	let token_data = services::users::decode_token::call(token)?;
-
-	let user_id = token_data.user_id;
-
-	models::user::User::find(&conn, user_id)
-		.map_err(|_| format_err!("User not found"))
 }

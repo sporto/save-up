@@ -24,16 +24,3 @@ schema:
 
 test:
 	APP_ENV=test cargo test
-
-build:
-	docker run \
-		--rm \
-		-it \
-		-v $PWD:/volume \
-		-v cargo-cache:/root/.cargo \
-		clux/muslrust:stable \
-		cargo build --release
-	mkdir -p ../bin/graphql/
-	mkdir -p ../bin/migrate/
-	cp target/x86_64-unknown-linux-musl/release/graphql ../bin/graphql/
-	cp target/x86_64-unknown-linux-musl/release/migrate ../bin/migrate/

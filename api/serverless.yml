@@ -47,23 +47,6 @@ provider:
     SYSTEM_EMAIL: ${ssm:/kic/prod/system-email}
     SYSTEM_JWT: ${ssm:/kic/prod/system-jwt}
 
-    # DATABASE_URL:
-    #   "Fn::Join": [
-    #     "",
-    #     [
-    #       "postgres://",
-    #       ${ssm:/kic/prod/db-user},
-    #       ":",
-    #       ${ssm:/kic/prod/db-pass},
-    #       "@",
-    #       "Fn::GetAtt": [PgDB, Endpoint.Address],
-    #       ":",
-    #       "Fn::GetAtt": [PgDB, Endpoint.Port],
-    #       "/",
-    #       "Ref": DBName
-    #     ]
-    #   ]
-
 custom:
   apiSecret: ${ssm:/kic/prod/api-secret}
   dbUserName: ${ssm:/kic/prod/db-user}
@@ -106,6 +89,17 @@ functions:
     events:
       - http:
           path: migrate
+          method: post
+  graphql:
+    runtime: go1.x
+    handler: bin/graphql/graphql
+    timeout: 10
+    package:
+      include:
+        - ./bin/graphql/**
+    events:
+      - http:
+          path: graphql
           method: post
   mail:
     runtime: go1.x

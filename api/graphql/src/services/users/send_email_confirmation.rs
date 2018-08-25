@@ -31,7 +31,5 @@ pub fn call(user: &User) -> Result<(), Error> {
 
 	client.publish(input);
 
-	// client.
-	// client::
 	Ok(())
 }

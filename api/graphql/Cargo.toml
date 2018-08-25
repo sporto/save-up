@@ -8,6 +8,10 @@ name = "graphql"
 path = "src/graphql.rs"
 
 [[bin]]
+name = "graphql_pub"
+path = "src/graphql_pub.rs"
+
+[[bin]]
 name = "migrate"
 path = "src/migrate.rs"
 
