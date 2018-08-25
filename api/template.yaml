@@ -80,7 +80,7 @@ Resources:
           Properties:
             # RestApiId: !Ref KicApi
             Path: /graphql-pub
-            Method: get
+            Method: post
 
     GraphQlPrivFunction:
       Type: AWS::Serverless::Function
