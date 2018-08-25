@@ -1,9 +1,12 @@
 module Investor exposing (main)
 
+import Browser exposing (UrlRequest)
+import Browser.Navigation
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Shared.Sessions as Sessions
+import Url exposing (Url)
 
 
 type alias Flags =
@@ -19,12 +22,15 @@ initialModel =
     { count = 0 }
 
 
-init flags =
+init : Flags -> Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
+init flags url key =
     ( initialModel, Cmd.none )
 
 
 type Msg
     = SignOut
+    | OnUrlRequest UrlRequest
+    | OnUrlChange Url
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -33,14 +39,22 @@ update msg model =
         SignOut ->
             ( model, Sessions.toJsSignOut () )
 
+        OnUrlRequest request ->
+            ( model, Cmd.none )
+
+        OnUrlChange url ->
+            ( model, Cmd.none )
+
 
 subscriptions model =
     Sub.none
 
 
-view : Model -> Html Msg
+view : Model -> Browser.Document Msg
 view model =
-    navigation model
+    { title = "SaveUp"
+    , body = [ navigation model ]
+    }
 
 
 navigation : Model -> Html Msg
@@ -53,9 +67,11 @@ navigation model =
 
 main : Program Flags Model Msg
 main =
-    Html.programWithFlags
+    Browser.application
         { init = init
         , subscriptions = subscriptions
         , update = update
         , view = view
+        , onUrlRequest = OnUrlRequest
+        , onUrlChange = OnUrlChange
         }
