@@ -3,6 +3,7 @@ module SignIn exposing (main)
 import ApiPub.Mutation
 import ApiPub.Object
 import ApiPub.Object.SignInResponse
+import Browser
 import Debug
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
@@ -103,7 +104,7 @@ update msg model =
             case result of
                 Err e ->
                     Debug.log
-                        (toString e)
+                        (Debug.toString e)
                         ( { model | response = RemoteData.Failure e }, Cmd.none )
 
                 Ok response ->
@@ -125,7 +126,7 @@ subscriptions model =
 
 main : Program Flags.PublicFlags Model Msg
 main =
-    Html.programWithFlags
+    Browser.document
         { init = init
         , subscriptions = subscriptions
         , update = update
@@ -138,8 +139,15 @@ main =
 -- TODO add html validation
 
 
-view : Model -> Html Msg
+view : Model -> Browser.Document Msg
 view model =
+    { title = "Sign in"
+    , body = [ body_ model ]
+    }
+
+
+body_ : Model -> Html Msg
+body_ model =
     div [ class "flex items-center justify-center pt-16" ]
         [ div []
             [ h1 []
@@ -203,7 +211,7 @@ maybeErrors model =
                 response.errors
 
         RemoteData.Failure err ->
-            Flash.error (toString err)
+            Flash.error (Debug.toString err)
 
         _ ->
             text ""
