@@ -23,7 +23,7 @@ extern crate url;
 extern crate validator;
 extern crate shared;
 
-use diesel::pg::PgConnection;
+// use diesel::pg::PgConnection;
 use failure::Error;
 use juniper::http::GraphQLRequest;
 use juniper::RootNode;

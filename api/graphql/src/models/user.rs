@@ -87,6 +87,11 @@ impl UserAttrs {
 		self.password_hash = ph.to_owned();
 		self
 	}
+
+	pub fn email_confirmation_token(mut self, token: &str) -> Self {
+		self.email_confirmation_token = Some(token.into());
+		self
+	}
 }
 
 impl User {
