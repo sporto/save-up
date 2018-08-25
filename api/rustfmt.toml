@@ -1,0 +1,5 @@
+hard_tabs = true
+merge_imports = true
+match_block_trailing_comma = true
+force_multiline_blocks = true
+struct_field_align_threshold = 20

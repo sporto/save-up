@@ -41,6 +41,7 @@ const PUBLIC_PATH: &'static str = "/graphql-pub";
 
 type PublicSchema =
 	RootNode<'static, graph::query_root::PublicQueryRoot, graph::mutation_root::PublicMutationRoot>;
+
 type Schema = RootNode<'static, graph::query_root::QueryRoot, graph::mutation_root::MutationRoot>;
 
 fn main() {

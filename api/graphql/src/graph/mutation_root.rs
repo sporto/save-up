@@ -1,18 +1,19 @@
-use juniper::{FieldResult};
+use failure::Error;
+use juniper::FieldResult;
 use validator::{ValidationError, ValidationErrors};
 
-use models::sign_up::SignUp;
-use models::sign_in::SignIn;
+use graph::context::{Context, PublicContext};
 use graph::mutations;
-use graph::context::{PublicContext,Context};
+use models::sign_in::SignIn;
+use models::sign_up::SignUp;
 
 pub struct PublicMutationRoot;
 pub struct MutationRoot;
 
 #[derive(GraphQLObject, Clone)]
 pub struct MutationError {
-	pub  key: String,
-	pub  messages: Vec<String>,
+	pub key: String,
+	pub messages: Vec<String>,
 }
 
 #[allow(dead_code)]
@@ -40,6 +41,15 @@ fn to_mutation_error_messages(errors: Vec<ValidationError>) -> Vec<String> {
 		.collect()
 }
 
+pub fn failure_to_mutation_errors(error: Error) -> Vec<MutationError> {
+	let mutation_error = MutationError {
+		key: "other".to_owned(),
+		messages: vec![error.to_string()],
+	};
+
+	vec![mutation_error]
+}
+
 graphql_object!(PublicMutationRoot: PublicContext | &self | {
 
 	field signUp(&executor, sign_up: SignUp) -> FieldResult<mutations::sign_up::SignUpResponse> {
@@ -48,6 +58,16 @@ graphql_object!(PublicMutationRoot: PublicContext | &self | {
 
 	field signIn(&executor, sign_in: SignIn) -> FieldResult<mutations::sign_in::SignInResponse> {
 		mutations::sign_in::call(executor, sign_in)
+	}
+
+	field confirm_email(
+		&executor,
+		attrs: mutations::confirm_email::ConfirmEmailInput
+		) -> FieldResult<mutations::confirm_email::ConfirmEmailResponse> {
+		
+		mutations
+			::confirm_email
+			::call(executor, attrs)
 	}
 
 });

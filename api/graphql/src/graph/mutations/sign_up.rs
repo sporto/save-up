@@ -1,6 +1,6 @@
 use failure::Error;
 use graph::context::PublicContext;
-use graph::mutation_root::MutationError;
+use graph::mutation_root::{MutationError,failure_to_mutation_errors};
 use juniper::{Executor, FieldResult};
 use models::sign_up::SignUp;
 use services;
@@ -14,14 +14,9 @@ pub struct SignUpResponse {
 
 pub fn call(executor: &Executor<PublicContext>, sign_up: SignUp) -> FieldResult<SignUpResponse> {
 	fn other_error(error: Error) -> SignUpResponse {
-		let mutation_error = MutationError {
-			key: "other".to_owned(),
-			messages: vec![error.to_string()],
-		};
-
 		SignUpResponse {
 			success: false,
-			errors: vec![mutation_error],
+			errors: failure_to_mutation_errors(error),
 			token: None,
 		}
 	}

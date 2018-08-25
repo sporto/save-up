@@ -2,8 +2,8 @@ use chrono::prelude::*;
 use diesel;
 use diesel::prelude::*;
 use failure::Error;
+
 use models::schema::users;
-use models::client;
 use models::user;
 
 pub fn call(conn: &PgConnection, token: &str) -> Result<user::User, Error> {
@@ -23,20 +23,20 @@ pub fn call(conn: &PgConnection, token: &str) -> Result<user::User, Error> {
 mod tests {
 	use super::*;
 	use utils::tests;
+	use models::client;
 
 	#[test]
 	fn it_updates_the_user() {
 		tests::with_db(|conn| {
 			let client = client::client_attrs().save(conn);
 
-			let user = user
-				::user_attrs(&client)
+			let user = user::user_attrs(&client)
 				.email_confirmation_token("xyz")
 				.save(conn);
 
 			let returned_user = call(&conn, "xyz").unwrap();
 
-			assert!(returned_user.email_confirmed_at != None )
+			assert!(returned_user.email_confirmed_at != None)
 		})
 	}
 
@@ -45,8 +45,7 @@ mod tests {
 		tests::with_db(|conn| {
 			let client = client::client_attrs().save(conn);
 
-			let user = user
-				::user_attrs(&client)
+			let user = user::user_attrs(&client)
 				.email_confirmation_token("abc")
 				.save(conn);
 
@@ -56,5 +55,4 @@ mod tests {
 		})
 	}
 
-	
 }
