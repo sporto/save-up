@@ -1,37 +1,40 @@
 module Admin exposing (main)
 
 import Admin.AppLocation as AppLocation exposing (AppLocation)
-import Admin.Navigation as Navigation
 import Admin.Pages.Home as Home
 import Admin.Pages.Invite as Invite
 import Admin.Routes as Routes exposing (Route)
+import Browser exposing (UrlRequest)
+import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
-import Navigation exposing (Location)
 import Shared.Context exposing (Context)
 import Shared.Flags as Flags
 import Shared.Sessions as Sessions
+import Url exposing (Url)
 
 
 type alias Model =
     { flags : Flags.Flags
     , currentLocation : AppLocation
+    , key : Nav.Key
     , page : Page
     }
 
 
-initialModel : Flags.Flags -> Location -> Model
-initialModel flags location =
+initialModel : Flags.Flags -> Url -> Nav.Key -> Model
+initialModel flags url key =
     { flags = flags
-    , currentLocation = AppLocation.navigationLocationToAppLocation location
+    , currentLocation = AppLocation.fromUrl url
+    , key = key
     , page = Page_Home
     }
 
 
-init : Flags.Flags -> Location -> ( Model, Cmd Msg )
-init flags location =
-    ( initialModel flags location
+init : Flags.Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
+init flags url key =
+    ( initialModel flags url key
     , Cmd.none
     )
         |> initCurrentPage
@@ -39,8 +42,8 @@ init flags location =
 
 type Msg
     = SignOut
-    | NavigateTo Routes.Route
-    | OnLocationChange Location
+    | OnUrlChange Url
+    | OnUrlRequest UrlRequest
     | PageInviteMsg Invite.Msg
 
 
@@ -61,21 +64,27 @@ update msg model =
         SignOut ->
             ( model, Sessions.toJsSignOut () )
 
-        NavigateTo route ->
-            ( model, Navigation.setRoute route )
-
-        OnLocationChange location ->
+        OnUrlChange url ->
             let
-                _ =
-                    Debug.log "location" location.pathname
-
                 newLocation =
-                    AppLocation.navigationLocationToAppLocation location
+                    AppLocation.fromUrl url
             in
             ( { model | currentLocation = newLocation }
             , Cmd.none
             )
                 |> initCurrentPage
+
+        OnUrlRequest urlRequest ->
+            case urlRequest of
+                Browser.Internal url ->
+                    ( model
+                    , Nav.pushUrl model.key (Url.toString url)
+                    )
+
+                Browser.External url ->
+                    ( model
+                    , Nav.load url
+                    )
 
         PageInviteMsg sub ->
             case model.page of
@@ -132,12 +141,14 @@ subscriptions model =
         ]
 
 
-view : Model -> Html Msg
+view : Model -> Browser.Document Msg
 view model =
-    section []
+    { title = "SaveUp"
+    , body =
         [ navigation model
         , currentPage model
         ]
+    }
 
 
 navigation : Model -> Html Msg
@@ -160,8 +171,7 @@ navigation model =
 navigationLink : Route -> String -> Html Msg
 navigationLink route label =
     a
-        [ href "javascript://"
-        , onClick (NavigateTo route)
+        [ href (Routes.pathFor route)
         , class "text-white mr-4"
         ]
         [ text label ]
@@ -181,16 +191,16 @@ currentPage model =
     in
     section [ class "p-4" ]
         [ page
-        , text (toString model.currentLocation.route)
-        , text (toString model.page)
         ]
 
 
 main : Program Flags.Flags Model Msg
 main =
-    Navigation.programWithFlags OnLocationChange
+    Browser.application
         { init = init
         , subscriptions = subscriptions
         , update = update
         , view = view
+        , onUrlRequest = OnUrlRequest
+        , onUrlChange = OnUrlChange
         }

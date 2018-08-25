@@ -29,8 +29,8 @@ init flags url key =
 
 type Msg
     = SignOut
-    | OnUrlRequest UrlRequest
     | OnUrlChange Url
+    | OnUrlRequest UrlRequest
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

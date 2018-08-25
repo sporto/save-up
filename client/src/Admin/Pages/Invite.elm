@@ -64,7 +64,7 @@ update context msg model =
             case result of
                 Err e ->
                     Debug.log
-                        (toString e)
+                        (Debug.toString e)
                         ( { model | response = RemoteData.Failure e }, Cmd.none )
 
                 Ok response ->

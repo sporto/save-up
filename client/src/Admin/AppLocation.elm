@@ -1,19 +1,17 @@
-module Admin.AppLocation exposing (AppLocation, navigationLocationToAppLocation)
+module Admin.AppLocation exposing (AppLocation, fromUrl)
 
 import Admin.Routes as Routes exposing (Route)
-import Navigation
+import Url exposing (Url)
 
 
 type alias AppLocation =
-    { hash : String
-    , query : String
+    { rawUrl : Url
     , route : Route
     }
 
 
-navigationLocationToAppLocation : Navigation.Location -> AppLocation
-navigationLocationToAppLocation location =
-    { hash = location.hash
-    , query = location.search
-    , route = Routes.parseLocation location
+fromUrl : Url -> AppLocation
+fromUrl url =
+    { rawUrl = url
+    , route = Routes.parseUrl url
     }

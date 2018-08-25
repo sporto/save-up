@@ -1,7 +1,7 @@
-module Admin.Routes exposing (Route(..), matchers, namespace, namespaceAbs, parseLocation, pathFor)
+module Admin.Routes exposing (Route(..), parseUrl, pathFor)
 
-import Navigation exposing (Location)
-import UrlParser exposing (..)
+import Url exposing (Url)
+import Url.Parser exposing (..)
 
 
 namespace =
@@ -28,9 +28,9 @@ matchers =
                 ]
 
 
-parseLocation : Location -> Route
-parseLocation location =
-    case parsePath matchers location of
+parseUrl : Url -> Route
+parseUrl url =
+    case parse matchers url of
         Just route ->
             route
 
