@@ -1,4 +1,4 @@
-port module Shared.Sessions exposing (..)
+port module Shared.Sessions exposing (SignIn, SignUp, newSignIn, newSignUp, toJsSignOut, toJsUseToken)
 
 import ApiPub.InputObject
 import Json.Decode as Decode

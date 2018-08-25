@@ -3,9 +3,9 @@ module SignIn exposing (main)
 import ApiPub.Mutation
 import ApiPub.Object
 import ApiPub.Object.SignInResponse
-import Graphqelm.Operation exposing (RootQuery, RootMutation)
-import Graphqelm.SelectionSet exposing (SelectionSet, with)
 import Debug
+import Graphql.Operation exposing (RootMutation, RootQuery)
+import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, name, type_)
 import Html.Events exposing (onClick, onInput, onSubmit)
@@ -13,10 +13,10 @@ import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
 import RemoteData
-import Shared.Css exposing (molecules)
 import Shared.Context exposing (PublicContext)
+import Shared.Css exposing (molecules)
 import Shared.Flags as Flags
-import Shared.GraphQl exposing (GraphResponse, GraphData, MutationError, mutationErrorPublicSelection, sendPublicMutation)
+import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorPublicSelection, sendPublicMutation)
 import Shared.Sessions as Sessions exposing (SignIn)
 import UI.Flash as Flash
 import UI.Forms as Forms
@@ -79,44 +79,44 @@ update msg model =
             { flags = model.flags
             }
     in
-        case msg of
-            ChangeEmail email ->
-                ( email
-                    |> asEmailInSignIn model.signIn
-                    |> asSignInInModel model
-                , Cmd.none
-                )
+    case msg of
+        ChangeEmail email ->
+            ( email
+                |> asEmailInSignIn model.signIn
+                |> asSignInInModel model
+            , Cmd.none
+            )
 
-            ChangePassword password ->
-                ( password
-                    |> asPasswordInSignIn model.signIn
-                    |> asSignInInModel model
-                , Cmd.none
-                )
+        ChangePassword password ->
+            ( password
+                |> asPasswordInSignIn model.signIn
+                |> asSignInInModel model
+            , Cmd.none
+            )
 
-            Submit ->
-                ( { model | response = RemoteData.Loading }
-                , sendCreateSignInMutation context model.signIn
-                )
+        Submit ->
+            ( { model | response = RemoteData.Loading }
+            , sendCreateSignInMutation context model.signIn
+            )
 
-            OnSubmitResponse result ->
-                case result of
-                    Err e ->
-                        Debug.log
-                            (toString e)
-                            ( { model | response = RemoteData.Failure e }, Cmd.none )
+        OnSubmitResponse result ->
+            case result of
+                Err e ->
+                    Debug.log
+                        (toString e)
+                        ( { model | response = RemoteData.Failure e }, Cmd.none )
 
-                    Ok response ->
-                        case response.token of
-                            Just token ->
-                                ( { model | response = RemoteData.Success response }
-                                , Sessions.toJsUseToken token
-                                )
+                Ok response ->
+                    case response.token of
+                        Just token ->
+                            ( { model | response = RemoteData.Success response }
+                            , Sessions.toJsUseToken token
+                            )
 
-                            Nothing ->
-                                ( { model | response = RemoteData.Success response }
-                                , Cmd.none
-                                )
+                        Nothing ->
+                            ( { model | response = RemoteData.Success response }
+                            , Cmd.none
+                            )
 
 
 subscriptions model =
@@ -235,6 +235,6 @@ createSignInMutation signIn =
 signInResponseSelection : SelectionSet SignInResponse ApiPub.Object.SignInResponse
 signInResponseSelection =
     ApiPub.Object.SignInResponse.selection SignInResponse
-        |> with (ApiPub.Object.SignInResponse.success)
+        |> with ApiPub.Object.SignInResponse.success
         |> with (ApiPub.Object.SignInResponse.errors mutationErrorPublicSelection)
-        |> with (ApiPub.Object.SignInResponse.token)
+        |> with ApiPub.Object.SignInResponse.token

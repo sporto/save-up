@@ -1,4 +1,4 @@
-module UI.Flash exposing (..)
+module UI.Flash exposing (error)
 
 import Html exposing (..)
 import Html.Attributes exposing (class)

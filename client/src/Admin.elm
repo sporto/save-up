@@ -57,42 +57,42 @@ update msg model =
             { flags = model.flags
             }
     in
-        case msg of
-            SignOut ->
-                ( model, Sessions.toJsSignOut () )
+    case msg of
+        SignOut ->
+            ( model, Sessions.toJsSignOut () )
 
-            NavigateTo route ->
-                ( model, Navigation.setRoute route )
+        NavigateTo route ->
+            ( model, Navigation.setRoute route )
 
-            OnLocationChange location ->
-                let
-                    _ =
-                        Debug.log "location" location.pathname
+        OnLocationChange location ->
+            let
+                _ =
+                    Debug.log "location" location.pathname
 
-                    newLocation =
-                        AppLocation.navigationLocationToAppLocation location
-                in
-                    ( { model | currentLocation = newLocation }
-                    , Cmd.none
+                newLocation =
+                    AppLocation.navigationLocationToAppLocation location
+            in
+            ( { model | currentLocation = newLocation }
+            , Cmd.none
+            )
+                |> initCurrentPage
+
+        PageInviteMsg sub ->
+            case model.page of
+                Page_Invite pageModel ->
+                    let
+                        ( newPageModel, pageCmd ) =
+                            Invite.update
+                                context
+                                sub
+                                pageModel
+                    in
+                    ( { model | page = Page_Invite newPageModel }
+                    , Cmd.map PageInviteMsg pageCmd
                     )
-                        |> initCurrentPage
 
-            PageInviteMsg sub ->
-                case model.page of
-                    Page_Invite pageModel ->
-                        let
-                            ( newPageModel, pageCmd ) =
-                                Invite.update
-                                    context
-                                    sub
-                                    pageModel
-                        in
-                            ( { model | page = Page_Invite newPageModel }
-                            , Cmd.map PageInviteMsg pageCmd
-                            )
-
-                    _ ->
-                        ( model, Cmd.none )
+                _ ->
+                    ( model, Cmd.none )
 
 
 initCurrentPage : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
@@ -108,12 +108,12 @@ initCurrentPage ( model, cmds ) =
                         ( pageModel, pageCmd ) =
                             Invite.init
                     in
-                        ( Page_Invite pageModel, Cmd.map PageInviteMsg pageCmd )
+                    ( Page_Invite pageModel, Cmd.map PageInviteMsg pageCmd )
 
                 Routes.Route_NotFound ->
                     ( Page_Home, Cmd.none )
     in
-        ( { model | page = newPage }, Cmd.batch [ cmds, newCmd ] )
+    ( { model | page = newPage }, Cmd.batch [ cmds, newCmd ] )
 
 
 subscriptions : Model -> Sub Msg
@@ -127,9 +127,9 @@ subscriptions model =
                 Page_Invite pageModel ->
                     Sub.map PageInviteMsg (Invite.subscriptions pageModel)
     in
-        Sub.batch
-            [ pageSub
-            ]
+    Sub.batch
+        [ pageSub
+        ]
 
 
 view : Model -> Html Msg
@@ -179,11 +179,11 @@ currentPage model =
                     Invite.view pageModel
                         |> map PageInviteMsg
     in
-        section [ class "p-4" ]
-            [ page
-            , text (toString model.currentLocation.route)
-            , text (toString model.page)
-            ]
+    section [ class "p-4" ]
+        [ page
+        , text (toString model.currentLocation.route)
+        , text (toString model.page)
+        ]
 
 
 main : Program Flags.Flags Model Msg

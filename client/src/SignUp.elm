@@ -3,8 +3,8 @@ module SignUp exposing (main)
 import ApiPub.Mutation
 import ApiPub.Object
 import ApiPub.Object.SignUpResponse
-import Graphqelm.Operation exposing (RootQuery, RootMutation)
-import Graphqelm.SelectionSet exposing (SelectionSet, with)
+import Graphql.Operation exposing (RootMutation, RootQuery)
+import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, name, type_)
 import Html.Events exposing (onClick, onInput, onSubmit)
@@ -12,10 +12,10 @@ import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
 import RemoteData
-import Shared.Css exposing (molecules)
 import Shared.Context exposing (PublicContext)
+import Shared.Css exposing (molecules)
 import Shared.Flags as Flags
-import Shared.GraphQl exposing (GraphResponse, GraphData, MutationError, mutationErrorPublicSelection, sendPublicMutation)
+import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorPublicSelection, sendPublicMutation)
 import Shared.Sessions as Sessions exposing (SignUp)
 import UI.Flash as Flash
 import UI.Forms as Forms
@@ -84,51 +84,51 @@ update msg model =
             { flags = model.flags
             }
     in
-        case msg of
-            ChangeEmail email ->
-                ( email
-                    |> asEmailInSignUp model.signUp
-                    |> asSignUpInModel model
-                , Cmd.none
-                )
+    case msg of
+        ChangeEmail email ->
+            ( email
+                |> asEmailInSignUp model.signUp
+                |> asSignUpInModel model
+            , Cmd.none
+            )
 
-            ChangeName name ->
-                ( name
-                    |> asNameInSignUp model.signUp
-                    |> asSignUpInModel model
-                , Cmd.none
-                )
+        ChangeName name ->
+            ( name
+                |> asNameInSignUp model.signUp
+                |> asSignUpInModel model
+            , Cmd.none
+            )
 
-            ChangePassword password ->
-                ( password
-                    |> asPasswordInSignUp model.signUp
-                    |> asSignUpInModel model
-                , Cmd.none
-                )
+        ChangePassword password ->
+            ( password
+                |> asPasswordInSignUp model.signUp
+                |> asSignUpInModel model
+            , Cmd.none
+            )
 
-            Submit ->
-                ( { model | response = RemoteData.Loading }
-                , sendCreateSignUpMutation context model.signUp
-                )
+        Submit ->
+            ( { model | response = RemoteData.Loading }
+            , sendCreateSignUpMutation context model.signUp
+            )
 
-            OnSubmitResponse result ->
-                case result of
-                    Err e ->
-                        Debug.log
-                            (toString e)
-                            ( { model | response = RemoteData.Failure e }, Cmd.none )
+        OnSubmitResponse result ->
+            case result of
+                Err e ->
+                    Debug.log
+                        (toString e)
+                        ( { model | response = RemoteData.Failure e }, Cmd.none )
 
-                    Ok response ->
-                        case response.token of
-                            Just token ->
-                                ( { model | response = RemoteData.Success response }
-                                , Sessions.toJsUseToken token
-                                )
+                Ok response ->
+                    case response.token of
+                        Just token ->
+                            ( { model | response = RemoteData.Success response }
+                            , Sessions.toJsUseToken token
+                            )
 
-                            Nothing ->
-                                ( { model | response = RemoteData.Success response }
-                                , Cmd.none
-                                )
+                        Nothing ->
+                            ( { model | response = RemoteData.Success response }
+                            , Cmd.none
+                            )
 
 
 subscriptions model =
@@ -222,6 +222,7 @@ maybeErrors model =
         RemoteData.Success response ->
             if List.isEmpty response.errors then
                 text ""
+
             else
                 Forms.mutationError
                     "other"
@@ -267,6 +268,6 @@ createSignUpMutation signUp =
 signUpResponseSelection : SelectionSet SignUpResponse ApiPub.Object.SignUpResponse
 signUpResponseSelection =
     ApiPub.Object.SignUpResponse.selection SignUpResponse
-        |> with (ApiPub.Object.SignUpResponse.success)
+        |> with ApiPub.Object.SignUpResponse.success
         |> with (ApiPub.Object.SignUpResponse.errors mutationErrorPublicSelection)
-        |> with (ApiPub.Object.SignUpResponse.token)
+        |> with ApiPub.Object.SignUpResponse.token

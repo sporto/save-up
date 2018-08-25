@@ -1,4 +1,4 @@
-module Admin.AppLocation exposing (..)
+module Admin.AppLocation exposing (AppLocation, navigationLocationToAppLocation)
 
 import Admin.Routes as Routes exposing (Route)
 import Navigation

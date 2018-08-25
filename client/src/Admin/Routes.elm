@@ -1,4 +1,4 @@
-module Admin.Routes exposing (..)
+module Admin.Routes exposing (Route(..), matchers, namespace, namespaceAbs, parseLocation, pathFor)
 
 import Navigation exposing (Location)
 import UrlParser exposing (..)

@@ -1,22 +1,22 @@
-module Shared.GraphQl exposing (..)
+module Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, apiEndPoint, apiEndPointPublic, mutationErrorPublicSelection, mutationErrorSelection, sendMutation, sendPublicMutation)
 
 import Api.Object
 import Api.Object.MutationError
 import ApiPub.Object
 import ApiPub.Object.MutationError
-import Graphqelm.Http
-import Graphqelm.Operation exposing (RootQuery, RootMutation)
-import Graphqelm.SelectionSet exposing (SelectionSet, with)
+import Graphql.Http
+import Graphql.Operation exposing (RootMutation, RootQuery)
+import Graphql.SelectionSet exposing (SelectionSet, with)
 import RemoteData
-import Shared.Context exposing (PublicContext, Context)
+import Shared.Context exposing (Context, PublicContext)
 
 
 type alias GraphData a =
-    RemoteData.RemoteData (Graphqelm.Http.Error a) a
+    RemoteData.RemoteData (Graphql.Http.Error a) a
 
 
 type alias GraphResponse a =
-    Result (Graphqelm.Http.Error a) a
+    Result (Graphql.Http.Error a) a
 
 
 type alias MutationError =
@@ -57,8 +57,8 @@ sendPublicMutation :
     -> Cmd msg
 sendPublicMutation context mutationId mutation onResponse =
     mutation
-        |> Graphqelm.Http.mutationRequest (apiEndPointPublic context mutationId)
-        |> Graphqelm.Http.send onResponse
+        |> Graphql.Http.mutationRequest (apiEndPointPublic context mutationId)
+        |> Graphql.Http.send onResponse
 
 
 sendMutation :
@@ -69,6 +69,6 @@ sendMutation :
     -> Cmd msg
 sendMutation context mutationId mutation onResponse =
     mutation
-        |> Graphqelm.Http.mutationRequest (apiEndPoint context mutationId)
-        |> Graphqelm.Http.withHeader "Authorization" ("Bearer " ++ context.flags.token)
-        |> Graphqelm.Http.send onResponse
+        |> Graphql.Http.mutationRequest (apiEndPoint context mutationId)
+        |> Graphql.Http.withHeader "Authorization" ("Bearer " ++ context.flags.token)
+        |> Graphql.Http.send onResponse

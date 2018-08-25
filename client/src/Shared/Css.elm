@@ -1,4 +1,4 @@
-module Shared.Css exposing (..)
+module Shared.Css exposing (molecules)
 
 
 molecules =

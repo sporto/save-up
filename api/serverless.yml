@@ -101,6 +101,17 @@ functions:
       - http:
           path: graphql
           method: post
+  graphql_pub:
+    runtime: go1.x
+    handler: bin/graphql_pub/graphql_pub
+    timeout: 10
+    package:
+      include:
+        - ./bin/graphql_pub/**
+    events:
+      - http:
+          path: graphql-pub
+          method: post
   mail:
     runtime: go1.x
     handler: bin/mail/mail

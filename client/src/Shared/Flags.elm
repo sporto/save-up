@@ -1,4 +1,4 @@
-module Shared.Flags exposing (..)
+module Shared.Flags exposing (Flags, PublicFlags, TokenData)
 
 
 type alias PublicFlags =

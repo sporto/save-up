@@ -1,4 +1,4 @@
-module Shared.Context exposing (..)
+module Shared.Context exposing (Context, PublicContext)
 
 import Shared.Flags exposing (Flags, PublicFlags)
 
