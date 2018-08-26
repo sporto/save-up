@@ -1,22 +1,13 @@
-use juniper::{FieldError, FieldResult};
-
 use chrono_tz::America;
 use chrono_tz::Australia;
-
+use graph_app::context::AppContext;
+use juniper::{FieldError, FieldResult};
 use models::client::*;
 use models::user::*;
-use graph::context::{PublicContext, Context};
 
-pub struct PublicQueryRoot;
-pub struct QueryRoot;
+pub struct AppQueryRoot;
 
-graphql_object!(PublicQueryRoot: PublicContext |&self| {
-	field apiVersion() -> &str {
-		"1.0"
-	}
-});
-
-graphql_object!(QueryRoot: Context |&self| {
+graphql_object!(AppQueryRoot: AppContext |&self| {
 
 	field apiVersion() -> &str {
 		"1.0"

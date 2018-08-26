@@ -1,5 +1,5 @@
-use graph::context::PublicContext;
-use graph::mutation_root::{MutationError,failure_to_mutation_errors};
+use graph_pub::context::PublicContext;
+use graph_common::mutations::{MutationError,failure_to_mutation_errors};
 use juniper::{Executor, FieldResult};
 use services;
 

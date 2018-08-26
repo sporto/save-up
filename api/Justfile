@@ -16,7 +16,7 @@ copy-binary directory bin_name:
 
 build-graphql:
 	just build-directory graphql
-	just copy-binary graphql graphql
+	just copy-binary graphql graphql_app
 	just copy-binary graphql graphql_pub
 	just copy-binary graphql migrate
 

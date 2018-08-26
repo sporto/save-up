@@ -1,6 +1,6 @@
+use graph_app::context::AppContext;
+use graph_common::mutations::MutationError;
 use juniper::{Executor, FieldResult};
-use graph::mutation_root::MutationError;
-use graph::context::Context;
 use services;
 
 #[derive(Deserialize, Clone, GraphQLInputObject)]
@@ -14,13 +14,14 @@ pub struct InvitationResponse {
 	errors: Vec<MutationError>,
 }
 
-pub fn call(executor: &Executor<Context>, input: InvitationInput) -> FieldResult<InvitationResponse> {
+pub fn call(
+	executor: &Executor<AppContext>,
+	input: InvitationInput,
+) -> FieldResult<InvitationResponse> {
 	let context = executor.context();
 
-	let invitation_result = services
-		::invitations
-		::create
-		::call(&context.conn, &context.user, &input.email);
+	let invitation_result =
+		services::invitations::create::call(&context.conn, &context.user, &input.email);
 
 	match invitation_result {
 		Ok(invitation) => invitation,
@@ -32,8 +33,8 @@ pub fn call(executor: &Executor<Context>, input: InvitationInput) -> FieldResult
 
 			return Ok(InvitationResponse {
 				success: false,
-				errors: vec! [ mutation_error ],
-			})
+				errors: vec![mutation_error],
+			});
 		}
 	};
 

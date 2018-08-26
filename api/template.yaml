@@ -63,7 +63,7 @@ Resources:
       CodeUri: bin/graphql_pub/
       Handler: graphql_pub
       Runtime: go1.x
-      FunctionName: KicPubGraphQl
+      FunctionName: KicPubGraphQlPub
       Description: "KIC GraphQl Public Server"
       Environment:
         Variables:
@@ -80,14 +80,14 @@ Resources:
             Path: /graphql-pub
             Method: post
 
-  GraphQlPrivFunction:
+  GraphQlAppFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: bin/graphql/
-      Handler: graphql
+      CodeUri: bin/graphql_app/
+      Handler: graphql_app
       Runtime: go1.x
-      FunctionName: KicGraphQl
-      Description: "KIC GraphQl Private Server"
+      FunctionName: KicGraphQlApp
+      Description: "KIC GraphQl App Server"
       Environment:
         Variables:
           API_SECRET:
@@ -101,7 +101,7 @@ Resources:
           Type: Api
           Properties:
             # RestApiId: !Ref KicApi
-            Path: /graphql
+            Path: /graphql-app
             Method: post
 
   MigrateFunction:

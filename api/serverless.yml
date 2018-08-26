@@ -90,16 +90,16 @@ functions:
       - http:
           path: migrate
           method: post
-  graphql:
+  graphql_app:
     runtime: go1.x
-    handler: bin/graphql/graphql
+    handler: bin/graphql_app/graphql_app
     timeout: 10
     package:
       include:
-        - ./bin/graphql/**
+        - ./bin/graphql_app/**
     events:
       - http:
-          path: graphql
+          path: graphql-app
           method: post
   graphql_pub:
     runtime: go1.x

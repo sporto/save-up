@@ -10,18 +10,18 @@ extern crate serde_derive;
 extern crate serde_json;
 #[macro_use]
 extern crate validator_derive;
-extern crate rusoto_core;
-extern crate rusoto_sns;
 extern crate aws_lambda as lambda;
-extern crate chrono_tz;
 extern crate chrono;
+extern crate chrono_tz;
 extern crate jsonwebtoken as jwt;
 extern crate libreauth;
+extern crate rusoto_core;
+extern crate rusoto_sns;
 extern crate serde;
-extern crate uuid;
-extern crate url;
-extern crate validator;
 extern crate shared;
+extern crate url;
+extern crate uuid;
+extern crate validator;
 
 use diesel::pg::PgConnection;
 use failure::Error;
@@ -31,7 +31,8 @@ use lambda::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
 use std::collections::HashMap;
 
 mod db;
-mod graph;
+mod graph_app;
+mod graph_common;
 mod models;
 mod services;
 mod utils;
@@ -39,10 +40,11 @@ mod utils;
 const PUBLIC_PATH: &'static str = "/graphql-pub";
 // const PRIVATE_PATH: &'static str = "/graphql";
 
-type PublicSchema =
-	RootNode<'static, graph::query_root::PublicQueryRoot, graph::mutation_root::PublicMutationRoot>;
-
-type Schema = RootNode<'static, graph::query_root::QueryRoot, graph::mutation_root::MutationRoot>;
+type AppSchema = RootNode<
+	'static,
+	graph_app::query_root::AppQueryRoot,
+	graph_app::mutation_root::AppMutationRoot,
+>;
 
 fn main() {
 	lambda::start(|request: ApiGatewayProxyRequest| {
@@ -94,16 +96,16 @@ fn run(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
 
 	let user = get_user(&conn, token)?;
 
-	let context = graph::context::Context {
+	let context = graph_app::context::AppContext {
 		conn: conn,
 		user: user,
 	};
 
-	let query_root = graph::query_root::QueryRoot {};
+	let query_root = graph_app::query_root::AppQueryRoot {};
 
-	let mutation_root = graph::mutation_root::MutationRoot {};
+	let mutation_root = graph_app::mutation_root::AppMutationRoot {};
 
-	let schema = Schema::new(query_root, mutation_root);
+	let schema = AppSchema::new(query_root, mutation_root);
 
 	let body = request.body.clone().ok_or(format_err!("Body not found"))?;
 
@@ -125,6 +127,5 @@ fn get_user(conn: &PgConnection, token: &str) -> Result<models::user::User, Erro
 
 	let user_id = token_data.user_id;
 
-	models::user::User::find(&conn, user_id)
-		.map_err(|_| format_err!("User not found"))
+	models::user::User::find(&conn, user_id).map_err(|_| format_err!("User not found"))
 }

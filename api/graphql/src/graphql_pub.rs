@@ -10,18 +10,18 @@ extern crate serde_derive;
 extern crate serde_json;
 #[macro_use]
 extern crate validator_derive;
-extern crate rusoto_core;
-extern crate rusoto_sns;
 extern crate aws_lambda as lambda;
-extern crate chrono_tz;
 extern crate chrono;
+extern crate chrono_tz;
 extern crate jsonwebtoken as jwt;
 extern crate libreauth;
+extern crate rusoto_core;
+extern crate rusoto_sns;
 extern crate serde;
-extern crate uuid;
-extern crate url;
-extern crate validator;
 extern crate shared;
+extern crate url;
+extern crate uuid;
+extern crate validator;
 
 // use diesel::pg::PgConnection;
 use failure::Error;
@@ -31,17 +31,17 @@ use lambda::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
 use std::collections::HashMap;
 
 mod db;
-mod graph;
+mod graph_common;
+mod graph_pub;
 mod models;
 mod services;
 mod utils;
 
-const PUBLIC_PATH: &'static str = "/graphql-pub";
-// const PRIVATE_PATH: &'static str = "/graphql";
-
-type PublicSchema =
-	RootNode<'static, graph::query_root::PublicQueryRoot, graph::mutation_root::PublicMutationRoot>;
-type Schema = RootNode<'static, graph::query_root::QueryRoot, graph::mutation_root::MutationRoot>;
+type PublicSchema = RootNode<
+	'static,
+	graph_pub::query_root::PublicQueryRoot,
+	graph_pub::mutation_root::PublicMutationRoot,
+>;
 
 fn main() {
 	lambda::start(|request: ApiGatewayProxyRequest| {
@@ -62,11 +62,11 @@ fn main() {
 fn run(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
 	let conn = db::establish_connection()?;
 
-	let context = graph::context::PublicContext { conn: conn };
+	let context = graph_pub::context::PublicContext { conn: conn };
 
-	let query_root = graph::query_root::PublicQueryRoot {};
+	let query_root = graph_pub::query_root::PublicQueryRoot {};
 
-	let mutation_root = graph::mutation_root::PublicMutationRoot {};
+	let mutation_root = graph_pub::mutation_root::PublicMutationRoot {};
 
 	let schema = PublicSchema::new(query_root, mutation_root);
 

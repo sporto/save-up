@@ -4,8 +4,8 @@ version = "0.1.0"
 authors = ["Sebastian Porto <s@porto5.com>"]
 
 [[bin]]
-name = "graphql"
-path = "src/graphql.rs"
+name = "graphql_app"
+path = "src/graphql_app.rs"
 
 [[bin]]
 name = "graphql_pub"
