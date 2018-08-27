@@ -2,9 +2,8 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module ApiPub.Scalar exposing (placeholder)
+module ApiPub.Scalar exposing (NaiveDateTime(..))
 
 
-placeholder : String
-placeholder =
-    ""
+type NaiveDateTime
+    = NaiveDateTime String

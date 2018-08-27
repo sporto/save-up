@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module ApiPub.InputObject exposing (SignIn, SignInRequiredFields, SignUp, SignUpRequiredFields, buildSignIn, buildSignUp, encodeSignIn, encodeSignUp)
+module ApiPub.InputObject exposing (ConfirmEmailInput, ConfirmEmailInputRequiredFields, RedeemInvitationInput, RedeemInvitationInputRequiredFields, SignIn, SignInRequiredFields, SignUp, SignUpRequiredFields, buildConfirmEmailInput, buildRedeemInvitationInput, buildSignIn, buildSignUp, encodeConfirmEmailInput, encodeRedeemInvitationInput, encodeSignIn, encodeSignUp)
 
 import ApiPub.Interface
 import ApiPub.Object
@@ -15,6 +15,52 @@ import Graphql.Internal.Encode as Encode exposing (Value)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
+
+
+buildConfirmEmailInput : ConfirmEmailInputRequiredFields -> ConfirmEmailInput
+buildConfirmEmailInput required =
+    { token = required.token }
+
+
+type alias ConfirmEmailInputRequiredFields =
+    { token : String }
+
+
+{-| Type for the ConfirmEmailInput input object.
+-}
+type alias ConfirmEmailInput =
+    { token : String }
+
+
+{-| Encode a ConfirmEmailInput into a value that can be used as an argument.
+-}
+encodeConfirmEmailInput : ConfirmEmailInput -> Value
+encodeConfirmEmailInput input =
+    Encode.maybeObject
+        [ ( "token", Encode.string input.token |> Just ) ]
+
+
+buildRedeemInvitationInput : RedeemInvitationInputRequiredFields -> RedeemInvitationInput
+buildRedeemInvitationInput required =
+    { name = required.name, password = required.password, token = required.token }
+
+
+type alias RedeemInvitationInputRequiredFields =
+    { name : String, password : String, token : String }
+
+
+{-| Type for the RedeemInvitationInput input object.
+-}
+type alias RedeemInvitationInput =
+    { name : String, password : String, token : String }
+
+
+{-| Encode a RedeemInvitationInput into a value that can be used as an argument.
+-}
+encodeRedeemInvitationInput : RedeemInvitationInput -> Value
+encodeRedeemInvitationInput input =
+    Encode.maybeObject
+        [ ( "name", Encode.string input.name |> Just ), ( "password", Encode.string input.password |> Just ), ( "token", Encode.string input.token |> Just ) ]
 
 
 buildSignIn : SignInRequiredFields -> SignIn

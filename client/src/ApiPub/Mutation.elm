@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module ApiPub.Mutation exposing (SignInRequiredArguments, SignUpRequiredArguments, selection, signIn, signUp)
+module ApiPub.Mutation exposing (ConfirmEmailRequiredArguments, RedeemInvitationRequiredArguments, SignInRequiredArguments, SignUpRequiredArguments, confirmEmail, redeemInvitation, selection, signIn, signUp)
 
 import ApiPub.InputObject
 import ApiPub.Interface
@@ -43,3 +43,21 @@ type alias SignInRequiredArguments =
 signIn : SignInRequiredArguments -> SelectionSet decodesTo ApiPub.Object.SignInResponse -> Field decodesTo RootMutation
 signIn requiredArgs object_ =
     Object.selectionField "signIn" [ Argument.required "signIn" requiredArgs.signIn ApiPub.InputObject.encodeSignIn ] object_ identity
+
+
+type alias ConfirmEmailRequiredArguments =
+    { input : ApiPub.InputObject.ConfirmEmailInput }
+
+
+confirmEmail : ConfirmEmailRequiredArguments -> SelectionSet decodesTo ApiPub.Object.ConfirmEmailResponse -> Field decodesTo RootMutation
+confirmEmail requiredArgs object_ =
+    Object.selectionField "confirmEmail" [ Argument.required "input" requiredArgs.input ApiPub.InputObject.encodeConfirmEmailInput ] object_ identity
+
+
+type alias RedeemInvitationRequiredArguments =
+    { input : ApiPub.InputObject.RedeemInvitationInput }
+
+
+redeemInvitation : RedeemInvitationRequiredArguments -> SelectionSet decodesTo ApiPub.Object.RedeemInvitationResponse -> Field decodesTo RootMutation
+redeemInvitation requiredArgs object_ =
+    Object.selectionField "redeemInvitation" [ Argument.required "input" requiredArgs.input ApiPub.InputObject.encodeRedeemInvitationInput ] object_ identity

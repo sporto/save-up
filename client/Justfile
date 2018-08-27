@@ -1,5 +1,9 @@
 graph:
-	yarn elm-graphql $API_HOST/graphql --base Api \
+	just graph-app
+	just graph-pub
+
+graph-app:
+	yarn elm-graphql $API_HOST/graphql-app --base Api \
 		--header "Authorization: Bearer $SYSTEM_JWT"
 
 graph-pub:

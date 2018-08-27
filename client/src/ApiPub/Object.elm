@@ -2,11 +2,19 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module ApiPub.Object exposing (MutationError(..), SignInResponse(..), SignUpResponse(..))
+module ApiPub.Object exposing (ConfirmEmailResponse(..), MutationError(..), RedeemInvitationResponse(..), SignInResponse(..), SignUpResponse(..), User(..))
+
+
+type ConfirmEmailResponse
+    = ConfirmEmailResponse
 
 
 type MutationError
     = MutationError
+
+
+type RedeemInvitationResponse
+    = RedeemInvitationResponse
 
 
 type SignInResponse
@@ -15,3 +23,7 @@ type SignInResponse
 
 type SignUpResponse
     = SignUpResponse
+
+
+type User
+    = User
