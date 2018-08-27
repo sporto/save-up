@@ -33,6 +33,7 @@ fn to_mutation_error_messages(errors: Vec<ValidationError>) -> Vec<String> {
 		.collect()
 }
 
+#[allow(dead_code)]
 pub fn failure_to_mutation_errors(error: Error) -> Vec<MutationError> {
 	let mutation_error = MutationError {
 		key: "other".to_owned(),

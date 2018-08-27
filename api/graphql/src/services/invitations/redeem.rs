@@ -3,20 +3,20 @@ use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use failure::Error;
+
 use models::invitation;
 use models::schema::invitations;
-use models::client;
 use models::user::{self, User, UserAttrs, ROLE_INVESTOR};
 use services;
 
 #[derive(Deserialize, Clone, GraphQLInputObject)]
-pub struct InvitationUseInput {
+pub struct RedeemInvitationInput {
 	pub name: String,
 	pub password: String,
 	pub token: String,
 }
 
-pub fn call(conn: &PgConnection, input: &InvitationUseInput) -> Result<User, Error> {
+pub fn call(conn: &PgConnection, input: &RedeemInvitationInput) -> Result<User, Error> {
 	let invitation = invitation::Invitation::find_by_token(&conn, &input.token)?;
 
 	// Find the client id
@@ -55,6 +55,7 @@ pub fn call(conn: &PgConnection, input: &InvitationUseInput) -> Result<User, Err
 mod tests {
 	use super::*;
 	use utils::tests;
+	use models::client;
 
 	#[test]
 	fn it_creates_a_user() {
@@ -68,7 +69,7 @@ mod tests {
 				.token(invitation_token)
 				.save(conn);
 
-			let input = InvitationUseInput {
+			let input = RedeemInvitationInput {
 				name: "Julia".into(),
 				password: "password".into(),
 				token: invitation_token.into(),
@@ -80,7 +81,7 @@ mod tests {
 			// sets the correct client
 			assert_eq!(returned_user.client_id, inviter.client_id);
 
-			// sets the use at 
+			// sets the use at
 		})
 	}
 }

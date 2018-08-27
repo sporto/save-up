@@ -4,7 +4,6 @@ use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
-use models::user::ROLE_INVESTOR;
 use validator::Validate;
 
 #[derive(Queryable, GraphQLObject, Debug)]
@@ -45,7 +44,7 @@ impl Invitation {
 }
 
 #[cfg(test)]
-use models::user::User;
+use models::user::{User, ROLE_INVESTOR};
 
 #[cfg(test)]
 pub fn invitation_attrs(inviter: &User) -> InvitationAttrs {

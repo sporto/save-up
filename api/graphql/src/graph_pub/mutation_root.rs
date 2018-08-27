@@ -19,12 +19,22 @@ graphql_object!(PublicMutationRoot: PublicContext | &self | {
 
 	field confirm_email(
 		&executor,
-		attrs: mutations::confirm_email::ConfirmEmailInput
+		input: mutations::confirm_email::ConfirmEmailInput
 		) -> FieldResult<mutations::confirm_email::ConfirmEmailResponse> {
 		
 		mutations
 			::confirm_email
-			::call(executor, attrs)
+			::call(executor, input)
+	}
+
+	field redeem_invitation(
+		&executor,
+		input: mutations::redeem_invitation::RedeemInvitationInput
+	) -> FieldResult<mutations::redeem_invitation::RedeemInvitationResponse> {
+
+		mutations
+			::redeem_invitation
+			::call(executor, input)
 	}
 
 });
