@@ -10,7 +10,7 @@ pub const ROLE_ADMIN: &str = "admin";
 #[allow(dead_code)]
 pub const ROLE_INVESTOR: &str = "investor";
 
-#[derive(Queryable,GraphQLObject,Debug,Clone)]
+#[derive(Queryable, GraphQLObject, Debug, Clone)]
 pub struct User {
 	pub id: i32,
 	pub created_at: NaiveDateTime,
@@ -78,6 +78,7 @@ pub fn system_user() -> User {
 	}
 }
 
+#[cfg(test)]
 impl UserAttrs {
 	pub fn save(self, conn: &PgConnection) -> User {
 		User::create(conn, self).unwrap()

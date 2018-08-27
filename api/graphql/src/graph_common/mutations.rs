@@ -1,5 +1,5 @@
 use failure::Error;
-use juniper::FieldResult;
+// use juniper::FieldResult;
 use validator::{ValidationError, ValidationErrors};
 
 #[derive(GraphQLObject, Clone)]

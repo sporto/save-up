@@ -1,12 +1,11 @@
-
 use super::schema::invitations;
-use chrono::{NaiveDateTime};
+use chrono::NaiveDateTime;
 use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
+use models::user::ROLE_INVESTOR;
 use validator::Validate;
-
 
 #[derive(Queryable, GraphQLObject, Debug)]
 pub struct Invitation {
@@ -18,7 +17,6 @@ pub struct Invitation {
 	pub token: String,
 	pub used_at: Option<NaiveDateTime>,
 }
-
 
 #[derive(Insertable, Validate)]
 #[table_name = "invitations"]
@@ -37,5 +35,37 @@ impl Invitation {
 			.values(&attrs)
 			.get_results(conn)
 			.and_then(|mut invitations| invitations.pop().ok_or(Error::NotFound))
+	}
+
+	pub fn find_by_token(conn: &PgConnection, token: &str) -> Result<Invitation, Error> {
+		invitations::table
+			.filter(invitations::token.eq(token))
+			.get_result(conn)
+	}
+}
+
+#[cfg(test)]
+use models::user::User;
+
+#[cfg(test)]
+pub fn invitation_attrs(inviter: &User) -> InvitationAttrs {
+	InvitationAttrs {
+		user_id: inviter.id,
+		email: "sam@sample.com".into(),
+		role: ROLE_INVESTOR.into(),
+		token: "abc".into(),
+		used_at: None,
+	}
+}
+
+#[cfg(test)]
+impl InvitationAttrs {
+	pub fn save(self, conn: &PgConnection) -> Invitation {
+		Invitation::create(conn, self).unwrap()
+	}
+
+	pub fn token(mut self, token: &str) -> Self {
+		self.token = token.to_owned();
+		self
 	}
 }
