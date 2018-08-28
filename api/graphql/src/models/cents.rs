@@ -1,12 +1,10 @@
 use juniper::Value;
-// use diesel::backend::Backend;
 use diesel::pg::Pg;
 use diesel::deserialize::{self,FromSql};
-use diesel::serialize::{self,Output, ToSql};
+use diesel::serialize::{self,Output,ToSql};
 use std::io;
 use diesel::sql_types::{BigInt,Money};
 
-// #[sql_type = "Money"]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, FromSqlRow, AsExpression)]
 #[sql_type = "Money"]
 pub struct Cents(pub i64);
@@ -17,23 +15,6 @@ impl ToString for Cents {
 		format!("{}", cents)
 	}
 }
-
-// impl<DB: Backend> ToSql<i64, DB> for Cents {
-// 	fn to_sql<W>(&self, out: &mut Output<W, DB>) -> serialize::Result
-// 	where
-// 		W: io::Write,
-// 	{
-// 		let Cents(cents) = self;
-// 		i64::to_sql(cents, out)
-// 	}
-// }
-
-// impl<DB: Backend> FromSql<i64, DB> for Cents {
-// 	fn from_sql(bytes: Option<&DB::RawValue>) -> deserialize::Result<Self> {
-// 		let v = (bytes);
-// 		Ok(Cents(9999))
-// 	}
-// }
 
 impl FromSql<Money, Pg> for Cents {
     fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
