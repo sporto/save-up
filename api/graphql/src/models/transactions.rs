@@ -1,13 +1,11 @@
 use chrono::NaiveDateTime;
 use diesel;
 use diesel::backend::Backend;
-use diesel::data_types::Cents;
-use diesel::deserialize::{self, FromSql};
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
-use diesel::serialize::{self, Output, ToSql};
 use diesel::sql_types::*;
+use models::cents::Cents;
 use models::schema::transactions;
 use std::io;
 use validator::Validate;
@@ -18,7 +16,7 @@ pub struct Transaction {
 	pub created_at: NaiveDateTime,
 	pub account_id: i32,
 	// pub kind: TransactionKind,
-	// pub amount: Cents,
+	pub amount: Cents,
 }
 
 // #[derive(Debug, Copy, Clone, FromSqlRow, AsExpression)]
@@ -53,7 +51,7 @@ pub struct Transaction {
 pub struct TransactionAttrs {
 	pub account_id: i32,
 	// pub kind: TransactionKind,
-	// pub amount: Cents,
+	pub amount: Cents,
 }
 
 impl Transaction {
