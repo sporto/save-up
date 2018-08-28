@@ -29,7 +29,7 @@ pub enum TransactionKind {
 	Deposit,
 }
 
-impl ToSql<String, Pg> for TransactionKind {
+impl ToSql<Text, Pg> for TransactionKind {
 	fn to_sql<W: io::Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
 		let v = match *self {
 			TransactionKind::Deposit => out.write_all(b"DEPOSIT")?,
@@ -38,7 +38,7 @@ impl ToSql<String, Pg> for TransactionKind {
 	}
 }
 
-impl FromSql<String, Pg> for TransactionKind {
+impl FromSql<Text, Pg> for TransactionKind {
 	fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
 		match not_none!(bytes) {
 			b"DEPOSIT" => Ok(TransactionKind::Deposit),
@@ -57,9 +57,8 @@ pub struct TransactionAttrs {
 
 impl Transaction {
 	pub fn create(conn: &PgConnection, attrs: TransactionAttrs) -> Result<Transaction, Error> {
-		// diesel::insert_into(transactions::dsl::transactions)
-		// 	.values(&attrs)
-		// 	.get_result(conn)
-		Err(Error::NotFound)
+		diesel::insert_into(transactions::dsl::transactions)
+			.values(&attrs)
+			.get_result(conn)
 	}
 }
