@@ -2,6 +2,7 @@ use graph_app::context::AppContext;
 use graph_common::mutations::MutationError;
 use juniper::{Executor, FieldResult};
 use services;
+use graph_common::mutations::failure_to_mutation_errors;
 
 #[derive(Deserialize, Clone, GraphQLInputObject)]
 pub struct InvitationInput {
@@ -25,15 +26,10 @@ pub fn call(
 
 	match invitation_result {
 		Ok(invitation) => invitation,
-		Err(_e) => {
-			let mutation_error = MutationError {
-				key: "other".to_owned(),
-				messages: vec!["Failed to invite".to_owned()],
-			};
-
+		Err(e) => {
 			return Ok(InvitationResponse {
 				success: false,
-				errors: vec![mutation_error],
+				errors: failure_to_mutation_errors(e),
 			});
 		}
 	};

@@ -29,6 +29,16 @@ table! {
 }
 
 table! {
+    transactions (id) {
+        id -> Int4,
+        created_at -> Timestamp,
+        account_id -> Int4,
+        kind -> Varchar,
+        amount -> Money,
+    }
+}
+
+table! {
     users (id) {
         id -> Int4,
         created_at -> Timestamp,
@@ -45,3 +55,4 @@ table! {
 joinable!(users -> clients (client_id));
 joinable!(invitations -> users (user_id));
 joinable!(accounts -> users (user_id));
+joinable!(transactions -> accounts (account_id));

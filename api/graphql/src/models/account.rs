@@ -5,6 +5,8 @@ use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
+// use diesel::sql_types::Numeric;
+// use diesel::pg::data_types::PgNumeric;
 use models::schema::accounts;
 use validator::Validate;
 
@@ -43,6 +45,8 @@ impl Account {
 	}
 
 	pub fn find_by_user_id(conn: &PgConnection, id: i32) -> Result<Account, Error> {
-		accounts::table.filter(accounts::user_id.eq(id)).get_result(conn)
+		accounts::table
+			.filter(accounts::user_id.eq(id))
+			.get_result(conn)
 	}
 }
