@@ -1,4 +1,4 @@
-pub mod accounts;
+pub mod account;
 pub mod client;
 pub mod error;
 pub mod invitation;

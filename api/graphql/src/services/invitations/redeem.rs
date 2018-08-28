@@ -6,7 +6,7 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use failure::Error;
 
-use models::accounts::{Account, AccountAttrs};
+use models::account::{Account, AccountAttrs};
 use models::invitation;
 use models::schema::invitations;
 use models::user::{self, User, UserAttrs, ROLE_INVESTOR};
@@ -89,12 +89,16 @@ mod tests {
 			};
 
 			// creates the user
-			let returned_user = call(&conn, &input).unwrap();
+			let user = call(&conn, &input).unwrap();
 
 			// sets the correct client
-			assert_eq!(returned_user.client_id, inviter.client_id);
+			assert_eq!(user.client_id, inviter.client_id);
 
-			// sets the use at
+			// And creates an account for the user
+			let account = Account::find_by_user_id(conn, user.id).unwrap();
+
+			assert_eq!(account.user_id, user.id);
 		})
 	}
+
 }

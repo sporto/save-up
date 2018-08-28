@@ -1,4 +1,5 @@
 use bigdecimal::BigDecimal;
+use bigdecimal::ToPrimitive;
 use chrono::NaiveDateTime;
 use diesel;
 use diesel::pg::PgConnection;
@@ -7,7 +8,7 @@ use diesel::result::Error;
 use models::schema::accounts;
 use validator::Validate;
 
-#[derive(Queryable, GraphQLObject)]
+#[derive(Queryable)]
 pub struct Account {
 	pub id: i32,
 	pub created_at: NaiveDateTime,
@@ -24,20 +25,24 @@ pub struct AccountAttrs {
 	pub yearly_interest: BigDecimal,
 }
 
-// graphql_object!(Account: () |&self| {
-//     field name() -> &str {
-//         self.name.as_str()
-//     }
+graphql_object!(Account: () |&self| {
+    field name() -> &str {
+        self.name.as_str()
+    }
 
-//     field yearly_interest() -> f32 {
-//         BigDecimal::to_f32(&self.yearly_interest).unwrap()
-//     }
-// });
+    field yearly_interest() -> f64 {
+        BigDecimal::to_f64(&self.yearly_interest).unwrap()
+    }
+});
 
 impl Account {
 	pub fn create(conn: &PgConnection, attrs: AccountAttrs) -> Result<Account, Error> {
 		diesel::insert_into(accounts::dsl::accounts)
 			.values(&attrs)
 			.get_result(conn)
+	}
+
+	pub fn find_by_user_id(conn: &PgConnection, id: i32) -> Result<Account, Error> {
+		accounts::table.filter(accounts::user_id.eq(id)).get_result(conn)
 	}
 }
