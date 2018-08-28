@@ -1,9 +1,12 @@
+use bigdecimal::BigDecimal;
+use bigdecimal::FromPrimitive;
 use chrono::prelude::*;
 use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use failure::Error;
 
+use models::accounts::{Account, AccountAttrs};
 use models::invitation;
 use models::schema::invitations;
 use models::user::{self, User, UserAttrs, ROLE_INVESTOR};
@@ -38,8 +41,18 @@ pub fn call(conn: &PgConnection, input: &RedeemInvitationInput) -> Result<User, 
 		email_confirmation_token: None,
 	};
 
-	// Transaction here
+	// Transaction should be here
+
 	let user = User::create(conn, user_attrs).map_err(|e| format_err!("{}", e))?;
+
+	// Create an account for this user´
+	let account_attrs = AccountAttrs {
+		user_id: user.id,
+		name: "Default".into(),
+		yearly_interest: BigDecimal::from_u8(20).unwrap(),
+	};
+
+	Account::create(conn, account_attrs).map_err(|e| format_err!("{}", e))?;
 
 	let now = Utc::now().naive_utc();
 
@@ -54,8 +67,8 @@ pub fn call(conn: &PgConnection, input: &RedeemInvitationInput) -> Result<User, 
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use utils::tests;
 	use models::client;
+	use utils::tests;
 
 	#[test]
 	fn it_creates_a_user() {

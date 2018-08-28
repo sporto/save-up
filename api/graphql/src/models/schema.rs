@@ -1,4 +1,14 @@
 table! {
+    accounts (id) {
+        id -> Int4,
+        created_at -> Timestamp,
+        user_id -> Int4,
+        name -> Varchar,
+        yearly_interest -> Numeric,
+    }
+}
+
+table! {
     clients (id) {
         id -> Int4,
         created_at -> Timestamp,
@@ -34,3 +44,4 @@ table! {
 
 joinable!(users -> clients (client_id));
 joinable!(invitations -> users (user_id));
+joinable!(accounts -> users (user_id));

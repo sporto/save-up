@@ -13,10 +13,10 @@ db-down:
 dp-test-setup:
 	DATABASE_URL=$DATABASE_URL_TEST diesel setup
 
-db-test-down:
+db-down-test:
 	DATABASE_URL=$DATABASE_URL_TEST diesel migration revert
 
-db-test-up:
+db-up-test:
 	DATABASE_URL=$DATABASE_URL_TEST diesel migration run
 
 schema:

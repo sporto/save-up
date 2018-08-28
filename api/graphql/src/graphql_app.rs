@@ -11,6 +11,7 @@ extern crate serde_json;
 #[macro_use]
 extern crate validator_derive;
 extern crate aws_lambda as lambda;
+extern crate bigdecimal;
 extern crate chrono;
 extern crate chrono_tz;
 extern crate jsonwebtoken as jwt;

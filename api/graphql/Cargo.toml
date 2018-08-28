@@ -23,7 +23,8 @@ path = "src/migrate.rs"
 aws_lambda = { git = "https://github.com/srijs/rust-aws-lambda" }
 chrono = "0.4"
 chrono-tz = "0.4"
-diesel = { version = "1.3", features = ["postgres", "chrono"] }
+bigdecimal = "0.0.11"
+diesel = { version = "1.3", features = ["postgres", "chrono", "numeric"] }
 diesel_migrations = "1.3.0"
 failure = "0.1.2"
 jsonwebtoken = "4"
