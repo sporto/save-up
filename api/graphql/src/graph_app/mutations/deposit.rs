@@ -2,7 +2,7 @@ use graph_app::context::AppContext;
 use graph_common::mutations::failure_to_mutation_errors;
 use graph_common::mutations::MutationError;
 use juniper::{Executor, FieldResult};
-use models::transactions::Transaction;
+use models::transaction::Transaction;
 pub use services::transactions::deposit::{self, DepositInput};
 
 #[derive(GraphQLObject, Clone)]

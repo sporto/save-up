@@ -1,7 +1,8 @@
 use diesel::pg::PgConnection;
 use failure::Error;
+use models::account::Account;
 use models::cents::Cents;
-use models::transactions::{Transaction, TransactionAttrs, TransactionKind};
+use models::transaction::{Transaction, TransactionAttrs, TransactionKind};
 
 #[derive(GraphQLInputObject, Clone)]
 pub struct DepositInput {
@@ -12,8 +13,10 @@ pub struct DepositInput {
 pub fn call(conn: &PgConnection, input: DepositInput) -> Result<Transaction, Error> {
 	// Fail if cents is negative
 	if input.cents <= 0 {
-		return Err(format_err!("Invalid amount"))
+		return Err(format_err!("Invalid amount"));
 	}
+
+	let account = Account::find(&conn, input.account_id)?;
 
 	let attrs = TransactionAttrs {
 		account_id: input.account_id,
@@ -22,6 +25,7 @@ pub fn call(conn: &PgConnection, input: DepositInput) -> Result<Transaction, Err
 	};
 
 	// TODO send an email to the account holder
+	// Calculate running balance
 
 	Transaction::create(conn, attrs).map_err(|e| format_err!("{}", e))
 }
@@ -35,9 +39,7 @@ mod test {
 	#[test]
 	fn it_creates_a_transaction() {
 		tests::with_db(|conn| {
-			let client = models::client
-				::factories
-				::client_attrs().save(conn);
+			let client = models::client::factories::client_attrs().save(conn);
 
 			let user = models::user::factories::user_attrs(&client).save(conn);
 
@@ -59,9 +61,7 @@ mod test {
 	#[test]
 	fn it_fails_with_negative_amount() {
 		tests::with_db(|conn| {
-			let client = models::client
-				::factories
-				::client_attrs().save(conn);
+			let client = models::client::factories::client_attrs().save(conn);
 
 			let user = models::user::factories::user_attrs(&client).save(conn);
 

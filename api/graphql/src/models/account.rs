@@ -7,9 +7,9 @@ use diesel::prelude::*;
 use diesel::result::Error;
 // use diesel::sql_types::Numeric;
 // use diesel::pg::data_types::PgNumeric;
+use models::cents::Cents;
 use models::schema::accounts;
 use validator::Validate;
-use models::cents::Cents;
 
 #[derive(Queryable)]
 pub struct Account {
@@ -47,6 +47,12 @@ impl Account {
 			.get_result(conn)
 	}
 
+	pub fn find(conn: &PgConnection, id: i32) -> Result<Account, Error> {
+		accounts::table
+			.filter(accounts::id.eq(id))
+			.get_result(conn)
+	}
+
 	pub fn find_by_user_id(conn: &PgConnection, id: i32) -> Result<Account, Error> {
 		accounts::table
 			.filter(accounts::user_id.eq(id))
@@ -74,6 +80,11 @@ pub mod factories {
 	impl AccountAttrs {
 		pub fn save(self, conn: &PgConnection) -> Account {
 			Account::create(conn, self).unwrap()
+		}
+
+		pub fn balance(mut self, balance: i64) -> Self {
+			self.balance = Cents(balance);
+			self
 		}
 	}
 

@@ -6,5 +6,5 @@ pub mod invitation;
 pub mod schema;
 pub mod sign_in;
 pub mod sign_up;
-pub mod transactions;
+pub mod transaction;
 pub mod user;
