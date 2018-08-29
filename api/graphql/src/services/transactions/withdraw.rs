@@ -112,4 +112,28 @@ mod test {
 			assert!(result.is_err());
 		})
 	}
+
+	#[test]
+	fn it_calculates_a_new_balance() {
+		tests::with_db(|conn| {
+			let client = models::client::factories::client_attrs().save(conn);
+
+			let user = models::user::factories::user_attrs(&client).save(conn);
+
+			let account = models::account::factories::account_attrs(&user).save(conn);
+
+			let prev = models::transaction::factories::transaction_attrs(&account)
+				.balance(300)
+				.save(conn);
+
+			let input = WithdrawalInput {
+				account_id: account.id,
+				cents: 200,
+			};
+
+			let transaction = call(conn, input).unwrap();
+
+			assert_eq!(transaction.balance, Cents(100));
+		})
+	}
 }

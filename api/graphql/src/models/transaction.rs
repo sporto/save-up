@@ -75,7 +75,7 @@ impl Transaction {
 		transactions::table
 			.filter(transactions::account_id.eq(account_id))
 			.order_by(transactions::created_at.desc())
-			.first::<Transaction>(conn)
+			.get_result(conn)
 	}
 }
 
