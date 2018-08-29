@@ -1,3 +1,4 @@
+pub mod accounts;
 pub mod invitations;
 pub mod passwords;
 pub mod seed_db;

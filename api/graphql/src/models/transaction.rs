@@ -1,3 +1,4 @@
+use bigdecimal::BigDecimal;
 use chrono::NaiveDateTime;
 use diesel;
 use diesel::backend::Backend;
@@ -21,6 +22,7 @@ pub struct Transaction {
 	pub account_id: i32,
 	pub kind: TransactionKind,
 	pub amount: Cents,
+	pub balance: Cents,
 }
 
 #[derive(Debug, Copy, Clone, FromSqlRow, AsExpression, GraphQLEnum, PartialEq)]
@@ -56,6 +58,7 @@ pub struct TransactionAttrs {
 	pub account_id: i32,
 	pub kind: TransactionKind,
 	pub amount: Cents,
+	pub balance: Cents,
 }
 
 impl Transaction {
@@ -64,4 +67,44 @@ impl Transaction {
 			.values(&attrs)
 			.get_result(conn)
 	}
+
+	pub fn find_last_by_account_id(
+		conn: &PgConnection,
+		account_id: i32,
+	) -> Result<Transaction, Error> {
+		transactions::table
+			.filter(transactions::account_id.eq(account_id))
+			.order_by(transactions::created_at.desc())
+			.first::<Transaction>(conn)
+	}
+}
+
+#[cfg(test)]
+pub mod factories {
+	use super::*;
+	use bigdecimal::FromPrimitive;
+	use models::account::Account;
+
+	pub fn transaction_attrs(account: &Account) -> TransactionAttrs {
+		let balance = Cents(0);
+
+		TransactionAttrs {
+			account_id: account.id,
+			kind: TransactionKind::Deposit,
+			amount: Cents(0),
+			balance: balance,
+		}
+	}
+
+	impl TransactionAttrs {
+		pub fn save(self, conn: &PgConnection) -> Transaction {
+			Transaction::create(conn, self).unwrap()
+		}
+
+		pub fn balance(mut self, balance: i64) -> TransactionAttrs {
+			self.balance = Cents(balance);
+			self
+		}
+	}
+
 }

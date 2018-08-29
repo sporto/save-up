@@ -3,6 +3,7 @@ use failure::Error;
 use models::account::Account;
 use models::cents::Cents;
 use models::transaction::{Transaction, TransactionAttrs, TransactionKind};
+use services::accounts;
 
 #[derive(GraphQLInputObject, Clone)]
 pub struct DepositInput {
@@ -16,12 +17,15 @@ pub fn call(conn: &PgConnection, input: DepositInput) -> Result<Transaction, Err
 		return Err(format_err!("Invalid amount"));
 	}
 
-	let account = Account::find(&conn, input.account_id)?;
+	let current_balance = accounts::get_balance::call(&conn, input.account_id)?;
+
+	let cents = input.cents as i64;
 
 	let attrs = TransactionAttrs {
 		account_id: input.account_id,
 		kind: TransactionKind::Deposit,
-		amount: Cents(input.cents as i64),
+		amount: Cents(cents),
+		balance: Cents(cents + current_balance),
 	};
 
 	// TODO send an email to the account holder

@@ -3,6 +3,7 @@ use failure::Error;
 use models::account::Account;
 use models::cents::Cents;
 use models::transaction::{Transaction, TransactionAttrs, TransactionKind};
+use services::accounts;
 
 #[derive(GraphQLInputObject, Clone)]
 pub struct WithdrawalInput {
@@ -16,11 +17,11 @@ pub fn call(conn: &PgConnection, input: WithdrawalInput) -> Result<Transaction, 
 		return Err(format_err!("Invalid amount"));
 	}
 
-	let account = Account::find(&conn, input.account_id)?;
+	let current_balance = accounts::get_balance::call(&conn, input.account_id)?;
 
-	let Cents(balance) = account.balance;
+	let amount = input.cents as i64;
 
-	let new_balance = balance - (input.cents as i64);
+	let new_balance = current_balance - amount;
 
 	if new_balance < 0 {
 		return Err(format_err!("Not enough balance"));
@@ -29,7 +30,8 @@ pub fn call(conn: &PgConnection, input: WithdrawalInput) -> Result<Transaction, 
 	let attrs = TransactionAttrs {
 		account_id: input.account_id,
 		kind: TransactionKind::Withdrawal,
-		amount: Cents(input.cents as i64),
+		amount: Cents(amount),
+		balance: Cents(new_balance),
 	};
 
 	// Do not allow withdrawing past the account balance
@@ -52,7 +54,11 @@ mod test {
 
 			let user = models::user::factories::user_attrs(&client).save(conn);
 
-			let account = models::account::factories::account_attrs(&user).balance(300).save(conn);
+			let account = models::account::factories::account_attrs(&user).save(conn);
+
+			let prev = models::transaction::factories::transaction_attrs(&account)
+				.balance(300)
+				.save(conn);
 
 			let input = WithdrawalInput {
 				account_id: account.id,
@@ -94,9 +100,7 @@ mod test {
 
 			let user = models::user::factories::user_attrs(&client).save(conn);
 
-			let account = models::account::factories::account_attrs(&user)
-				.balance(199)
-				.save(conn);
+			let account = models::account::factories::account_attrs(&user).save(conn);
 
 			let input = WithdrawalInput {
 				account_id: account.id,

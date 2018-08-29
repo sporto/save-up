@@ -50,7 +50,6 @@ pub fn call(conn: &PgConnection, input: &RedeemInvitationInput) -> Result<User, 
 	let account_attrs = AccountAttrs {
 		user_id: user.id,
 		name: "Default".into(),
-		balance: Cents(0),
 		yearly_interest: BigDecimal::from_u8(20).unwrap(),
 	};
 
