@@ -67,8 +67,7 @@ impl User {
 	pub fn create(conn: &PgConnection, attrs: UserAttrs) -> Result<User, Error> {
 		diesel::insert_into(users::dsl::users)
 			.values(&attrs)
-			.get_results(conn)
-			.and_then(|mut users| users.pop().ok_or(Error::NotFound))
+			.get_result(conn)
 	}
 
 	// Read
@@ -87,7 +86,6 @@ impl User {
 	pub fn find_by_email(conn: &PgConnection, email: &str) -> Result<User, Error> {
 		users::table
 			.filter(users::email.eq(email))
-			.limit(1)
 			.first::<User>(conn)
 	}
 

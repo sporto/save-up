@@ -1,5 +1,5 @@
 use super::schema::clients;
-use chrono::{NaiveDateTime};
+use chrono::NaiveDateTime;
 use diesel;
 use diesel::prelude::*;
 use diesel::result::Error;
@@ -27,8 +27,7 @@ impl Client {
 	pub fn create(conn: &PgConnection, attrs: ClientAttrs) -> Result<Client, Error> {
 		diesel::insert_into(clients::dsl::clients)
 			.values(&attrs)
-			.get_results(conn)
-			.and_then(|mut clients| clients.pop().ok_or(Error::NotFound))
+			.get_result(conn)
 	}
 
 	// Read
@@ -41,18 +40,11 @@ impl Client {
 
 	#[allow(dead_code)]
 	pub fn find(conn: &PgConnection, client_id: i32) -> Result<Client, Error> {
-		// clients::table.filter(clients::id.eq(client_id))
-		//     .limit(1)
-		//     .load::<Client>(conn)
-		//     .and_then(|mut clients| clients.pop().ok_or(Error::NotFound))
 		clients::table.find(client_id).first::<Client>(conn)
 	}
 
 	pub fn first(conn: &PgConnection) -> Result<Client, Error> {
-		clients::table
-			.limit(1)
-			.load::<Client>(conn)
-			.and_then(|mut clients| clients.pop().ok_or(Error::NotFound))
+		clients::table.first::<Client>(conn)
 	}
 
 	// Delete
