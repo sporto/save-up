@@ -29,7 +29,7 @@ pub fn call(conn: &PgConnection, input: WithdrawalInput) -> Result<Transaction, 
 	let attrs = TransactionAttrs {
 		account_id: input.account_id,
 		kind: TransactionKind::Withdrawal,
-		amount: Cents(-input.cents as i64),
+		amount: Cents(input.cents as i64),
 	};
 
 	// Do not allow withdrawing past the account balance
@@ -62,7 +62,7 @@ mod test {
 			let transaction = call(conn, input).unwrap();
 
 			assert_eq!(transaction.account_id, account.id);
-			assert_eq!(transaction.amount, Cents(-200));
+			assert_eq!(transaction.amount, Cents(200));
 			assert_eq!(transaction.kind, TransactionKind::Withdrawal);
 		})
 	}
