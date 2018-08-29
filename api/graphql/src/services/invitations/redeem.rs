@@ -7,6 +7,7 @@ use diesel::prelude::*;
 use failure::Error;
 
 use models::account::{Account, AccountAttrs};
+use models::cents::Cents;
 use models::invitation;
 use models::schema::invitations;
 use models::user::{self, User, UserAttrs, ROLE_INVESTOR};
@@ -49,6 +50,7 @@ pub fn call(conn: &PgConnection, input: &RedeemInvitationInput) -> Result<User, 
 	let account_attrs = AccountAttrs {
 		user_id: user.id,
 		name: "Default".into(),
+		balance: Cents(0),
 		yearly_interest: BigDecimal::from_u8(20).unwrap(),
 	};
 

@@ -3,5 +3,6 @@ CREATE TABLE accounts (
   created_at TIMESTAMP DEFAULT current_timestamp NOT NULL,
   user_id SERIAL REFERENCES users (id),
   name VARCHAR NOT NULL,
+  balance MONEY NOT NULL,
   yearly_interest DECIMAL(5,2) NOT NULL
 )

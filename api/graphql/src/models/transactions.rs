@@ -55,7 +55,7 @@ impl FromSql<Text, Pg> for TransactionKind {
 pub struct TransactionAttrs {
 	pub account_id: i32,
 	pub kind: TransactionKind,
-	pub cents: Cents,
+	pub amount: Cents,
 }
 
 impl Transaction {

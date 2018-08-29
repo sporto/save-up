@@ -9,6 +9,7 @@ use diesel::result::Error;
 // use diesel::pg::data_types::PgNumeric;
 use models::schema::accounts;
 use validator::Validate;
+use models::cents::Cents;
 
 #[derive(Queryable)]
 pub struct Account {
@@ -16,6 +17,7 @@ pub struct Account {
 	pub created_at: NaiveDateTime,
 	pub user_id: i32,
 	pub name: String,
+	pub balance: Cents,
 	pub yearly_interest: BigDecimal,
 }
 
@@ -24,6 +26,7 @@ pub struct Account {
 pub struct AccountAttrs {
 	pub user_id: i32,
 	pub name: String,
+	pub balance: Cents,
 	pub yearly_interest: BigDecimal,
 }
 
@@ -63,6 +66,7 @@ pub mod factories {
 		AccountAttrs {
 			user_id: user.id,
 			name: user.clone().name,
+			balance: Cents(0),
 			yearly_interest: yearly_interest,
 		}
 	}

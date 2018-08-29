@@ -3,5 +3,5 @@ CREATE TABLE transactions (
   created_at TIMESTAMP DEFAULT current_timestamp NOT NULL,
   account_id SERIAL REFERENCES accounts (id),
   kind VARCHAR NOT NULL,
-  cents MONEY NOT NULL
+  amount MONEY NOT NULL
 )

@@ -18,7 +18,7 @@ pub fn call(conn: &PgConnection, input: WithdrawalInput) -> Result<Transaction, 
 	let attrs = TransactionAttrs {
 		account_id: input.account_id,
 		kind: TransactionKind::Withdrawal,
-		cents: Cents(-input.cents as i64),
+		amount: Cents(-input.cents as i64),
 	};
 
 	// TODO do not allow withdrawing past the account balance

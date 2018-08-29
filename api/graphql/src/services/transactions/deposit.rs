@@ -18,7 +18,7 @@ pub fn call(conn: &PgConnection, input: DepositInput) -> Result<Transaction, Err
 	let attrs = TransactionAttrs {
 		account_id: input.account_id,
 		kind: TransactionKind::Deposit,
-		cents: Cents(input.cents as i64),
+		amount: Cents(input.cents as i64),
 	};
 
 	// TODO send an email to the account holder

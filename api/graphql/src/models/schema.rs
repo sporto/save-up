@@ -4,6 +4,7 @@ table! {
         created_at -> Timestamp,
         user_id -> Int4,
         name -> Varchar,
+        balance -> Money,
         yearly_interest -> Numeric,
     }
 }
@@ -34,7 +35,7 @@ table! {
         created_at -> Timestamp,
         account_id -> Int4,
         kind -> Varchar,
-        cents -> Money,
+        amount -> Money,
     }
 }
 
