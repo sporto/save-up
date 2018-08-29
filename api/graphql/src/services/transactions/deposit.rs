@@ -6,15 +6,17 @@ use models::transactions::{Transaction, TransactionAttrs, TransactionKind};
 #[derive(GraphQLInputObject, Clone)]
 pub struct DepositInput {
 	account_id: i32,
-	amount: Cents,
+	cents: i32,
 }
 
 pub fn call(conn: &PgConnection, input: DepositInput) -> Result<Transaction, Error> {
 	let attrs = TransactionAttrs {
 		account_id: input.account_id,
 		kind: TransactionKind::Deposit,
-		amount: input.amount,
+		amount: Cents(input.cents as i64),
 	};
+
+	// TODO send an email to the account holder
 
 	Transaction::create(conn, attrs).map_err(|e| format_err!("{}", e))
 }
@@ -46,7 +48,6 @@ mod test {
 			assert_eq!(transaction.account_id, account.id);
 			assert_eq!(transaction.amount, Cents(200));
 			assert_eq!(transaction.kind, TransactionKind::Deposit);
-
 		})
 	}
 }
