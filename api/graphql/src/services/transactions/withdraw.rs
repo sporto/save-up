@@ -21,8 +21,10 @@ pub fn call(conn: &PgConnection, input: WithdrawalInput) -> Result<Transaction, 
 
 	let amount = input.cents as i64;
 
+	// Calculate running balance
 	let new_balance = current_balance - amount;
 
+	// Do not allow withdrawing past the account balance
 	if new_balance < 0 {
 		return Err(format_err!("Not enough balance"));
 	}
@@ -33,10 +35,6 @@ pub fn call(conn: &PgConnection, input: WithdrawalInput) -> Result<Transaction, 
 		amount: Cents(amount),
 		balance: Cents(new_balance),
 	};
-
-	// Do not allow withdrawing past the account balance
-
-	// Calculate running balance
 
 	Transaction::create(conn, attrs).map_err(|e| format_err!("{}", e))
 }

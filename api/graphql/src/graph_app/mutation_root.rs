@@ -15,4 +15,8 @@ graphql_object!(AppMutationRoot: AppContext | &self | {
 		mutations::deposit::call(executor, input)
 	}
 
+	field withdraw(&executor, input: mutations::withdraw::WithdrawalInput) -> FieldResult<mutations::withdraw::WithdrawalResponse> {
+		mutations::withdraw::call(executor, input)
+	}
+
 });
