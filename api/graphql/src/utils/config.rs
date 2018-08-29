@@ -44,7 +44,7 @@ fn variable_names() -> VariableNames {
 			database_end_point: "DATABASE_HOST_TEST".into(),
 			database_user: "DATABASE_USER_TEST".into(),
 			database_pass: "DATABASE_PASS_TEST".into(),
-		}
+		},
 	}
 }
 
@@ -52,40 +52,37 @@ pub fn get() -> Result<Config, Error> {
 	let names = variable_names();
 
 	// let client_host = env::var("CLIENT_HOST")?;
-	let api_secret = env::var("API_SECRET")
-		.map_err(|_| format_err!("API_SECRET not found"))?;
+	let api_secret = env::var("API_SECRET").map_err(|_| format_err!("API_SECRET not found"))?;
 
-	let db_name = env::var(names.database_name)
-		.map_err(|_| format_err!("database_name not found"))?;
+	let db_name =
+		env::var(names.database_name).map_err(|_| format_err!("database_name not found"))?;
 
 	let db_end_point = env::var(names.database_end_point)
-			.map_err(|_| format_err!("database_end_point not found"))?;
+		.map_err(|_| format_err!("database_end_point not found"))?;
 
-	let db_user = env::var(names.database_user)
-			.map_err(|_| format_err!("database_user not found"))?;
+	let db_user =
+		env::var(names.database_user).map_err(|_| format_err!("database_user not found"))?;
 
-	let db_pass = env::var(names.database_pass)
-			.map_err(|_| format_err!("database_pass not found"))?;
+	let db_pass =
+		env::var(names.database_pass).map_err(|_| format_err!("database_pass not found"))?;
 
 	let mut url = Url::parse("postgres://user@host/name")?;
 
-	url.set_username(&db_user);
-	url.set_host(Some(&db_end_point));
-	url.set_path(&db_name);
+	let _res1 = url.set_username(&db_user);
+	let _res2 = url.set_host(Some(&db_end_point));
+	let _res3 = url.set_path(&db_name);
 
 	if db_pass != "" {
-		url.set_password(Some(&db_pass));
+		let _res4 = url.set_password(Some(&db_pass));
 	}
 
 	// e.g. postgres://user:password@host:3333/db_name
 	// let database_url =
 	// 	format!("postgres://{}:{}@{}/{}", db_user, db_pass, db_end_point, db_name);
 
-	let database_url =
-		url.to_string();
+	let database_url = url.to_string();
 
-	let system_jwt = env::var("SYSTEM_JWT")
-		.map_err(|_| format_err!("SYSTEM_JWT not found"))?;
+	let system_jwt = env::var("SYSTEM_JWT").map_err(|_| format_err!("SYSTEM_JWT not found"))?;
 
 	let config = Config {
 		// client_host: client_host,

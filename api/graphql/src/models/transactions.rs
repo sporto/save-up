@@ -23,7 +23,7 @@ pub struct Transaction {
 	pub amount: Cents,
 }
 
-#[derive(Debug, Copy, Clone, FromSqlRow, AsExpression, GraphQLEnum)]
+#[derive(Debug, Copy, Clone, FromSqlRow, AsExpression, GraphQLEnum, PartialEq)]
 #[sql_type = "Varchar"]
 pub enum TransactionKind {
 	Deposit,
@@ -31,7 +31,7 @@ pub enum TransactionKind {
 
 impl ToSql<Text, Pg> for TransactionKind {
 	fn to_sql<W: io::Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
-		let v = match *self {
+		let _v = match *self {
 			TransactionKind::Deposit => out.write_all(b"DEPOSIT")?,
 		};
 		Ok(IsNull::No)

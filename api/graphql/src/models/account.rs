@@ -50,3 +50,27 @@ impl Account {
 			.get_result(conn)
 	}
 }
+
+#[cfg(test)]
+pub mod factories {
+	use super::*;
+	use bigdecimal::FromPrimitive;
+	use models::user::User;
+
+	pub fn account_attrs(user: &User) -> AccountAttrs {
+		let yearly_interest = BigDecimal::from_f32(10.5).unwrap();
+
+		AccountAttrs {
+			user_id: user.id,
+			name: user.clone().name,
+			yearly_interest: yearly_interest,
+		}
+	}
+
+	impl AccountAttrs {
+		pub fn save(self, conn: &PgConnection) -> Account {
+			Account::create(conn, self).unwrap()
+		}
+	}
+
+}
