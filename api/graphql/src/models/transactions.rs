@@ -27,12 +27,14 @@ pub struct Transaction {
 #[sql_type = "Varchar"]
 pub enum TransactionKind {
 	Deposit,
+	Withdrawal,
 }
 
 impl ToSql<Text, Pg> for TransactionKind {
 	fn to_sql<W: io::Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
 		let _v = match *self {
 			TransactionKind::Deposit => out.write_all(b"DEPOSIT")?,
+			TransactionKind::Withdrawal => out.write_all(b"WITHDRAWAL")?,
 		};
 		Ok(IsNull::No)
 	}
@@ -42,6 +44,7 @@ impl FromSql<Text, Pg> for TransactionKind {
 	fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
 		match not_none!(bytes) {
 			b"DEPOSIT" => Ok(TransactionKind::Deposit),
+			b"WITHDRAWAL" => Ok(TransactionKind::Withdrawal),
 			_ => Err("Unrecognized enum variant".into()),
 		}
 	}
@@ -52,7 +55,7 @@ impl FromSql<Text, Pg> for TransactionKind {
 pub struct TransactionAttrs {
 	pub account_id: i32,
 	pub kind: TransactionKind,
-	pub amount: Cents,
+	pub cents: Cents,
 }
 
 impl Transaction {

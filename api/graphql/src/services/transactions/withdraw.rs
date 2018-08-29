@@ -4,12 +4,12 @@ use models::cents::Cents;
 use models::transactions::{Transaction, TransactionAttrs, TransactionKind};
 
 #[derive(GraphQLInputObject, Clone)]
-pub struct DepositInput {
+pub struct WithdrawalInput {
 	account_id: i32,
 	cents: i32,
 }
 
-pub fn call(conn: &PgConnection, input: DepositInput) -> Result<Transaction, Error> {
+pub fn call(conn: &PgConnection, input: WithdrawalInput) -> Result<Transaction, Error> {
 	// Fail if cents is negative
 	if input.cents <= 0 {
 		return Err(format_err!("Invalid amount"))
@@ -17,13 +17,15 @@ pub fn call(conn: &PgConnection, input: DepositInput) -> Result<Transaction, Err
 
 	let attrs = TransactionAttrs {
 		account_id: input.account_id,
-		kind: TransactionKind::Deposit,
-		cents: Cents(input.cents as i64),
+		kind: TransactionKind::Withdrawal,
+		cents: Cents(-input.cents as i64),
 	};
 
-	// TODO send an email to the account holder
+	// TODO do not allow withdrawing past the account balance
 
-	Transaction::create(conn, attrs).map_err(|e| format_err!("{}", e))
+	Transaction
+		::create(conn, attrs)
+		.map_err(|e| format_err!("{}", e))
 }
 
 #[cfg(test)]
@@ -43,7 +45,7 @@ mod test {
 
 			let account = models::account::factories::account_attrs(&user).save(conn);
 
-			let input = DepositInput {
+			let input = WithdrawalInput {
 				account_id: account.id,
 				cents: 200,
 			};
@@ -51,8 +53,8 @@ mod test {
 			let transaction = call(conn, input).unwrap();
 
 			assert_eq!(transaction.account_id, account.id);
-			assert_eq!(transaction.amount, Cents(200));
-			assert_eq!(transaction.kind, TransactionKind::Deposit);
+			assert_eq!(transaction.amount, Cents(-200));
+			assert_eq!(transaction.kind, TransactionKind::Withdrawal);
 		})
 	}
 
@@ -67,7 +69,7 @@ mod test {
 
 			let account = models::account::factories::account_attrs(&user).save(conn);
 
-			let input = DepositInput {
+			let input = WithdrawalInput {
 				account_id: account.id,
 				cents: -200,
 			};

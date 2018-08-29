@@ -34,7 +34,7 @@ table! {
         created_at -> Timestamp,
         account_id -> Int4,
         kind -> Varchar,
-        amount -> Money,
+        cents -> Money,
     }
 }
 
