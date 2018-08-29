@@ -15,19 +15,6 @@ pub struct ClientAttrs {
 	pub name: String,
 }
 
-#[cfg(test)]
-pub fn client_attrs() -> ClientAttrs {
-	ClientAttrs {
-		name: "Client".to_owned(),
-	}
-}
-
-impl ClientAttrs {
-	pub fn save(self, conn: &PgConnection) -> Client {
-		Client::create(conn, self).unwrap()
-	}
-}
-
 #[derive(Queryable, GraphQLObject)]
 pub struct Client {
 	pub id: i32,
@@ -72,5 +59,22 @@ impl Client {
 	#[allow(dead_code)]
 	pub fn delete_all(conn: &PgConnection) -> Result<usize, Error> {
 		diesel::delete(clients::table).execute(conn)
+	}
+}
+
+#[cfg(test)]
+pub mod factories {
+	use super::*;
+
+	pub fn client_attrs() -> ClientAttrs {
+		ClientAttrs {
+			name: "Client".to_owned(),
+		}
+	}
+
+	impl ClientAttrs {
+		pub fn save(self, conn: &PgConnection) -> Client {
+			Client::create(conn, self).unwrap()
+		}
 	}
 }

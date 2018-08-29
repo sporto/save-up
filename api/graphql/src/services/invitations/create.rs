@@ -38,8 +38,8 @@ mod tests {
 	#[test]
 	fn it_creates_an_invitation() {
 		tests::with_db(|conn| {
-			let client = models::client::client_attrs().save(conn);
-			let user = models::user::user_attrs(&client).save(conn);
+			let client = models::client::factories::client_attrs().save(conn);
+			let user = models::user::factories::user_attrs(&client).save(conn);
 			let email = "samantha@sample.com".to_owned();
 
 			let result = call(&conn, &user, &email);

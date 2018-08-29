@@ -73,12 +73,12 @@ mod tests {
 	#[test]
 	fn it_creates_a_user() {
 		tests::with_db(|conn| {
-			let client = client::client_attrs().save(conn);
-			let inviter = user::user_attrs(&client).save(conn);
+			let client = client::factories::client_attrs().save(conn);
+			let inviter = user::factories::user_attrs(&client).save(conn);
 
 			let invitation_token = "token".into();
 
-			let invitation = invitation::invitation_attrs(&inviter)
+			let invitation = invitation::factories::invitation_attrs(&inviter)
 				.token(invitation_token)
 				.save(conn);
 

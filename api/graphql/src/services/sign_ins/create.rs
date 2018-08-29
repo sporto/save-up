@@ -4,8 +4,7 @@ use models::user::User;
 use services;
 
 pub fn call(conn: &PgConnection, sign_in: SignIn) -> Result<User, String> {
-	let user = User::find_by_email(conn, &sign_in.email)
-		.map_err(|_| "User not found".to_owned())?;
+	let user = User::find_by_email(conn, &sign_in.email).map_err(|_| "User not found".to_owned())?;
 
 	let invalid = "Invalid email or password".to_owned();
 
@@ -23,8 +22,8 @@ pub fn call(conn: &PgConnection, sign_in: SignIn) -> Result<User, String> {
 mod tests {
 	use super::*;
 	use models;
-	use utils::tests;
 	use services::passwords;
+	use utils::tests;
 
 	#[test]
 	fn it_can_sign_in() {
@@ -33,9 +32,9 @@ mod tests {
 
 			let password_hash = passwords::encrypt::call(&password).unwrap();
 
-			let client = models::client::client_attrs().save(conn);
+			let client = models::client::factories::client_attrs().save(conn);
 
-			let user = models::user::user_attrs(&client)
+			let user = models::user::factories::user_attrs(&client)
 				.password_hash(&password_hash)
 				.save(conn);
 
@@ -61,9 +60,9 @@ mod tests {
 
 			let password_hash = passwords::encrypt::call(&password).unwrap();
 
-			let client = models::client::client_attrs().save(conn);
+			let client = models::client::factories::client_attrs().save(conn);
 
-			let user = models::user::user_attrs(&client)
+			let user = models::user::factories::user_attrs(&client)
 				.password_hash(&password_hash)
 				.save(conn);
 

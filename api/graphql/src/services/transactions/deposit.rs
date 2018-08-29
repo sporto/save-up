@@ -28,9 +28,11 @@ mod test {
 	#[test]
 	fn it_creates_a_transaction() {
 		tests::with_db(|conn| {
-			let client = models::client::client_attrs().save(conn);
+			let client = models::client
+				::factories
+				::client_attrs().save(conn);
 
-			let user = models::user::user_attrs(&client).save(conn);
+			let user = models::user::factories::user_attrs(&client).save(conn);
 
 			let account = models::account::factories::account_attrs(&user).save(conn);
 

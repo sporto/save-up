@@ -46,22 +46,6 @@ pub struct TokenData {
 	pub role: String,
 }
 
-#[cfg(test)]
-use models::client::Client;
-
-#[cfg(test)]
-pub fn user_attrs(client: &Client) -> UserAttrs {
-	UserAttrs {
-		client_id: client.id,
-		email: "sam@sample.com".to_owned(),
-		password_hash: "abc".to_owned(),
-		name: "Sam".to_owned(),
-		role: ROLE_ADMIN.to_owned(),
-		email_confirmation_token: None,
-		email_confirmed_at: None,
-	}
-}
-
 pub fn system_user() -> User {
 	let created_at = NaiveDateTime::from_timestamp(1_000_000_000, 0);
 
@@ -75,23 +59,6 @@ pub fn system_user() -> User {
 		role: ROLE_ADMIN.to_owned(),
 		email_confirmation_token: None,
 		email_confirmed_at: None,
-	}
-}
-
-#[cfg(test)]
-impl UserAttrs {
-	pub fn save(self, conn: &PgConnection) -> User {
-		User::create(conn, self).unwrap()
-	}
-
-	pub fn password_hash(mut self, ph: &str) -> Self {
-		self.password_hash = ph.to_owned();
-		self
-	}
-
-	pub fn email_confirmation_token(mut self, token: &str) -> Self {
-		self.email_confirmation_token = Some(token.into());
-		self
 	}
 }
 
@@ -128,5 +95,39 @@ impl User {
 	#[allow(dead_code)]
 	pub fn delete_all(conn: &PgConnection) -> Result<usize, Error> {
 		diesel::delete(users::table).execute(conn)
+	}
+}
+
+#[cfg(test)]
+pub mod factories {
+	use super::*;
+	use models::client::Client;
+
+	pub fn user_attrs(client: &Client) -> UserAttrs {
+		UserAttrs {
+			client_id: client.id,
+			email: "sam@sample.com".to_owned(),
+			password_hash: "abc".to_owned(),
+			name: "Sam".to_owned(),
+			role: ROLE_ADMIN.to_owned(),
+			email_confirmation_token: None,
+			email_confirmed_at: None,
+		}
+	}
+
+	impl UserAttrs {
+		pub fn save(self, conn: &PgConnection) -> User {
+			User::create(conn, self).unwrap()
+		}
+
+		pub fn password_hash(mut self, ph: &str) -> Self {
+			self.password_hash = ph.to_owned();
+			self
+		}
+
+		pub fn email_confirmation_token(mut self, token: &str) -> Self {
+			self.email_confirmation_token = Some(token.into());
+			self
+		}
 	}
 }

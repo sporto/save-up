@@ -22,15 +22,15 @@ pub fn call(conn: &PgConnection, token: &str) -> Result<user::User, Error> {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use utils::tests;
 	use models::client;
+	use utils::tests;
 
 	#[test]
 	fn it_updates_the_user() {
 		tests::with_db(|conn| {
-			let client = client::client_attrs().save(conn);
+			let client = client::factories::client_attrs().save(conn);
 
-			let user = user::user_attrs(&client)
+			let user = user::factories::user_attrs(&client)
 				.email_confirmation_token("xyz")
 				.save(conn);
 
@@ -43,9 +43,9 @@ mod tests {
 	#[test]
 	fn it_returns_error_when_token_not_found() {
 		tests::with_db(|conn| {
-			let client = client::client_attrs().save(conn);
+			let client = client::factories::client_attrs().save(conn);
 
-			let user = user::user_attrs(&client)
+			let user = user::factories::user_attrs(&client)
 				.email_confirmation_token("abc")
 				.save(conn);
 

@@ -44,27 +44,28 @@ impl Invitation {
 }
 
 #[cfg(test)]
-use models::user::{User, ROLE_INVESTOR};
+pub mod factories {
+	use super::*;
+	use models::user::{User, ROLE_INVESTOR};
 
-#[cfg(test)]
-pub fn invitation_attrs(inviter: &User) -> InvitationAttrs {
-	InvitationAttrs {
-		user_id: inviter.id,
-		email: "sam@sample.com".into(),
-		role: ROLE_INVESTOR.into(),
-		token: "abc".into(),
-		used_at: None,
-	}
-}
-
-#[cfg(test)]
-impl InvitationAttrs {
-	pub fn save(self, conn: &PgConnection) -> Invitation {
-		Invitation::create(conn, self).unwrap()
+	pub fn invitation_attrs(inviter: &User) -> InvitationAttrs {
+		InvitationAttrs {
+			user_id: inviter.id,
+			email: "sam@sample.com".into(),
+			role: ROLE_INVESTOR.into(),
+			token: "abc".into(),
+			used_at: None,
+		}
 	}
 
-	pub fn token(mut self, token: &str) -> Self {
-		self.token = token.to_owned();
-		self
+	impl InvitationAttrs {
+		pub fn save(self, conn: &PgConnection) -> Invitation {
+			Invitation::create(conn, self).unwrap()
+		}
+
+		pub fn token(mut self, token: &str) -> Self {
+			self.token = token.to_owned();
+			self
+		}
 	}
 }
