@@ -17,6 +17,8 @@ pub fn call(conn: &PgConnection, input: WithdrawalInput) -> Result<Transaction, 
 		return Err(format_err!("Invalid amount"));
 	}
 
+	// Calculate interest first
+
 	let current_balance = accounts::get_balance::call(&conn, input.account_id)?;
 
 	let amount = input.cents as i64;

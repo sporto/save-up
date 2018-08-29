@@ -30,6 +30,7 @@ pub struct Transaction {
 pub enum TransactionKind {
 	Deposit,
 	Withdrawal,
+	Interest,
 }
 
 impl ToSql<Text, Pg> for TransactionKind {
@@ -37,6 +38,7 @@ impl ToSql<Text, Pg> for TransactionKind {
 		let _v = match *self {
 			TransactionKind::Deposit => out.write_all(b"DEPOSIT")?,
 			TransactionKind::Withdrawal => out.write_all(b"WITHDRAWAL")?,
+			TransactionKind::Interest => out.write_all(b"INTEREST")?,
 		};
 		Ok(IsNull::No)
 	}
@@ -47,6 +49,7 @@ impl FromSql<Text, Pg> for TransactionKind {
 		match not_none!(bytes) {
 			b"DEPOSIT" => Ok(TransactionKind::Deposit),
 			b"WITHDRAWAL" => Ok(TransactionKind::Withdrawal),
+			b"INTEREST" => Ok(TransactionKind::Interest),
 			_ => Err("Unrecognized enum variant".into()),
 		}
 	}

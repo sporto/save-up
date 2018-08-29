@@ -16,3 +16,4 @@ TODO
 - Calculate interest
   - Before deposit
   - Before withdrawal
+- Authorise invite (only admins)
