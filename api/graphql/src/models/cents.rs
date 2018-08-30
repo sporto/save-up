@@ -5,6 +5,7 @@ use diesel::serialize::{self,Output,ToSql};
 use std::io;
 use diesel::sql_types::{BigInt,Money};
 use std::ops::Sub;
+use std::ops::Add;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, FromSqlRow, AsExpression)]
 #[sql_type = "Money"]
@@ -38,6 +39,14 @@ impl Sub for Cents {
 	}
 }
 
+impl Add for Cents {
+	type Output = Cents;
+
+	fn add(self, Cents(other): Cents) -> Cents {
+		let Cents(cents) = self;
+		Cents(cents + other)
+	}
+}
 
 
 graphql_scalar!(Cents {

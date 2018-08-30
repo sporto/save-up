@@ -1,8 +1,10 @@
+use super::calculate_interest;
 use chrono::prelude::*;
 use chrono::Duration;
 use diesel::pg::PgConnection;
 use diesel::result::Error as DieselError;
 use failure::Error;
+use models::account::Account;
 use models::cents::Cents;
 use models::transaction::{Transaction, TransactionAttrs, TransactionKind};
 
@@ -13,18 +15,16 @@ pub enum PayInterestResponse {
 }
 
 pub fn call(conn: &PgConnection, account_id: i32) -> Result<PayInterestResponse, Error> {
+	let account = Account::find(&conn, account_id)?;
+
 	let previous_transaction_result = Transaction::find_last_by_account_id(&conn, account_id);
 
 	// If there is no previous transaction, then there is no interest to pay
 	let previous_transaction = match previous_transaction_result {
 		Ok(t) => t,
-		Err(e) => {
-			match e {
-				DieselError::NotFound =>
-					return Ok(PayInterestResponse::NotNeeded),
-				_ =>
-					return Err(format_err!("{}", e))
-			}
+		Err(e) => match e {
+			DieselError::NotFound => return Ok(PayInterestResponse::NotNeeded),
+			_ => return Err(format_err!("{}", e)),
 		},
 	};
 
@@ -40,7 +40,12 @@ pub fn call(conn: &PgConnection, account_id: i32) -> Result<PayInterestResponse,
 	}
 
 	// Calculate the interest
-	let interest = 9999;
+	let Cents(interest) = calculate_interest::call(
+		previous_transaction.balance,
+		&account.yearly_interest,
+		previous_transaction.created_at,
+		now,
+	)?;
 
 	let Cents(previous_balance) = previous_transaction.balance;
 
