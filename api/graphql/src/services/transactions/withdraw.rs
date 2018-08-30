@@ -4,6 +4,7 @@ use failure::Error;
 use models::cents::Cents;
 use models::transaction::{Transaction, TransactionAttrs, TransactionKind};
 use services::accounts;
+use services::emails::acknowledge_withdrawal;
 
 #[derive(GraphQLInputObject, Clone)]
 pub struct WithdrawalInput {
@@ -39,7 +40,11 @@ pub fn call(conn: &PgConnection, input: WithdrawalInput) -> Result<Transaction, 
 		balance: Cents(new_balance),
 	};
 
-	Transaction::create(conn, attrs).map_err(|e| format_err!("{}", e))
+	let transaction = Transaction::create(conn, attrs).map_err(|e| format_err!("{}", e))?;
+
+	acknowledge_withdrawal::call(&conn, &transaction)?;
+
+	Ok(transaction)
 }
 
 #[cfg(test)]

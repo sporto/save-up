@@ -1,3 +1,4 @@
+use super::send;
 use failure::Error;
 use models::user::User;
 use rusoto_core::Region;
@@ -5,8 +6,6 @@ use rusoto_sns::{PublishInput, Sns, SnsClient};
 use shared::email_kinds::EmailKind;
 
 pub fn call(user: &User) -> Result<(), Error> {
-	let client = SnsClient::new(Region::ApSoutheast1);
-
 	let confirmation_token = user
 		.clone()
 		.email_confirmation_token
@@ -17,19 +16,5 @@ pub fn call(user: &User) -> Result<(), Error> {
 		confirmation_token: confirmation_token.to_string(),
 	};
 
-	let message = json!(email_kind);
-
-	let input = PublishInput {
-		message: message.to_string(),
-		message_attributes: None,
-		message_structure: None,
-		phone_number: None,
-		subject: None,
-		target_arn: None,
-		topic_arn: Some("emails".into()),
-	};
-
-	client.publish(input);
-
-	Ok(())
+	send::call(&email_kind)
 }

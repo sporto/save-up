@@ -4,6 +4,7 @@ use failure::Error;
 use models::cents::Cents;
 use models::transaction::{Transaction, TransactionAttrs, TransactionKind};
 use services::accounts;
+use services::emails::acknowledge_deposit;
 
 #[derive(GraphQLInputObject, Clone)]
 pub struct DepositInput {
@@ -34,9 +35,12 @@ pub fn call(conn: &PgConnection, input: DepositInput) -> Result<Transaction, Err
 		balance: new_balance,
 	};
 
-	// TODO send an email to the account holder
+	let transaction = Transaction::create(conn, attrs).map_err(|e| format_err!("{}", e))?;
 
-	Transaction::create(conn, attrs).map_err(|e| format_err!("{}", e))
+	// Send an email to the account holder
+	acknowledge_deposit::call(&conn, &transaction)?;
+
+	Ok(transaction)
 }
 
 #[cfg(test)]

@@ -62,7 +62,7 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 		})
 		.map_err(|e| format_err!("{}", e))?;
 
-	services::users::send_email_confirmation::call(&user)?;
+	services::emails::email_confirmation::call(&user)?;
 
 	Ok(user)
 }
