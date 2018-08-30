@@ -7,7 +7,7 @@ use diesel::prelude::*;
 use diesel::result::Error;
 // use diesel::sql_types::Numeric;
 // use diesel::pg::data_types::PgNumeric;
-use models::cents::Cents;
+// use models::cents::Cents;
 use models::schema::accounts;
 use validator::Validate;
 
@@ -77,6 +77,12 @@ pub mod factories {
 	impl AccountAttrs {
 		pub fn save(self, conn: &PgConnection) -> Account {
 			Account::create(conn, self).unwrap()
+		}
+	}
+
+	impl Account {
+		pub fn delete_all(conn: &PgConnection) -> Result<usize, Error> {
+			diesel::delete(accounts::table).execute(conn)
 		}
 	}
 }

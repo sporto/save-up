@@ -89,11 +89,6 @@ impl User {
 			.first::<User>(conn)
 	}
 
-	// Delete
-	#[allow(dead_code)]
-	pub fn delete_all(conn: &PgConnection) -> Result<usize, Error> {
-		diesel::delete(users::table).execute(conn)
-	}
 }
 
 #[cfg(test)]
@@ -126,6 +121,12 @@ pub mod factories {
 		pub fn email_confirmation_token(mut self, token: &str) -> Self {
 			self.email_confirmation_token = Some(token.into());
 			self
+		}
+	}
+
+	impl User {
+		pub fn delete_all(conn: &PgConnection) -> Result<usize, Error> {
+			diesel::delete(users::table).execute(conn)
 		}
 	}
 }

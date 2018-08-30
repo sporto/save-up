@@ -38,7 +38,7 @@ mod models;
 mod services;
 mod utils;
 
-const PUBLIC_PATH: &'static str = "/graphql-pub";
+// const PUBLIC_PATH: &'static str = "/graphql-pub";
 // const PRIVATE_PATH: &'static str = "/graphql";
 
 type AppSchema = RootNode<

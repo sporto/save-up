@@ -7,7 +7,7 @@ use diesel::prelude::*;
 use failure::Error;
 
 use models::account::{Account, AccountAttrs};
-use models::cents::Cents;
+// use models::cents::Cents;
 use models::invitation;
 use models::schema::invitations;
 use models::user::{self, User, UserAttrs, ROLE_INVESTOR};

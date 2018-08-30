@@ -46,12 +46,6 @@ impl Client {
 	pub fn first(conn: &PgConnection) -> Result<Client, Error> {
 		clients::table.first::<Client>(conn)
 	}
-
-	// Delete
-	#[allow(dead_code)]
-	pub fn delete_all(conn: &PgConnection) -> Result<usize, Error> {
-		diesel::delete(clients::table).execute(conn)
-	}
 }
 
 #[cfg(test)]
@@ -67,6 +61,12 @@ pub mod factories {
 	impl ClientAttrs {
 		pub fn save(self, conn: &PgConnection) -> Client {
 			Client::create(conn, self).unwrap()
+		}
+	}
+
+	impl Client {
+		pub fn delete_all(conn: &PgConnection) -> Result<usize, Error> {
+			diesel::delete(clients::table).execute(conn)
 		}
 	}
 }

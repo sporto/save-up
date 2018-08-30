@@ -30,7 +30,7 @@ mod tests {
 		tests::with_db(|conn| {
 			let client = client::factories::client_attrs().save(conn);
 
-			let user = user::factories::user_attrs(&client)
+			let _user = user::factories::user_attrs(&client)
 				.email_confirmation_token("xyz")
 				.save(conn);
 
@@ -45,7 +45,7 @@ mod tests {
 		tests::with_db(|conn| {
 			let client = client::factories::client_attrs().save(conn);
 
-			let user = user::factories::user_attrs(&client)
+			let _user = user::factories::user_attrs(&client)
 				.email_confirmation_token("abc")
 				.save(conn);
 

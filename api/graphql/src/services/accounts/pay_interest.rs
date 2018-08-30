@@ -88,7 +88,7 @@ mod tests {
 			let client = models::client::factories::client_attrs().save(conn);
 			let user = models::user::factories::user_attrs(&client).save(conn);
 			let account = models::account::factories::account_attrs(&user).save(conn);
-			let transaction =
+			let _transaction =
 				models::transaction::factories::transaction_attrs(&account).save(conn);
 
 			let response = call(conn, account.id).unwrap();
@@ -120,7 +120,7 @@ mod tests {
 			let response = call(conn, account.id).unwrap();
 
 			match response {
-				_NotNeeded => panic!("Should not be NotNeeded"),
+				PayInterestResponse::NotNeeded => panic!("Should not be NotNeeded"),
 				PayInterestResponse::Paid(returned_transaction) => {
 					assert_eq!(returned_transaction.kind, TransactionKind::Interest);
 				}

@@ -1,7 +1,6 @@
-use bigdecimal::BigDecimal;
 use chrono::NaiveDateTime;
 use diesel;
-use diesel::backend::Backend;
+// use diesel::backend::Backend;
 use diesel::deserialize::{self, FromSql};
 use diesel::pg::Pg;
 use diesel::pg::PgConnection;
@@ -9,7 +8,7 @@ use diesel::prelude::*;
 use diesel::result::Error;
 use diesel::serialize::{self, IsNull, Output, ToSql};
 use diesel::sql_types::*;
-use juniper::Value;
+// use juniper::Value;
 use models::cents::Cents;
 use models::schema::transactions;
 use std::io;
@@ -85,7 +84,7 @@ impl Transaction {
 #[cfg(test)]
 pub mod factories {
 	use super::*;
-	use bigdecimal::FromPrimitive;
+	// use bigdecimal::FromPrimitive;
 	use models::account::Account;
 
 	pub fn transaction_attrs(account: &Account) -> TransactionAttrs {
@@ -107,6 +106,12 @@ pub mod factories {
 		pub fn balance(mut self, balance: i64) -> TransactionAttrs {
 			self.balance = Cents(balance);
 			self
+		}
+	}
+
+	impl Transaction {
+		pub fn delete_all(conn: &PgConnection) -> Result<usize, Error> {
+			diesel::delete(transactions::table).execute(conn)
 		}
 	}
 
