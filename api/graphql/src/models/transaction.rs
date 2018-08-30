@@ -15,7 +15,7 @@ use models::schema::transactions;
 use std::io;
 use validator::Validate;
 
-#[derive(Queryable, GraphQLObject, Clone)]
+#[derive(Debug, Queryable, GraphQLObject, Clone, PartialEq)]
 pub struct Transaction {
 	pub id: i32,
 	pub created_at: NaiveDateTime,

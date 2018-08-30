@@ -99,7 +99,7 @@ mod test {
 			// 	.balance(1)
 			// 	.save(conn);
 
-			let prev2 = models::transaction::factories::transaction_attrs(&account)
+			let _prev2 = models::transaction::factories::transaction_attrs(&account)
 				.balance(2)
 				.save(conn);
 

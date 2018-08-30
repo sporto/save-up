@@ -79,7 +79,7 @@ mod tests {
 
 			let invitation_token = "token".into();
 
-			let invitation = invitation::factories::invitation_attrs(&inviter)
+			let _invitation = invitation::factories::invitation_attrs(&inviter)
 				.token(invitation_token)
 				.save(conn);
 

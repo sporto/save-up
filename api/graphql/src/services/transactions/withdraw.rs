@@ -122,7 +122,7 @@ mod test {
 
 			let account = models::account::factories::account_attrs(&user).save(conn);
 
-			let prev = models::transaction::factories::transaction_attrs(&account)
+			let _prev = models::transaction::factories::transaction_attrs(&account)
 				.balance(300)
 				.save(conn);
 
