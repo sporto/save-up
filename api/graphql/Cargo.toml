@@ -41,3 +41,4 @@ uuid = { version = "0.6", features = ["v4"] }
 validator = "0.7"
 validator_derive = "0.7"
 shared = { path = "../shared" }
+range_check = "0.1.0"

@@ -14,6 +14,7 @@ extern crate validator_derive;
 extern crate aws_lambda as lambda;
 extern crate bigdecimal;
 extern crate chrono;
+extern crate range_check;
 extern crate serde;
 extern crate url;
 extern crate validator;

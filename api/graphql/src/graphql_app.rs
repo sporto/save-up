@@ -23,6 +23,7 @@ extern crate shared;
 extern crate url;
 extern crate uuid;
 extern crate validator;
+extern crate range_check;
 
 use diesel::pg::PgConnection;
 use failure::Error;
