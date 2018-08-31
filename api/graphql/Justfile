@@ -6,18 +6,14 @@ db-gen name:
 
 db-up:
 	DATABASE_URL=$DATABASE_URL_LOCAL diesel migration run
+	DATABASE_URL=$DATABASE_URL_TEST diesel migration run
 
 db-down:
 	DATABASE_URL=$DATABASE_URL_LOCAL diesel migration revert
+	DATABASE_URL=$DATABASE_URL_TEST diesel migration revert
 
 dp-test-setup:
 	DATABASE_URL=$DATABASE_URL_TEST diesel setup
-
-db-down-test:
-	DATABASE_URL=$DATABASE_URL_TEST diesel migration revert
-
-db-up-test:
-	DATABASE_URL=$DATABASE_URL_TEST diesel migration run
 
 schema:
 	DATABASE_URL=$DATABASE_URL_LOCAL diesel print-schema > src/models/schema.rs
