@@ -1,8 +1,9 @@
+use graph_app::actions::accounts::authorise;
 pub use graph_app::actions::transactions::withdraw::{self, WithdrawalInput};
 use graph_app::context::AppContext;
 use graph_common::mutations::failure_to_mutation_errors;
 use graph_common::mutations::MutationError;
-use juniper::{Executor, FieldResult};
+use juniper::{Executor, FieldError, FieldResult};
 use models::transaction::Transaction;
 
 #[derive(GraphQLObject, Clone)]
@@ -17,11 +18,11 @@ pub fn call(
 	input: WithdrawalInput,
 ) -> FieldResult<WithdrawalResponse> {
 	let context = executor.context();
-
 	let conn = &context.conn;
+	let current_user = &context.user;
 
 	// Authorise this transaction
-	let can_access = authorise::call(&conn, input.account_id, &context.user)?;
+	let can_access = authorise::call(&conn, input.account_id, &current_user)?;
 
 	if can_access == false {
 		return Err(FieldError::from("Unauthorised"));

@@ -8,18 +8,18 @@ use models::account::Account;
 use models::schema as db;
 use models::user::{User, Role};
 
-pub fn call(conn: &PgConnection, account_id: i32, accessing_user: &User) -> Result<bool, Error> {
+pub fn call(conn: &PgConnection, account_id: i32, current_user: &User) -> Result<bool, Error> {
 	// Ok if account holder
 	let account = Account::find(&conn, account_id)?;
 
-	if account.user_id == accessing_user.id {
+	if account.user_id == current_user.id {
 		return Ok(true);
 	}
 
 	// Ok if admin for this client
 	let admins_ids = get_admin_ids(&conn, &account)?;
 
-	let has_access = admins_ids.contains(&accessing_user.id);
+	let has_access = admins_ids.contains(&current_user.id);
 
 	Ok(has_access)
 }

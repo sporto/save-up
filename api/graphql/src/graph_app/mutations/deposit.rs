@@ -16,11 +16,11 @@ pub struct DepositResponse {
 
 pub fn call(executor: &Executor<AppContext>, input: DepositInput) -> FieldResult<DepositResponse> {
 	let context = executor.context();
-
 	let conn = &context.conn;
+	let current_user = &context.user;
 
 	// Authorise this transaction
-	let can_access = authorise::call(&conn, input.account_id, &context.user)?;
+	let can_access = authorise::call(&conn, input.account_id, &current_user)?;
 
 	if can_access == false {
 		return Err(FieldError::from("Unauthorised"));

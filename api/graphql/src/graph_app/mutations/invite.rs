@@ -1,8 +1,9 @@
-use graph_app::context::AppContext;
-use graph_common::mutations::MutationError;
-use juniper::{Executor, FieldResult};
 use graph_app::actions::invitations;
+use graph_app::actions::invitations::authorise;
+use graph_app::context::AppContext;
 use graph_common::mutations::failure_to_mutation_errors;
+use graph_common::mutations::MutationError;
+use juniper::{Executor, FieldError, FieldResult};
 
 #[derive(Deserialize, Clone, GraphQLInputObject)]
 pub struct InvitationInput {
@@ -20,9 +21,17 @@ pub fn call(
 	input: InvitationInput,
 ) -> FieldResult<InvitationResponse> {
 	let context = executor.context();
+	let conn = &context.conn;
+	let current_user = &context.user;
 
-	let invitation_result =
-		invitations::create::call(&context.conn, &context.user, &input.email);
+	// Authorise
+	let can = authorise::call(&conn, &current_user)?;
+
+	if can == false {
+		return Err(FieldError::from("Unauthorised"));
+	}
+
+	let invitation_result = invitations::create::call(&conn, &current_user, &input.email);
 
 	match invitation_result {
 		Ok(invitation) => invitation,

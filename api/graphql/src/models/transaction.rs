@@ -1,6 +1,6 @@
 use chrono::NaiveDateTime;
 use diesel;
-use diesel::pg::Pg;
+// use diesel::pg::Pg;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;

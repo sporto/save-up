@@ -8,8 +8,8 @@ use models::transaction::{Transaction, TransactionAttrs, TransactionKind};
 
 #[derive(GraphQLInputObject, Clone)]
 pub struct WithdrawalInput {
-	account_id: i32,
-	cents: i32,
+	pub account_id: i32,
+	pub cents: i32,
 }
 
 pub fn call(conn: &PgConnection, input: WithdrawalInput) -> Result<Transaction, Error> {
