@@ -2,8 +2,8 @@ use graph_common::mutations::{failure_to_mutation_errors, MutationError};
 use graph_pub::context::PublicContext;
 use juniper::{Executor, FieldResult};
 use models::user::User;
-use services::invitations::redeem;
-pub use services::invitations::redeem::RedeemInvitationInput;
+use graph_pub::actions::invitations::redeem;
+pub use graph_pub::actions::invitations::redeem::RedeemInvitationInput;
 
 #[derive(GraphQLObject, Clone)]
 pub struct RedeemInvitationResponse {

@@ -1,7 +1,7 @@
 use graph_app::context::AppContext;
 use graph_common::mutations::MutationError;
 use juniper::{Executor, FieldResult};
-use services;
+use graph_app::actions::invitations;
 use graph_common::mutations::failure_to_mutation_errors;
 
 #[derive(Deserialize, Clone, GraphQLInputObject)]
@@ -22,7 +22,7 @@ pub fn call(
 	let context = executor.context();
 
 	let invitation_result =
-		services::invitations::create::call(&context.conn, &context.user, &input.email);
+		invitations::create::call(&context.conn, &context.user, &input.email);
 
 	match invitation_result {
 		Ok(invitation) => invitation,
