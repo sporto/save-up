@@ -3,6 +3,7 @@ pub mod cents;
 pub mod client;
 pub mod error;
 pub mod invitation;
+pub mod role;
 pub mod schema;
 pub mod sign_in;
 pub mod sign_up;

@@ -6,7 +6,7 @@ use failure::Error;
 use models;
 use models::account::Account;
 use models::schema as db;
-use models::user::{User, ROLE_ADMIN};
+use models::user::{User, Role};
 
 pub fn call(conn: &PgConnection, account_id: i32, accessing_user: &User) -> Result<bool, Error> {
 	// Ok if account holder
@@ -31,7 +31,7 @@ fn get_admin_ids(conn: &PgConnection, account: &Account) -> Result<Vec<i32>, Err
 
 	let is_in_client = db::users::client_id.eq(user.client_id);
 
-	let is_admin = db::users::role.eq(ROLE_ADMIN);
+	let is_admin = db::users::role.eq(Role::Admin);
 
 	let admin_filter = is_in_client.and(is_admin);
 

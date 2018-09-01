@@ -8,7 +8,7 @@ use graph_pub::actions::passwords;
 use models::client::{Client, ClientAttrs};
 use models::schema::users;
 use models::sign_up::SignUp;
-use models::user::{User, UserAttrs, ROLE_ADMIN};
+use models::user::{Role, User, UserAttrs};
 use uuid::Uuid;
 use validator::Validate;
 
@@ -19,7 +19,7 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 	// Validate the user attrs
 	let temp_user_attrs = UserAttrs {
 		client_id: 1, // Just to validate
-		role: ROLE_ADMIN.to_string(),
+		role: Role::Admin,
 		name: sign_up.name.clone(),
 		email: sign_up.email.clone(),
 		password_hash: password_hash.clone(),
@@ -51,7 +51,7 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 
 			let user_attrs = UserAttrs {
 				client_id: client.id,
-				role: ROLE_ADMIN.to_string(),
+				role: Role::Admin,
 				name: sign_up.name,
 				email: sign_up.email,
 				password_hash: password_hash,
@@ -91,7 +91,7 @@ mod tests {
 
 			assert_eq!(user.name, "Sam".to_owned());
 			assert_eq!(user.email, "sam@sample.com".to_owned());
-			assert_eq!(user.role, ROLE_ADMIN.to_owned());
+			assert_eq!(user.role, Role::Admin);
 		})
 	}
 

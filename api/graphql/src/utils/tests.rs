@@ -4,7 +4,7 @@ use diesel::Connection;
 use models;
 use models::account::Account;
 use models::client::Client;
-use models::user::{User,ROLE_ADMIN};
+use models::user::{User,Role};
 use utils::db_conn;
 
 #[allow(dead_code)]
@@ -69,6 +69,6 @@ pub fn client(conn: &PgConnection) -> Client {
 #[allow(dead_code)]
 pub fn admin_for(conn: &PgConnection, client: &Client) -> User {
 	models::user::factories::user_attrs(&client)
-		.role(ROLE_ADMIN)
+		.role(Role::Admin)
 		.save(conn)
 }

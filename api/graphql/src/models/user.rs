@@ -4,11 +4,8 @@ use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
+pub use super::role::Role;
 use validator::Validate;
-
-pub const ROLE_ADMIN: &str = "admin";
-#[allow(dead_code)]
-pub const ROLE_INVESTOR: &str = "investor";
 
 #[derive(Queryable, GraphQLObject, Debug, Clone)]
 pub struct User {
@@ -18,7 +15,7 @@ pub struct User {
 	pub email: String,
 	pub password_hash: String,
 	pub name: String,
-	pub role: String,
+	pub role: Role,
 	pub email_confirmation_token: Option<String>,
 	pub email_confirmed_at: Option<NaiveDateTime>,
 }
@@ -32,7 +29,7 @@ pub struct UserAttrs {
 	pub password_hash: String,
 	#[validate(length(min = "1"))]
 	pub name: String,
-	pub role: String,
+	pub role: Role,
 	pub email_confirmation_token: Option<String>,
 	pub email_confirmed_at: Option<NaiveDateTime>,
 }
@@ -43,7 +40,7 @@ pub struct TokenData {
 	pub user_id: i32,
 	pub email: String,
 	pub name: String,
-	pub role: String,
+	pub role: Role,
 }
 
 #[allow(dead_code)]
@@ -57,7 +54,7 @@ pub fn system_user() -> User {
 		client_id: 0,
 		password_hash: "".to_owned(),
 		name: "SYSTEM".to_owned(),
-		role: ROLE_ADMIN.to_owned(),
+		role: Role::Admin,
 		email_confirmation_token: None,
 		email_confirmed_at: None,
 	}
@@ -105,7 +102,7 @@ pub mod factories {
 			email: "sam@sample.com".to_owned(),
 			password_hash: "abc".to_owned(),
 			name: "Sam".to_owned(),
-			role: ROLE_ADMIN.to_owned(),
+			role: Role::Admin,
 			email_confirmation_token: None,
 			email_confirmed_at: None,
 		}
@@ -116,8 +113,8 @@ pub mod factories {
 			User::create(conn, self).unwrap()
 		}
 
-		pub fn role(mut self, role: &str) -> Self {
-			self.role = role.to_owned();
+		pub fn role(mut self, role: Role) -> Self {
+			self.role = role;
 			self
 		}
 

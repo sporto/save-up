@@ -1,7 +1,7 @@
 use diesel::pg::PgConnection;
 use failure::Error;
 use models::invitation::{Invitation, InvitationAttrs};
-use models::user::{User, ROLE_INVESTOR};
+use models::user::{User, Role};
 use uuid::Uuid;
 use validator::Validate;
 
@@ -11,7 +11,7 @@ pub fn call(conn: &PgConnection, user: &User, email: &str) -> Result<Invitation,
 	let invitation_attrs = InvitationAttrs {
 		user_id: user.id,
 		email: email.to_string(),
-		role: ROLE_INVESTOR.to_string(),
+		role: Role::Investor,
 		token: token.to_string(),
 		used_at: None,
 	};

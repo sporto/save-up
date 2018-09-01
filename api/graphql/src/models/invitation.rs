@@ -4,6 +4,7 @@ use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
+use models::role::Role;
 use validator::Validate;
 
 #[derive(Queryable, GraphQLObject, Debug)]
@@ -12,7 +13,7 @@ pub struct Invitation {
 	pub created_at: NaiveDateTime,
 	pub user_id: i32,
 	pub email: String,
-	pub role: String,
+	pub role: Role,
 	pub token: String,
 	pub used_at: Option<NaiveDateTime>,
 }
@@ -23,7 +24,7 @@ pub struct InvitationAttrs {
 	pub user_id: i32,
 	#[validate(email)]
 	pub email: String,
-	pub role: String,
+	pub role: Role,
 	pub token: String,
 	pub used_at: Option<NaiveDateTime>,
 }
@@ -48,14 +49,14 @@ impl Invitation {
 #[cfg(test)]
 pub mod factories {
 	use super::*;
-	use models::user::{User, ROLE_INVESTOR};
+	use models::user::{Role, User};
 
 	#[allow(dead_code)]
 	pub fn invitation_attrs(inviter: &User) -> InvitationAttrs {
 		InvitationAttrs {
 			user_id: inviter.id,
 			email: "sam@sample.com".into(),
-			role: ROLE_INVESTOR.into(),
+			role: Role::Investor,
 			token: "abc".into(),
 			used_at: None,
 		}

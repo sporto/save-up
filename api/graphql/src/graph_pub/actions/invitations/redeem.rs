@@ -11,7 +11,7 @@ use models::account::{Account, AccountAttrs};
 use graph_pub::actions::passwords;
 use models::invitation;
 use models::schema::invitations;
-use models::user::{self, User, UserAttrs, ROLE_INVESTOR};
+use models::user::{self, User, UserAttrs, Role};
 
 #[derive(Deserialize, Clone, GraphQLInputObject)]
 pub struct RedeemInvitationInput {
@@ -34,7 +34,7 @@ pub fn call(conn: &PgConnection, input: &RedeemInvitationInput) -> Result<User, 
 
 	let user_attrs = UserAttrs {
 		client_id: inviter.client_id,
-		role: ROLE_INVESTOR.to_string(),
+		role: Role::Investor,
 		name: input.clone().name,
 		email: invitation.email,
 		password_hash: password_hash,
