@@ -27,7 +27,7 @@ bigdecimal = "0.0.11"
 diesel = { version = "1.3", features = ["postgres", "chrono", "numeric"] }
 diesel_migrations = "1.3.0"
 failure = "0.1.2"
-jsonwebtoken = "4"
+jsonwebtoken = "5"
 juniper = "0.9"
 juniper_codegen = "0.9"
 libreauth = "0.10.0"
