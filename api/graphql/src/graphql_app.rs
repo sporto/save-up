@@ -125,7 +125,7 @@ fn get_user(conn: &PgConnection, token: &str) -> Result<models::user::User, Erro
 		return Ok(models::user::system_user());
 	}
 
-	let token_data = services::users::decode_token::call(token)?;
+	let token_data = graph_app::actions::users::decode_token::call(token)?;
 
 	let user_id = token_data.user_id;
 
