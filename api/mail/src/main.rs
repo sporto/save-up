@@ -24,7 +24,7 @@ use std::time::Duration;
 #[derive(Template)]
 #[template(path = "invite.html")]
 struct InviteTemplate<'a> {
-	inviter: &'a str,
+	inviter_name: &'a str,
 	invitation_token: &'a str,
 }
 
@@ -32,6 +32,20 @@ struct InviteTemplate<'a> {
 #[template(path = "confirm_email.html")]
 struct ConfirmEmailTemplate<'a> {
 	confirmation_token: &'a str,
+}
+
+#[derive(Template)]
+#[template(path = "acknowledge_deposit.html")]
+struct AcknowledgeDepositTemplate<'a> {
+	amount: &'a i64,
+	balance: &'a i64,
+}
+
+#[derive(Template)]
+#[template(path = "acknowledge_withdrawal.html")]
+struct AcknowledgeWithdrawalTemplate<'a> {
+	amount: &'a i64,
+	balance: &'a i64,
 }
 
 // https://github.com/srijs/rust-aws-lambda/blob/88904328b9f6a6ad016645a73a7acb41c08000cd/aws_lambda_events/src/generated/fixtures/example-sns-event.json
@@ -76,12 +90,30 @@ fn generate_intermidiate(email_kind: &EmailKind) -> Result<String, Error> {
 		}.render(),
 
 		EmailKind::Invite {
-			inviter,
+			inviter_name,
 			invitation_token,
 			..
 		} => InviteTemplate {
-			inviter: inviter,
-			invitation_token: invitation_token,
+			inviter_name,
+			invitation_token,
+		}.render(),
+
+		EmailKind::AcknowledgeDeposit {
+			amount_in_cents,
+			balance_in_cents,
+			..
+		} => AcknowledgeDepositTemplate {
+			amount: &(amount_in_cents / 100),
+			balance: &(balance_in_cents / 100),
+		}.render(),
+
+		EmailKind::AcknowledgeWithdrawal {
+			amount_in_cents,
+			balance_in_cents,
+			..
+		} => AcknowledgeWithdrawalTemplate {
+			amount: &(amount_in_cents / 100),
+			balance: &(balance_in_cents / 100),
 		}.render(),
 	};
 
@@ -142,13 +174,17 @@ fn email_for_email_kind(email_kind: &EmailKind) -> String {
 	match email_kind {
 		EmailKind::ConfirmEmail { email, .. } => email.to_owned(),
 		EmailKind::Invite { email, .. } => email.to_owned(),
+		EmailKind::AcknowledgeDeposit { email, .. } => email.to_owned(),
+		EmailKind::AcknowledgeWithdrawal { email, .. } => email.to_owned(),
 	}
 }
 
 fn subject_for_email_kind(email_kind: &EmailKind) -> String {
 	match email_kind {
 		EmailKind::ConfirmEmail { .. } => "Confirm your email".to_owned(),
-		EmailKind::Invite { .. } => "You have been invited".to_owned(),
+		EmailKind::Invite { .. } => "You have been invited to SaveUp".to_owned(),
+		EmailKind::AcknowledgeDeposit { .. } => "Successful deposit".to_owned(),
+		EmailKind::AcknowledgeWithdrawal { .. } => "Successful withdrawal".to_owned(),
 	}
 }
 

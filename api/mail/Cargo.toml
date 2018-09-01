@@ -6,13 +6,13 @@ authors = ["Sebastian Porto <s@porto5.com>"]
 [dependencies]
 aws_lambda = { git = "https://github.com/srijs/rust-aws-lambda" }
 askama = "0.7"
-chrono = "*"
+chrono = "0.4"
 failure = "0.1"
 openssl-probe = "0.1.2"
 rusoto_core = "0.33"
 rusoto_ses = "0.33"
-serde = "*"
-serde_derive = "*"
+serde = "1.0"
+serde_derive = "1.0"
 serde_json = "1.0"
 shared = { path = "../shared" }
 

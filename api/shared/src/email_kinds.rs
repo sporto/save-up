@@ -6,7 +6,7 @@ pub enum EmailKind {
 	},
 	Invite {
 		email: String,
-		inviter: String,
+		inviter_name: String,
 		invitation_token: String,
 	},
 	AcknowledgeDeposit {

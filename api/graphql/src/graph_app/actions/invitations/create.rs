@@ -1,7 +1,8 @@
+use super::super::emails::send_invitation;
 use diesel::pg::PgConnection;
 use failure::Error;
 use models::invitation::{Invitation, InvitationAttrs};
-use models::user::{User, Role};
+use models::user::{Role, User};
 use uuid::Uuid;
 use validator::Validate;
 
@@ -23,8 +24,7 @@ pub fn call(conn: &PgConnection, user: &User, email: &str) -> Result<Invitation,
 	let invitation =
 		Invitation::create(conn, invitation_attrs).map_err(|e| format_err!("{}", e.to_string()))?;
 
-	// TODO send to the mail lambda
-	// invitations::send_email::call(&user, &invitation)?;
+	send_invitation::call(&user, &invitation)?;
 
 	Ok(invitation)
 }
