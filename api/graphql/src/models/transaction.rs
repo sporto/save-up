@@ -64,12 +64,14 @@ pub struct TransactionAttrs {
 }
 
 impl Transaction {
+	#[allow(dead_code)]
 	pub fn create(conn: &PgConnection, attrs: TransactionAttrs) -> Result<Transaction, Error> {
 		diesel::insert_into(transactions::dsl::transactions)
 			.values(&attrs)
 			.get_result(conn)
 	}
 
+	#[allow(dead_code)]
 	pub fn find_last_by_account_id(
 		conn: &PgConnection,
 		account_id: i32,

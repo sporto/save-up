@@ -39,18 +39,21 @@ graphql_object!(Account: () |&self| {
 });
 
 impl Account {
+	#[allow(dead_code)]
 	pub fn create(conn: &PgConnection, attrs: AccountAttrs) -> Result<Account, Error> {
 		diesel::insert_into(accounts::dsl::accounts)
 			.values(&attrs)
 			.get_result(conn)
 	}
 
+	#[allow(dead_code)]
 	pub fn find(conn: &PgConnection, id: i32) -> Result<Account, Error> {
 		accounts::table
 			.filter(accounts::id.eq(id))
 			.get_result(conn)
 	}
 
+	#[allow(dead_code)]
 	pub fn find_by_user_id(conn: &PgConnection, id: i32) -> Result<Account, Error> {
 		accounts::table
 			.filter(accounts::user_id.eq(id))

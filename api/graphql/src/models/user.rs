@@ -46,6 +46,7 @@ pub struct TokenData {
 	pub role: String,
 }
 
+#[allow(dead_code)]
 pub fn system_user() -> User {
 	let created_at = NaiveDateTime::from_timestamp(1_000_000_000, 0);
 
@@ -64,6 +65,7 @@ pub fn system_user() -> User {
 
 impl User {
 	// Create
+	#[allow(dead_code)]
 	pub fn create(conn: &PgConnection, attrs: UserAttrs) -> Result<User, Error> {
 		diesel::insert_into(users::dsl::users)
 			.values(&attrs)
@@ -71,6 +73,7 @@ impl User {
 	}
 
 	// Read
+	#[allow(dead_code)]
 	pub fn all(conn: &PgConnection) -> Vec<User> {
 		users::table
 			.load::<User>(conn)

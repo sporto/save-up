@@ -29,6 +29,7 @@ pub struct InvitationAttrs {
 }
 
 impl Invitation {
+	#[allow(dead_code)]
 	pub fn create(conn: &PgConnection, attrs: InvitationAttrs) -> Result<Invitation, Error> {
 		diesel::insert_into(invitations::dsl::invitations)
 			.values(&attrs)
@@ -36,6 +37,7 @@ impl Invitation {
 			.and_then(|mut invitations| invitations.pop().ok_or(Error::NotFound))
 	}
 
+	#[allow(dead_code)]
 	pub fn find_by_token(conn: &PgConnection, token: &str) -> Result<Invitation, Error> {
 		invitations::table
 			.filter(invitations::token.eq(token))

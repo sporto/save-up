@@ -24,6 +24,7 @@ pub struct Client {
 
 impl Client {
 	// Create
+	#[allow(dead_code)]
 	pub fn create(conn: &PgConnection, attrs: ClientAttrs) -> Result<Client, Error> {
 		diesel::insert_into(clients::dsl::clients)
 			.values(&attrs)
@@ -43,6 +44,7 @@ impl Client {
 		clients::table.find(client_id).first::<Client>(conn)
 	}
 
+	#[allow(dead_code)]
 	pub fn first(conn: &PgConnection) -> Result<Client, Error> {
 		clients::table.first::<Client>(conn)
 	}

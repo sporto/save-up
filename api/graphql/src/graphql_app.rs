@@ -32,7 +32,6 @@ use juniper::RootNode;
 use lambda::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
 use std::collections::HashMap;
 
-mod authorisers;
 mod graph_app;
 mod graph_common;
 mod models;
