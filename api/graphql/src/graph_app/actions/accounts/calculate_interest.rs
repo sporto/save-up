@@ -2,7 +2,6 @@ use bigdecimal::BigDecimal;
 // use bigdecimal::FromPrimitive;
 use bigdecimal::ToPrimitive;
 use chrono::prelude::*;
-use diesel::pg::PgConnection;
 use failure::Error;
 use models::cents::Cents;
 

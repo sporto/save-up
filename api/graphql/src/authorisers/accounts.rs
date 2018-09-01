@@ -27,7 +27,7 @@ pub fn access(conn: &PgConnection, account_id: i32, accessing_user: &User) -> Re
 fn get_admin_ids(conn: &PgConnection, account: &Account) -> Result<Vec<i32>, Error> {
 	let user = User::find(&conn, account.user_id)?;
 
-	let client = models::client::Client::find(&conn, user.client_id)?;
+	let _client = models::client::Client::find(&conn, user.client_id)?;
 
 	let is_in_client = db::users::client_id.eq(user.client_id);
 
