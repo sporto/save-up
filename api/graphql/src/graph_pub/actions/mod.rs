@@ -1,3 +1,4 @@
+pub mod emails;
 pub mod invitations;
 pub mod sign_ins;
 pub mod sign_ups;

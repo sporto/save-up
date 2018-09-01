@@ -1,5 +1,5 @@
-use super::send;
 use failure::Error;
+use graph_common::actions::emails::send;
 use models::user::User;
 use shared::email_kinds::EmailKind;
 

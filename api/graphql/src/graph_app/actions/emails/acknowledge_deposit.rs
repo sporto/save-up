@@ -1,12 +1,13 @@
 use diesel::pg::PgConnection;
 use failure::Error;
-
-use super::send;
 use models::account::Account;
 use models::cents::Cents;
 use models::transaction::Transaction;
 use models::user::User;
+use rusoto_core::Region;
+use rusoto_sns::{PublishInput, Sns, SnsClient};
 use shared::email_kinds::EmailKind;
+use graph_common::actions::emails::send;
 
 pub fn call(conn: &PgConnection, transaction: &Transaction) -> Result<(), Error> {
 	// Find the user
@@ -16,7 +17,7 @@ pub fn call(conn: &PgConnection, transaction: &Transaction) -> Result<(), Error>
 	let Cents(cents) = transaction.amount;
 	let Cents(balance) = transaction.balance;
 
-	let email_kind = EmailKind::AcknowledgeWithdrawal {
+	let email_kind = EmailKind::AcknowledgeDeposit {
 		email: user.clone().email,
 		amount_in_cents: cents,
 		balance_in_cents: balance,

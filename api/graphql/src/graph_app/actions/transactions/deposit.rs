@@ -1,10 +1,10 @@
 use diesel::pg::PgConnection;
 use failure::Error;
 // use models::account::Account;
+use graph_app::actions::emails::acknowledge_deposit;
 use models::cents::Cents;
 use models::transaction::{Transaction, TransactionAttrs, TransactionKind};
 use services::accounts;
-use services::emails::acknowledge_deposit;
 
 #[derive(GraphQLInputObject, Clone)]
 pub struct DepositInput {

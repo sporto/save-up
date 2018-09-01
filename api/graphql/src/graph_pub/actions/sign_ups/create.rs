@@ -3,6 +3,7 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::select;
 use failure::Error;
+use graph_pub::actions::emails;
 use models::client::{Client, ClientAttrs};
 use models::schema::users;
 use models::sign_up::SignUp;
@@ -62,7 +63,7 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 		})
 		.map_err(|e| format_err!("{}", e))?;
 
-	services::emails::email_confirmation::call(&user)?;
+	emails::email_confirmation::call(&user)?;
 
 	Ok(user)
 }
