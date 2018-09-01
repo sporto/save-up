@@ -4,6 +4,7 @@ use utils::db_conn;
 use diesel::Connection;
 use models;
 
+#[allow(dead_code)]
 pub fn with_db<F>(f: F) -> ()
 where
 	F: Fn(&PgConnection) -> (),
@@ -16,6 +17,7 @@ where
 	});
 }
 
+#[allow(dead_code)]
 pub fn with_db_cleaner<F>(f: F) -> ()
 where
 	F: Fn(&PgConnection) -> (),

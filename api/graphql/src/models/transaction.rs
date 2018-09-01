@@ -89,6 +89,7 @@ pub mod factories {
 	// use bigdecimal::FromPrimitive;
 	use models::account::Account;
 
+	#[allow(dead_code)]
 	pub fn transaction_attrs(account: &Account) -> TransactionAttrs {
 		let balance = Cents(0);
 

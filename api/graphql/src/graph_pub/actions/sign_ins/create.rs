@@ -7,7 +7,7 @@ use models::user::User;
 pub fn call(conn: &PgConnection, sign_in: SignIn) -> Result<User, Error> {
 	let user = User::find_by_email(conn, &sign_in.email).map_err(|e| format_err!("{}", e))?;
 
-	let invalid = format_err!("Invalid email or password");
+	let _invalid = format_err!("Invalid email or password");
 
 	let valid = passwords::verify::call(&sign_in.password, &user.password_hash)
 		.map_err(|_| format_err!("Invalid email or password"))?;

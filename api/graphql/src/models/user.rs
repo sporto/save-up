@@ -99,6 +99,7 @@ pub mod factories {
 	use super::*;
 	use models::client::Client;
 
+	#[allow(dead_code)]
 	pub fn user_attrs(client: &Client) -> UserAttrs {
 		UserAttrs {
 			client_id: client.id,

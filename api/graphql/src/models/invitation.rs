@@ -50,6 +50,7 @@ pub mod factories {
 	use super::*;
 	use models::user::{User, ROLE_INVESTOR};
 
+	#[allow(dead_code)]
 	pub fn invitation_attrs(inviter: &User) -> InvitationAttrs {
 		InvitationAttrs {
 			user_id: inviter.id,

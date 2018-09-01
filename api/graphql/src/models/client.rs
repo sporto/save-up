@@ -54,6 +54,7 @@ impl Client {
 pub mod factories {
 	use super::*;
 
+	#[allow(dead_code)]
 	pub fn client_attrs() -> ClientAttrs {
 		ClientAttrs {
 			name: "Client".to_owned(),

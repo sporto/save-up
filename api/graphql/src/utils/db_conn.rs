@@ -3,6 +3,7 @@ use diesel::Connection;
 use failure::Error;
 use utils::config;
 
+#[allow(dead_code)]
 pub type Conn = PgConnection;
 
 pub fn establish_connection() -> Result<PgConnection, Error> {
