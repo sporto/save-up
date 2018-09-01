@@ -1,7 +1,7 @@
 use juniper::{Executor, FieldError, FieldResult};
 
+use graph_app::actions::accounts::authorise;
 pub use graph_app::actions::transactions::deposit::{self, DepositInput};
-use graph_app::authorisers;
 use graph_app::context::AppContext;
 use graph_common::mutations::failure_to_mutation_errors;
 use graph_common::mutations::MutationError;
@@ -20,7 +20,7 @@ pub fn call(executor: &Executor<AppContext>, input: DepositInput) -> FieldResult
 	let conn = &context.conn;
 
 	// Authorise this transaction
-	let can_access = authorisers::accounts::access(&conn, input.account_id, &context.user)?;
+	let can_access = authorise::call(&conn, input.account_id, &context.user)?;
 
 	if can_access == false {
 		return Err(FieldError::from("Unauthorised"));

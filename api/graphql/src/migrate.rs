@@ -29,7 +29,7 @@ mod utils;
 embed_migrations!();
 
 fn main() {
-	lambda::start(|request: ApiGatewayProxyRequest| match run() {
+	lambda::start(|_request: ApiGatewayProxyRequest| match run() {
 		Ok(_) => Ok(ApiGatewayProxyResponse {
 			body: None,
 			status_code: 200,

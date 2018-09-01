@@ -1,6 +1,6 @@
-use db;
 use diesel::pg::PgConnection;
 use diesel::result::Error;
+use utils::db_conn;
 use diesel::Connection;
 use models;
 
@@ -8,7 +8,7 @@ pub fn with_db<F>(f: F) -> ()
 where
 	F: Fn(&PgConnection) -> (),
 {
-	let conn = db::get_test_connection();
+	let conn = db_conn::get_test_connection();
 
 	conn.test_transaction::<_, Error, _>(|| {
 		f(&conn);
@@ -20,7 +20,7 @@ pub fn with_db_cleaner<F>(f: F) -> ()
 where
 	F: Fn(&PgConnection) -> (),
 {
-	let conn = db::get_test_connection();
+	let conn = db_conn::get_test_connection();
 
 	f(&conn);
 

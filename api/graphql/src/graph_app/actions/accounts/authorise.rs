@@ -8,7 +8,7 @@ use models::account::Account;
 use models::schema as db;
 use models::user::{User, ROLE_ADMIN};
 
-pub fn access(conn: &PgConnection, account_id: i32, accessing_user: &User) -> Result<bool, Error> {
+pub fn call(conn: &PgConnection, account_id: i32, accessing_user: &User) -> Result<bool, Error> {
 	// Ok if account holder
 	let account = Account::find(&conn, account_id)?;
 

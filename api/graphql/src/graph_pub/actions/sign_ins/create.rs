@@ -22,8 +22,8 @@ pub fn call(conn: &PgConnection, sign_in: SignIn) -> Result<User, Error> {
 #[cfg(test)]
 mod tests {
 	use super::*;
+	use graph_pub::actions::passwords;
 	use models;
-	use services::passwords;
 	use utils::tests;
 
 	#[test]

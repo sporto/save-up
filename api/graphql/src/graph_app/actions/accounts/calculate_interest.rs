@@ -1,5 +1,4 @@
 use bigdecimal::BigDecimal;
-// use bigdecimal::FromPrimitive;
 use bigdecimal::ToPrimitive;
 use chrono::prelude::*;
 use failure::Error;
@@ -44,6 +43,7 @@ pub fn call(
 mod test {
 	use super::*;
 	use range_check::Contains;
+	use bigdecimal::FromPrimitive;
 
 	#[test]
 	fn it_calculates_the_interest_at_30() {

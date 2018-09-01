@@ -67,6 +67,7 @@ pub mod factories {
 	use bigdecimal::FromPrimitive;
 	use models::user::User;
 
+	#[allow(dead_code)]
 	pub fn account_attrs(user: &User) -> AccountAttrs {
 		let yearly_interest = BigDecimal::from_f32(10.5).unwrap();
 
