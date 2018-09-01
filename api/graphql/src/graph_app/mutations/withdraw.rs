@@ -18,6 +18,15 @@ pub fn call(
 ) -> FieldResult<WithdrawalResponse> {
 	let context = executor.context();
 
+	let conn = &context.conn;
+
+	// Authorise this transaction
+	let can_access = authorise::call(&conn, input.account_id, &context.user)?;
+
+	if can_access == false {
+		return Err(FieldError::from("Unauthorised"));
+	}
+
 	let result = withdraw::call(&context.conn, input);
 
 	let response = match result {
