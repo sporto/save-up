@@ -8,10 +8,10 @@ use failure::Error;
 
 use models::account::{Account, AccountAttrs};
 // use models::cents::Cents;
+use graph_pub::actions::passwords;
 use models::invitation;
 use models::schema::invitations;
 use models::user::{self, User, UserAttrs, ROLE_INVESTOR};
-use services;
 
 #[derive(Deserialize, Clone, GraphQLInputObject)]
 pub struct RedeemInvitationInput {
@@ -27,7 +27,7 @@ pub fn call(conn: &PgConnection, input: &RedeemInvitationInput) -> Result<User, 
 	let inviter = user::User::find(&conn, invitation.user_id)?;
 
 	let password_hash =
-		services::passwords::encrypt::call(&input.password).map_err(|e| format_err!("{}", e))?;
+		passwords::encrypt::call(&input.password).map_err(|e| format_err!("{}", e))?;
 
 	// Email for users created via invitation don't need to be confirmed
 	let email_confirmed_at = Some(Utc::now().naive_utc());

@@ -4,17 +4,17 @@ use diesel::prelude::*;
 use diesel::select;
 use failure::Error;
 use graph_pub::actions::emails;
+use graph_pub::actions::passwords;
 use models::client::{Client, ClientAttrs};
 use models::schema::users;
 use models::sign_up::SignUp;
 use models::user::{User, UserAttrs, ROLE_ADMIN};
-use services;
 use uuid::Uuid;
 use validator::Validate;
 
 pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 	let password_hash =
-		services::passwords::encrypt::call(&sign_up.password).map_err(|e| format_err!("{}", e))?;
+		passwords::encrypt::call(&sign_up.password).map_err(|e| format_err!("{}", e))?;
 
 	// Validate the user attrs
 	let temp_user_attrs = UserAttrs {

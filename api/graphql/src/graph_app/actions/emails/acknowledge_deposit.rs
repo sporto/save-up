@@ -4,8 +4,6 @@ use models::account::Account;
 use models::cents::Cents;
 use models::transaction::Transaction;
 use models::user::User;
-use rusoto_core::Region;
-use rusoto_sns::{PublishInput, Sns, SnsClient};
 use shared::email_kinds::EmailKind;
 use graph_common::actions::emails::send;
 

@@ -1,15 +1,15 @@
 use diesel::pg::PgConnection;
 use failure::Error;
+use graph_pub::actions::passwords;
 use models::sign_in::SignIn;
 use models::user::User;
-use services;
 
 pub fn call(conn: &PgConnection, sign_in: SignIn) -> Result<User, Error> {
 	let user = User::find_by_email(conn, &sign_in.email).map_err(|e| format_err!("{}", e))?;
 
 	let invalid = format_err!("Invalid email or password");
 
-	let valid = services::passwords::verify::call(&sign_in.password, &user.password_hash)
+	let valid = passwords::verify::call(&sign_in.password, &user.password_hash)
 		.map_err(|_| format_err!("Invalid email or password"))?;
 
 	if valid {
