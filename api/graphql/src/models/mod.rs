@@ -8,4 +8,5 @@ pub mod schema;
 pub mod sign_in;
 pub mod sign_up;
 pub mod transaction;
+pub mod transaction_kind;
 pub mod user;
