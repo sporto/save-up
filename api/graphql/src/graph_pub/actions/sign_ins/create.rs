@@ -1,20 +1,21 @@
 use diesel::pg::PgConnection;
+use failure::Error;
 use models::sign_in::SignIn;
 use models::user::User;
 use services;
 
-pub fn call(conn: &PgConnection, sign_in: SignIn) -> Result<User, String> {
-	let user = User::find_by_email(conn, &sign_in.email).map_err(|_| "User not found".to_owned())?;
+pub fn call(conn: &PgConnection, sign_in: SignIn) -> Result<User, Error> {
+	let user = User::find_by_email(conn, &sign_in.email).map_err(|e| format_err!("{}", e))?;
 
-	let invalid = "Invalid email or password".to_owned();
+	let invalid = format_err!("Invalid email or password");
 
 	let valid = services::passwords::verify::call(&sign_in.password, &user.password_hash)
-		.map_err(|_| invalid.clone())?;
+		.map_err(|_| format_err!("Invalid email or password"))?;
 
 	if valid {
 		Ok(user)
 	} else {
-		Err(invalid)
+		Err(format_err!("Invalid email or password"))
 	}
 }
 

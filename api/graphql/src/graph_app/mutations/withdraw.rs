@@ -1,9 +1,9 @@
+pub use graph_app::actions::transactions::withdraw::{self, WithdrawalInput};
 use graph_app::context::AppContext;
 use graph_common::mutations::failure_to_mutation_errors;
 use graph_common::mutations::MutationError;
 use juniper::{Executor, FieldResult};
 use models::transaction::Transaction;
-pub use services::transactions::withdraw::{self, WithdrawalInput};
 
 #[derive(GraphQLObject, Clone)]
 pub struct WithdrawalResponse {
@@ -12,7 +12,10 @@ pub struct WithdrawalResponse {
 	transaction: Option<Transaction>,
 }
 
-pub fn call(executor: &Executor<AppContext>, input: WithdrawalInput) -> FieldResult<WithdrawalResponse> {
+pub fn call(
+	executor: &Executor<AppContext>,
+	input: WithdrawalInput,
+) -> FieldResult<WithdrawalResponse> {
 	let context = executor.context();
 
 	let result = withdraw::call(&context.conn, input);

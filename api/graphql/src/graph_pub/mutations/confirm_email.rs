@@ -1,7 +1,7 @@
+use graph_common::mutations::{failure_to_mutation_errors, MutationError};
+use graph_pub::actions::users::confirm_email;
 use graph_pub::context::PublicContext;
-use graph_common::mutations::{MutationError,failure_to_mutation_errors};
 use juniper::{Executor, FieldResult};
-use services;
 
 #[derive(Deserialize, Clone, GraphQLInputObject)]
 pub struct ConfirmEmailInput {
@@ -20,7 +20,7 @@ pub fn call(
 ) -> FieldResult<ConfirmEmailResponse> {
 	let context = executor.context();
 
-	let result = services::users::confirm_email::call(&context.conn, &input.token);
+	let result = confirm_email::call(&context.conn, &input.token);
 
 	let response = match result {
 		Ok(_) => ConfirmEmailResponse {

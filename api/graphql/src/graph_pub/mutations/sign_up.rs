@@ -1,9 +1,10 @@
 use failure::Error;
 use graph_common::mutations::{failure_to_mutation_errors, MutationError};
+use graph_pub::actions::sign_ups;
+use graph_pub::actions::users::make_token;
 use graph_pub::context::PublicContext;
 use juniper::{Executor, FieldResult};
 use models::sign_up::SignUp;
-use services;
 
 #[derive(GraphQLObject, Clone)]
 pub struct SignUpResponse {
@@ -23,14 +24,14 @@ pub fn call(executor: &Executor<PublicContext>, sign_up: SignUp) -> FieldResult<
 
 	let context = executor.context();
 
-	let user_result = services::sign_ups::create::call(&context.conn, sign_up);
+	let user_result = sign_ups::create::call(&context.conn, sign_up);
 
 	let user = match user_result {
 		Ok(user) => user,
 		Err(e) => return Ok(other_error(e)),
 	};
 
-	let token_result = services::users::make_token::call(user);
+	let token_result = make_token::call(user);
 
 	let token = match token_result {
 		Ok(token) => token,

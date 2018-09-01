@@ -5,7 +5,7 @@ use graph_common::mutations::failure_to_mutation_errors;
 use graph_common::mutations::MutationError;
 use models::transaction::Transaction;
 use authorisers;
-pub use services::transactions::deposit::{self, DepositInput};
+pub use graph_app::actions::transactions::deposit::{self, DepositInput};
 
 #[derive(GraphQLObject, Clone)]
 pub struct DepositResponse {
