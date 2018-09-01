@@ -41,3 +41,58 @@ fn get_admin_ids(conn: &PgConnection, account: &Account) -> Result<Vec<i32>, Err
 		.get_results(conn)
 		.map_err(|e| format_err!("{}", e))
 }
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use utils::tests;
+
+	#[test]
+	fn is_true_for_the_user() {
+		tests::with_db(|conn| {
+			let (account, user, _) = tests::account(&conn);
+
+			let response = call(conn, account.id, &user).unwrap();
+
+			assert!(response);
+		})
+	}
+
+	fn is_false_for_other_users() {
+		tests::with_db(|conn| {
+			let (account, _, _) = tests::account(&conn);
+
+			let (other_user, _) = tests::user(&conn);
+
+			let response = call(conn, account.id, &other_user).unwrap();
+
+			assert!(response == false);
+		})
+	}
+
+	fn is_true_for_admin() {
+		tests::with_db(|conn| {
+			let (account, user, client) = tests::account(&conn);
+
+			let admin = tests::admin_for(&conn, &client);
+
+			let response = call(conn, account.id, &admin).unwrap();
+
+			assert!(response);
+		})
+	}
+
+	fn is_false_for_other_admins() {
+		tests::with_db(|conn| {
+			let (account, _, _) = tests::account(&conn);
+
+			let other_client = tests::client(&conn);
+
+			let other_admin = tests::admin_for(&conn, &other_client);
+
+			let response = call(conn, account.id, &other_admin).unwrap();
+
+			assert!(response);
+		})
+	}
+}

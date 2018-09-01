@@ -76,9 +76,7 @@ mod tests {
 	#[test]
 	fn it_doesnt_do_anything_if_there_is_no_previous_transaction() {
 		tests::with_db(|conn| {
-			let client = models::client::factories::client_attrs().save(conn);
-			let user = models::user::factories::user_attrs(&client).save(conn);
-			let account = models::account::factories::account_attrs(&user).save(conn);
+			let (account, _, _) = tests::account(&conn);
 
 			let response = call(conn, account.id).unwrap();
 			let expected = PayInterestResponse::NotNeeded;

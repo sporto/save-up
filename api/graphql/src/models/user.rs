@@ -91,7 +91,6 @@ impl User {
 			.filter(users::email.eq(email))
 			.first::<User>(conn)
 	}
-
 }
 
 #[cfg(test)]
@@ -115,6 +114,11 @@ pub mod factories {
 	impl UserAttrs {
 		pub fn save(self, conn: &PgConnection) -> User {
 			User::create(conn, self).unwrap()
+		}
+
+		pub fn role(mut self, role: &str) -> Self {
+			self.role = role.to_owned();
+			self
 		}
 
 		pub fn password_hash(mut self, ph: &str) -> Self {
