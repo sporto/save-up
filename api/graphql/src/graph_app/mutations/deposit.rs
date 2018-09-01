@@ -1,8 +1,10 @@
+use juniper::{Executor, FieldError, FieldResult};
+
 use graph_app::context::AppContext;
 use graph_common::mutations::failure_to_mutation_errors;
 use graph_common::mutations::MutationError;
-use juniper::{Executor, FieldResult};
 use models::transaction::Transaction;
+use authorisers;
 pub use services::transactions::deposit::{self, DepositInput};
 
 #[derive(GraphQLObject, Clone)]
@@ -15,7 +17,16 @@ pub struct DepositResponse {
 pub fn call(executor: &Executor<AppContext>, input: DepositInput) -> FieldResult<DepositResponse> {
 	let context = executor.context();
 
-	let result = deposit::call(&context.conn, input);
+	let conn = &context.conn;
+
+	// Authorise this transaction
+	let can_access = authorisers::accounts::access(&conn, input.account_id, &context.user)?;
+
+	if can_access == false {
+		return Err(FieldError::from("Unauthorised"));
+	}
+
+	let result = deposit::call(&conn, input);
 
 	let response = match result {
 		Ok(transaction) => DepositResponse {

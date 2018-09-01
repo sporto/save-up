@@ -1,13 +1,12 @@
 use diesel::pg::PgConnection;
 use failure::Error;
+
+use super::send;
 use models::account::Account;
 use models::cents::Cents;
 use models::transaction::Transaction;
 use models::user::User;
-use rusoto_core::Region;
-use rusoto_sns::{PublishInput, Sns, SnsClient};
 use shared::email_kinds::EmailKind;
-use super::send;
 
 pub fn call(conn: &PgConnection, transaction: &Transaction) -> Result<(), Error> {
 	// Find the user

@@ -8,8 +8,8 @@ use services::emails::acknowledge_deposit;
 
 #[derive(GraphQLInputObject, Clone)]
 pub struct DepositInput {
-	account_id: i32,
-	cents: i32,
+	pub account_id: i32,
+	pub cents: i32,
 }
 
 pub fn call(conn: &PgConnection, input: DepositInput) -> Result<Transaction, Error> {

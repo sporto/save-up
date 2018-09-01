@@ -16,6 +16,7 @@ extern crate chrono;
 extern crate chrono_tz;
 extern crate jsonwebtoken as jwt;
 extern crate libreauth;
+extern crate range_check;
 extern crate rusoto_core;
 extern crate rusoto_sns;
 extern crate serde;
@@ -23,7 +24,6 @@ extern crate shared;
 extern crate url;
 extern crate uuid;
 extern crate validator;
-extern crate range_check;
 
 // use diesel::pg::PgConnection;
 use failure::Error;
@@ -32,6 +32,7 @@ use juniper::RootNode;
 use lambda::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
 use std::collections::HashMap;
 
+mod authorisers;
 mod db;
 mod graph_common;
 mod graph_pub;
