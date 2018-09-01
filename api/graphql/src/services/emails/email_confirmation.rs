@@ -1,8 +1,6 @@
 use super::send;
 use failure::Error;
 use models::user::User;
-// use rusoto_core::Region;
-use rusoto_sns::{PublishInput, Sns, SnsClient};
 use shared::email_kinds::EmailKind;
 
 pub fn call(user: &User) -> Result<(), Error> {

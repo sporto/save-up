@@ -33,7 +33,6 @@ use lambda::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
 use std::collections::HashMap;
 
 mod authorisers;
-mod db;
 mod graph_common;
 mod graph_pub;
 mod models;
@@ -63,7 +62,7 @@ fn main() {
 }
 
 fn run(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
-	let conn = db::establish_connection()?;
+	let conn = utils::db_conn::establish_connection()?;
 
 	let context = graph_pub::context::PublicContext { conn: conn };
 

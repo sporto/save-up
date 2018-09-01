@@ -23,7 +23,6 @@ use failure::Error;
 use lambda::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
 use std::collections::HashMap;
 
-mod db;
 mod models;
 mod utils;
 
@@ -47,7 +46,7 @@ fn main() {
 }
 
 fn run() -> Result<(), Error> {
-	let connection = db::establish_connection()?;
+	let connection = utils::db_conn::establish_connection()?;
 
 	embedded_migrations::run_with_output(&connection, &mut std::io::stdout())
 		.map_err(|e| format_err!("{}", e.to_string()))

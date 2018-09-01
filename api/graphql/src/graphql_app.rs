@@ -33,7 +33,6 @@ use lambda::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
 use std::collections::HashMap;
 
 mod authorisers;
-mod db;
 mod graph_app;
 mod graph_common;
 mod models;
@@ -95,7 +94,7 @@ fn run(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
 	// So get whatever is after an index of 7
 	let token = &header[7..];
 
-	let conn = db::establish_connection()?;
+	let conn = utils::db_conn::establish_connection()?;
 
 	let user = get_user(&conn, token)?;
 
