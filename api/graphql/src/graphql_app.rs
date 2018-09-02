@@ -35,7 +35,6 @@ use std::collections::HashMap;
 mod graph_app;
 mod graph_common;
 mod models;
-mod services;
 mod utils;
 
 // const PUBLIC_PATH: &'static str = "/graphql-pub";
