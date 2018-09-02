@@ -9,4 +9,6 @@ pub mod sign_in;
 pub mod sign_up;
 pub mod transaction;
 pub mod transaction_kind;
+pub mod transaction_request_state;
+pub mod transaction_request;
 pub mod user;
