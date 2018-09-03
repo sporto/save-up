@@ -39,4 +39,9 @@ impl TransactionRequest {
 			.values(&attrs)
 			.get_result(conn)
 	}
+
+	#[allow(dead_code)]
+	pub fn find(conn: &PgConnection, id: i32) -> Result<TransactionRequest, Error> {
+		transaction_requests::table.find(id).get_result(conn)
+	}
 }

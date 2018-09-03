@@ -6,9 +6,9 @@ use failure::Error;
 use models;
 use models::account::Account;
 use models::schema as db;
-use models::user::{User, Role};
+use models::user::{Role, User};
 
-pub fn call(conn: &PgConnection, account_id: i32, current_user: &User) -> Result<bool, Error> {
+pub fn can_access(conn: &PgConnection, account_id: i32, current_user: &User) -> Result<bool, Error> {
 	// Ok if account holder
 	let account = Account::find(&conn, account_id)?;
 
@@ -17,6 +17,13 @@ pub fn call(conn: &PgConnection, account_id: i32, current_user: &User) -> Result
 	}
 
 	// Ok if admin for this client
+	can_admin(conn, account_id, current_user)
+}
+
+pub fn can_admin(conn: &PgConnection, account_id: i32, current_user: &User) -> Result<bool, Error> {
+	// Ok if admin for this client
+	let account = Account::find(&conn, account_id)?;
+
 	let admins_ids = get_admin_ids(&conn, &account)?;
 
 	let has_access = admins_ids.contains(&current_user.id);

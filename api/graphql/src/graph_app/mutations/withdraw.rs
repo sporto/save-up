@@ -22,7 +22,7 @@ pub fn call(
 	let current_user = &context.user;
 
 	// Authorise this transaction
-	let can_access = authorise::call(&conn, input.account_id, &current_user)?;
+	let can_access = authorise::can_access(&conn, input.account_id, &current_user)?;
 
 	if can_access == false {
 		return Err(FieldError::from("Unauthorised"));
