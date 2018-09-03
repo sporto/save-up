@@ -42,6 +42,18 @@ struct RequestWithdrawalTemplate<'a> {
 }
 
 #[derive(Template)]
+#[template(path = "approve_transaction.html")]
+struct ApproveTransactionRequestTemplate<'a> {
+	amount: &'a i64,
+}
+
+#[derive(Template)]
+#[template(path = "reject_transaction.html")]
+struct RejectTransactionRequestTemplate<'a> {
+	amount: &'a i64,
+}
+
+#[derive(Template)]
 #[template(path = "acknowledge_deposit.html")]
 struct AcknowledgeDepositTemplate<'a> {
 	amount: &'a i64,
@@ -112,6 +124,18 @@ fn generate_intermidiate(email_kind: &EmailKind) -> Result<String, Error> {
 		} => RequestWithdrawalTemplate {
 			amount: &(amount_in_cents / 100),
 			name,
+		}.render(),
+
+		EmailKind::ApproveTransactionRequest {
+			amount_in_cents, ..
+		} => ApproveTransactionRequestTemplate {
+			amount: &(amount_in_cents / 100),
+		}.render(),
+
+		EmailKind::RejectTransactionRequest {
+			amount_in_cents, ..
+		} => RejectTransactionRequestTemplate {
+			amount: &(amount_in_cents / 100),
 		}.render(),
 
 		EmailKind::AcknowledgeDeposit {
@@ -191,6 +215,8 @@ fn email_for_email_kind(email_kind: &EmailKind) -> String {
 		EmailKind::ConfirmEmail { email, .. } => email.to_owned(),
 		EmailKind::Invite { email, .. } => email.to_owned(),
 		EmailKind::RequestWithdrawal { email, .. } => email.to_owned(),
+		EmailKind::ApproveTransactionRequest { email, .. } => email.to_owned(),
+		EmailKind::RejectTransactionRequest { email, .. } => email.to_owned(),
 		EmailKind::AcknowledgeDeposit { email, .. } => email.to_owned(),
 		EmailKind::AcknowledgeWithdrawal { email, .. } => email.to_owned(),
 	}
@@ -201,6 +227,8 @@ fn subject_for_email_kind(email_kind: &EmailKind) -> String {
 		EmailKind::ConfirmEmail { .. } => "Confirm your email".to_owned(),
 		EmailKind::Invite { .. } => "You have been invited to SaveUp".to_owned(),
 		EmailKind::RequestWithdrawal { .. } => "Withdrawal request".to_owned(),
+		EmailKind::ApproveTransactionRequest { .. } => "Your request has been approved".to_owned(),
+		EmailKind::RejectTransactionRequest { .. } => "Your request".to_owned(),
 		EmailKind::AcknowledgeDeposit { .. } => "Successful deposit".to_owned(),
 		EmailKind::AcknowledgeWithdrawal { .. } => "Successful withdrawal".to_owned(),
 	}
