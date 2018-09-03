@@ -2,7 +2,11 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Scalar exposing (NaiveDateTime(..))
+module Api.Scalar exposing (Cents(..), NaiveDateTime(..))
+
+
+type Cents
+    = Cents String
 
 
 type NaiveDateTime

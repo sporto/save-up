@@ -2,8 +2,9 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.InputObject exposing (InvitationInput, InvitationInputRequiredFields, buildInvitationInput, encodeInvitationInput)
+module Api.InputObject exposing (DepositInput, DepositInputRequiredFields, InvitationInput, InvitationInputRequiredFields, RequestWithdrawalInput, RequestWithdrawalInputRequiredFields, ResolveTransactionRequestInput, ResolveTransactionRequestInputRequiredFields, WithdrawalInput, WithdrawalInputRequiredFields, buildDepositInput, buildInvitationInput, buildRequestWithdrawalInput, buildResolveTransactionRequestInput, buildWithdrawalInput, encodeDepositInput, encodeInvitationInput, encodeRequestWithdrawalInput, encodeResolveTransactionRequestInput, encodeWithdrawalInput)
 
+import Api.Enum.TransactionRequestState
 import Api.Interface
 import Api.Object
 import Api.Scalar
@@ -15,6 +16,29 @@ import Graphql.Internal.Encode as Encode exposing (Value)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
+
+
+buildDepositInput : DepositInputRequiredFields -> DepositInput
+buildDepositInput required =
+    { accountId = required.accountId, cents = required.cents }
+
+
+type alias DepositInputRequiredFields =
+    { accountId : Int, cents : Int }
+
+
+{-| Type for the DepositInput input object.
+-}
+type alias DepositInput =
+    { accountId : Int, cents : Int }
+
+
+{-| Encode a DepositInput into a value that can be used as an argument.
+-}
+encodeDepositInput : DepositInput -> Value
+encodeDepositInput input =
+    Encode.maybeObject
+        [ ( "accountId", Encode.int input.accountId |> Just ), ( "cents", Encode.int input.cents |> Just ) ]
 
 
 buildInvitationInput : InvitationInputRequiredFields -> InvitationInput
@@ -38,3 +62,72 @@ encodeInvitationInput : InvitationInput -> Value
 encodeInvitationInput input =
     Encode.maybeObject
         [ ( "email", Encode.string input.email |> Just ) ]
+
+
+buildRequestWithdrawalInput : RequestWithdrawalInputRequiredFields -> RequestWithdrawalInput
+buildRequestWithdrawalInput required =
+    { accountId = required.accountId, cents = required.cents }
+
+
+type alias RequestWithdrawalInputRequiredFields =
+    { accountId : Int, cents : Int }
+
+
+{-| Type for the RequestWithdrawalInput input object.
+-}
+type alias RequestWithdrawalInput =
+    { accountId : Int, cents : Int }
+
+
+{-| Encode a RequestWithdrawalInput into a value that can be used as an argument.
+-}
+encodeRequestWithdrawalInput : RequestWithdrawalInput -> Value
+encodeRequestWithdrawalInput input =
+    Encode.maybeObject
+        [ ( "accountId", Encode.int input.accountId |> Just ), ( "cents", Encode.int input.cents |> Just ) ]
+
+
+buildResolveTransactionRequestInput : ResolveTransactionRequestInputRequiredFields -> ResolveTransactionRequestInput
+buildResolveTransactionRequestInput required =
+    { transactionRequestId = required.transactionRequestId, outcome = required.outcome }
+
+
+type alias ResolveTransactionRequestInputRequiredFields =
+    { transactionRequestId : Int, outcome : Api.Enum.TransactionRequestState.TransactionRequestState }
+
+
+{-| Type for the ResolveTransactionRequestInput input object.
+-}
+type alias ResolveTransactionRequestInput =
+    { transactionRequestId : Int, outcome : Api.Enum.TransactionRequestState.TransactionRequestState }
+
+
+{-| Encode a ResolveTransactionRequestInput into a value that can be used as an argument.
+-}
+encodeResolveTransactionRequestInput : ResolveTransactionRequestInput -> Value
+encodeResolveTransactionRequestInput input =
+    Encode.maybeObject
+        [ ( "transactionRequestId", Encode.int input.transactionRequestId |> Just ), ( "outcome", Encode.enum Api.Enum.TransactionRequestState.toString input.outcome |> Just ) ]
+
+
+buildWithdrawalInput : WithdrawalInputRequiredFields -> WithdrawalInput
+buildWithdrawalInput required =
+    { accountId = required.accountId, cents = required.cents }
+
+
+type alias WithdrawalInputRequiredFields =
+    { accountId : Int, cents : Int }
+
+
+{-| Type for the WithdrawalInput input object.
+-}
+type alias WithdrawalInput =
+    { accountId : Int, cents : Int }
+
+
+{-| Encode a WithdrawalInput into a value that can be used as an argument.
+-}
+encodeWithdrawalInput : WithdrawalInput -> Value
+encodeWithdrawalInput input =
+    Encode.maybeObject
+        [ ( "accountId", Encode.int input.accountId |> Just ), ( "cents", Encode.int input.cents |> Just ) ]

@@ -2,11 +2,15 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object exposing (Client(..), InvitationResponse(..), MutationError(..), User(..))
+module Api.Object exposing (Client(..), DepositResponse(..), InvitationResponse(..), MutationError(..), RequestWithdrawalResponse(..), ResolveTransactionRequestResponse(..), Transaction(..), TransactionRequest(..), User(..), WithdrawalResponse(..))
 
 
 type Client
     = Client
+
+
+type DepositResponse
+    = DepositResponse
 
 
 type InvitationResponse
@@ -17,5 +21,25 @@ type MutationError
     = MutationError
 
 
+type RequestWithdrawalResponse
+    = RequestWithdrawalResponse
+
+
+type ResolveTransactionRequestResponse
+    = ResolveTransactionRequestResponse
+
+
+type Transaction
+    = Transaction
+
+
+type TransactionRequest
+    = TransactionRequest
+
+
 type User
     = User
+
+
+type WithdrawalResponse
+    = WithdrawalResponse

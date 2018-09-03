@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Mutation exposing (InviteRequiredArguments, invite, selection)
+module Api.Mutation exposing (DepositRequiredArguments, InviteRequiredArguments, RequestWithdrawRequiredArguments, ResolveTransactionRequestRequiredArguments, WithdrawRequiredArguments, deposit, invite, requestWithdraw, resolveTransactionRequest, selection, withdraw)
 
 import Api.InputObject
 import Api.Interface
@@ -28,9 +28,45 @@ selection constructor =
 
 
 type alias InviteRequiredArguments =
-    { attrs : Api.InputObject.InvitationInput }
+    { input : Api.InputObject.InvitationInput }
 
 
 invite : InviteRequiredArguments -> SelectionSet decodesTo Api.Object.InvitationResponse -> Field decodesTo RootMutation
 invite requiredArgs object_ =
-    Object.selectionField "invite" [ Argument.required "attrs" requiredArgs.attrs Api.InputObject.encodeInvitationInput ] object_ identity
+    Object.selectionField "invite" [ Argument.required "input" requiredArgs.input Api.InputObject.encodeInvitationInput ] object_ identity
+
+
+type alias RequestWithdrawRequiredArguments =
+    { input : Api.InputObject.RequestWithdrawalInput }
+
+
+requestWithdraw : RequestWithdrawRequiredArguments -> SelectionSet decodesTo Api.Object.RequestWithdrawalResponse -> Field decodesTo RootMutation
+requestWithdraw requiredArgs object_ =
+    Object.selectionField "requestWithdraw" [ Argument.required "input" requiredArgs.input Api.InputObject.encodeRequestWithdrawalInput ] object_ identity
+
+
+type alias ResolveTransactionRequestRequiredArguments =
+    { input : Api.InputObject.ResolveTransactionRequestInput }
+
+
+resolveTransactionRequest : ResolveTransactionRequestRequiredArguments -> SelectionSet decodesTo Api.Object.ResolveTransactionRequestResponse -> Field decodesTo RootMutation
+resolveTransactionRequest requiredArgs object_ =
+    Object.selectionField "resolveTransactionRequest" [ Argument.required "input" requiredArgs.input Api.InputObject.encodeResolveTransactionRequestInput ] object_ identity
+
+
+type alias DepositRequiredArguments =
+    { input : Api.InputObject.DepositInput }
+
+
+deposit : DepositRequiredArguments -> SelectionSet decodesTo Api.Object.DepositResponse -> Field decodesTo RootMutation
+deposit requiredArgs object_ =
+    Object.selectionField "deposit" [ Argument.required "input" requiredArgs.input Api.InputObject.encodeDepositInput ] object_ identity
+
+
+type alias WithdrawRequiredArguments =
+    { input : Api.InputObject.WithdrawalInput }
+
+
+withdraw : WithdrawRequiredArguments -> SelectionSet decodesTo Api.Object.WithdrawalResponse -> Field decodesTo RootMutation
+withdraw requiredArgs object_ =
+    Object.selectionField "withdraw" [ Argument.required "input" requiredArgs.input Api.InputObject.encodeWithdrawalInput ] object_ identity

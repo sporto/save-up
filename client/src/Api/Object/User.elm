@@ -4,6 +4,7 @@
 
 module Api.Object.User exposing (clientId, createdAt, email, emailConfirmationToken, emailConfirmedAt, id, name, passwordHash, role, selection)
 
+import Api.Enum.Role
 import Api.InputObject
 import Api.Interface
 import Api.Object
@@ -55,9 +56,9 @@ name =
     Object.fieldDecoder "name" [] Decode.string
 
 
-role : Field String Api.Object.User
+role : Field Api.Enum.Role.Role Api.Object.User
 role =
-    Object.fieldDecoder "role" [] Decode.string
+    Object.fieldDecoder "role" [] Api.Enum.Role.decoder
 
 
 emailConfirmationToken : Field (Maybe String) Api.Object.User
