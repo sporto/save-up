@@ -28,3 +28,15 @@ pub struct TransactionRequestAttrs {
 	pub amount: Cents,
 	pub state: TransactionRequestState,
 }
+
+impl TransactionRequest {
+	#[allow(dead_code)]
+	pub fn create(
+		conn: &PgConnection,
+		attrs: TransactionRequestAttrs,
+	) -> Result<TransactionRequest, Error> {
+		diesel::insert_into(transaction_requests::dsl::transaction_requests)
+			.values(&attrs)
+			.get_result(conn)
+	}
+}

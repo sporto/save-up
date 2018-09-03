@@ -9,6 +9,10 @@ pub enum EmailKind {
 		inviter_name: String,
 		invitation_token: String,
 	},
+	RequestWithdrawal {
+		email: String,
+		amount_in_cents: i64,
+	},
 	AcknowledgeDeposit {
 		email: String,
 		amount_in_cents: i64,

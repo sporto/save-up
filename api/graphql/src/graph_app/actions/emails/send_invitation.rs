@@ -1,8 +1,6 @@
 use failure::Error;
 
 use graph_common::actions::emails::send;
-use models::account::Account;
-use models::cents::Cents;
 use models::invitation::Invitation;
 use models::user::User;
 use shared::email_kinds::EmailKind;
