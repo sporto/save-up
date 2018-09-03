@@ -14,6 +14,14 @@ pub enum EmailKind {
 		name: String,
 		amount_in_cents: i64,
 	},
+	ApproveTransactionRequest {
+		email: String,
+		amount_in_cents: i64,
+	},
+	RejectTransactionRequest {
+		email: String,
+		amount_in_cents: i64,
+	},
 	AcknowledgeDeposit {
 		email: String,
 		amount_in_cents: i64,
