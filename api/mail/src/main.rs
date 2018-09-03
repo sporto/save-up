@@ -35,6 +35,13 @@ struct ConfirmEmailTemplate<'a> {
 }
 
 #[derive(Template)]
+#[template(path = "request_withdrawal.html")]
+struct RequestWithdrawalTemplate<'a> {
+	amount: &'a i64,
+	name: &'a str,
+}
+
+#[derive(Template)]
 #[template(path = "acknowledge_deposit.html")]
 struct AcknowledgeDepositTemplate<'a> {
 	amount: &'a i64,
@@ -96,6 +103,15 @@ fn generate_intermidiate(email_kind: &EmailKind) -> Result<String, Error> {
 		} => InviteTemplate {
 			inviter_name,
 			invitation_token,
+		}.render(),
+
+		EmailKind::RequestWithdrawal {
+			amount_in_cents,
+			name,
+			..
+		} => RequestWithdrawalTemplate {
+			amount: &(amount_in_cents / 100),
+			name,
 		}.render(),
 
 		EmailKind::AcknowledgeDeposit {
@@ -174,6 +190,7 @@ fn email_for_email_kind(email_kind: &EmailKind) -> String {
 	match email_kind {
 		EmailKind::ConfirmEmail { email, .. } => email.to_owned(),
 		EmailKind::Invite { email, .. } => email.to_owned(),
+		EmailKind::RequestWithdrawal { email, .. } => email.to_owned(),
 		EmailKind::AcknowledgeDeposit { email, .. } => email.to_owned(),
 		EmailKind::AcknowledgeWithdrawal { email, .. } => email.to_owned(),
 	}
@@ -183,6 +200,7 @@ fn subject_for_email_kind(email_kind: &EmailKind) -> String {
 	match email_kind {
 		EmailKind::ConfirmEmail { .. } => "Confirm your email".to_owned(),
 		EmailKind::Invite { .. } => "You have been invited to SaveUp".to_owned(),
+		EmailKind::RequestWithdrawal { .. } => "Withdrawal request".to_owned(),
 		EmailKind::AcknowledgeDeposit { .. } => "Successful deposit".to_owned(),
 		EmailKind::AcknowledgeWithdrawal { .. } => "Successful withdrawal".to_owned(),
 	}

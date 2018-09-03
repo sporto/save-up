@@ -16,6 +16,7 @@ pub fn call(conn: &PgConnection, transaction_request: &TransactionRequest) -> Re
 
 	let email_kind = EmailKind::RequestWithdrawal {
 		email: user.email,
+		name: user.name,
 		amount_in_cents: cents,
 	};
 

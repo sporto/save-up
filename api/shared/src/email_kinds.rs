@@ -11,6 +11,7 @@ pub enum EmailKind {
 	},
 	RequestWithdrawal {
 		email: String,
+		name: String,
 		amount_in_cents: i64,
 	},
 	AcknowledgeDeposit {
