@@ -1,5 +1,5 @@
 start:
-	invoker start invoker.ini
+	overmind start
 
 net-login:
 	netlifyctl login

@@ -2,7 +2,6 @@
 
 The following tools are required:
 
-- http://invoker.codemancers.com/
 - Direnv
 - Just
 - Postgres
@@ -10,6 +9,7 @@ The following tools are required:
 - Node + Yarn
 - Elm
 - Rust + Cargo
+- Overmind (Process manager) https://github.com/DarthSim/overmind
 - Guttenberg for the static site https://www.getgutenberg.io
 - Netlify CLI https://github.com/netlify/netlifyctl/blob/master/README.md
 

@@ -132,7 +132,7 @@ createMutation email =
     Api.Mutation.selection identity
         |> with
             (Api.Mutation.invite
-                { attrs = { email = email } }
+                { input = { email = email } }
                 invitationResponseSelection
             )
 
