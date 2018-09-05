@@ -1,9 +1,8 @@
-import * as invariant from "invariant"
-import * as webpack from "webpack"
-// @ts-ignore
-import * as MiniCssExtractPlugin from "mini-css-extract-plugin"
-import * as HtmlWebpackPlugin from "html-webpack-plugin"
-import * as path from "path"
+const invariant = require("invariant")
+const webpack = require("webpack")
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+const HtmlWebpackPlugin = require("html-webpack-plugin")
+const path = require("path")
 
 const API_HOST = process.env.API_HOST
 
@@ -14,12 +13,12 @@ const ENTRY_SIGN_UP = "sign-up"
 const ENTRY_GRAPHIQL = "graphiql"
 const COMMON = "common"
 const STYLES = "styles"
-const ASSETS_PATH = "/app"
+const ASSETS_PATH = "/a"
 const DEV_MODE = process.env.NODE_ENV !== "production"
 
 invariant(API_HOST, "API_HOST must be defined")
 
-let baseConfig: webpack.Configuration = {
+let baseConfig = {
 	entry: {
 		[ENTRY_GRAPHIQL]: "./src/graphiql.ts",
 		[ENTRY_SIGN_IN]: "./src/signIn.ts",
@@ -34,7 +33,7 @@ let baseConfig: webpack.Configuration = {
 		splitChunks: {
 			cacheGroups: {
 				common: {
-					// test: /[\\/]node_modules[\\/]/,
+					test: /[\\/]node_modules[\\/]/,
 					name: COMMON,
 					chunks: "initial",
 					enforce: true
@@ -130,4 +129,4 @@ let baseConfig: webpack.Configuration = {
 	],
 }
 
-export default baseConfig
+module.exports = baseConfig

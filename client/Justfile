@@ -16,13 +16,13 @@ build:
 	yarn ts-node ./node_modules/.bin/webpack --config webpack.dev.ts --reporter basic
 
 watch:
-	yarn ts-node ./node_modules/.bin/webpack --config webpack.dev.ts --watch
+	yarn ts-node ./node_modules/.bin/webpack --config webpack.dev.ts
 
 build-prod:
 	NODE_ENV=production yarn ts-node ./node_modules/.bin/webpack --config webpack.prod.ts
 
 start:
-	yarn ts-node ./node_modules/.bin/webpack-serve ./webpack.dev.ts
+	yarn webpack-dev-server --config ./webpack.dev.js
 
 open-stats:
 	yarn webpack-bundle-analyzer dist/app/stats.json
