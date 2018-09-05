@@ -9,6 +9,7 @@ pub const INVESTOR: &[u8] = b"INVESTOR";
 
 #[derive(Debug, Copy, Clone, FromSqlRow, AsExpression, GraphQLEnum, PartialEq, Deserialize, Serialize)]
 #[sql_type = "Varchar"]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Role {
 	Admin,
 	Investor,

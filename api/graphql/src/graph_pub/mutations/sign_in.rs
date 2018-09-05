@@ -28,7 +28,6 @@ pub fn call(executor: &Executor<PublicContext>, sign_in: SignIn) -> FieldResult<
 	};
 
 	let token_result = make_token::call(user);
-	// .map_err(|e| format_err!("{}", e.to_string()));
 
 	let token = match token_result {
 		Ok(token) => token,

@@ -155,7 +155,7 @@ navigation : Model -> Html Msg
 navigation model =
     nav [ class "flex justify-between p-4 bg-black text-white" ]
         [ div []
-            [ text "KIC" ]
+            [ text "SaveUp" ]
         , div
             []
             [ navigationLink Routes.Route_Home "Home"

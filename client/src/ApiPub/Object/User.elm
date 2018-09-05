@@ -33,7 +33,7 @@ id =
 
 createdAt : Field ApiPub.Scalar.NaiveDateTime ApiPub.Object.User
 createdAt =
-    Object.fieldDecoder "createdAt" [] (Decode.oneOf [ Decode.string, Decode.float |> Decode.map Debug.toString, Decode.int |> Decode.map Debug.toString, Decode.bool |> Decode.map Debug.toString ] |> Decode.map ApiPub.Scalar.NaiveDateTime)
+    Object.fieldDecoder "createdAt" [] (Object.scalarDecoder |> Decode.map ApiPub.Scalar.NaiveDateTime)
 
 
 clientId : Field Int ApiPub.Object.User
@@ -68,4 +68,4 @@ emailConfirmationToken =
 
 emailConfirmedAt : Field (Maybe ApiPub.Scalar.NaiveDateTime) ApiPub.Object.User
 emailConfirmedAt =
-    Object.fieldDecoder "emailConfirmedAt" [] (Decode.oneOf [ Decode.string, Decode.float |> Decode.map Debug.toString, Decode.int |> Decode.map Debug.toString, Decode.bool |> Decode.map Debug.toString ] |> Decode.map ApiPub.Scalar.NaiveDateTime |> Decode.nullable)
+    Object.fieldDecoder "emailConfirmedAt" [] (Object.scalarDecoder |> Decode.map ApiPub.Scalar.NaiveDateTime |> Decode.nullable)

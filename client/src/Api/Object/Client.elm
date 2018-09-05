@@ -32,7 +32,7 @@ id =
 
 createdAt : Field Api.Scalar.NaiveDateTime Api.Object.Client
 createdAt =
-    Object.fieldDecoder "createdAt" [] (Decode.oneOf [ Decode.string, Decode.float |> Decode.map Debug.toString, Decode.int |> Decode.map Debug.toString, Decode.bool |> Decode.map Debug.toString ] |> Decode.map Api.Scalar.NaiveDateTime)
+    Object.fieldDecoder "createdAt" [] (Object.scalarDecoder |> Decode.map Api.Scalar.NaiveDateTime)
 
 
 name : Field String Api.Object.Client

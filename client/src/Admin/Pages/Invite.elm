@@ -6,8 +6,8 @@ import Api.Object.InvitationResponse
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
-import Html.Attributes exposing (class, href, name, type_, value)
-import Html.Events exposing (onSubmit)
+import Html.Attributes exposing (class, href, name, style, type_, value)
+import Html.Events exposing (onInput, onSubmit)
 import RemoteData
 import Shared.Context exposing (Context)
 import Shared.Css exposing (molecules)
@@ -81,24 +81,27 @@ update context msg model =
 
 view : Model -> Html Msg
 view model =
-    section []
-        [ h1 [] [ text "Invite" ]
-        , form [ class "mt-2", onSubmit Submit ]
-            [ p []
-                [ label
-                    [ class molecules.form.label
+    section [ class "flex justify-center" ]
+        [ div [ style "width" "24rem" ]
+            [ h1 [] [ text "Invite" ]
+            , form [ class "mt-2", onSubmit Submit ]
+                [ p []
+                    [ label
+                        [ class molecules.form.label
+                        ]
+                        [ text "Email" ]
+                    , input
+                        [ class molecules.form.input
+                        , type_ "email"
+                        , name "email"
+                        , value model.email
+                        , onInput ChangeEmail
+                        ]
+                        []
                     ]
-                    [ text "Email" ]
-                , input
-                    [ class molecules.form.input
-                    , type_ "email"
-                    , name "email"
-                    , value model.email
+                , p [ class "mt-6" ]
+                    [ submit model
                     ]
-                    []
-                ]
-            , p [ class "mt-6" ]
-                [ submit model
                 ]
             ]
         ]

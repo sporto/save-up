@@ -35,7 +35,7 @@ Resources:
           Type: Api
           Properties:
             # RestApiId: !Ref KicApi
-            Path: /graphql
+            Path: /graphql-app
             Method: OPTIONS
 
   HelloFunction:

@@ -46,7 +46,7 @@ apiEndPointPublic context id =
 
 apiEndPoint : Context -> String -> String
 apiEndPoint context id =
-    context.flags.apiHost ++ "/graphql?id=" ++ id
+    context.flags.apiHost ++ "/graphql-app?id=" ++ id
 
 
 sendPublicMutation :

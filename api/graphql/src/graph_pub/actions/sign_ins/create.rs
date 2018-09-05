@@ -5,17 +5,18 @@ use models::sign_in::SignIn;
 use models::user::User;
 
 pub fn call(conn: &PgConnection, sign_in: SignIn) -> Result<User, Error> {
-	let user = User::find_by_email(conn, &sign_in.email).map_err(|e| format_err!("{}", e))?;
+	let invalid = "Invalid email or password";
 
-	let _invalid = format_err!("Invalid email or password");
+	let user = User::find_by_email(conn, &sign_in.email).map_err(|e| format_err!("{}", e))
+		.map_err(|_| format_err!("{}", invalid) )?;
 
 	let valid = passwords::verify::call(&sign_in.password, &user.password_hash)
-		.map_err(|_| format_err!("Invalid email or password"))?;
+		.map_err(|_| format_err!("{}", invalid) )?;
 
 	if valid {
 		Ok(user)
 	} else {
-		Err(format_err!("Invalid email or password"))
+		Err(format_err!("{}", invalid))
 	}
 }
 

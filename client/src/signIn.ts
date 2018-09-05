@@ -4,4 +4,4 @@ require("./styles.css")
 import * as Elm from "./SignIn.elm"
 import auth from "./auth"
 
-auth(Elm.SignIn)
+auth(Elm.Elm.SignIn)

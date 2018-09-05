@@ -33,7 +33,7 @@ id =
 
 createdAt : Field Api.Scalar.NaiveDateTime Api.Object.Transaction
 createdAt =
-    Object.fieldDecoder "createdAt" [] (Decode.oneOf [ Decode.string, Decode.float |> Decode.map Debug.toString, Decode.int |> Decode.map Debug.toString, Decode.bool |> Decode.map Debug.toString ] |> Decode.map Api.Scalar.NaiveDateTime)
+    Object.fieldDecoder "createdAt" [] (Object.scalarDecoder |> Decode.map Api.Scalar.NaiveDateTime)
 
 
 accountId : Field Int Api.Object.Transaction
@@ -48,9 +48,9 @@ kind =
 
 amount : Field Api.Scalar.Cents Api.Object.Transaction
 amount =
-    Object.fieldDecoder "amount" [] (Decode.oneOf [ Decode.string, Decode.float |> Decode.map Debug.toString, Decode.int |> Decode.map Debug.toString, Decode.bool |> Decode.map Debug.toString ] |> Decode.map Api.Scalar.Cents)
+    Object.fieldDecoder "amount" [] (Object.scalarDecoder |> Decode.map Api.Scalar.Cents)
 
 
 balance : Field Api.Scalar.Cents Api.Object.Transaction
 balance =
-    Object.fieldDecoder "balance" [] (Decode.oneOf [ Decode.string, Decode.float |> Decode.map Debug.toString, Decode.int |> Decode.map Debug.toString, Decode.bool |> Decode.map Debug.toString ] |> Decode.map Api.Scalar.Cents)
+    Object.fieldDecoder "balance" [] (Object.scalarDecoder |> Decode.map Api.Scalar.Cents)

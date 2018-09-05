@@ -34,7 +34,7 @@ id =
 
 createdAt : Field Api.Scalar.NaiveDateTime Api.Object.TransactionRequest
 createdAt =
-    Object.fieldDecoder "createdAt" [] (Decode.oneOf [ Decode.string, Decode.float |> Decode.map Debug.toString, Decode.int |> Decode.map Debug.toString, Decode.bool |> Decode.map Debug.toString ] |> Decode.map Api.Scalar.NaiveDateTime)
+    Object.fieldDecoder "createdAt" [] (Object.scalarDecoder |> Decode.map Api.Scalar.NaiveDateTime)
 
 
 accountId : Field Int Api.Object.TransactionRequest
@@ -49,7 +49,7 @@ kind =
 
 amount : Field Api.Scalar.Cents Api.Object.TransactionRequest
 amount =
-    Object.fieldDecoder "amount" [] (Decode.oneOf [ Decode.string, Decode.float |> Decode.map Debug.toString, Decode.int |> Decode.map Debug.toString, Decode.bool |> Decode.map Debug.toString ] |> Decode.map Api.Scalar.Cents)
+    Object.fieldDecoder "amount" [] (Object.scalarDecoder |> Decode.map Api.Scalar.Cents)
 
 
 state : Field Api.Enum.TransactionRequestState.TransactionRequestState Api.Object.TransactionRequest
