@@ -2,8 +2,11 @@ import * as sessions from "./services/sessions"
 import getConfig from "./services/config"
 
 interface Elm {
-	embed(node: HTMLElement | null, flags: PublicFlags): PublicApp
+	init(args: ElmArgs): PublicApp
 }
+
+interface ElmArgs 
+	{node: HTMLElement | null, flags: PublicFlags}
 
 interface PublicApp {
 	ports: {
@@ -23,7 +26,7 @@ export default function auth(Elm: Elm) {
 
 		const node = document.getElementById("app")
 
-		const app: PublicApp = Elm.embed(node, flags)
+		const app: PublicApp = Elm.init({node, flags})
 
 		app.ports.toJsUseToken.subscribe(sessions.newSessionWithToken)
 	})

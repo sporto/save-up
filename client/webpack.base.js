@@ -32,17 +32,15 @@ let baseConfig = {
 	optimization: {
 		splitChunks: {
 			cacheGroups: {
-				common: {
-					test: /[\\/]node_modules[\\/]/,
-					name: COMMON,
-					chunks: "initial",
-					enforce: true
-				},
 				styles: {
 					name: STYLES,
 					test: /\.css$/,
 					chunks: "all",
-					enforce: true,
+				},
+				commons: {
+					test: /[\\/]node_modules[\\/]/,
+					name: COMMON,
+					chunks: "all",
 				},
 			},
 		},
@@ -54,9 +52,6 @@ let baseConfig = {
 				test: /\.ts$/,
 				use: {
 					loader: "ts-loader",
-					options: {
-						// allowTsInNodeModules: false,
-					},
 				},
 			},
 
@@ -67,8 +62,6 @@ let baseConfig = {
 					loader: "elm-webpack-loader",
 					options: {
 						cwd: __dirname,
-						// debug: true,
-						// warn: true,
 					},
 				},
 			},
@@ -97,31 +90,31 @@ let baseConfig = {
 			filename: DEV_MODE ? "[name].css" :  "[name].[hash].css",
 		}),
 		new HtmlWebpackPlugin({
-			chunks: [COMMON, ENTRY_GRAPHIQL],
-			title: "Sign In",
+			chunks: [COMMON, STYLES, ENTRY_GRAPHIQL],
+			title: "Graphiql",
 			filename: ENTRY_GRAPHIQL + "/index.html",
 			template: "src/graphiql.html",
 		}),
 		new HtmlWebpackPlugin({
-			chunks: [COMMON, ENTRY_SIGN_IN],
+			chunks: [COMMON, STYLES, ENTRY_SIGN_IN],
 			title: "Sign In",
 			filename: ENTRY_SIGN_IN + "/index.html",
 			template: "src/application.html",
 		}),
 		new HtmlWebpackPlugin({
-			chunks: [COMMON, ENTRY_SIGN_UP],
-			title: "Sign Ip",
+			chunks: [COMMON, STYLES, ENTRY_SIGN_UP],
+			title: "Sign Up",
 			filename: ENTRY_SIGN_UP + "/index.html",
 			template: "src/application.html",
 		}),
 		new HtmlWebpackPlugin({
-			chunks: [COMMON, ENTRY_ADMIN],
+			chunks: [COMMON, STYLES, ENTRY_ADMIN],
 			title: "Admin",
 			filename: ENTRY_ADMIN + "/index.html",
 			template: "src/application.html",
 		}),
 		new HtmlWebpackPlugin({
-			chunks: [COMMON, ENTRY_INVESTOR],
+			chunks: [COMMON, STYLES, ENTRY_INVESTOR],
 			title: "Investor",
 			filename: ENTRY_INVESTOR + "/index.html",
 			template: "src/application.html",

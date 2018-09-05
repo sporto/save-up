@@ -4,10 +4,9 @@ const merge = require("webpack-merge")
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
 const CleanWebpackPlugin = require("clean-webpack-plugin")
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
+const common = require("./webpack.base")
 
-import common from "./webpack.base"
-
-let outputPath = path.join(__dirname, "dist", "a")
+let outputPath = path.join(__dirname, "dist-prod", "a")
 
 let prodConfig = {
 	mode: "production",
@@ -24,6 +23,22 @@ let prodConfig = {
 			}),
 			new OptimizeCSSAssetsPlugin({}),
 		],
+	},
+	module: {
+		rules: [
+
+			{
+				test: /\.elm$/,
+				exclude: [/elm-stuff/, /node_modules/],
+				use: {
+					loader: "elm-webpack-loader",
+					options: {
+						
+					},
+				},
+			},
+
+		]
 	},
 	plugins: [
 		new CleanWebpackPlugin(outputPath),

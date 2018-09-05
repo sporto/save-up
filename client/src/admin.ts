@@ -4,4 +4,4 @@ require("./styles.css")
 import * as Elm from "./Admin.elm"
 import app from "./app"
 
-app(Elm.Admin)
+app(Elm.Elm.Admin)

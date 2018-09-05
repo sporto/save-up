@@ -2,8 +2,11 @@ import * as sessions from "./services/sessions"
 import hookCommonPorts from "./services/hookCommonPorts"
 
 interface Elm {
-	embed(node: HTMLElement | null, flags: Flags): App
+	init(args: ElmArgs): App
 }
+
+interface ElmArgs 
+	{node: HTMLElement | null, flags: Flags}
 
 interface App {
 	ports: CommonPorts
@@ -22,7 +25,7 @@ export default function run(Elm: Elm) {
 		console.log(flags)
 
 		const node = document.getElementById("app")
-		const app = Elm.embed(node, flags)
+		const app = Elm.init({node, flags})
 
 		hookCommonPorts(app.ports)
 	})

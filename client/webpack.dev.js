@@ -7,7 +7,7 @@ const common = require("./webpack.base")
 let outputPath = path.join(__dirname, "dist-dev", "a")
 
 let devConfig = {
-
+	mode: "development",
 	output: {
 		filename: "[name].js",
 		path: outputPath,
@@ -16,8 +16,13 @@ let devConfig = {
 		new CleanWebpackPlugin(outputPath),
 	],
 	devServer: {
-		contentBase: outputPath,
 		port: 8080,
+		historyApiFallback: {
+			rewrites: [
+				{ from: /^\/a\/admin/, to: '/a/admin' },
+				{ from: /^\/a\/investor/, to: '/a/investor' },
+			],
+		},
 	},
 }
 

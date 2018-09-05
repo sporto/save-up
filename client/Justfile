@@ -12,14 +12,11 @@ graph-pub:
 test:
 	yarn elm-test
 
-build:
-	yarn ts-node ./node_modules/.bin/webpack --config webpack.dev.ts --reporter basic
-
-watch:
-	yarn ts-node ./node_modules/.bin/webpack --config webpack.dev.ts
+build-dev:
+	yarn  webpack --config webpack.dev.js
 
 build-prod:
-	NODE_ENV=production yarn ts-node ./node_modules/.bin/webpack --config webpack.prod.ts
+	NODE_ENV=production yarn webpack --config webpack.prod.js
 
 start:
 	yarn webpack-dev-server --config ./webpack.dev.js
