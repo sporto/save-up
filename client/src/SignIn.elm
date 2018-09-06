@@ -198,7 +198,7 @@ submit model =
 
 links =
     p [ class "mt-6" ]
-        [ a [ href "/sign-up" ] [ text "Sign up" ]
+        [ a [ href "/a/sign-up" ] [ text "Sign up" ]
         ]
 
 

@@ -12,7 +12,7 @@ db-down:
 	DATABASE_URL=$DATABASE_URL_LOCAL diesel migration revert
 	DATABASE_URL=$DATABASE_URL_TEST diesel migration revert
 
-dp-test-setup:
+dp-setup-test:
 	DATABASE_URL=$DATABASE_URL_TEST diesel setup
 
 schema:

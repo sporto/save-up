@@ -246,7 +246,7 @@ maybeErrors model =
 links =
     p [ class "mt-6" ]
         [ text "Already signed up? "
-        , a [ href "/sign-in" ] [ text "sign in" ]
+        , a [ href "/a/sign-in" ] [ text "Sign in" ]
         ]
 
 
