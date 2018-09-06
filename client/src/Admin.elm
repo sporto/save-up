@@ -163,7 +163,7 @@ navigation model =
             ]
         , div []
             [ text model.flags.tokenData.name
-            , a [ href "javascript://", class "text-white ml-3", onClick SignOut ]
+            , a [ href "#", class "text-white ml-3", onClick SignOut ]
                 [ text "Log out"
                 , i [ class "fas fa-sign-out-alt ml-2" ] []
                 ]
