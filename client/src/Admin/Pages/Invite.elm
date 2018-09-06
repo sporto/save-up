@@ -12,6 +12,7 @@ import RemoteData
 import Shared.Context exposing (Context)
 import Shared.Css exposing (molecules)
 import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorSelection, sendMutation)
+import UI.Flash as Flash
 
 
 type Msg
@@ -85,7 +86,11 @@ view model =
         [ div [ style "width" "24rem" ]
             [ h1 [] [ text "Invite" ]
             , form [ class "mt-2", onSubmit Submit ]
-                [ p []
+                [ p [ class "text-grey-dark leading-normal" ]
+                    [ text "Invite your children so they can have an account in SaveUp."
+                    ]
+                , error model
+                , p [ class "mt-4" ]
                     [ label
                         [ class molecules.form.label
                         ]
@@ -114,7 +119,18 @@ submit model =
             text "..."
 
         _ ->
-            button [ class molecules.form.submit ] [ text "Sign up" ]
+            button [ class molecules.form.submit ] [ text "Invite" ]
+
+
+error : Model -> Html Msg
+error model =
+    case model.response of
+        RemoteData.Failure e ->
+            Flash.error
+                "Something went wrong"
+
+        _ ->
+            text ""
 
 
 
