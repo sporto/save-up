@@ -161,9 +161,12 @@ navigation model =
             [ navigationLink Routes.Route_Home "Home"
             , navigationLink Routes.Route_Invite "Invite"
             ]
-        , div [  ]
+        , div []
             [ text model.flags.tokenData.name
-            , a [ href "javascript://", class "text-white ml-3", onClick SignOut ] [ text "Log out" ]
+            , a [ href "javascript://", class "text-white ml-3", onClick SignOut ]
+                [ text "Log out"
+                , i [ class "fas fa-sign-out-alt ml-2" ] []
+                ]
             ]
         ]
 

@@ -119,7 +119,7 @@ submit model =
             text "..."
 
         _ ->
-            button [ class molecules.form.submit ] [ text "Invite" ]
+            button [ class molecules.form.submit ] [ i [ class "fas fa-envelope mr-2" ] [], text "Invite" ]
 
 
 error : Model -> Html Msg

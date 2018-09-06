@@ -49,6 +49,18 @@ let baseConfig = {
 		rules: [
 
 			{
+				test: /.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
+				use: [{
+					loader: 'file-loader',
+					options: {
+						name: '[name].[ext]',
+						// outputPath: 'fonts/',
+						// publicPath: '../fonts/',
+					},
+				}],
+			},
+
+			{
 				test: /\.ts$/,
 				use: {
 					loader: "ts-loader",
@@ -75,7 +87,16 @@ let baseConfig = {
 					"css-loader",
 					"postcss-loader",
 				]
-			}
+			},
+
+			// {
+			// 	test: /\.svg/,
+			// 	use: {
+			// 		loader: 'svg-url-loader',
+			// 	},
+			// },
+
+			
 
 		],
 	},
