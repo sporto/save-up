@@ -13,6 +13,7 @@ import Shared.Context exposing (Context)
 import Shared.Css exposing (molecules)
 import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorSelection, sendMutation)
 import UI.Flash as Flash
+import UI.Icons as Icons
 
 
 type Msg
@@ -116,7 +117,7 @@ submit : Model -> Html Msg
 submit model =
     case model.response of
         RemoteData.Loading ->
-            text "..."
+            Icons.spinner
 
         _ ->
             button [ class molecules.form.submit ] [ i [ class "fas fa-envelope mr-2" ] [], text "Invite" ]
