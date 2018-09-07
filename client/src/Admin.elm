@@ -10,20 +10,20 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Shared.Context exposing (Context)
-import Shared.Flags as Flags
+import Shared.Flags as Flags exposing (Flags)
 import Shared.Sessions as Sessions
 import Url exposing (Url)
 
 
 type alias Model =
-    { flags : Flags.Flags
+    { flags : Flags
     , currentLocation : AppLocation
     , key : Nav.Key
     , page : Page
     }
 
 
-initialModel : Flags.Flags -> Url -> Nav.Key -> Model
+initialModel : Flags -> Url -> Nav.Key -> Model
 initialModel flags url key =
     { flags = flags
     , currentLocation = AppLocation.fromUrl url
@@ -32,7 +32,7 @@ initialModel flags url key =
     }
 
 
-init : Flags.Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
+init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     ( initialModel flags url key
     , Cmd.none
@@ -197,7 +197,7 @@ currentPage model =
         ]
 
 
-main : Program Flags.Flags Model Msg
+main : Program Flags Model Msg
 main =
     Browser.application
         { init = init

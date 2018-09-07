@@ -9,6 +9,10 @@ graph-app:
 graph-pub:
 	yarn elm-graphql $API_HOST/graphql-pub --base ApiPub
 
+elm-ts:
+	yarn elm-typescript-interop src/Admin.elm --output=src/admin.d.ts
+	yarn elm-typescript-interop src/Investor.elm --output=src/investor.d.ts
+
 test:
 	yarn elm-test
 
@@ -23,6 +27,3 @@ start:
 
 open-stats:
 	yarn webpack-bundle-analyzer dist/app/stats.json
-
-
-
