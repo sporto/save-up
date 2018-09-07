@@ -5,6 +5,7 @@ use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use failure::Error;
+use diesel::result::Error as DieselError;
 
 use models::account::{Account, AccountAttrs};
 // use models::cents::Cents;
@@ -21,7 +22,13 @@ pub struct RedeemInvitationInput {
 }
 
 pub fn call(conn: &PgConnection, input: &RedeemInvitationInput) -> Result<User, Error> {
-	let invitation = invitation::Invitation::find_by_token(&conn, &input.token)?;
+	let invitation = invitation::Invitation::find_by_token(&conn, &input.token)
+		.map_err(|e|
+			match e {
+				DieselError::NotFound => format_err!("Invalid invitation token"),
+				_ => format_err!("{}", e)
+			}
+		)?;
 
 	// Find the client id
 	let inviter = user::User::find(&conn, invitation.user_id)?;

@@ -21,6 +21,7 @@ import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutatio
 import Shared.Sessions as Sessions exposing (SignUp)
 import UI.Flash as Flash
 import UI.Forms as Forms
+import UI.Icons as Icons
 
 
 type alias Model =
@@ -168,7 +169,7 @@ submit : Model -> Html Msg
 submit model =
     case model.response of
         RemoteData.Loading ->
-            text "..."
+            Icons.spinner
 
         _ ->
             button [ class molecules.form.submit ] [ text "Sign up" ]
