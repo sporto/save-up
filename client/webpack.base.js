@@ -6,25 +6,23 @@ const path = require("path")
 
 const API_HOST = process.env.API_HOST
 
-const ENTRY_ADMIN = "admin"
-const ENTRY_INVESTOR = "investor"
-const ENTRY_SIGN_IN = "sign-in"
-const ENTRY_SIGN_UP = "sign-up"
-const ENTRY_GRAPHIQL = "graphiql"
-const COMMON = "common"
-const STYLES = "styles"
 const ASSETS_PATH = "/a"
+const COMMON = "common"
 const DEV_MODE = process.env.NODE_ENV !== "production"
+const ENTRY_ADMIN = "admin"
+const ENTRY_GRAPHIQL = "graphiql"
+const ENTRY_INVESTOR = "investor"
+const ENTRY_PUB = "pub"
+const STYLES = "styles"
 
 invariant(API_HOST, "API_HOST must be defined")
 
 let baseConfig = {
 	entry: {
-		[ENTRY_GRAPHIQL]: "./src/graphiql.ts",
-		[ENTRY_SIGN_IN]: "./src/signIn.ts",
-		[ENTRY_SIGN_UP]: "./src/signUp.ts",
 		[ENTRY_ADMIN]: "./src/admin.ts",
+		[ENTRY_GRAPHIQL]: "./src/graphiql.ts",
 		[ENTRY_INVESTOR]: "./src/investor.ts",
+		[ENTRY_PUB]: "./src/public.ts",
 	},
 	output: {
 		publicPath: ASSETS_PATH,
@@ -89,15 +87,6 @@ let baseConfig = {
 				]
 			},
 
-			// {
-			// 	test: /\.svg/,
-			// 	use: {
-			// 		loader: 'svg-url-loader',
-			// 	},
-			// },
-
-			
-
 		],
 	},
 	resolve: {
@@ -117,15 +106,9 @@ let baseConfig = {
 			template: "src/graphiql.html",
 		}),
 		new HtmlWebpackPlugin({
-			chunks: [COMMON, STYLES, ENTRY_SIGN_IN],
-			title: "Sign In",
-			filename: ENTRY_SIGN_IN + "/index.html",
-			template: "src/application.html",
-		}),
-		new HtmlWebpackPlugin({
-			chunks: [COMMON, STYLES, ENTRY_SIGN_UP],
-			title: "Sign Up",
-			filename: ENTRY_SIGN_UP + "/index.html",
+			chunks: [COMMON, STYLES, ENTRY_PUB],
+			title: "Public",
+			filename: ENTRY_PUB + "/index.html",
 			template: "src/application.html",
 		}),
 		new HtmlWebpackPlugin({

@@ -19,6 +19,7 @@ let devConfig = {
 		port: 8080,
 		historyApiFallback: {
 			rewrites: [
+				{ from: /^\/a\/pub/, to: '/a/pub' },
 				{ from: /^\/a\/admin/, to: '/a/admin' },
 				{ from: /^\/a\/investor/, to: '/a/investor' },
 			],

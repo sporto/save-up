@@ -1,4 +1,4 @@
-module SignIn exposing (main)
+module Public.Pages.SignIn exposing (Model, Msg, init, subscriptions, update, view)
 
 import ApiPub.Mutation
 import ApiPub.Object
@@ -124,30 +124,13 @@ subscriptions model =
     Sub.none
 
 
-main : Program Flags.PublicFlags Model Msg
-main =
-    Browser.document
-        { init = init
-        , subscriptions = subscriptions
-        , update = update
-        , view = view
-        }
-
-
 
 -- VIEW
 -- TODO add html validation
 
 
-view : Model -> Browser.Document Msg
+view : Model -> Html Msg
 view model =
-    { title = "Sign in"
-    , body = [ body_ model ]
-    }
-
-
-body_ : Model -> Html Msg
-body_ model =
     div [ class "flex items-center justify-center pt-16" ]
         [ div []
             [ h1 []
