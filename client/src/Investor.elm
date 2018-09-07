@@ -6,6 +6,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Shared.Sessions as Sessions
+import UI.Navigation as Navigation
 import Url exposing (Url)
 
 
@@ -59,9 +60,14 @@ view model =
 
 navigation : Model -> Html Msg
 navigation model =
-    nav [ class "flex justify-between p-2 bg-black text-white" ]
-        [ div [] [ text "KIC" ]
-        , div [] [ a [ href "javascript://", class "text-white", onClick SignOut ] [ text "Log out" ] ]
+    nav [ class "flex p-4 bg-blue text-white" ]
+        [ Navigation.logo
+        , div
+            [ class "ml-8 flex-grow" ]
+            []
+        , div []
+            [ Navigation.signOut SignOut
+            ]
         ]
 
 

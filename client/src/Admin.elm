@@ -13,6 +13,7 @@ import Shared.Context exposing (Context)
 import Shared.Flags as Flags exposing (Flags)
 import Shared.Sessions as Sessions
 import Url exposing (Url)
+import UI.Navigation as Navigation
 
 
 type alias Model =
@@ -154,8 +155,7 @@ view model =
 navigation : Model -> Html Msg
 navigation model =
     nav [ class "flex p-4 bg-black text-white" ]
-        [ div [ class "font-semibold" ]
-            [ text "SaveUp" ]
+        [ Navigation.logo
         , div
             [ class "ml-8 flex-grow" ]
             [ navigationLink Routes.Route_Home "Home"
@@ -163,10 +163,7 @@ navigation model =
             ]
         , div []
             [ text model.flags.tokenData.name
-            , a [ href "#", class "text-white ml-3", onClick SignOut ]
-                [ text "Log out"
-                , i [ class "fas fa-sign-out-alt ml-2" ] []
-                ]
+            , Navigation.signOut SignOut
             ]
         ]
 
