@@ -71,7 +71,10 @@ update context msg model =
 
                 Ok response ->
                     if response.success then
-                        ( { model | response = RemoteData.Success response }
+                        ( { model
+                            | response = RemoteData.Success response
+                            , email = ""
+                          }
                         , Cmd.none
                         )
 
@@ -90,7 +93,7 @@ view model =
                 [ p [ class "text-grey-dark leading-normal" ]
                     [ text "Invite your children so they can have an account in SaveUp."
                     ]
-                , error model
+                , flash model
                 , p [ class "mt-4" ]
                     [ label
                         [ class molecules.form.label
@@ -123,9 +126,17 @@ submit model =
             button [ class molecules.form.submit ] [ i [ class "fas fa-envelope mr-2" ] [], text "Invite" ]
 
 
-error : Model -> Html Msg
-error model =
+flash : Model -> Html msg
+flash model =
     case model.response of
+        RemoteData.Success response ->
+            if response.success then
+                Flash.success
+                    "The invitation was sent"
+
+            else
+                text ""
+
         RemoteData.Failure e ->
             Flash.error
                 "Something went wrong"
