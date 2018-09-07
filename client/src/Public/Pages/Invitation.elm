@@ -2,7 +2,7 @@ module Public.Pages.Invitation exposing (Model, Msg, init, subscriptions, update
 
 import ApiPub.Mutation
 import ApiPub.Object
-import ApiPub.Object.SignUpResponse
+import ApiPub.Object.RedeemInvitationResponse
 import Browser
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
@@ -26,29 +26,25 @@ import UI.Forms as Forms
 type alias Model =
     { flags : Flags.PublicFlags
     , signUp : SignUp
-    , token : String
-    , response : GraphData SignUpResponse
+    , invitationToken : String
+    , response : GraphData RedeemInvitationResponse
     }
 
 
 initialModel : Flags.PublicFlags -> String -> Model
-initialModel flags token =
+initialModel flags invitationToken =
     { flags = flags
     , signUp = Sessions.newSignUp
-    , token = token
+    , invitationToken = invitationToken
     , response = RemoteData.NotAsked
     }
 
 
-type alias SignUpResponse =
+type alias RedeemInvitationResponse =
     { success : Bool
     , errors : List MutationError
     , token : Maybe String
     }
-
-
-
-
 
 
 asSignUpInModel : Model -> SignUp -> Model
@@ -57,15 +53,15 @@ asSignUpInModel model signUp =
 
 
 init : Flags.PublicFlags -> String -> ( Model, Cmd Msg )
-init flags token =
-    ( initialModel flags token, Cmd.none )
+init flags invitationToken =
+    ( initialModel flags invitationToken, Cmd.none )
 
 
 type Msg
     = ChangeName String
     | ChangePassword String
     | Submit
-    | OnSubmitResponse (GraphResponse SignUpResponse)
+    | OnSubmitResponse (GraphResponse RedeemInvitationResponse)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -77,7 +73,6 @@ update msg model =
             }
     in
     case msg of
-
         ChangeName name ->
             ( name
                 |> Sessions.asNameInSignUp model.signUp
@@ -94,7 +89,7 @@ update msg model =
 
         Submit ->
             ( { model | response = RemoteData.Loading }
-            , sendCreateSignUpMutation context model.signUp
+            , sendRedeemMutation context model.signUp model.invitationToken
             )
 
         OnSubmitResponse result ->
@@ -209,28 +204,35 @@ links =
 -- GraphQL data
 
 
-sendCreateSignUpMutation : PublicContext -> SignUp -> Cmd Msg
-sendCreateSignUpMutation context signUp =
+sendRedeemMutation : PublicContext -> SignUp -> String -> Cmd Msg
+sendRedeemMutation context signUp invitationToken =
     sendPublicMutation
         context
-        "create-sign-up"
-        (createSignUpMutation signUp)
+        "reedeem-invitation"
+        (createRedeemMutation signUp invitationToken)
         OnSubmitResponse
 
 
-createSignUpMutation : SignUp -> SelectionSet SignUpResponse RootMutation
-createSignUpMutation signUp =
+createRedeemMutation : SignUp -> String -> SelectionSet RedeemInvitationResponse RootMutation
+createRedeemMutation signUp invitationToken =
+    let
+        input =
+            { name = signUp.name
+            , password = signUp.password
+            , token = invitationToken
+            }
+    in
     ApiPub.Mutation.selection identity
         |> with
-            (ApiPub.Mutation.signUp
-                { signUp = signUp }
-                signUpResponseSelection
+            (ApiPub.Mutation.redeemInvitation
+                { input = input }
+                redeemResponseSelection
             )
 
 
-signUpResponseSelection : SelectionSet SignUpResponse ApiPub.Object.SignUpResponse
-signUpResponseSelection =
-    ApiPub.Object.SignUpResponse.selection SignUpResponse
-        |> with ApiPub.Object.SignUpResponse.success
-        |> with (ApiPub.Object.SignUpResponse.errors mutationErrorPublicSelection)
-        |> with ApiPub.Object.SignUpResponse.token
+redeemResponseSelection : SelectionSet RedeemInvitationResponse ApiPub.Object.RedeemInvitationResponse
+redeemResponseSelection =
+    ApiPub.Object.RedeemInvitationResponse.selection RedeemInvitationResponse
+        |> with ApiPub.Object.RedeemInvitationResponse.success
+        |> with (ApiPub.Object.RedeemInvitationResponse.errors mutationErrorPublicSelection)
+        |> with ApiPub.Object.RedeemInvitationResponse.token
