@@ -35,12 +35,13 @@ pub struct UserAttrs {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct TokenData {
+pub struct TokenClaims {
 	#[serde(rename = "userId")]
 	pub user_id: i32,
 	pub email: String,
 	pub name: String,
 	pub role: Role,
+	pub exp: i64,
 }
 
 #[allow(dead_code)]
