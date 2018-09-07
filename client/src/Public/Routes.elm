@@ -15,6 +15,7 @@ namespaceAbs =
 type Route
     = Route_SignIn
     | Route_SignUp
+    | Route_Invitation String
 
 
 matchers : Parser (Route -> a) a
@@ -23,8 +24,9 @@ matchers =
         </> s "pub"
         </> oneOf
                 [ map Route_SignIn top
-                , map Route_SignIn (s "sign-in")
-                , map Route_SignUp (s "sign-up")
+                , map Route_SignIn (s segmentSignIn)
+                , map Route_SignUp (s segmentSignUp)
+                , map Route_Invitation (s segmentInvitation </> string)
                 ]
 
 
@@ -42,8 +44,22 @@ pathFor : Route -> String
 pathFor route =
     case route of
         Route_SignIn ->
-            namespaceAbs ++ "/sign-in"
+            namespaceAbs ++ "/" ++ segmentSignIn
 
         Route_SignUp ->
-            namespaceAbs ++ "/sign-up"
+            namespaceAbs ++ "/" ++ segmentSignUp
 
+        Route_Invitation token ->
+            namespaceAbs ++ "/" ++ segmentInvitation ++ "/" ++ token
+
+
+segmentSignIn =
+    "sign-in"
+
+
+segmentSignUp =
+    "sign-up"
+
+
+segmentInvitation =
+    "invitation"

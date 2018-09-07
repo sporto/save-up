@@ -13,6 +13,7 @@ import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
+import Public.Routes as Routes
 import RemoteData
 import Shared.Context exposing (PublicContext)
 import Shared.Css exposing (molecules)
@@ -181,7 +182,7 @@ submit model =
 
 links =
     p [ class "mt-6" ]
-        [ a [ href "/a/sign-up" ] [ text "Sign up" ]
+        [ a [ href (Routes.pathFor Routes.Route_SignUp) ] [ text "Sign up" ]
         ]
 
 

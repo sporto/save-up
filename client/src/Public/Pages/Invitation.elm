@@ -1,4 +1,4 @@
-module Public.Pages.SignUp exposing (Model, Msg, init, subscriptions, update, view)
+module Public.Pages.Invitation exposing (Model, Msg, init, subscriptions, update, view)
 
 import ApiPub.Mutation
 import ApiPub.Object
@@ -26,14 +26,16 @@ import UI.Forms as Forms
 type alias Model =
     { flags : Flags.PublicFlags
     , signUp : SignUp
+    , token : String
     , response : GraphData SignUpResponse
     }
 
 
-initialModel : Flags.PublicFlags -> Model
-initialModel flags =
+initialModel : Flags.PublicFlags -> String -> Model
+initialModel flags token =
     { flags = flags
     , signUp = Sessions.newSignUp
+    , token = token
     , response = RemoteData.NotAsked
     }
 
@@ -46,19 +48,21 @@ type alias SignUpResponse =
 
 
 
+
+
+
 asSignUpInModel : Model -> SignUp -> Model
 asSignUpInModel model signUp =
     { model | signUp = signUp }
 
 
-init : Flags.PublicFlags -> ( Model, Cmd Msg )
-init flags =
-    ( initialModel flags, Cmd.none )
+init : Flags.PublicFlags -> String -> ( Model, Cmd Msg )
+init flags token =
+    ( initialModel flags token, Cmd.none )
 
 
 type Msg
-    = ChangeEmail String
-    | ChangeName String
+    = ChangeName String
     | ChangePassword String
     | Submit
     | OnSubmitResponse (GraphResponse SignUpResponse)
@@ -73,12 +77,6 @@ update msg model =
             }
     in
     case msg of
-        ChangeEmail email ->
-            ( email
-                |> Sessions.asEmailInSignUp model.signUp
-                |> asSignUpInModel model
-            , Cmd.none
-            )
 
         ChangeName name ->
             ( name
@@ -146,19 +144,6 @@ view model =
                         [ class molecules.form.input
                         , onInput ChangeName
                         , name "name"
-                        ]
-                        []
-                    ]
-                , p [ class "mt-6" ]
-                    [ label
-                        [ class molecules.form.label ]
-                        [ text "Email"
-                        ]
-                    , input
-                        [ class molecules.form.input
-                        , type_ "email"
-                        , onInput ChangeEmail
-                        , name "email"
                         ]
                         []
                     ]

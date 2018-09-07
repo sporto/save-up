@@ -6,6 +6,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Public.AppLocation as AppLocation exposing (AppLocation)
+import Public.Pages.Invitation as Invitation
 import Public.Pages.SignIn as SignIn
 import Public.Pages.SignUp as SignUp
 import Public.Routes as Routes exposing (Route)
@@ -45,12 +46,14 @@ type Msg
     | OnUrlRequest UrlRequest
     | PageSignInMsg SignIn.Msg
     | PageSignUpMsg SignUp.Msg
+    | PageInvitationMsg Invitation.Msg
 
 
 type Page
     = Page_Initial
     | Page_SignIn SignIn.Model
     | Page_SignUp SignUp.Model
+    | Page_Invitation Invitation.Model
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -116,6 +119,22 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        PageInvitationMsg sub ->
+            case model.page of
+                Page_Invitation pageModel ->
+                    let
+                        ( newPageModel, pageCmd ) =
+                            Invitation.update
+                                sub
+                                pageModel
+                    in
+                    ( { model | page = Page_Invitation newPageModel }
+                    , Cmd.map PageInvitationMsg pageCmd
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
+
 
 initCurrentPage : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 initCurrentPage ( model, cmds ) =
@@ -135,6 +154,13 @@ initCurrentPage ( model, cmds ) =
                             SignUp.init model.flags
                     in
                     ( Page_SignUp pageModel, Cmd.map PageSignUpMsg pageCmd )
+
+                Routes.Route_Invitation token ->
+                    let
+                        ( pageModel, pageCmd ) =
+                            Invitation.init model.flags token
+                    in
+                    ( Page_Invitation pageModel, Cmd.map PageInvitationMsg pageCmd )
     in
     ( { model | page = newPage }, Cmd.batch [ cmds, newCmd ] )
 
@@ -149,6 +175,9 @@ subscriptions model =
 
                 Page_SignUp pageModel ->
                     Sub.map PageSignUpMsg (SignUp.subscriptions pageModel)
+
+                Page_Invitation pageModel ->
+                    Sub.map PageInvitationMsg (Invitation.subscriptions pageModel)
 
                 Page_Initial ->
                     Sub.none
@@ -179,6 +208,10 @@ currentPage model =
                 Page_SignUp pageModel ->
                     SignUp.view pageModel
                         |> map PageSignUpMsg
+
+                Page_Invitation pageModel ->
+                    Invitation.view pageModel
+                        |> map PageInvitationMsg
 
                 Page_Initial ->
                     text ""
