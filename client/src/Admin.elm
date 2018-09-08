@@ -13,6 +13,7 @@ import Shared.Context exposing (Context)
 import Shared.Flags as Flags exposing (Flags)
 import Shared.Pages.NotFound as NotFound
 import Shared.Sessions as Sessions
+import UI.Footer as Footer
 import UI.Navigation as Navigation
 import Url exposing (Url)
 
@@ -155,21 +156,26 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "SaveUp"
     , body =
-        [ navigation model
-        , currentPage model
-        ]
+        [ layout model ]
     }
 
 
-navigation : Model -> Html Msg
-navigation model =
+layout model =
+    section []
+        [ header_ model
+        , navigation model
+        , currentPage model
+        , Footer.view
+        ]
+
+
+header_ : Model -> Html Msg
+header_ model =
     nav [ class "flex p-4 bg-black text-white" ]
         [ Navigation.logo
         , div
             [ class "ml-8 flex-grow" ]
-            [ navigationLink Routes.Route_Home "Home"
-            , navigationLink Routes.Route_Invite "Invite"
-            ]
+            []
         , div []
             [ text model.flags.tokenData.name
             , Navigation.signOut SignOut
@@ -177,11 +183,19 @@ navigation model =
         ]
 
 
+navigation : Model -> Html Msg
+navigation model =
+    nav [ class "flex p-4 bg-grey" ]
+        [ navigationLink Routes.Route_Home "Home"
+        , navigationLink Routes.Route_Invite "Invite"
+        ]
+
+
 navigationLink : Route -> String -> Html Msg
 navigationLink route label =
     a
         [ href (Routes.pathFor route)
-        , class "text-white mr-4 no-underline"
+        , class "text-black mr-4 no-underline"
         ]
         [ text label ]
 

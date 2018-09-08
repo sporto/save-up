@@ -14,6 +14,7 @@ import Shared.Pages.NotFound as NotFound
 import Shared.Sessions as Sessions
 import UI.Navigation as Navigation
 import Url exposing (Url)
+import UI.Footer as Footer
 
 
 type alias Model =
@@ -131,15 +132,22 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "SaveUp"
     , body =
-        [ navigation model
-        , currentPage model
-        ]
+        [ layout model ]
     }
 
 
-navigation : Model -> Html Msg
-navigation model =
-    nav [ class "flex p-4 bg-blue text-white" ]
+layout model =
+    section [ class "" ]
+        [ header_ model
+        , navigation model
+        , currentPage model
+        , Footer.view
+        ]
+
+
+header_ : Model -> Html Msg
+header_ model =
+    header [ class "flex p-4 bg-blue text-white" ]
         [ Navigation.logo
         , div
             [ class "ml-8 flex-grow" ]
@@ -147,6 +155,12 @@ navigation model =
         , div []
             [ Navigation.signOut SignOut
             ]
+        ]
+
+
+navigation model =
+    nav [ class "bg-grey-light p-3" ]
+        [ text "Nav"
         ]
 
 
@@ -168,6 +182,8 @@ currentPage model =
     section [ class "p-4" ]
         [ page
         ]
+
+
 
 
 main : Program Flags Model Msg
