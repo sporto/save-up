@@ -10,7 +10,7 @@ sessions.proceedIfSignedIn(function(tokenAndData: TokenAndData) {
 	function graphQLFetcher(graphQLParams: any) {
 		let config = getConfig()
 
-		return fetch(config.apiHost + "/graphql", {
+		return fetch(config.apiHost + "/graphql-app", {
 			method: "post",
 			headers: {
 				"Content-Type": "application/json",

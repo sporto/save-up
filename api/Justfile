@@ -14,7 +14,10 @@ copy-binary directory bin_name:
 	mkdir -p ./bin/{{bin_name}}/
 	cp {{directory}}/target/x86_64-unknown-linux-musl/release/{{bin_name}} ./bin/{{bin_name}}/
 
-build-graphql:
+check-graph:
+	cd graphql && cargo check
+
+build-graph:
 	just build-directory graphql
 	just copy-binary graphql graphql_app
 	just copy-binary graphql graphql_pub

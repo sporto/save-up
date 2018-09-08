@@ -1,13 +1,14 @@
+pub use super::role::Role;
+use super::schema as db;
 use super::schema::users;
 use chrono::NaiveDateTime;
 use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
-pub use super::role::Role;
 use validator::Validate;
 
-#[derive(Queryable, GraphQLObject, Debug, Clone)]
+#[derive(Queryable, Debug, Clone)]
 pub struct User {
 	pub id: i32,
 	pub created_at: NaiveDateTime,
@@ -62,6 +63,11 @@ pub fn system_user() -> User {
 }
 
 impl User {
+	// Scopes
+	// pub fn is_investor() -> diesel::expression::operators::Eq<i32, i32> {
+	// 	db::users::role.eq(Role::Investor)
+	// }
+
 	// Create
 	#[allow(dead_code)]
 	pub fn create(conn: &PgConnection, attrs: UserAttrs) -> Result<User, Error> {
