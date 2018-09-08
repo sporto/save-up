@@ -59,10 +59,8 @@ type Page
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     let
-        context : PublicContext
         context =
-            { flags = model.flags
-            }
+            newContext model
     in
     case msg of
         OnUrlChange url ->
@@ -93,6 +91,7 @@ update msg model =
                     let
                         ( newPageModel, pageCmd ) =
                             SignIn.update
+                                context
                                 sub
                                 pageModel
                     in
@@ -109,6 +108,7 @@ update msg model =
                     let
                         ( newPageModel, pageCmd ) =
                             SignUp.update
+                                context
                                 sub
                                 pageModel
                     in
@@ -125,6 +125,7 @@ update msg model =
                     let
                         ( newPageModel, pageCmd ) =
                             Invitation.update
+                                context
                                 sub
                                 pageModel
                     in
@@ -134,6 +135,12 @@ update msg model =
 
                 _ ->
                     ( model, Cmd.none )
+
+
+newContext : Model -> PublicContext
+newContext model =
+    { flags = model.flags
+    }
 
 
 initCurrentPage : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
@@ -199,18 +206,21 @@ view model =
 currentPage : Model -> Html Msg
 currentPage model =
     let
+        context =
+            newContext model
+
         page =
             case model.page of
                 Page_SignIn pageModel ->
-                    SignIn.view pageModel
+                    SignIn.view context pageModel
                         |> map PageSignInMsg
 
                 Page_SignUp pageModel ->
-                    SignUp.view pageModel
+                    SignUp.view context pageModel
                         |> map PageSignUpMsg
 
                 Page_Invitation pageModel ->
-                    Invitation.view pageModel
+                    Invitation.view context pageModel
                         |> map PageInvitationMsg
 
                 Page_Initial ->

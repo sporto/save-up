@@ -84,8 +84,8 @@ update context msg model =
                         )
 
 
-view : Model -> Html Msg
-view model =
+view : Context -> Model -> Html Msg
+view context model =
     section [ class "flex justify-center" ]
         [ div [ style "width" "24rem" ]
             [ h1 [] [ text "Invite" ]

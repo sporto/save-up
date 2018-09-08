@@ -11,9 +11,10 @@ import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Shared.Context exposing (Context)
 import Shared.Flags as Flags exposing (Flags)
+import Shared.Pages.NotFound as NotFound
 import Shared.Sessions as Sessions
-import Url exposing (Url)
 import UI.Navigation as Navigation
+import Url exposing (Url)
 
 
 type alias Model =
@@ -51,15 +52,14 @@ type Msg
 type Page
     = Page_Home
     | Page_Invite Invite.Model
+    | Page_NotFound
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     let
-        context : Context
         context =
-            { flags = model.flags
-            }
+            newContext model
     in
     case msg of
         SignOut ->
@@ -105,6 +105,12 @@ update msg model =
                     ( model, Cmd.none )
 
 
+newContext : Model -> Context
+newContext model =
+    { flags = model.flags
+    }
+
+
 initCurrentPage : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 initCurrentPage ( model, cmds ) =
     let
@@ -131,6 +137,9 @@ subscriptions model =
     let
         pageSub =
             case model.page of
+                Page_NotFound ->
+                    Sub.none
+
                 Page_Home ->
                     Sub.none
 
@@ -180,13 +189,19 @@ navigationLink route label =
 currentPage : Model -> Html Msg
 currentPage model =
     let
+        context =
+            newContext model
+
         page =
             case model.page of
+                Page_NotFound ->
+                    NotFound.view
+
                 Page_Home ->
-                    Home.view
+                    Home.view context
 
                 Page_Invite pageModel ->
-                    Invite.view pageModel
+                    Invite.view context pageModel
                         |> map PageInviteMsg
     in
     section [ class "p-4" ]

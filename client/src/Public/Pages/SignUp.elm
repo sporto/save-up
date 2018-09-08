@@ -25,16 +25,14 @@ import UI.Icons as Icons
 
 
 type alias Model =
-    { flags : Flags.PublicFlags
-    , signUp : SignUp
+    { signUp : SignUp
     , response : GraphData SignUpResponse
     }
 
 
 initialModel : Flags.PublicFlags -> Model
 initialModel flags =
-    { flags = flags
-    , signUp = Sessions.newSignUp
+    { signUp = Sessions.newSignUp
     , response = RemoteData.NotAsked
     }
 
@@ -44,7 +42,6 @@ type alias SignUpResponse =
     , errors : List MutationError
     , token : Maybe String
     }
-
 
 
 asSignUpInModel : Model -> SignUp -> Model
@@ -65,14 +62,8 @@ type Msg
     | OnSubmitResponse (GraphResponse SignUpResponse)
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    let
-        context : PublicContext
-        context =
-            { flags = model.flags
-            }
-    in
+update : PublicContext -> Msg -> Model -> ( Model, Cmd Msg )
+update context msg model =
     case msg of
         ChangeEmail email ->
             ( email
@@ -129,8 +120,8 @@ subscriptions model =
 -- TODO add html validation
 
 
-view : Model -> Html Msg
-view model =
+view : PublicContext -> Model -> Html Msg
+view context model =
     div [ class "flex items-center justify-center pt-16" ]
         [ div []
             [ h1 []
