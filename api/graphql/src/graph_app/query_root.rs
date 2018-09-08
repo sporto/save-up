@@ -1,9 +1,10 @@
 use chrono_tz::America;
 use chrono_tz::Australia;
-use graph_app::context::AppContext;
-use juniper::{FieldError, FieldResult};
-// use models::client::*;
 use diesel::prelude::*;
+use graph_app::actions;
+use graph_app::context::AppContext;
+use graph_app::queries::*;
+use juniper::{FieldError, FieldResult};
 use models::account::Account;
 use models::role::Role;
 use models::schema as db;
@@ -23,7 +24,7 @@ graphql_object!(AppQueryRoot: AppContext |&self| {
 
 	 	Ok(AdminViewer {
 			investors: vec![],
-			b: 1,
+			account: None,
 	 	})
 	}
 
@@ -41,10 +42,11 @@ graphql_object!(AppQueryRoot: AppContext |&self| {
 
 struct AdminViewer {
 	investors: Vec<User>,
-	b: i32,
+	account: Option<Account>,
 }
 
 graphql_object!(AdminViewer: AppContext |&self| {
+
 	field investors(&executor) -> FieldResult<Vec<User>> {
 		let context = &executor.context();
 		let client_id = context.user.client_id;
@@ -62,35 +64,21 @@ graphql_object!(AdminViewer: AppContext |&self| {
 			.map_err(|e| FieldError::from(e))
 	}
 
-	field b() -> i32 {
-		2
-	}
-});
+	field account(&executor, id: i32) -> FieldResult<Account> {
+		let ctx = &executor.context();
+		let conn = &ctx.conn;
+		let current_user = &ctx.user;
 
-graphql_object!(User: AppContext |&self| {
-	field id() -> &str {
-		self.email.as_str()
-	}
+		// Authorise
+		let can = actions::accounts::authorise::can_access(conn, id, current_user)?;
 
-	field email() -> i32 {
-		self.id
-	}
+		if can == false {
+			return Err(FieldError::from("Unauthorized"))
+		};
 
-	field name() -> &str {
-		self.name.as_str()
-	}
-
-	field accounts(&executor) -> FieldResult<Vec<Account>> {
-		let context = &executor.context();
-		let client_id = context.user.client_id;
-		let conn = &context.conn;
-
-		let filter = db::accounts
-			::user_id.eq(self.id);
-
-		db::accounts::table
-			.filter(filter)
-			.load(conn)
+		Account::find(conn, id)
 			.map_err(|e| FieldError::from(e))
 	}
+
 });
+

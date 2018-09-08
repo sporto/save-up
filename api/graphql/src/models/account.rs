@@ -5,9 +5,6 @@ use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
-// use diesel::sql_types::Numeric;
-// use diesel::pg::data_types::PgNumeric;
-// use models::cents::Cents;
 use models::schema::accounts;
 use validator::Validate;
 
@@ -28,16 +25,6 @@ pub struct AccountAttrs {
 	pub yearly_interest: BigDecimal,
 }
 
-graphql_object!(Account: () |&self| {
-    field name() -> &str {
-        self.name.as_str()
-    }
-
-    field yearly_interest() -> f64 {
-        BigDecimal::to_f64(&self.yearly_interest).unwrap()
-    }
-});
-
 impl Account {
 	#[allow(dead_code)]
 	pub fn create(conn: &PgConnection, attrs: AccountAttrs) -> Result<Account, Error> {
@@ -48,9 +35,7 @@ impl Account {
 
 	#[allow(dead_code)]
 	pub fn find(conn: &PgConnection, id: i32) -> Result<Account, Error> {
-		accounts::table
-			.filter(accounts::id.eq(id))
-			.get_result(conn)
+		accounts::table.filter(accounts::id.eq(id)).get_result(conn)
 	}
 
 	#[allow(dead_code)]

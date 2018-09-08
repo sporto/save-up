@@ -32,12 +32,12 @@ impl Client {
 	}
 
 	// Read
-	#[allow(dead_code)]
-	pub fn all(conn: &PgConnection) -> Vec<Client> {
-		clients::table
-			.load::<Client>(conn)
-			.expect("Error loading clients")
-	}
+	// #[allow(dead_code)]
+	// pub fn all(conn: &PgConnection) -> Vec<Client> {
+	// 	clients::table
+	// 		.load::<Client>(conn)
+	// 		.expect("Error loading clients")
+	// }
 
 	#[allow(dead_code)]
 	pub fn find(conn: &PgConnection, client_id: i32) -> Result<Client, Error> {

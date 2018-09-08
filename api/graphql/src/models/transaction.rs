@@ -1,6 +1,5 @@
 use chrono::NaiveDateTime;
 use diesel;
-// use diesel::pg::Pg;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
@@ -41,10 +40,27 @@ impl Transaction {
 		conn: &PgConnection,
 		account_id: i32,
 	) -> Result<Transaction, Error> {
+		let filter = transactions::account_id.eq(account_id);
+
 		transactions::table
-			.filter(transactions::account_id.eq(account_id))
+			.filter(filter)
 			.order_by(transactions::created_at.desc())
 			.get_result(conn)
+	}
+
+	pub fn find_by_account_id(
+		conn: &PgConnection,
+		account_id: i32,
+		since: NaiveDateTime,
+	) -> Result<Vec<Transaction>, Error> {
+		let filter = transactions::account_id
+			.eq(account_id)
+			.and(transactions::created_at.ge(since));
+
+		transactions::table
+			.filter(filter)
+			.order_by(transactions::created_at.desc())
+			.get_results(conn)
 	}
 }
 
