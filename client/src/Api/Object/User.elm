@@ -2,9 +2,8 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.User exposing (clientId, createdAt, email, emailConfirmationToken, emailConfirmedAt, id, name, passwordHash, role, selection)
+module Api.Object.User exposing (accounts, email, id, name, selection)
 
-import Api.Enum.Role
 import Api.InputObject
 import Api.Interface
 import Api.Object
@@ -26,29 +25,14 @@ selection constructor =
     Object.selection constructor
 
 
-id : Field Int Api.Object.User
+id : Field String Api.Object.User
 id =
-    Object.fieldDecoder "id" [] Decode.int
+    Object.fieldDecoder "id" [] Decode.string
 
 
-createdAt : Field Api.Scalar.NaiveDateTime Api.Object.User
-createdAt =
-    Object.fieldDecoder "createdAt" [] (Object.scalarDecoder |> Decode.map Api.Scalar.NaiveDateTime)
-
-
-clientId : Field Int Api.Object.User
-clientId =
-    Object.fieldDecoder "clientId" [] Decode.int
-
-
-email : Field String Api.Object.User
+email : Field Int Api.Object.User
 email =
-    Object.fieldDecoder "email" [] Decode.string
-
-
-passwordHash : Field String Api.Object.User
-passwordHash =
-    Object.fieldDecoder "passwordHash" [] Decode.string
+    Object.fieldDecoder "email" [] Decode.int
 
 
 name : Field String Api.Object.User
@@ -56,16 +40,6 @@ name =
     Object.fieldDecoder "name" [] Decode.string
 
 
-role : Field Api.Enum.Role.Role Api.Object.User
-role =
-    Object.fieldDecoder "role" [] Api.Enum.Role.decoder
-
-
-emailConfirmationToken : Field (Maybe String) Api.Object.User
-emailConfirmationToken =
-    Object.fieldDecoder "emailConfirmationToken" [] (Decode.string |> Decode.nullable)
-
-
-emailConfirmedAt : Field (Maybe Api.Scalar.NaiveDateTime) Api.Object.User
-emailConfirmedAt =
-    Object.fieldDecoder "emailConfirmedAt" [] (Object.scalarDecoder |> Decode.map Api.Scalar.NaiveDateTime |> Decode.nullable)
+accounts : SelectionSet decodesTo Api.Object.Account -> Field (List decodesTo) Api.Object.User
+accounts object_ =
+    Object.selectionField "accounts" [] object_ (identity >> Decode.list)

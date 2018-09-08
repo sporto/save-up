@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.Client exposing (createdAt, id, name, selection)
+module Api.Object.AdminViewer exposing (AccountRequiredArguments, account, investors, selection)
 
 import Api.InputObject
 import Api.Interface
@@ -20,21 +20,20 @@ import Json.Decode as Decode
 
 {-| Select fields to build up a SelectionSet for this object.
 -}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.Client
+selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.AdminViewer
 selection constructor =
     Object.selection constructor
 
 
-id : Field Int Api.Object.Client
-id =
-    Object.fieldDecoder "id" [] Decode.int
+investors : SelectionSet decodesTo Api.Object.User -> Field (List decodesTo) Api.Object.AdminViewer
+investors object_ =
+    Object.selectionField "investors" [] object_ (identity >> Decode.list)
 
 
-createdAt : Field Api.Scalar.NaiveDateTime Api.Object.Client
-createdAt =
-    Object.fieldDecoder "createdAt" [] (Object.scalarDecoder |> Decode.map Api.Scalar.NaiveDateTime)
+type alias AccountRequiredArguments =
+    { id : Int }
 
 
-name : Field String Api.Object.Client
-name =
-    Object.fieldDecoder "name" [] Decode.string
+account : AccountRequiredArguments -> SelectionSet decodesTo Api.Object.Account -> Field decodesTo Api.Object.AdminViewer
+account requiredArgs object_ =
+    Object.selectionField "account" [ Argument.required "id" requiredArgs.id Encode.int ] object_ identity

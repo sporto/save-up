@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Query exposing (apiVersion, client, selection, timezones, users)
+module Api.Query exposing (admin, apiVersion, selection, timezones)
 
 import Api.InputObject
 import Api.Interface
@@ -32,14 +32,9 @@ apiVersion =
     Object.fieldDecoder "apiVersion" [] Decode.string
 
 
-client : SelectionSet decodesTo Api.Object.Client -> Field decodesTo RootQuery
-client object_ =
-    Object.selectionField "client" [] object_ identity
-
-
-users : SelectionSet decodesTo Api.Object.User -> Field (List decodesTo) RootQuery
-users object_ =
-    Object.selectionField "users" [] object_ (identity >> Decode.list)
+admin : SelectionSet decodesTo Api.Object.AdminViewer -> Field decodesTo RootQuery
+admin object_ =
+    Object.selectionField "admin" [] object_ identity
 
 
 timezones : Field (List String) RootQuery
