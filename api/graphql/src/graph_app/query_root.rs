@@ -17,21 +17,6 @@ graphql_object!(AppQueryRoot: AppContext |&self| {
 		"1.0"
 	}
 
-	// field client(&executor) -> FieldResult<Client> {
-	// 	let context = executor.context();
-
-	// 	Client::first(&context.conn)
-	// 		.map_err(|e| FieldError::from(e) )
-	// }
-
-	// field users(&executor) -> FieldResult<Vec<User>> {
-	// 	let context = executor.context();
-
-	// 	let users = User::all(&context.conn);
-
-	// 	Ok(users)
-	// }
-
 	// Only an admin can request this
 	field admin(&executor) -> FieldResult<AdminViewer> {
 		// TODO fail if not admin
@@ -75,34 +60,12 @@ graphql_object!(AdminViewer: AppContext |&self| {
 			.filter(filter)
 			.load::<User>(conn)
 			.map_err(|e| FieldError::from(e))
-			// .map(users_to_investors)
 	}
 
 	field b() -> i32 {
 		2
 	}
 });
-
-// #[derive(GraphQLObject, Debug, Clone)]
-// struct Investor {
-// 	accounts: Vec<Account>,
-// 	email: String,
-// 	id: i32,
-// 	name: String,
-// }
-
-// fn users_to_investors(users: Vec<User>) -> Vec<Investor> {
-// 	users.iter().map(user_to_investor).collect()
-// }
-
-// fn user_to_investor(user: &User) -> Investor {
-// 	Investor {
-// 		accounts: vec![],
-// 		email: user.email.clone(),
-// 		id: user.id,
-// 		name: user.name.clone(),
-// 	}
-// }
 
 graphql_object!(User: AppContext |&self| {
 	field id() -> &str {
