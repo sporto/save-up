@@ -13,6 +13,7 @@ import RemoteData
 import Shared.Context exposing (Context)
 import Shared.Css exposing (molecules)
 import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorSelection, sendMutation)
+import UI.Flash as Flash
 import Verify exposing (Validator, validate, verify)
 
 
@@ -42,7 +43,12 @@ type SubPage
 type alias DepositModel =
     { form : DepositForm
     , response : GraphData DepositResponse
+    , validationErrors : Maybe ValidationErrors
     }
+
+
+type alias ValidationErrors =
+    ( String, List String )
 
 
 newDepositModel : DepositModel
@@ -51,6 +57,7 @@ newDepositModel =
         { amount = ""
         }
     , response = RemoteData.NotAsked
+    , validationErrors = Nothing
     }
 
 
@@ -158,15 +165,18 @@ updateDeposit context accountID msg model =
         SubmitDeposit ->
             case depositValidator model.form of
                 Ok form ->
-                    ( { model | response = RemoteData.Loading }
+                    ( { model
+                        | response = RemoteData.Loading
+                        , validationErrors = Nothing
+                      }
                     , depositMutationCmd
                         context
                         accountID
                         (form.amount * 100)
                     )
 
-                Err error ->
-                    ( model, Cmd.none )
+                Err errors ->
+                    ( { model | validationErrors = Just errors }, Cmd.none )
 
 
 view : Context -> Model -> Html Msg
@@ -226,7 +236,7 @@ currentPage context model =
 
 
 
---DEPOSIT
+-- Deposit Views
 
 
 deposit : Context -> DepositModel -> Html DepositMsg
@@ -235,7 +245,8 @@ deposit context model =
         [ div [ style "width" "24rem" ]
             [ h1 [ class molecules.page.title ] [ text "Make a deposit" ]
             , form [ class "mt-2", onSubmit SubmitDeposit ]
-                [ p [ class molecules.form.fieldset ]
+                [ validationErrorsView model.validationErrors
+                , p [ class molecules.form.fieldset ]
                     [ label [ class molecules.form.label ] [ text "Amount" ]
                     , input
                         [ class molecules.form.input
@@ -282,6 +293,20 @@ validateAmount error input =
 
         Nothing ->
             Err ( error, [] )
+
+
+
+-- Common views
+
+
+validationErrorsView : Maybe ValidationErrors -> Html msg
+validationErrorsView maybeValidationErrorsView =
+    case maybeValidationErrorsView of
+        Nothing ->
+            text ""
+
+        Just ( firstError, other ) ->
+            Flash.error firstError
 
 
 
