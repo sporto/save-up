@@ -9,6 +9,7 @@ import Graphql.Operation exposing (RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import RemoteData
 import Shared.Context exposing (Context)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse)
 
@@ -19,16 +20,18 @@ type Msg
 
 
 type alias Model =
-    {}
+    { data : GraphData Data
+    }
 
 
 newModel =
-    {}
+    { data = RemoteData.NotAsked
+    }
 
 
-init : ( Model, Cmd Msg )
-init =
-    ( newModel, Cmd.none )
+init : Context -> ( Model, Cmd Msg )
+init context =
+    ( newModel, getData context )
 
 
 subscriptions : Model -> Sub Msg
@@ -43,7 +46,17 @@ update context msg model =
             ( model, Cmd.none )
 
         OnData result ->
-            ( model, Cmd.none )
+            case result of
+                Err e ->
+                    ({model |
+                    response = RemoteData.Failure e}
+                    , Cmd.none
+                    )
+
+                Ok data ->
+                    ( {model
+                    | data = RemoteData.Success data
+                    }, Cmd.none )
 
 
 view : Context -> Model -> Html msg
@@ -76,6 +89,7 @@ type alias Account =
     }
 
 
+getData : Context -> Cmd Msg
 getData context =
     GraphQl.sendQuery
         context

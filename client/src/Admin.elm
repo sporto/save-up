@@ -37,10 +37,17 @@ initialModel flags url key =
 
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
-    ( initialModel flags url key
+    let
+        model =
+            initialModel flags url key
+
+        context =
+            newContext model
+    in
+    ( model
     , Cmd.none
     )
-        |> initCurrentPage
+        |> initCurrentPage context
 
 
 type Msg
@@ -75,7 +82,7 @@ update msg model =
             ( { model | currentLocation = newLocation }
             , Cmd.none
             )
-                |> initCurrentPage
+                |> initCurrentPage context
 
         OnUrlRequest urlRequest ->
             case urlRequest of
@@ -130,8 +137,8 @@ newContext model =
     }
 
 
-initCurrentPage : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
-initCurrentPage ( model, cmds ) =
+initCurrentPage : Context -> ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+initCurrentPage context ( model, cmds ) =
     let
         ( newPage, newCmd ) =
             case model.currentLocation.route of
@@ -139,6 +146,7 @@ initCurrentPage ( model, cmds ) =
                     let
                         ( pageModel, pageCmd ) =
                             Home.init
+                                context
                     in
                     ( Page_Home pageModel, Cmd.map PageHomeMsg pageCmd )
 
