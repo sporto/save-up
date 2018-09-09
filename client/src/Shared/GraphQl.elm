@@ -1,4 +1,4 @@
-module Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, apiEndPoint, apiEndPointPublic, mutationErrorPublicSelection, mutationErrorSelection, sendMutation, sendPublicMutation)
+module Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, apiEndPoint, apiEndPointPublic, mutationErrorPublicSelection, mutationErrorSelection, sendMutation, sendPublicMutation, sendQuery)
 
 import Api.Object
 import Api.Object.MutationError
@@ -70,5 +70,18 @@ sendMutation :
 sendMutation context mutationId mutation onResponse =
     mutation
         |> Graphql.Http.mutationRequest (apiEndPoint context mutationId)
+        |> Graphql.Http.withHeader "Authorization" ("Bearer " ++ context.flags.token)
+        |> Graphql.Http.send onResponse
+
+
+sendQuery: 
+    Context
+    -> String
+    -> SelectionSet response RootQuery
+    -> (GraphResponse response -> msg)
+    -> Cmd msg
+sendQuery context queryId query onResponse =
+    query
+        |> Graphql.Http.queryRequest (apiEndPoint context queryId)
         |> Graphql.Http.withHeader "Authorization" ("Bearer " ++ context.flags.token)
         |> Graphql.Http.send onResponse
