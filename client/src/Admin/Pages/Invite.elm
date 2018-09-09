@@ -86,15 +86,15 @@ update context msg model =
 
 view : Context -> Model -> Html Msg
 view context model =
-    section [ class "flex justify-center", class molecules.page.container ]
+    section [ class molecules.page.container, class "flex justify-center" ]
         [ div [ style "width" "24rem" ]
-            [ h1 [] [ text "Invite" ]
+            [ h1 [ class molecules.page.title ] [ text "Invite" ]
             , form [ class "mt-2", onSubmit Submit ]
                 [ p [ class "text-grey-dark leading-normal" ]
                     [ text "Invite your children so they can have an account in SaveUp."
                     ]
                 , flash model
-                , p [ class "mt-4" ]
+                , p [ class molecules.form.fieldset ]
                     [ label
                         [ class molecules.form.label
                         ]
@@ -108,7 +108,7 @@ view context model =
                         ]
                         []
                     ]
-                , p [ class "mt-6" ]
+                , p [ class molecules.form.actions ]
                     [ submit model
                     ]
                 ]

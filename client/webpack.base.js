@@ -68,12 +68,17 @@ let baseConfig = {
 			{
 				test: /\.elm$/,
 				exclude: [/elm-stuff/, /node_modules/],
-				use: {
-					loader: "elm-webpack-loader",
-					options: {
-						cwd: __dirname,
-					},
-				},
+				use: [
+					// {
+					// 	loader: "elm-hot-webpack-loader"
+					// },
+					{
+						loader: "elm-webpack-loader",
+						options: {
+							cwd: __dirname,
+						},
+					}
+				],
 			},
 
 			{
@@ -93,11 +98,11 @@ let baseConfig = {
 		extensions: [".ts", ".js"],
 	},
 	plugins: [
-	  new webpack.DefinePlugin({
-		API_HOST: JSON.stringify(API_HOST),
+		new webpack.DefinePlugin({
+			API_HOST: JSON.stringify(API_HOST),
 		}),
 		new MiniCssExtractPlugin({
-			filename: DEV_MODE ? "[name].css" :  "[name].[hash].css",
+			filename: DEV_MODE ? "[name].css" : "[name].[hash].css",
 		}),
 		new HtmlWebpackPlugin({
 			chunks: [COMMON, STYLES, ENTRY_GRAPHIQL],

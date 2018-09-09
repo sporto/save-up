@@ -2,7 +2,7 @@ module Admin.Pages.Account exposing (Model, Msg, init, subscriptions, update, vi
 
 import Admin.Routes as Routes
 import Html exposing (..)
-import Html.Attributes exposing (class, href, src)
+import Html.Attributes exposing (class, href, src, style, type_)
 import Shared.Context exposing (Context)
 import Shared.Css exposing (molecules)
 
@@ -45,7 +45,7 @@ update context msg model =
             ( model, Cmd.none )
 
 
-view : Context -> Model -> Html msg
+view : Context -> Model -> Html Msg
 view context model =
     section []
         [ navigation context model
@@ -81,6 +81,7 @@ navigationLink route label =
         [ text label ]
 
 
+currentPage : Context -> Model -> Html Msg
 currentPage context model =
     case model.route of
         Routes.RouteAccount_Top ->
@@ -89,14 +90,43 @@ currentPage context model =
                 ]
 
         Routes.RouteAccount_Deposit ->
-            div [ class molecules.page.container ]
-                [ h1 [] [ text "Make a deposit" ]
-                ]
+            deposit
+                context
+                model
 
         Routes.RouteAccount_Withdraw ->
             div [ class molecules.page.container ]
-                [ h1 [] [ text "Make a withdrawal" ]
+                [ h1 [ class molecules.page.title ] [ text "Make a withdrawal" ]
                 ]
+
+
+
+--DEPOSIT
+
+
+deposit : Context -> Model -> Html Msg
+deposit context model =
+    div [ class molecules.page.container, class "flex justify-center" ]
+        [ div [ style "width" "24rem" ]
+            [ h1 [ class molecules.page.title ] [ text "Make a deposit" ]
+            , form [ class "mt-2" ]
+                [ p [ class molecules.form.fieldset ]
+                    [ label [ class molecules.form.label ] [ text "Amount" ]
+                    , input [ class molecules.form.input, type_ "number" ] []
+                    ]
+                , p [ class molecules.form.actions ]
+                    [ submitDeposit model
+                    ]
+                ]
+            ]
+        ]
+
+
+submitDeposit : Model -> Html Msg
+submitDeposit model =
+    button [ class molecules.form.submit ]
+        [ text "Deposit"
+        ]
 
 
 getData context =

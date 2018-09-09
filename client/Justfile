@@ -26,7 +26,7 @@ build-prod:
 	NODE_ENV=production yarn webpack --config webpack.prod.js
 
 start:
-	yarn webpack-dev-server --config ./webpack.dev.js
+	yarn webpack-dev-server --config ./webpack.dev.js --hot
 
 open-stats:
 	yarn webpack-bundle-analyzer dist/app/stats.json
