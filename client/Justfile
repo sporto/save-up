@@ -16,6 +16,9 @@ elm-ts:
 	yarn elm-typescript-interop src/Admin.elm --output=src/admin.d.ts
 	yarn elm-typescript-interop src/Investor.elm --output=src/investor.d.ts
 
+elm-make-all:
+	elm make src/Investor.elm src/Admin.elm  src/Public.elm
+
 test:
 	yarn elm-test
 

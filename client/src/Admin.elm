@@ -13,6 +13,7 @@ import Html.Events exposing (onClick)
 import Shared.Context exposing (Context)
 import Shared.Flags as Flags exposing (Flags)
 import Shared.Pages.NotFound as NotFound
+import Shared.Return as Return
 import Shared.Sessions as Sessions
 import UI.Footer as Footer
 import UI.Navigation as Navigation
@@ -163,29 +164,20 @@ initCurrentPage context ( model, cmds ) =
         ( newPage, newCmd ) =
             case model.currentLocation.route of
                 Routes.Route_Account id subRoute ->
-                    let
-                        ( pageModel, pageCmd ) =
-                            Account.init
-                                context
-                                id
-                                subRoute
-                    in
-                    ( Page_Account pageModel, Cmd.map PageAccountMsg pageCmd )
+                    Account.init
+                        context
+                        id
+                        subRoute
+                        |> Return.mapBoth Page_Account PageAccountMsg
 
                 Routes.Route_Home ->
-                    let
-                        ( pageModel, pageCmd ) =
-                            Home.init
-                                context
-                    in
-                    ( Page_Home pageModel, Cmd.map PageHomeMsg pageCmd )
+                    Home.init
+                        context
+                        |> Return.mapBoth Page_Home PageHomeMsg
 
                 Routes.Route_Invite ->
-                    let
-                        ( pageModel, pageCmd ) =
-                            Invite.init
-                    in
-                    ( Page_Invite pageModel, Cmd.map PageInviteMsg pageCmd )
+                    Invite.init
+                        |> Return.mapBoth Page_Invite PageInviteMsg
 
                 Routes.Route_NotFound ->
                     ( Page_NotFound, Cmd.none )

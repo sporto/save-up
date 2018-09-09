@@ -50,7 +50,11 @@ newDepositModel =
 
 type Msg
     = NoOp
-    | OnDepositResponse (GraphResponse DepositResponse)
+    | Msg_Desposit DepositMsg
+
+
+type DepositMsg
+    = OnDepositResponse (GraphResponse DepositResponse)
 
 
 init : Context -> ID -> Routes.RouteAccount -> ( Model, Cmd Msg )
@@ -81,33 +85,39 @@ update context msg model =
         NoOp ->
             ( model, Cmd.none )
 
+        Msg_Desposit subMsg ->
+            case model.subPage of
+                SubPage_Deposit depositModel ->
+                    let
+                        ( nextDepositModel, newCmd ) =
+                            updateDeposit context subMsg depositModel
+                    in
+                    ( { model | subPage = SubPage_Deposit nextDepositModel }, Cmd.map Msg_Desposit newCmd )
+
+                _ ->
+                    ( model, Cmd.none )
+
+
+updateDeposit : Context -> DepositMsg -> DepositModel -> ( DepositModel, Cmd DepositMsg )
+updateDeposit context msg depositModel =
+    case msg of
         OnDepositResponse result ->
-            let
-                ( subPage, cmd ) =
-                    case model.subPage of
-                        SubPage_Deposit depositModel ->
-                            case result of
-                                Err e ->
-                                    ( SubPage_Deposit { depositModel | response = RemoteData.Failure e }, Cmd.none )
+            case result of
+                Err e ->
+                    ( { depositModel | response = RemoteData.Failure e }, Cmd.none )
 
-                                Ok response ->
-                                    if response.success then
-                                        ( SubPage_Deposit
-                                            { depositModel
-                                                | response = RemoteData.Success response
-                                            }
-                                        , Cmd.none
-                                        )
+                Ok response ->
+                    if response.success then
+                        ( { depositModel
+                            | response = RemoteData.Success response
+                          }
+                        , Cmd.none
+                        )
 
-                                    else
-                                        ( SubPage_Deposit { depositModel | response = RemoteData.Success response }
-                                        , Cmd.none
-                                        )
-
-                        _ ->
-                            ( model.subPage, Cmd.none )
-            in
-            ( { model | subPage = subPage }, cmd )
+                    else
+                        ( { depositModel | response = RemoteData.Success response }
+                        , Cmd.none
+                        )
 
 
 view : Context -> Model -> Html Msg
@@ -214,7 +224,7 @@ depositMutationCmd context accountID cents =
         context
         "create-deposit"
         (depositMutation accountID cents)
-        OnDepositResponse
+        (\r -> Msg_Desposit <| OnDepositResponse r)
 
 
 depositMutation : ID -> Int -> SelectionSet DepositResponse RootMutation
