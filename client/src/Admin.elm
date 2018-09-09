@@ -186,17 +186,12 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "SaveUp"
     , body =
-        [ layout model ]
-    }
-
-
-layout model =
-    section []
         [ header_ model
         , navigation model
         , currentPage model
         , Footer.view
         ]
+    }
 
 
 header_ : Model -> Html Msg
@@ -249,7 +244,7 @@ currentPage model =
                     Invite.view context pageModel
                         |> map PageInviteMsg
     in
-    section [ class "p-4" ]
+    section [ class "flex-auto p-4" ]
         [ page
         ]
 
