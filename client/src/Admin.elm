@@ -31,7 +31,7 @@ initialModel flags url key =
     { flags = flags
     , currentLocation = AppLocation.fromUrl url
     , key = key
-    , page = Page_Home
+    , page = Page_NotFound
     }
 
 
@@ -48,10 +48,11 @@ type Msg
     | OnUrlChange Url
     | OnUrlRequest UrlRequest
     | PageInviteMsg Invite.Msg
+    | PageHomeMsg Home.Msg
 
 
 type Page
-    = Page_Home
+    = Page_Home Home.Model
     | Page_Invite Invite.Model
     | Page_NotFound
 
@@ -88,6 +89,23 @@ update msg model =
                     , Nav.load url
                     )
 
+        PageHomeMsg sub ->
+            case model.page of
+                Page_Home pageModel ->
+                    let
+                        ( newPageModel, pageCmd ) =
+                            Home.update
+                                context
+                                sub
+                                pageModel
+                    in
+                    ( { model | page = Page_Home newPageModel }
+                    , Cmd.map PageHomeMsg pageCmd
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
+
         PageInviteMsg sub ->
             case model.page of
                 Page_Invite pageModel ->
@@ -118,7 +136,11 @@ initCurrentPage ( model, cmds ) =
         ( newPage, newCmd ) =
             case model.currentLocation.route of
                 Routes.Route_Home ->
-                    ( Page_Home, Cmd.none )
+                    let
+                        ( pageModel, pageCmd ) =
+                            Home.init
+                    in
+                    ( Page_Home pageModel, Cmd.map PageHomeMsg pageCmd )
 
                 Routes.Route_Invite ->
                     let
@@ -128,7 +150,7 @@ initCurrentPage ( model, cmds ) =
                     ( Page_Invite pageModel, Cmd.map PageInviteMsg pageCmd )
 
                 Routes.Route_NotFound ->
-                    ( Page_Home, Cmd.none )
+                    ( Page_NotFound, Cmd.none )
     in
     ( { model | page = newPage }, Cmd.batch [ cmds, newCmd ] )
 
@@ -141,8 +163,8 @@ subscriptions model =
                 Page_NotFound ->
                     Sub.none
 
-                Page_Home ->
-                    Sub.none
+                Page_Home pageModel ->
+                    Sub.map PageHomeMsg (Home.subscriptions pageModel)
 
                 Page_Invite pageModel ->
                     Sub.map PageInviteMsg (Invite.subscriptions pageModel)
@@ -211,8 +233,9 @@ currentPage model =
                 Page_NotFound ->
                     NotFound.view
 
-                Page_Home ->
-                    Home.view context
+                Page_Home pageModel ->
+                    Home.view context pageModel
+                        |> map PageHomeMsg
 
                 Page_Invite pageModel ->
                     Invite.view context pageModel
