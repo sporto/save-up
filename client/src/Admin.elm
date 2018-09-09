@@ -1,6 +1,7 @@
 module Admin exposing (main)
 
 import Admin.AppLocation as AppLocation exposing (AppLocation)
+import Admin.Pages.Account as Account
 import Admin.Pages.Home as Home
 import Admin.Pages.Invite as Invite
 import Admin.Routes as Routes exposing (Route)
@@ -54,12 +55,14 @@ type Msg
     = SignOut
     | OnUrlChange Url
     | OnUrlRequest UrlRequest
-    | PageInviteMsg Invite.Msg
+    | PageAccountMsg Account.Msg
     | PageHomeMsg Home.Msg
+    | PageInviteMsg Invite.Msg
 
 
 type Page
     = Page_Home Home.Model
+    | Page_Account Account.Model
     | Page_Invite Invite.Model
     | Page_NotFound
 
@@ -95,6 +98,23 @@ update msg model =
                     ( model
                     , Nav.load url
                     )
+
+        PageAccountMsg sub ->
+            case model.page of
+                Page_Account pageModel ->
+                    let
+                        ( newPageModel, pageCmd ) =
+                            Account.update
+                                context
+                                sub
+                                pageModel
+                    in
+                    ( { model | page = Page_Account newPageModel }
+                    , Cmd.map PageAccountMsg pageCmd
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
 
         PageHomeMsg sub ->
             case model.page of
@@ -142,6 +162,16 @@ initCurrentPage context ( model, cmds ) =
     let
         ( newPage, newCmd ) =
             case model.currentLocation.route of
+                Routes.Route_Account id subRoute ->
+                    let
+                        ( pageModel, pageCmd ) =
+                            Account.init
+                                context
+                                id
+                                subRoute
+                    in
+                    ( Page_Account pageModel, Cmd.map PageAccountMsg pageCmd )
+
                 Routes.Route_Home ->
                     let
                         ( pageModel, pageCmd ) =
@@ -171,6 +201,9 @@ subscriptions model =
                 Page_NotFound ->
                     Sub.none
 
+                Page_Account pageModel ->
+                    Sub.map PageAccountMsg (Account.subscriptions pageModel)
+
                 Page_Home pageModel ->
                     Sub.map PageHomeMsg (Home.subscriptions pageModel)
 
@@ -187,7 +220,6 @@ view model =
     { title = "SaveUp"
     , body =
         [ header_ model
-        , navigation model
         , currentPage model
         , Footer.view
         ]
@@ -196,11 +228,13 @@ view model =
 
 header_ : Model -> Html Msg
 header_ model =
-    nav [ class "flex p-4 bg-black text-white" ]
+    nav [ class "flex p-4 bg-teal-darker text-white" ]
         [ Navigation.logo
         , div
             [ class "ml-8 flex-grow" ]
-            []
+            [ navigationLink Routes.Route_Home "Home"
+            , navigationLink Routes.Route_Invite "Invite"
+            ]
         , div []
             [ text model.flags.tokenData.name
             , Navigation.signOut SignOut
@@ -208,19 +242,11 @@ header_ model =
         ]
 
 
-navigation : Model -> Html Msg
-navigation model =
-    nav [ class "flex p-4 bg-grey" ]
-        [ navigationLink Routes.Route_Home "Home"
-        , navigationLink Routes.Route_Invite "Invite"
-        ]
-
-
 navigationLink : Route -> String -> Html Msg
 navigationLink route label =
     a
         [ href (Routes.pathFor route)
-        , class "text-black mr-4 no-underline"
+        , class "text-white mr-4 no-underline"
         ]
         [ text label ]
 
@@ -236,6 +262,10 @@ currentPage model =
                 Page_NotFound ->
                     NotFound.view
 
+                Page_Account pageModel ->
+                    Account.view context pageModel
+                        |> map PageAccountMsg
+
                 Page_Home pageModel ->
                     Home.view context pageModel
                         |> map PageHomeMsg
@@ -244,9 +274,8 @@ currentPage model =
                     Invite.view context pageModel
                         |> map PageInviteMsg
     in
-    section [ class "flex-auto p-4" ]
-        [ page
-        ]
+    section [ class "flex-auto" ]
+        [ page ]
 
 
 main : Program Flags Model Msg

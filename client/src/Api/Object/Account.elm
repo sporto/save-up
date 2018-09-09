@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.Account exposing (TransactionsRequiredArguments, name, selection, transactions, yearlyInterest)
+module Api.Object.Account exposing (TransactionsRequiredArguments, id, name, selection, transactions, yearlyInterest)
 
 import Api.InputObject
 import Api.Interface
@@ -25,6 +25,11 @@ selection constructor =
     Object.selection constructor
 
 
+id : Field Int Api.Object.Account
+id =
+    Object.fieldDecoder "id" [] Decode.int
+
+
 name : Field String Api.Object.Account
 name =
     Object.fieldDecoder "name" [] Decode.string
@@ -36,9 +41,9 @@ yearlyInterest =
 
 
 type alias TransactionsRequiredArguments =
-    { since : Api.Scalar.NaiveDateTime }
+    { since : Float }
 
 
 transactions : TransactionsRequiredArguments -> SelectionSet decodesTo Api.Object.Transaction -> Field (List decodesTo) Api.Object.Account
 transactions requiredArgs object_ =
-    Object.selectionField "transactions" [ Argument.required "since" requiredArgs.since (\(Api.Scalar.NaiveDateTime raw) -> Encode.string raw) ] object_ (identity >> Decode.list)
+    Object.selectionField "transactions" [ Argument.required "since" requiredArgs.since Encode.float ] object_ (identity >> Decode.list)

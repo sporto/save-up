@@ -5,6 +5,6 @@ import Html.Attributes exposing (class, href)
 
 
 view =
-    footer [ class "flex-no-shrink mt-8 p-5 bg-grey-dark text-white" ]
+    footer [ class "flex-no-shrink mt-8 p-5 bg-grey-darkest text-white" ]
         [ text "Copyright 2018"
         ]

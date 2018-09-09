@@ -1,5 +1,6 @@
 module Admin.Pages.Home exposing (Model, Msg, init, subscriptions, update, view)
 
+import Admin.Routes as Routes
 import Api.Object
 import Api.Object.Account
 import Api.Object.AdminViewer
@@ -8,9 +9,10 @@ import Api.Query
 import Graphql.Operation exposing (RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, href)
 import RemoteData
 import Shared.Context exposing (Context)
+import Shared.Css exposing (molecules)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse)
 import UI.Empty as Empty
 import UI.Icons as Icons
@@ -66,8 +68,8 @@ update context msg model =
 
 view : Context -> Model -> Html msg
 view context model =
-    section []
-        [ h1 [] [ text "Welcome" ]
+    section [ class molecules.page.container ]
+        [ h1 [ class "mt-4" ] [ text "Welcome" ]
         , investors context model
         ]
 
@@ -79,28 +81,58 @@ investors context model =
             Empty.graphError e
 
         RemoteData.NotAsked ->
-            Icons.spinner
+            loading
 
         RemoteData.Loading ->
-            Icons.spinner
+            loading
 
         RemoteData.Success data ->
             investorsData context data
 
 
+loading =
+    p [ class "mt-4" ]
+        [ Icons.spinner
+        ]
+
+
 investorsData : Context -> Data -> Html msg
 investorsData context data =
     if List.isEmpty data.investors then
-        p [ class "mt-3" ] [ text "You don't have any investors, please invite one by clicking the invite link above." ]
+        p [ class "mt-4" ] [ text "You don't have any investors, please invite one by clicking the invite link above." ]
 
     else
-        ul [ class "mt-3" ] (List.map investorView data.investors)
+        div [ class "mt-4" ]
+            (List.map investorView data.investors)
 
 
 investorView : Investor -> Html msg
 investorView investor =
-    li []
-        [ text investor.name
+    div []
+        [ div [ class "text-xl" ] [ text investor.name ]
+        , div [ class "mt-2" ] (List.map accountView investor.accounts)
+        ]
+
+
+accountView : Account -> Html msg
+accountView account =
+    let
+        pathShow =
+            Routes.pathFor <| Routes.routeForAccountShow account.id
+
+        pathDeposit =
+            Routes.pathFor <| Routes.routeForAccountDeposit account.id
+
+        pathWithdraw =
+            Routes.pathFor <| Routes.routeForAccountWithdraw account.id
+    in
+    div [ class "flex items-center justify-between" ]
+        [ div [] [ text "9999" ]
+        , div []
+            [ a [ href pathShow, class "mr-2" ] [ text "Show" ]
+            , a [ href pathDeposit, class "mr-2" ] [ text "Deposit" ]
+            , a [ href pathWithdraw ] [ text "Withdraw" ]
+            ]
         ]
 
 
@@ -122,7 +154,8 @@ type alias Investor =
 
 
 type alias Account =
-    { name : String
+    { id : Int
+    , name : String
     }
 
 
@@ -157,4 +190,5 @@ investorNode =
 accountNode : SelectionSet Account Api.Object.Account
 accountNode =
     Api.Object.Account.selection Account
+        |> with Api.Object.Account.id
         |> with Api.Object.Account.name

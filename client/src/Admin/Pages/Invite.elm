@@ -86,7 +86,7 @@ update context msg model =
 
 view : Context -> Model -> Html Msg
 view context model =
-    section [ class "flex justify-center" ]
+    section [ class "flex justify-center", class molecules.page.container ]
         [ div [ style "width" "24rem" ]
             [ h1 [] [ text "Invite" ]
             , form [ class "mt-2", onSubmit Submit ]
