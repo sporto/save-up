@@ -7,11 +7,13 @@ import Api.Object.DepositResponse
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
-import Html.Attributes exposing (class, href, src, style, type_)
+import Html.Attributes exposing (class, href, src, style, type_, value)
+import Html.Events exposing (onInput, onSubmit)
 import RemoteData
 import Shared.Context exposing (Context)
 import Shared.Css exposing (molecules)
 import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorSelection, sendMutation)
+import Verify exposing (Validator, validate, verify)
 
 
 type alias ID =
@@ -38,14 +40,35 @@ type SubPage
 
 
 type alias DepositModel =
-    { response : GraphData DepositResponse
+    { form : DepositForm
+    , response : GraphData DepositResponse
     }
 
 
 newDepositModel : DepositModel
 newDepositModel =
-    { response = RemoteData.NotAsked
+    { form =
+        { amount = ""
+        }
+    , response = RemoteData.NotAsked
     }
+
+
+asFormInDepositModel model form =
+    { model | form = form }
+
+
+type alias DepositForm =
+    { amount : String }
+
+
+type alias VerifiedDepositForm =
+    { amount : Int
+    }
+
+
+asAmountInDepositForm form amount =
+    { form | amount = amount }
 
 
 type Msg
@@ -55,6 +78,8 @@ type Msg
 
 type DepositMsg
     = OnDepositResponse (GraphResponse DepositResponse)
+    | ChangeDepositAmount String
+    | SubmitDeposit
 
 
 init : Context -> ID -> Routes.RouteAccount -> ( Model, Cmd Msg )
@@ -90,7 +115,11 @@ update context msg model =
                 SubPage_Deposit depositModel ->
                     let
                         ( nextDepositModel, newCmd ) =
-                            updateDeposit context subMsg depositModel
+                            updateDeposit
+                                context
+                                model.accountID
+                                subMsg
+                                depositModel
                     in
                     ( { model | subPage = SubPage_Deposit nextDepositModel }, Cmd.map Msg_Desposit newCmd )
 
@@ -98,26 +127,46 @@ update context msg model =
                     ( model, Cmd.none )
 
 
-updateDeposit : Context -> DepositMsg -> DepositModel -> ( DepositModel, Cmd DepositMsg )
-updateDeposit context msg depositModel =
+updateDeposit : Context -> ID -> DepositMsg -> DepositModel -> ( DepositModel, Cmd DepositMsg )
+updateDeposit context accountID msg model =
     case msg of
+        ChangeDepositAmount amount ->
+            ( amount
+                |> asAmountInDepositForm model.form
+                |> asFormInDepositModel model
+            , Cmd.none
+            )
+
         OnDepositResponse result ->
             case result of
                 Err e ->
-                    ( { depositModel | response = RemoteData.Failure e }, Cmd.none )
+                    ( { model | response = RemoteData.Failure e }, Cmd.none )
 
                 Ok response ->
                     if response.success then
-                        ( { depositModel
+                        ( { model
                             | response = RemoteData.Success response
                           }
                         , Cmd.none
                         )
 
                     else
-                        ( { depositModel | response = RemoteData.Success response }
+                        ( { model | response = RemoteData.Success response }
                         , Cmd.none
                         )
+
+        SubmitDeposit ->
+            case depositValidator model.form of
+                Ok form ->
+                    ( { model | response = RemoteData.Loading }
+                    , depositMutationCmd
+                        context
+                        accountID
+                        (form.amount * 100)
+                    )
+
+                Err error ->
+                    ( model, Cmd.none )
 
 
 view : Context -> Model -> Html Msg
@@ -167,7 +216,8 @@ currentPage context model =
         SubPage_Deposit depositModel ->
             deposit
                 context
-                model
+                depositModel
+                |> map Msg_Desposit
 
         SubPage_Withdraw ->
             div [ class molecules.page.container ]
@@ -179,15 +229,21 @@ currentPage context model =
 --DEPOSIT
 
 
-deposit : Context -> Model -> Html Msg
+deposit : Context -> DepositModel -> Html DepositMsg
 deposit context model =
     div [ class molecules.page.container, class "flex justify-center" ]
         [ div [ style "width" "24rem" ]
             [ h1 [ class molecules.page.title ] [ text "Make a deposit" ]
-            , form [ class "mt-2" ]
+            , form [ class "mt-2", onSubmit SubmitDeposit ]
                 [ p [ class molecules.form.fieldset ]
                     [ label [ class molecules.form.label ] [ text "Amount" ]
-                    , input [ class molecules.form.input, type_ "number" ] []
+                    , input
+                        [ class molecules.form.input
+                        , type_ "number"
+                        , onInput ChangeDepositAmount
+                        , value model.form.amount
+                        ]
+                        []
                     ]
                 , p [ class molecules.form.actions ]
                     [ submitDeposit model
@@ -197,11 +253,35 @@ deposit context model =
         ]
 
 
-submitDeposit : Model -> Html Msg
+submitDeposit : DepositModel -> Html msg
 submitDeposit model =
     button [ class molecules.form.submit ]
         [ text "Deposit"
         ]
+
+
+
+-- Verify deposit
+
+
+depositValidator : Validator String DepositForm VerifiedDepositForm
+depositValidator =
+    validate VerifiedDepositForm
+        |> verify .amount (validateAmount "Invalid amount")
+
+
+validateAmount : error -> Validator error String Int
+validateAmount error input =
+    case String.toInt input of
+        Just int ->
+            if int > 0 then
+                Ok int
+
+            else
+                Err ( error, [] )
+
+        Nothing ->
+            Err ( error, [] )
 
 
 
@@ -218,13 +298,13 @@ type alias DepositResponse =
     }
 
 
-depositMutationCmd : Context -> ID -> Int -> Cmd Msg
+depositMutationCmd : Context -> ID -> Int -> Cmd DepositMsg
 depositMutationCmd context accountID cents =
     sendMutation
         context
         "create-deposit"
         (depositMutation accountID cents)
-        (\r -> Msg_Desposit <| OnDepositResponse r)
+        OnDepositResponse
 
 
 depositMutation : ID -> Int -> SelectionSet DepositResponse RootMutation
