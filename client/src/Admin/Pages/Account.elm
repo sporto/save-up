@@ -20,16 +20,31 @@ type alias ID =
 
 type alias Model =
     { accountID : Int
-    , route : Routes.RouteAccount
-    , depositResponse : GraphData DepositResponse
+    , subPage : SubPage
     }
 
 
-newModel : ID -> Routes.RouteAccount -> Model
-newModel accountID route =
+newModel : ID -> SubPage -> Model
+newModel accountID subPage =
     { accountID = accountID
-    , route = route
-    , depositResponse = RemoteData.NotAsked
+    , subPage = subPage
+    }
+
+
+type SubPage
+    = SubPage_Top
+    | SubPage_Deposit DepositModel
+    | SubPage_Withdraw
+
+
+type alias DepositModel =
+    { response : GraphData DepositResponse
+    }
+
+
+newDepositModel : DepositModel
+newDepositModel =
+    { response = RemoteData.NotAsked
     }
 
 
@@ -40,7 +55,19 @@ type Msg
 
 init : Context -> ID -> Routes.RouteAccount -> ( Model, Cmd Msg )
 init context accountID route =
-    ( newModel accountID route, getData context )
+    let
+        subPage =
+            case route of
+                Routes.RouteAccount_Top ->
+                    SubPage_Top
+
+                Routes.RouteAccount_Deposit ->
+                    SubPage_Deposit newDepositModel
+
+                Routes.RouteAccount_Withdraw ->
+                    SubPage_Withdraw
+    in
+    ( newModel accountID subPage, getData context )
 
 
 subscriptions : Model -> Sub Msg
@@ -55,22 +82,32 @@ update context msg model =
             ( model, Cmd.none )
 
         OnDepositResponse result ->
-            case result of
-                Err e ->
-                    ( { model | depositResponse = RemoteData.Failure e }, Cmd.none )
+            let
+                ( subPage, cmd ) =
+                    case model.subPage of
+                        SubPage_Deposit depositModel ->
+                            case result of
+                                Err e ->
+                                    ( SubPage_Deposit { depositModel | response = RemoteData.Failure e }, Cmd.none )
 
-                Ok response ->
-                    if response.success then
-                        ( { model
-                            | depositResponse = RemoteData.Success response
-                          }
-                        , Cmd.none
-                        )
+                                Ok response ->
+                                    if response.success then
+                                        ( SubPage_Deposit
+                                            { depositModel
+                                                | response = RemoteData.Success response
+                                            }
+                                        , Cmd.none
+                                        )
 
-                    else
-                        ( { model | depositResponse = RemoteData.Success response }
-                        , Cmd.none
-                        )
+                                    else
+                                        ( SubPage_Deposit { depositModel | response = RemoteData.Success response }
+                                        , Cmd.none
+                                        )
+
+                        _ ->
+                            ( model.subPage, Cmd.none )
+            in
+            ( { model | subPage = subPage }, cmd )
 
 
 view : Context -> Model -> Html Msg
@@ -111,18 +148,18 @@ navigationLink route label =
 
 currentPage : Context -> Model -> Html Msg
 currentPage context model =
-    case model.route of
-        Routes.RouteAccount_Top ->
+    case model.subPage of
+        SubPage_Top ->
             div [ class molecules.page.container ]
                 [ img [ src "https://via.placeholder.com/600x320" ] []
                 ]
 
-        Routes.RouteAccount_Deposit ->
+        SubPage_Deposit depositModel ->
             deposit
                 context
                 model
 
-        Routes.RouteAccount_Withdraw ->
+        SubPage_Withdraw ->
             div [ class molecules.page.container ]
                 [ h1 [ class molecules.page.title ] [ text "Make a withdrawal" ]
                 ]
