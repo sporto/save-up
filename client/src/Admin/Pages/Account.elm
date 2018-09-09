@@ -14,6 +14,7 @@ import Shared.Context exposing (Context)
 import Shared.Css exposing (molecules)
 import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorSelection, sendMutation)
 import UI.Flash as Flash
+import UI.Icons as Icons
 import Verify exposing (Validator, validate, verify)
 
 
@@ -153,6 +154,9 @@ updateDeposit context accountID msg model =
                     if response.success then
                         ( { model
                             | response = RemoteData.Success response
+                            , form =
+                                ""
+                                    |> asAmountInDepositForm model.form
                           }
                         , Cmd.none
                         )
@@ -245,7 +249,8 @@ deposit context model =
         [ div [ style "width" "24rem" ]
             [ h1 [ class molecules.page.title ] [ text "Make a deposit" ]
             , form [ class "mt-2", onSubmit SubmitDeposit ]
-                [ validationErrorsView model.validationErrors
+                [ flashDeposit model
+                , validationErrorsView model.validationErrors
                 , p [ class molecules.form.fieldset ]
                     [ label [ class molecules.form.label ] [ text "Amount" ]
                     , input
@@ -266,9 +271,33 @@ deposit context model =
 
 submitDeposit : DepositModel -> Html msg
 submitDeposit model =
-    button [ class molecules.form.submit ]
-        [ text "Deposit"
-        ]
+    case model.response of
+        RemoteData.Loading ->
+            Icons.spinner
+
+        _ ->
+            button [ class molecules.form.submit ]
+                [ text "Deposit"
+                ]
+
+
+flashDeposit : DepositModel -> Html msg
+flashDeposit model =
+    case model.response of
+        RemoteData.Success response ->
+            if response.success then
+                Flash.success
+                    "Deposit saved"
+
+            else
+                text ""
+
+        RemoteData.Failure e ->
+            Flash.error
+                "Something went wrong"
+
+        _ ->
+            text ""
 
 
 

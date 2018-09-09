@@ -59,7 +59,7 @@ impl Transaction {
 
 		transactions::table
 			.filter(filter)
-			.order_by(transactions::created_at.desc())
+			.order_by(transactions::created_at.asc())
 			.get_results(conn)
 	}
 }
