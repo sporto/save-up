@@ -1,10 +1,17 @@
 module Admin.Pages.Account exposing (Model, Msg, init, subscriptions, update, view)
 
 import Admin.Routes as Routes
+import Api.Mutation
+import Api.Object
+import Api.Object.DepositResponse
+import Graphql.Operation exposing (RootMutation, RootQuery)
+import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, src, style, type_)
+import RemoteData
 import Shared.Context exposing (Context)
 import Shared.Css exposing (molecules)
+import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorSelection, sendMutation)
 
 
 type alias ID =
@@ -14,6 +21,7 @@ type alias ID =
 type alias Model =
     { accountID : Int
     , route : Routes.RouteAccount
+    , depositResponse : GraphData DepositResponse
     }
 
 
@@ -21,11 +29,13 @@ newModel : ID -> Routes.RouteAccount -> Model
 newModel accountID route =
     { accountID = accountID
     , route = route
+    , depositResponse = RemoteData.NotAsked
     }
 
 
 type Msg
     = NoOp
+    | OnDepositResponse (GraphResponse DepositResponse)
 
 
 init : Context -> ID -> Routes.RouteAccount -> ( Model, Cmd Msg )
@@ -43,6 +53,24 @@ update context msg model =
     case msg of
         NoOp ->
             ( model, Cmd.none )
+
+        OnDepositResponse result ->
+            case result of
+                Err e ->
+                    ( { model | depositResponse = RemoteData.Failure e }, Cmd.none )
+
+                Ok response ->
+                    if response.success then
+                        ( { model
+                            | depositResponse = RemoteData.Success response
+                          }
+                        , Cmd.none
+                        )
+
+                    else
+                        ( { model | depositResponse = RemoteData.Success response }
+                        , Cmd.none
+                        )
 
 
 view : Context -> Model -> Html Msg
@@ -129,5 +157,41 @@ submitDeposit model =
         ]
 
 
+
+-- GraphQl
+
+
 getData context =
     Cmd.none
+
+
+type alias DepositResponse =
+    { success : Bool
+    , errors : List MutationError
+    }
+
+
+depositMutationCmd : Context -> ID -> Int -> Cmd Msg
+depositMutationCmd context accountID cents =
+    sendMutation
+        context
+        "create-deposit"
+        (depositMutation accountID cents)
+        OnDepositResponse
+
+
+depositMutation : ID -> Int -> SelectionSet DepositResponse RootMutation
+depositMutation accountID cents =
+    Api.Mutation.selection identity
+        |> with
+            (Api.Mutation.deposit
+                { input = { accountId = accountID, cents = cents } }
+                depositResponseSelection
+            )
+
+
+depositResponseSelection : SelectionSet DepositResponse Api.Object.DepositResponse
+depositResponseSelection =
+    Api.Object.DepositResponse.selection DepositResponse
+        |> with Api.Object.DepositResponse.success
+        |> with (Api.Object.DepositResponse.errors mutationErrorSelection)
