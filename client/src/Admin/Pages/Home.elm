@@ -12,6 +12,8 @@ import Html.Attributes exposing (class)
 import RemoteData
 import Shared.Context exposing (Context)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse)
+import UI.Empty as Empty
+import UI.Icons as Icons
 
 
 type Msg
@@ -48,22 +50,57 @@ update context msg model =
         OnData result ->
             case result of
                 Err e ->
-                    ({model |
-                    response = RemoteData.Failure e}
+                    ( { model
+                        | data = RemoteData.Failure e
+                      }
                     , Cmd.none
                     )
 
                 Ok data ->
-                    ( {model
-                    | data = RemoteData.Success data
-                    }, Cmd.none )
+                    ( { model
+                        | data = RemoteData.Success data
+                      }
+                    , Cmd.none
+                    )
 
 
 view : Context -> Model -> Html msg
 view context model =
     section []
         [ h1 [] [ text "Welcome" ]
-        , p [ class "mt-3" ] [ text "You don't have any investors, please invite one by clicking the invite link above." ]
+        , investors context model
+        ]
+
+
+investors : Context -> Model -> Html msg
+investors context model =
+    case model.data of
+        RemoteData.Failure e ->
+            Empty.graphError e
+
+        RemoteData.NotAsked ->
+            Icons.spinner
+
+        RemoteData.Loading ->
+            Icons.spinner
+
+        RemoteData.Success data ->
+            investorsData context data
+
+
+investorsData : Context -> Data -> Html msg
+investorsData context data =
+    if List.isEmpty data.investors then
+        p [ class "mt-3" ] [ text "You don't have any investors, please invite one by clicking the invite link above." ]
+
+    else
+        ul [ class "mt-3" ] (List.map investorView data.investors)
+
+
+investorView : Investor -> Html msg
+investorView investor =
+    li []
+        [ text investor.name
         ]
 
 
