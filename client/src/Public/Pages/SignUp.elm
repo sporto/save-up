@@ -94,9 +94,7 @@ update context msg model =
         OnSubmitResponse result ->
             case result of
                 Err e ->
-                    Debug.log
-                        (Debug.toString e)
-                        ( { model | response = RemoteData.Failure e }, Cmd.none )
+                    ( { model | response = RemoteData.Failure e }, Cmd.none )
 
                 Ok response ->
                     case response.token of
@@ -199,7 +197,7 @@ maybeErrors model =
                     response.errors
 
         RemoteData.Failure err ->
-            Flash.error (Debug.toString err)
+            Flash.error "Error"
 
         _ ->
             text ""

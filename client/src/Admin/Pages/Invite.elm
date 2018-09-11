@@ -65,9 +65,7 @@ update context msg model =
         OnSubmitResponse result ->
             case result of
                 Err e ->
-                    Debug.log
-                        (Debug.toString e)
-                        ( { model | response = RemoteData.Failure e }, Cmd.none )
+                    ( { model | response = RemoteData.Failure e }, Cmd.none )
 
                 Ok response ->
                     if response.success then
