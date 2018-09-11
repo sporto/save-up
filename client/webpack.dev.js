@@ -12,6 +12,25 @@ let devConfig = {
 		filename: "[name].js",
 		path: outputPath,
 	},
+	module: {
+		rules: [
+			{
+				test: /\.elm$/,
+				exclude: [/elm-stuff/, /node_modules/],
+				use: [
+					// {
+					// 	loader: "elm-hot-webpack-loader"
+					// },
+					{
+						loader: "elm-webpack-loader",
+						options: {
+							cwd: __dirname,
+						},
+					}
+				],
+			},
+		],
+	},
 	plugins: [
 		new CleanWebpackPlugin(outputPath),
 	],

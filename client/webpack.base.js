@@ -66,22 +66,6 @@ let baseConfig = {
 			},
 
 			{
-				test: /\.elm$/,
-				exclude: [/elm-stuff/, /node_modules/],
-				use: [
-					// {
-					// 	loader: "elm-hot-webpack-loader"
-					// },
-					{
-						loader: "elm-webpack-loader",
-						options: {
-							cwd: __dirname,
-						},
-					}
-				],
-			},
-
-			{
 				test: /\.css$/,
 				use: [
 					{

@@ -33,7 +33,7 @@ let prodConfig = {
 				use: {
 					loader: "elm-webpack-loader",
 					options: {
-						
+						optimize: true,
 					},
 				},
 			},
