@@ -17,6 +17,7 @@ import RemoteData
 import Shared.Context exposing (Context)
 import Shared.Css exposing (molecules)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse, MutationError)
+import UI.Empty as Empty
 import UI.Flash as Flash
 import UI.Icons as Icons
 import Verify exposing (Validator, validate, verify)
@@ -260,9 +261,9 @@ currentPage : Context -> Model -> Html Msg
 currentPage context model =
     case model.subPage of
         SubPage_Top topModel ->
-            div [ class molecules.page.container ]
-                [ img [ src "https://via.placeholder.com/600x320" ] []
-                ]
+            accountView
+                context
+                topModel
 
         SubPage_Deposit depositModel ->
             deposit
@@ -274,6 +275,45 @@ currentPage context model =
             div [ class molecules.page.container ]
                 [ h1 [ class molecules.page.title ] [ text "Make a withdrawal" ]
                 ]
+
+
+
+-- Account view
+
+
+accountView : Context -> TopModel -> Html msg
+accountView context model =
+    let
+        inner =
+            case model.data of
+                RemoteData.NotAsked ->
+                    [ Empty.loading ]
+
+                RemoteData.Loading ->
+                    [ Empty.loading ]
+
+                RemoteData.Failure e ->
+                    [ Empty.graphError e ]
+
+                RemoteData.Success data ->
+                    accountWithData context data
+    in
+    div [ class molecules.page.container ] inner
+
+
+accountWithData : Context -> Account -> List (Html msg)
+accountWithData context account =
+    let
+        balance =
+            account.balanceInCents // 100
+    in
+    [ div []
+        [ text "Balance: "
+        , span [ class "text-3xl font-semibold" ] [ text (String.fromInt balance) ]
+        , span [ class "ml-2" ] [ Icons.money ]
+        ]
+    , img [ src "https://via.placeholder.com/600x320" ] []
+    ]
 
 
 

@@ -78,23 +78,17 @@ view context model =
 investors : Context -> Model -> Html msg
 investors context model =
     case model.data of
+        RemoteData.NotAsked ->
+            Empty.loading
+
+        RemoteData.Loading ->
+            Empty.loading
+
         RemoteData.Failure e ->
             Empty.graphError e
 
-        RemoteData.NotAsked ->
-            loading
-
-        RemoteData.Loading ->
-            loading
-
         RemoteData.Success data ->
             investorsData context data
-
-
-loading =
-    p [ class "mt-4" ]
-        [ Icons.spinner
-        ]
 
 
 investorsData : Context -> Data -> Html msg
