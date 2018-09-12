@@ -1,5 +1,4 @@
 use bigdecimal::BigDecimal;
-use bigdecimal::ToPrimitive;
 use chrono::NaiveDateTime;
 use diesel;
 use diesel::pg::PgConnection;

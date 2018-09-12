@@ -6,6 +6,7 @@ import Api.Object
 import Api.Object.Account
 import Api.Object.AdminViewer
 import Api.Object.DepositResponse
+import Api.Object.Transaction
 import Api.Query
 import Graphql.Field as Field
 import Graphql.Operation exposing (RootMutation, RootQuery)
@@ -17,6 +18,7 @@ import RemoteData
 import Shared.Context exposing (Context)
 import Shared.Css exposing (molecules)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse, MutationError)
+import Time exposing (Posix)
 import UI.Empty as Empty
 import UI.Flash as Flash
 import UI.Icons as Icons
@@ -59,6 +61,13 @@ newTopModel =
 
 type alias Account =
     { balanceInCents : Int
+    , transactions : List Transaction
+    }
+
+
+type alias Transaction =
+    { createdAt : Posix
+    , balanceInCents : Int
     }
 
 
@@ -445,6 +454,14 @@ accountNode : SelectionSet Account Api.Object.Account
 accountNode =
     Api.Object.Account.selection Account
         |> with (Api.Object.Account.balanceInCents |> Field.map round)
+        |> with (Api.Object.Account.transactions { since = 0 } transactionNode)
+
+
+transactionNode : SelectionSet Transaction Api.Object.Transaction
+transactionNode =
+    Api.Object.Transaction.selection Transaction
+        |> with (Api.Object.Transaction.createdAt |> Field.mapOrFail GraphQl.unwrapNaiveDateTime)
+        |> with (Api.Object.Transaction.balanceInCents |> Field.map round)
 
 
 type alias DepositResponse =

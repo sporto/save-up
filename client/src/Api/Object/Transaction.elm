@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.Transaction exposing (accountId, amount, balance, createdAt, id, kind, selection)
+module Api.Object.Transaction exposing (accountId, amountInCents, balanceInCents, createdAt, id, kind, selection)
 
 import Api.Enum.TransactionKind
 import Api.InputObject
@@ -46,11 +46,11 @@ kind =
     Object.fieldDecoder "kind" [] Api.Enum.TransactionKind.decoder
 
 
-amount : Field Api.Scalar.Cents Api.Object.Transaction
-amount =
-    Object.fieldDecoder "amount" [] (Object.scalarDecoder |> Decode.map Api.Scalar.Cents)
+amountInCents : Field Float Api.Object.Transaction
+amountInCents =
+    Object.fieldDecoder "amountInCents" [] Decode.float
 
 
-balance : Field Api.Scalar.Cents Api.Object.Transaction
-balance =
-    Object.fieldDecoder "balance" [] (Object.scalarDecoder |> Decode.map Api.Scalar.Cents)
+balanceInCents : Field Float Api.Object.Transaction
+balanceInCents =
+    Object.fieldDecoder "balanceInCents" [] Decode.float

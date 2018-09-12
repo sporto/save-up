@@ -1,7 +1,8 @@
-module Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, apiEndPoint, apiEndPointPublic, mutationErrorPublicSelection, mutationErrorSelection, sendMutation, sendPublicMutation, sendQuery)
+module Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, apiEndPoint, apiEndPointPublic, mutationErrorPublicSelection, mutationErrorSelection, sendMutation, sendPublicMutation, sendQuery, unwrapNaiveDateTime)
 
 import Api.Object
 import Api.Object.MutationError
+import Api.Scalar
 import ApiPub.Object
 import ApiPub.Object.MutationError
 import Graphql.Http
@@ -9,6 +10,7 @@ import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
 import RemoteData
 import Shared.Context exposing (Context, PublicContext)
+import Time exposing (Posix)
 
 
 type alias GraphData a =
@@ -74,7 +76,7 @@ sendMutation context mutationId mutation onResponse =
         |> Graphql.Http.send onResponse
 
 
-sendQuery: 
+sendQuery :
     Context
     -> String
     -> SelectionSet response RootQuery
@@ -85,3 +87,11 @@ sendQuery context queryId query onResponse =
         |> Graphql.Http.queryRequest (apiEndPoint context queryId)
         |> Graphql.Http.withHeader "Authorization" ("Bearer " ++ context.flags.token)
         |> Graphql.Http.send onResponse
+
+
+unwrapNaiveDateTime : Api.Scalar.NaiveDateTime -> Result String Posix
+unwrapNaiveDateTime (Api.Scalar.NaiveDateTime time) =
+    time
+        |> String.toInt
+        |> Result.fromMaybe "Not an integer"
+        |> Result.map Time.millisToPosix

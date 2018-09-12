@@ -1,5 +1,5 @@
 pub use super::role::Role;
-use super::schema as db;
+// use super::schema as db;
 use super::schema::users;
 use chrono::NaiveDateTime;
 use diesel;

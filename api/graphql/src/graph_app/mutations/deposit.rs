@@ -7,12 +7,26 @@ use graph_common::mutations::failure_to_mutation_errors;
 use graph_common::mutations::MutationError;
 use models::transaction::Transaction;
 
-#[derive(GraphQLObject, Clone)]
+#[derive(Clone)]
 pub struct DepositResponse {
 	success: bool,
 	errors: Vec<MutationError>,
 	transaction: Option<Transaction>,
 }
+
+graphql_object!(DepositResponse: AppContext |&self| {
+	field success() -> bool {
+		self.success
+	}
+
+	field errors() -> &Vec<MutationError> {
+		&self.errors
+	}
+
+	field transaction() -> &Option<Transaction> {
+		&self.transaction
+	}
+});
 
 pub fn call(executor: &Executor<AppContext>, input: DepositInput) -> FieldResult<DepositResponse> {
 	let context = executor.context();

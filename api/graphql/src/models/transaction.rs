@@ -8,7 +8,7 @@ use models::schema::transactions;
 pub use models::transaction_kind::TransactionKind;
 use validator::Validate;
 
-#[derive(Debug, Queryable, GraphQLObject, Clone, PartialEq)]
+#[derive(Debug, Queryable, Clone, PartialEq)]
 pub struct Transaction {
 	pub id: i32,
 	pub created_at: NaiveDateTime,
@@ -48,6 +48,7 @@ impl Transaction {
 			.get_result(conn)
 	}
 
+	#[allow(dead_code)]
 	pub fn find_by_account_id(
 		conn: &PgConnection,
 		account_id: i32,
