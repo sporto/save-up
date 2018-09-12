@@ -220,7 +220,7 @@ view model =
 
 header_ : Model -> Html Msg
 header_ model =
-    nav [ class "flex p-4 bg-teal-darker text-white" ]
+    nav [ class "flex p-4 bg-grey-darkest text-white" ]
         [ Navigation.logo
         , div
             [ class "ml-8 flex-grow" ]

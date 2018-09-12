@@ -3,7 +3,11 @@ module Admin.Pages.Account exposing (Model, Msg, init, subscriptions, update, vi
 import Admin.Routes as Routes
 import Api.Mutation
 import Api.Object
+import Api.Object.Account
+import Api.Object.AdminViewer
 import Api.Object.DepositResponse
+import Api.Query
+import Graphql.Field as Field
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
@@ -12,7 +16,7 @@ import Html.Events exposing (onInput, onSubmit)
 import RemoteData
 import Shared.Context exposing (Context)
 import Shared.Css exposing (molecules)
-import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorSelection, sendMutation)
+import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse, MutationError)
 import UI.Flash as Flash
 import UI.Icons as Icons
 import Verify exposing (Validator, validate, verify)
@@ -36,9 +40,25 @@ newModel accountID subPage =
 
 
 type SubPage
-    = SubPage_Top
+    = SubPage_Top TopModel
     | SubPage_Deposit DepositModel
     | SubPage_Withdraw
+
+
+type alias TopModel =
+    { data : GraphData Account
+    }
+
+
+newTopModel : TopModel
+newTopModel =
+    { data = RemoteData.NotAsked
+    }
+
+
+type alias Account =
+    { balanceInCents : Int
+    }
 
 
 type alias DepositModel =
@@ -82,6 +102,7 @@ asAmountInDepositForm form amount =
 type Msg
     = NoOp
     | Msg_Desposit DepositMsg
+    | OnAccountData (GraphResponse Account)
 
 
 type DepositMsg
@@ -93,18 +114,18 @@ type DepositMsg
 init : Context -> ID -> Routes.RouteAccount -> ( Model, Cmd Msg )
 init context accountID route =
     let
-        subPage =
+        ( subPage, cmd ) =
             case route of
                 Routes.RouteAccount_Top ->
-                    SubPage_Top
+                    ( SubPage_Top newTopModel, accountQueryCmd context accountID )
 
                 Routes.RouteAccount_Deposit ->
-                    SubPage_Deposit newDepositModel
+                    ( SubPage_Deposit newDepositModel, Cmd.none )
 
                 Routes.RouteAccount_Withdraw ->
-                    SubPage_Withdraw
+                    ( SubPage_Withdraw, Cmd.none )
     in
-    ( newModel accountID subPage, getData context )
+    ( newModel accountID subPage, cmd )
 
 
 subscriptions : Model -> Sub Msg
@@ -133,6 +154,22 @@ update context msg model =
 
                 _ ->
                     ( model, Cmd.none )
+
+        OnAccountData result ->
+            case result of
+                Err e ->
+                    ( { model
+                        | subPage = SubPage_Top { data = RemoteData.Failure e }
+                      }
+                    , Cmd.none
+                    )
+
+                Ok data ->
+                    ( { model
+                        | subPage = SubPage_Top { data = RemoteData.Success data }
+                      }
+                    , Cmd.none
+                    )
 
 
 updateDeposit : Context -> ID -> DepositMsg -> DepositModel -> ( DepositModel, Cmd DepositMsg )
@@ -222,7 +259,7 @@ navigationLink route label =
 currentPage : Context -> Model -> Html Msg
 currentPage context model =
     case model.subPage of
-        SubPage_Top ->
+        SubPage_Top topModel ->
             div [ class molecules.page.container ]
                 [ img [ src "https://via.placeholder.com/600x320" ] []
                 ]
@@ -343,8 +380,31 @@ validationErrorsView maybeValidationErrorsView =
 -- GraphQl
 
 
-getData context =
-    Cmd.none
+accountQueryCmd : Context -> ID -> Cmd Msg
+accountQueryCmd context accountID =
+    GraphQl.sendQuery
+        context
+        "account"
+        (accountQuery accountID)
+        OnAccountData
+
+
+accountQuery : ID -> SelectionSet Account RootQuery
+accountQuery accountID =
+    Api.Query.selection identity
+        |> with (Api.Query.admin <| adminNode accountID)
+
+
+adminNode : ID -> SelectionSet Account Api.Object.AdminViewer
+adminNode accountID =
+    Api.Object.AdminViewer.selection identity
+        |> with (Api.Object.AdminViewer.account { id = accountID } accountNode)
+
+
+accountNode : SelectionSet Account Api.Object.Account
+accountNode =
+    Api.Object.Account.selection Account
+        |> with (Api.Object.Account.balanceInCents |> Field.map round)
 
 
 type alias DepositResponse =
@@ -355,7 +415,7 @@ type alias DepositResponse =
 
 depositMutationCmd : Context -> ID -> Int -> Cmd DepositMsg
 depositMutationCmd context accountID cents =
-    sendMutation
+    GraphQl.sendMutation
         context
         "create-deposit"
         (depositMutation accountID cents)
@@ -376,4 +436,4 @@ depositResponseSelection : SelectionSet DepositResponse Api.Object.DepositRespon
 depositResponseSelection =
     Api.Object.DepositResponse.selection DepositResponse
         |> with Api.Object.DepositResponse.success
-        |> with (Api.Object.DepositResponse.errors mutationErrorSelection)
+        |> with (Api.Object.DepositResponse.errors GraphQl.mutationErrorSelection)
