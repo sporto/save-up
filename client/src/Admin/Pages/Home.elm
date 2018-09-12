@@ -6,6 +6,7 @@ import Api.Object.Account
 import Api.Object.AdminViewer
 import Api.Object.User
 import Api.Query
+import Graphql.Field as Field
 import Graphql.Operation exposing (RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
@@ -108,7 +109,7 @@ investorsData context data =
 
 investorView : Investor -> Html msg
 investorView investor =
-    div []
+    div [ class "border p-4 rounded shadow-md" ]
         [ div [ class "text-xl" ] [ text investor.name ]
         , div [ class "mt-2" ] (List.map accountView investor.accounts)
         ]
@@ -125,13 +126,33 @@ accountView account =
 
         pathWithdraw =
             Routes.pathFor <| Routes.routeForAccountWithdraw account.id
+
+        balance =
+            account.balanceInCents // 100
     in
     div [ class "flex items-center justify-between" ]
-        [ div [] [ text "9999" ]
+        [ div [] [ text "Balance: ", strong [ class "mr-1 text-3xl" ] [ text (String.fromInt balance) ], Icons.money ]
         , div []
-            [ a [ href pathShow, class "mr-2" ] [ text "Show" ]
-            , a [ href pathDeposit, class "mr-2" ] [ text "Deposit" ]
-            , a [ href pathWithdraw ] [ text "Withdraw" ]
+            [ a
+                [ href pathShow
+                , class "mr-3"
+                , class molecules.button.base
+                , class molecules.button.primary
+                ]
+                [ span [ class "mr-2" ] [ Icons.chart ], text "Show" ]
+            , a
+                [ href pathDeposit
+                , class "mr-3"
+                , class molecules.button.base
+                , class molecules.button.primary
+                ]
+                [ span [ class "mr-2" ] [ Icons.deposit ], text "Deposit" ]
+            , a
+                [ href pathWithdraw
+                , class molecules.button.base
+                , class molecules.button.primary
+                ]
+                [ span [ class "mr-2" ] [ Icons.withdraw ], text "Withdraw" ]
             ]
         ]
 
@@ -155,6 +176,7 @@ type alias Investor =
 
 type alias Account =
     { id : Int
+    , balanceInCents : Int
     , name : String
     }
 
@@ -191,4 +213,5 @@ accountNode : SelectionSet Account Api.Object.Account
 accountNode =
     Api.Object.Account.selection Account
         |> with Api.Object.Account.id
+        |> with (Api.Object.Account.balanceInCents |> Field.map round)
         |> with Api.Object.Account.name
