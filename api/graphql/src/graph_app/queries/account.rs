@@ -1,6 +1,7 @@
 use bigdecimal::BigDecimal;
 use bigdecimal::ToPrimitive;
 use chrono::NaiveDateTime;
+use graph_app::actions;
 use graph_app::context::AppContext;
 use models::account::Account;
 use models::transaction::Transaction;
@@ -14,7 +15,15 @@ graphql_object!(Account: AppContext |&self| {
 		self.name.as_str()
 	}
 
-	field yearly_interest() -> f64 {
+	field balanceInCents(&executor) -> f64 {
+		let ctx = &executor.context();
+		let conn = &ctx.conn;
+
+		actions::accounts::get_balance::call(conn, self.id)
+			.unwrap_or(0) as f64
+	}
+
+	field yearlyInterest() -> f64 {
 		BigDecimal::to_f64(&self.yearly_interest).unwrap()
 	}
 

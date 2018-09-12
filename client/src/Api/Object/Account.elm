@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.Account exposing (TransactionsRequiredArguments, id, name, selection, transactions, yearlyInterest)
+module Api.Object.Account exposing (TransactionsRequiredArguments, balanceInCents, id, name, selection, transactions, yearlyInterest)
 
 import Api.InputObject
 import Api.Interface
@@ -33,6 +33,11 @@ id =
 name : Field String Api.Object.Account
 name =
     Object.fieldDecoder "name" [] Decode.string
+
+
+balanceInCents : Field Float Api.Object.Account
+balanceInCents =
+    Object.fieldDecoder "balanceInCents" [] Decode.float
 
 
 yearlyInterest : Field Float Api.Object.Account
