@@ -203,7 +203,7 @@ navigation context model =
         routeWithdraw =
             Routes.routeForAccountWithdraw model.accountID
     in
-    nav [ class "p-4 bg-teal" ]
+    nav [ class "p-4 bg-indigo-light" ]
         [ navigationLink routeShow "Account"
         , navigationLink routeDeposit "Deposit"
         , navigationLink routeWithdraw "Withdraw"
@@ -276,8 +276,9 @@ submitDeposit model =
             Icons.spinner
 
         _ ->
-            button [ class molecules.form.submit ]
-                [ text "Deposit"
+            button [ class molecules.button.primary ]
+                [ span [ class "mr-2" ] [ Icons.deposit ]
+                , text "Deposit"
                 ]
 
 

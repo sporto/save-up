@@ -136,20 +136,17 @@ accountView account =
             [ a
                 [ href pathShow
                 , class "mr-3"
-                , class molecules.button.base
                 , class molecules.button.primary
                 ]
                 [ span [ class "mr-2" ] [ Icons.chart ], text "Show" ]
             , a
                 [ href pathDeposit
                 , class "mr-3"
-                , class molecules.button.base
                 , class molecules.button.primary
                 ]
                 [ span [ class "mr-2" ] [ Icons.deposit ], text "Deposit" ]
             , a
                 [ href pathWithdraw
-                , class molecules.button.base
                 , class molecules.button.primary
                 ]
                 [ span [ class "mr-2" ] [ Icons.withdraw ], text "Withdraw" ]

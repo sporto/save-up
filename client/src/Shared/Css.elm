@@ -1,10 +1,13 @@
 module Shared.Css exposing (molecules)
 
 
+buttonBase =
+    "font-bold py-2 px-4 rounded no-underline "
+
+
 molecules =
     { button =
-        { base = "font-bold py-2 px-4 rounded no-underline"
-        , primary = "bg-blue hover:bg-blue-dark text-white"
+        { primary = buttonBase ++ "bg-indigo hover:bg-indigo-dark text-white"
         }
     , form =
         { label = "blocktext-sm font-bold"
