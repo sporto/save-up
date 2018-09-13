@@ -261,7 +261,7 @@ navigationLink : Routes.Route -> String -> Html msg
 navigationLink route label =
     a
         [ href (Routes.pathFor route)
-        , class "text-white mr-4 no-underline"
+        , class "text-white mr-6 no-underline"
         ]
         [ text label ]
 
