@@ -13,8 +13,7 @@ elm-analyse:
 	yarn elm-analyse
 
 elm-ts:
-	yarn elm-typescript-interop src/Admin.elm --output=src/admin.d.ts
-	yarn elm-typescript-interop src/Investor.elm --output=src/investor.d.ts
+	yarn elm-typescript-interop
 
 elm-make-all:
 	elm make src/Investor.elm src/Admin.elm  src/Public.elm
