@@ -79,7 +79,7 @@ let baseConfig = {
 		],
 	},
 	resolve: {
-		extensions: [".ts", ".js"],
+		extensions: [".ts", ".js", ".elm"],
 	},
 	plugins: [
 		new webpack.DefinePlugin({
