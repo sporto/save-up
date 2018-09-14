@@ -1646,9 +1646,9 @@ elm-hot@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/elm-hot/-/elm-hot-1.0.0.tgz#d2087f896545915029919dcdbcb4b8fdc08aec96"
 
-elm-typescript-interop@^0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/elm-typescript-interop/-/elm-typescript-interop-0.0.8.tgz#572f15a40ae69971730de685116ac735ceff6282"
+elm-typescript-interop@^0.0.9:
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/elm-typescript-interop/-/elm-typescript-interop-0.0.9.tgz#2bbc6f1858499743c784027db527b275abd5979c"
   dependencies:
     elm "^0.18.0"
     glob "^7.1.3"
