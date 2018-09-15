@@ -1,15 +1,15 @@
 {
-  "compilerOptions": {
-      "module": "commonjs",
-      "noImplicitAny": true,
-      "preserveConstEnums": true,
-      "sourceMap": true,
-      "strictNullChecks": true,
-      "target": "es5"
-  },
-  "exclude": [
-    "node_modules",
-    "elm-stuff",
-    "tests/elm-stuff"
-  ]
+	"compilerOptions": {
+		"module": "ES2015",
+		"noImplicitAny": true,
+		"preserveConstEnums": true,
+		"sourceMap": true,
+		"strictNullChecks": true,
+		"target": "es5"
+	},
+	"exclude": [
+		"node_modules",
+		"elm-stuff",
+		"tests/elm-stuff"
+	]
 }

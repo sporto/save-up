@@ -5,3 +5,4 @@ dist
 dist-dev
 dist-prod
 elm-package.json
+.rpt2_cache
