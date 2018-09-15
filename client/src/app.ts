@@ -5,7 +5,7 @@ import * as session from "./sessions"
 import getConfig from "./config"
 
 // @ts-ignore
-import Elm from "./App.elm"
+import { Elm } from "./App.elm"
 
 let token = session.getToken()
 let config = getConfig()

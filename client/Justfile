@@ -15,9 +15,6 @@ elm-analyse:
 elm-ts:
 	yarn elm-typescript-interop
 
-elm-make-all:
-	elm make src/Investor.elm src/Admin.elm  src/Public.elm
-
 test:
 	yarn elm-test
 
@@ -40,7 +37,7 @@ build-prod:
 	NODE_ENV=production npx webpack --config webpack.prod.js --progress
 
 start:
-	npx rollup -c -w
+	npx webpack-dev-server --config ./webpack.dev.js --hot
 
 # build-dev:
 # 	npx rollup -c
