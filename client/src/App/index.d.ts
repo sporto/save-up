@@ -6,10 +6,10 @@ export namespace Elm {
   namespace App {
     export interface App {
       ports: {
-        toJsUseToken: {
+        toJsStoreToken: {
           subscribe(callback: (data: string) => void): void
         }
-        toJsSignOut: {
+        toJsRemoveToken: {
           subscribe(callback: (data: null) => void): void
         }
       };

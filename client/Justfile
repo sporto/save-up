@@ -33,11 +33,11 @@ test:
 # build-public-ts-2:
 # 	tsc -p ./
 
-build-dev:
-	yarn  webpack --config webpack.dev.js --progress --reporter=basic
+# build-dev:
+# 	yarn  webpack --config webpack.dev.js --progress --reporter=basic
 
-build-prod:
-	NODE_ENV=production yarn webpack --config webpack.prod.js --progress
+# build-prod:
+# 	NODE_ENV=production yarn webpack --config webpack.prod.js --progress
 
 start:
 	yarn rollup -c -w

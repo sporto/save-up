@@ -46,7 +46,6 @@
     "webpack-merge": "^4.1.4"
   },
   "dependencies": {
-    "invariant": "^2.2.4",
-    "js-cookie": "^2.2.0"
+    "invariant": "^2.2.4"
   }
 }

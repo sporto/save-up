@@ -1,11 +1,11 @@
+declare var API_HOST: string
+
 // @ts-ignore
 import Elm from './App.elm'
 
-import * as Cookies from "js-cookie"
-
 export const TOKEN_KEY = "save-up-token"
 
-let token = Cookies.get(TOKEN_KEY)
+let token = getToken()
 
 let apiHost = API_HOST
 
@@ -18,17 +18,25 @@ let flags = {
 
 let app: Elm.App.App = Elm.App.init({ node, flags })
 
+app.ports
+	.toJsStoreToken
+	.subscribe(storeToken)
+
+app.ports
+	.toJsRemoveToken
+	.subscribe(removeToken)
 
 
-
-function removeToken(): boolean {
-	Cookies.remove(TOKEN_KEY)
-	return true
+function getToken(): string | null {
+	return localStorage.getItem(TOKEN_KEY)
 }
 
-function storeToken(token: string): boolean {
-	Cookies.set(TOKEN_KEY, token)
-	return true
+function removeToken(): void {
+	return localStorage.removeItem(TOKEN_KEY)
+}
+
+function storeToken(token: string): void {
+	return localStorage.setItem(TOKEN_KEY, token)
 }
 
 
