@@ -1,17 +1,16 @@
-declare var API_HOST: string
-
 //@ts-ignore
 import styles from "./styles.css"
 // const styles = require("./styles.css")
 
+import * as session from "./sessions"
+import getConfig from "./config"
+
 // @ts-ignore
-// import Elm from "./App.elm"
+import Elm from "./App.elm"
 
-export const TOKEN_KEY = "save-up-token"
-
-let token = getToken()
-
-let apiHost = API_HOST
+let token = session.getToken()
+let config = getConfig()
+let apiHost = config.apiHost
 
 let node = document.getElementById('app')
 
@@ -20,27 +19,14 @@ let flags = {
 	token,
 }
 
-// let app: Elm.App.App = Elm.App.init({ node, flags })
+let app: Elm.App.App = Elm.App.init({ node, flags })
 
-// app.ports
-// 	.toJsStoreToken
-// 	.subscribe(storeToken)
+app.ports
+	.toJsStoreToken
+	.subscribe(session.storeToken)
 
-// app.ports
-// 	.toJsRemoveToken
-// 	.subscribe(removeToken)
-
-
-function getToken(): string | null {
-	return localStorage.getItem(TOKEN_KEY)
-}
-
-function removeToken(): void {
-	return localStorage.removeItem(TOKEN_KEY)
-}
-
-function storeToken(token: string): void {
-	return localStorage.setItem(TOKEN_KEY, token)
-}
+app.ports
+	.toJsRemoveToken
+	.subscribe(session.removeToken)
 
 

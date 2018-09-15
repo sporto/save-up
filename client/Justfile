@@ -33,20 +33,20 @@ test:
 # build-public-ts-2:
 # 	tsc -p ./
 
-# build-dev:
-# 	yarn  webpack --config webpack.dev.js --progress --reporter=basic
+build-dev:
+	npx webpack --config webpack.dev.js --progress --reporter=basic
 
-# build-prod:
-# 	NODE_ENV=production yarn webpack --config webpack.prod.js --progress
+build-prod:
+	NODE_ENV=production npx webpack --config webpack.prod.js --progress
 
 start:
 	npx rollup -c -w
 
-build-dev:
-	npx rollup -c
+# build-dev:
+# 	npx rollup -c
 
-build-prod:
-	env ENV=prod yarn rollup -c
+# build-prod:
+#	env ENV=prod yarn rollup -c
 
 # open-stats:
 # 	yarn webpack-bundle-analyzer dist/app/stats.json

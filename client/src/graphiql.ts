@@ -2,30 +2,28 @@ declare var GraphiQL: any
 declare var ReactDOM: any
 declare var React: any
 
-import * as sessions from "./services/sessions"
-import getConfig from "./services/config"
+import * as session from "./sessions"
+import getConfig from "./config"
 
-sessions.proceedIfSignedIn(function(tokenAndData: TokenAndData) {
+let token = session.getToken()
 
-	function graphQLFetcher(graphQLParams: any) {
-		let config = getConfig()
+function graphQLFetcher(graphQLParams: any) {
+	let config = getConfig()
 
-		return fetch(config.apiHost + "/graphql-app", {
-			method: "post",
-			headers: {
-				"Content-Type": "application/json",
-				"Authorization": "Bearer " + tokenAndData.token,
-			},
-			body: JSON.stringify(graphQLParams),
-		}).then(response => response.json());
+	return fetch(config.apiHost + "/graphql-app", {
+		method: "post",
+		headers: {
+			"Content-Type": "application/json",
+			"Authorization": "Bearer " + token,
+		},
+		body: JSON.stringify(graphQLParams),
+	}).then(response => response.json());
 
-	}
+}
 
-	let node = document.getElementById("app")
+let node = document.getElementById("app")
 
-	ReactDOM.render(
-		React.createElement(GraphiQL, {fetcher: graphQLFetcher}),
-		node,
-	)
-
-})
+ReactDOM.render(
+	React.createElement(GraphiQL, { fetcher: graphQLFetcher }),
+	node,
+)
