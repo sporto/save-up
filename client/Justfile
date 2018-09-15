@@ -21,6 +21,18 @@ elm-make-all:
 test:
 	yarn elm-test
 
+# build-public-elm:
+# 	elm make src/Public.elm --output ./elm-out/public.js
+
+# build-app-elm:
+# 	elm make src/Admin.elm src/Investor.elm --output ./elm-out/app.js
+
+# build-public-ts:
+# 	tsc -m system --outFile ./dist-dev/public.js ./src/public.ts
+
+# build-public-ts-2:
+# 	tsc -p ./
+
 build-dev:
 	yarn  webpack --config webpack.dev.js --progress --reporter=basic
 
@@ -28,7 +40,7 @@ build-prod:
 	NODE_ENV=production yarn webpack --config webpack.prod.js --progress
 
 start:
-	yarn webpack-dev-server --config ./webpack.dev.js --hot
+	yarn rollup -c -w
 
 open-stats:
 	yarn webpack-bundle-analyzer dist/app/stats.json

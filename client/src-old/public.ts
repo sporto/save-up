@@ -1,24 +1,26 @@
+declare var Elmo: any;
+
 require("./styles.css")
 
 //@ts-ignore
-import * as Elmo from "./Public.elm"
+// import * as Elmo from "./Public.elm"
 
 import * as sessions from "./services/sessions"
 import getConfig from "./services/config"
 
-interface Elm {
-	init(args: ElmArgs): PublicApp
-}
+// interface Elm {
+// 	init(args: ElmArgs): PublicApp
+// }
 
-interface ElmArgs { node: HTMLElement | null, flags: PublicFlags }
+// interface ElmArgs { node: HTMLElement | null, flags: PublicFlags }
 
-interface PublicApp {
-	ports: {
-		toJsUseToken: {
-			subscribe(f: (t: string) => void): void,
-		},
-	},
-}
+// interface PublicApp {
+// 	ports: {
+// 		toJsUseToken: {
+// 			subscribe(f: (t: string) => void): void,
+// 		},
+// 	},
+// }
 
 sessions.proceedIfSignedOut(function () {
 	let config = getConfig()
@@ -29,7 +31,7 @@ sessions.proceedIfSignedOut(function () {
 
 	const node = document.getElementById("app")
 
-	const app: PublicApp = Elmo.Elm.Public.init({ node, flags })
+	const app = Elmo.Public.init({ node, flags })
 
 	// app.ports.toJsUseToken.subscribe(sessions.newSessionWithToken)
 })

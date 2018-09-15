@@ -1,31 +1,31 @@
 declare var API_HOST: string
 
-interface Config {
+export interface Config {
 	apiHost: string,
 }
 
-interface TokenData {
+export interface TokenData {
 	name: string,
 	email: string,
 	role: string,
 }
 
-interface TokenAndData {
+export interface TokenAndData {
 	token: string,
 	data: TokenData,
 }
 
-interface PublicFlags {
+export interface PublicFlags {
 	apiHost: string,
 }
 
-interface Flags {
+export interface Flags {
 	apiHost: string,
 	token: string,
 	tokenData: TokenData,
 }
 
-interface SignUp {
+export interface SignUp {
 	email: string,
 	name: string,
 	password: string,

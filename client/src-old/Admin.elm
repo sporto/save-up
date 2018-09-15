@@ -1,4 +1,4 @@
-module App exposing (main)
+module Admin exposing (main)
 
 import Admin.AppLocation as AppLocation exposing (AppLocation)
 import Admin.Pages.Account as Account

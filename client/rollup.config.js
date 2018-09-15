@@ -1,13 +1,18 @@
 import typescript from "rollup-plugin-typescript2";
 import elm from "rollup-plugin-elm"
 import resolve from "rollup-plugin-node-resolve";
-import commonjs from "rollup-plugin-commonjs";
-// import path from "path"
+import commonjs from "rollup-plugin-commonjs"
+import serve from 'rollup-plugin-serve'
+import htmlTemplate from 'rollup-plugin-generate-html-template'
+
+var serveConfig = {
+	contentBase: "dist-dev",
+}
 
 export default {
-	input: "./src/public.ts",
+	input: "./src/app.ts",
 	output: {
-		file: "./dist-dev/public.js",
+		file: "./dist-dev/app.js",
 		format: "iife"
 	},
 	plugins: [
@@ -16,9 +21,11 @@ export default {
 		typescript({
 			typescript: require("typescript")
 		}),
-		elm({
-			exclude: "elm_stuff/**",
-			// pathToElm: path.resolve("/usr/local/bin/elm")
-		})
+		elm(),
+		htmlTemplate({
+			template: 'src/app.html',
+			target: 'index.html',
+		}),
+		serve(serveConfig)
 	]
 };
