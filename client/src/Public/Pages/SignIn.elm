@@ -13,12 +13,11 @@ import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Public.Routes as Routes
 import RemoteData
-import Shared.Context exposing (PublicContext)
 import Shared.Css exposing (molecules)
-import Shared.Flags as Flags
+import Shared.Globals exposing (..)
 import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorPublicSelection, sendPublicMutation)
+import Shared.Routes as Routes
 import Shared.Sessions as Sessions exposing (SignIn)
 import UI.Flash as Flash
 import UI.Forms as Forms
@@ -31,7 +30,7 @@ type alias Model =
     }
 
 
-initialModel : Flags.PublicFlags -> Model
+initialModel : Flags -> Model
 initialModel flags =
     { signIn = Sessions.newSignIn
     , response = RemoteData.NotAsked
@@ -60,7 +59,7 @@ asSignInInModel model signIn =
     { model | signIn = signIn }
 
 
-init : Flags.PublicFlags -> ( Model, Cmd Msg )
+init : Flags -> ( Model, Cmd Msg )
 init flags =
     ( initialModel flags, Cmd.none )
 
@@ -103,7 +102,7 @@ update context msg model =
                     case response.token of
                         Just token ->
                             ( { model | response = RemoteData.Success response }
-                            , Sessions.toJsUseToken token
+                            , Sessions.startSession context.navKey token
                             )
 
                         Nothing ->
@@ -173,7 +172,7 @@ submit model =
 
 links =
     p [ class "mt-6" ]
-        [ a [ href (Routes.pathFor Routes.Route_SignUp) ] [ text "Sign up" ]
+        [ a [ href (Routes.pathFor Routes.routeForSignUp) ] [ text "Sign up" ]
         ]
 
 

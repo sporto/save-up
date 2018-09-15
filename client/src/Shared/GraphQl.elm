@@ -9,7 +9,7 @@ import Graphql.Http
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
 import RemoteData
-import Shared.Context exposing (Context, PublicContext)
+import Shared.Globals exposing (..)
 import Time exposing (Posix)
 
 
@@ -72,7 +72,7 @@ sendMutation :
 sendMutation context mutationId mutation onResponse =
     mutation
         |> Graphql.Http.mutationRequest (apiEndPoint context mutationId)
-        |> Graphql.Http.withHeader "Authorization" ("Bearer " ++ context.flags.token)
+        |> Graphql.Http.withHeader "Authorization" ("Bearer " ++ context.auth.token)
         |> Graphql.Http.send onResponse
 
 
@@ -85,7 +85,7 @@ sendQuery :
 sendQuery context queryId query onResponse =
     query
         |> Graphql.Http.queryRequest (apiEndPoint context queryId)
-        |> Graphql.Http.withHeader "Authorization" ("Bearer " ++ context.flags.token)
+        |> Graphql.Http.withHeader "Authorization" ("Bearer " ++ context.auth.token)
         |> Graphql.Http.send onResponse
 
 

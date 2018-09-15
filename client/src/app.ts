@@ -1,35 +1,42 @@
-import * as sessions from "./services/sessions"
-import hookCommonPorts from "./services/hookCommonPorts"
+declare var API_HOST: string
 
-import { Elm } from "./Admin/index"
+// @ts-ignore
+import Elm from './App.elm'
 
-// interface Elm {
-// 	init(args: ElmArgs): App
-// }
+export const TOKEN_KEY = "save-up-token"
 
-// interface ElmArgs 
-// 	{node: HTMLElement | null, flags: Flags}
+let token = getToken()
 
-// interface App {
-// 	ports: CommonPorts
-// }
+let apiHost = API_HOST
 
-export default function run(Elm: any) {
+let node = document.getElementById('app')
 
-	sessions.proceedIfSignedIn(function (tokenAndData: TokenAndData) {
-
-		const flags: Flags = {
-			apiHost: API_HOST,
-			token: tokenAndData.token,
-			tokenData: tokenAndData.data,
-		}
-
-		// console.log(flags)
-
-		const node = document.getElementById("app")
-		const app: Elm.Admin.App = Elm.init({ node, flags })
-
-		hookCommonPorts(app)
-	})
-
+let flags = {
+	apiHost,
+	token,
 }
+
+let app: Elm.App.App = Elm.App.init({ node, flags })
+
+app.ports
+	.toJsStoreToken
+	.subscribe(storeToken)
+
+app.ports
+	.toJsRemoveToken
+	.subscribe(removeToken)
+
+
+function getToken(): string | null {
+	return localStorage.getItem(TOKEN_KEY)
+}
+
+function removeToken(): void {
+	return localStorage.removeItem(TOKEN_KEY)
+}
+
+function storeToken(token: string): void {
+	return localStorage.setItem(TOKEN_KEY, token)
+}
+
+

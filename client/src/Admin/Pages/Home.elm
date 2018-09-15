@@ -1,6 +1,5 @@
 module Admin.Pages.Home exposing (Model, Msg, init, subscriptions, update, view)
 
-import Admin.Routes as Routes
 import Api.Object
 import Api.Object.Account
 import Api.Object.AdminViewer
@@ -12,9 +11,10 @@ import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import RemoteData
-import Shared.Context exposing (Context)
+import Shared.Globals exposing (..)
 import Shared.Css exposing (molecules)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse)
+import Shared.Routes as Routes
 import UI.Empty as Empty
 import UI.Icons as Icons
 
@@ -113,13 +113,13 @@ accountView : Account -> Html msg
 accountView account =
     let
         pathShow =
-            Routes.pathFor <| Routes.routeForAccountShow account.id
+            Routes.pathFor <| Routes.routeForAdminAccountShow account.id
 
         pathDeposit =
-            Routes.pathFor <| Routes.routeForAccountDeposit account.id
+            Routes.pathFor <| Routes.routeForAdminAccountDeposit account.id
 
         pathWithdraw =
-            Routes.pathFor <| Routes.routeForAccountWithdraw account.id
+            Routes.pathFor <| Routes.routeForAdminAccountWithdraw account.id
 
         balance =
             account.balanceInCents // 100

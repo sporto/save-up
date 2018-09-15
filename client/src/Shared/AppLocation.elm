@@ -1,6 +1,6 @@
-module Public.AppLocation exposing (AppLocation, fromUrl)
+module Shared.AppLocation exposing (AppLocation, fromUrl)
 
-import Public.Routes as Routes exposing (Route)
+import Shared.Routes as Routes exposing (Route)
 import Url exposing (Url)
 
 

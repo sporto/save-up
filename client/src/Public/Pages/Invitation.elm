@@ -12,12 +12,11 @@ import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Public.Routes as Routes
 import RemoteData
-import Shared.Context exposing (PublicContext)
 import Shared.Css exposing (molecules)
-import Shared.Flags as Flags
+import Shared.Globals exposing (..)
 import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorPublicSelection, sendPublicMutation)
+import Shared.Routes as Routes
 import Shared.Sessions as Sessions exposing (SignUp)
 import UI.Flash as Flash
 import UI.Forms as Forms
@@ -31,7 +30,7 @@ type alias Model =
     }
 
 
-initialModel : Flags.PublicFlags -> String -> Model
+initialModel : Flags -> String -> Model
 initialModel flags invitationToken =
     { signUp = Sessions.newSignUp
     , invitationToken = invitationToken
@@ -51,7 +50,7 @@ asSignUpInModel model signUp =
     { model | signUp = signUp }
 
 
-init : Flags.PublicFlags -> String -> ( Model, Cmd Msg )
+init : Flags -> String -> ( Model, Cmd Msg )
 init flags invitationToken =
     ( initialModel flags invitationToken, Cmd.none )
 
@@ -94,7 +93,7 @@ update context msg model =
                     case response.token of
                         Just token ->
                             ( { model | response = RemoteData.Success response }
-                            , Sessions.toJsUseToken token
+                            , Sessions.startSession context.navKey token
                             )
 
                         Nothing ->
@@ -187,7 +186,7 @@ maybeErrors model =
 links =
     p [ class "mt-6" ]
         [ text "Already signed up? "
-        , a [ href (Routes.pathFor Routes.Route_SignIn) ] [ text "Sign in" ]
+        , a [ href (Routes.pathFor Routes.routeForSignUp) ] [ text "Sign in" ]
         ]
 
 

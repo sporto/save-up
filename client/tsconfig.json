@@ -1,15 +1,19 @@
 {
-  "compilerOptions": {
-      "module": "commonjs",
-      "noImplicitAny": true,
-      "preserveConstEnums": true,
-      "sourceMap": true,
-      "strictNullChecks": true,
-      "target": "es5"
-  },
-  "exclude": [
-    "node_modules",
-    "elm-stuff",
-    "tests/elm-stuff"
-  ]
+	"compilerOptions": {
+		"module": "ESNext",
+		// "moduleResolution": "node",
+		"noImplicitAny": true,
+		"preserveConstEnums": true,
+		"strictNullChecks": true,
+		// "target": "es5",
+		"outDir": "./dist-dev"
+	},
+	"include": [
+		"src/**/*"
+	],
+	"exclude": [
+		"node_modules",
+		"elm-stuff",
+		"tests/elm-stuff"
+	]
 }
