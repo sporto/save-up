@@ -2,9 +2,12 @@ port module Shared.Sessions exposing (SignIn, SignUp, asEmailInSignUp, asNameInS
 
 import ApiPub.InputObject
 import Browser.Navigation as Nav
-import Json.Decode as Decode
+import Json.Decode as Decode exposing (Decoder, field)
+import Json.Decode.Pipeline as P
+import Jwt exposing (JwtError)
 import Shared.Globals exposing (..)
 import Shared.Routes as Routes
+import Time exposing (Posix)
 
 
 type alias SignUp =
@@ -43,6 +46,48 @@ newSignIn =
     { email = ""
     , password = ""
     }
+
+
+decodeToken : String -> Result JwtError TokenData
+decodeToken token =
+    Jwt.decodeToken tokenDecoder token
+
+
+tokenDecoder : Decode.Decoder TokenData
+tokenDecoder =
+    Decode.succeed TokenData
+        |> P.required "exp" decodeExp
+        |> P.required "userId" Decode.int
+        |> P.required "email" Decode.string
+        |> P.required "name" Decode.string
+        |> P.required "role" decodeRole
+
+
+decodeExp : Decode.Decoder Posix
+decodeExp =
+    Decode.int
+        |> Decode.andThen
+            (\ts ->
+                Decode.succeed
+                    (Time.millisToPosix (ts * 1000))
+            )
+
+
+decodeRole : Decode.Decoder Role
+decodeRole =
+    Decode.string
+        |> Decode.andThen
+            (\role ->
+                case role of
+                    "ADMIN" ->
+                        Decode.succeed Admin
+
+                    "INVESTOR" ->
+                        Decode.succeed Investor
+
+                    _ ->
+                        Decode.fail ("Invalid role " ++ role)
+            )
 
 
 startSession : Nav.Key -> String -> Cmd msg

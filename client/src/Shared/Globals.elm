@@ -1,18 +1,12 @@
 module Shared.Globals exposing (Authentication, Context, Flags, PublicContext, Role(..), TokenData)
 
 import Browser.Navigation as Nav
+import Time exposing (Posix)
 
 
 type alias Flags =
     { apiHost : String
     , token : Maybe String
-    }
-
-
-type alias TokenData =
-    { name : String
-    , email : String
-    , role : Role
     }
 
 
@@ -36,4 +30,13 @@ type alias Context =
 type alias Authentication =
     { token : String
     , data : TokenData
+    }
+
+
+type alias TokenData =
+    { exp : Posix
+    , userId : Int
+    , email : String
+    , name : String
+    , role : Role
     }
