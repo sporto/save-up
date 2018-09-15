@@ -1,8 +1,8 @@
-@tailwind preflight;
+/* @tailwind preflight;
 
 @tailwind components;
 
-@tailwind utilities;
+@tailwind utilities; */
 
 html, body {
   height: 100%;

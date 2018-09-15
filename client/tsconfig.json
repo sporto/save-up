@@ -1,12 +1,11 @@
 {
 	"compilerOptions": {
 		"module": "ESNext",
-		// "moduleResolution": "node",
 		"noImplicitAny": true,
 		"preserveConstEnums": true,
 		"strictNullChecks": true,
-		// "target": "es5",
-		"outDir": "./dist-dev"
+		"outDir": "./dist-dev",
+		"target": "ES5"
 	},
 	"include": [
 		"src/**/*"

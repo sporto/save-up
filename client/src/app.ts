@@ -1,7 +1,11 @@
 declare var API_HOST: string
 
+//@ts-ignore
+import styles from "./styles.css"
+// const styles = require("./styles.css")
+
 // @ts-ignore
-import Elm from './App.elm'
+// import Elm from "./App.elm"
 
 export const TOKEN_KEY = "save-up-token"
 
@@ -16,15 +20,15 @@ let flags = {
 	token,
 }
 
-let app: Elm.App.App = Elm.App.init({ node, flags })
+// let app: Elm.App.App = Elm.App.init({ node, flags })
 
-app.ports
-	.toJsStoreToken
-	.subscribe(storeToken)
+// app.ports
+// 	.toJsStoreToken
+// 	.subscribe(storeToken)
 
-app.ports
-	.toJsRemoveToken
-	.subscribe(removeToken)
+// app.ports
+// 	.toJsRemoveToken
+// 	.subscribe(removeToken)
 
 
 function getToken(): string | null {

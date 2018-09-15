@@ -40,7 +40,13 @@ test:
 # 	NODE_ENV=production yarn webpack --config webpack.prod.js --progress
 
 start:
-	yarn rollup -c -w
+	npx rollup -c -w
 
-open-stats:
-	yarn webpack-bundle-analyzer dist/app/stats.json
+build-dev:
+	npx rollup -c
+
+build-prod:
+	env ENV=prod yarn rollup -c
+
+# open-stats:
+# 	yarn webpack-bundle-analyzer dist/app/stats.json
