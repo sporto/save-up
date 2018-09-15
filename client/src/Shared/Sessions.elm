@@ -1,4 +1,4 @@
-port module Shared.Sessions exposing (SignIn, SignUp, asEmailInSignUp, asNameInSignUp, asPasswordInSignUp, endSession, newSignIn, newSignUp, startSession)
+port module Shared.Sessions exposing (SignIn, SignUp, asEmailInSignUp, asNameInSignUp, asPasswordInSignUp, decodeToken, endSession, newSignIn, newSignUp, startSession)
 
 import ApiPub.InputObject
 import Browser.Navigation as Nav
