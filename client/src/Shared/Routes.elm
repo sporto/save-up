@@ -1,4 +1,4 @@
-module Shared.Routes exposing (Route(..), RouteInAdmin(..), RouteInAdminInAccount(..), isInAnyAdminRoute, parseUrl, pathFor, routeForAdminAccountDeposit, routeForAdminAccountShow, routeForAdminAccountWithdraw, routeForAdminHome, routeForAdminInvite)
+module Shared.Routes exposing (Route(..), RouteInAdmin(..), RouteInAdminInAccount(..), RouteInInvestor(..), isInAnyAdminRoute, parseUrl, pathFor, routeForAdminAccountDeposit, routeForAdminAccountShow, routeForAdminAccountWithdraw, routeForAdminHome, routeForAdminInvite)
 
 import Url exposing (Url)
 import Url.Parser exposing (..)
@@ -6,6 +6,7 @@ import Url.Parser exposing (..)
 
 type Route
     = Route_Admin RouteInAdmin
+    | Route_Investor RouteInInvestor
     | Route_NotFound
 
 
@@ -21,11 +22,16 @@ type RouteInAdminInAccount
     | RouteInAdminInAccount_Withdraw
 
 
+type RouteInInvestor
+    = RouteInInvestor_Home
+
+
 matchers : Parser (Route -> a) a
 matchers =
     s segBasepath
         </> oneOf
                 [ map Route_Admin (s segAdmin </> matchersForAdmin)
+                , map Route_Investor (s segInvestor </> matchersForInvestor)
                 ]
 
 
@@ -47,6 +53,13 @@ matchersForAdminInAccount =
         ]
 
 
+matchersForInvestor : Parser (RouteInInvestor -> a) a
+matchersForInvestor =
+    oneOf
+        [ map RouteInInvestor_Home top
+        ]
+
+
 parseUrl : Url -> Route
 parseUrl url =
     case parse matchers url of
@@ -65,6 +78,9 @@ pathFor route =
 
         Route_Admin adminRoute ->
             "/" ++ segBasepath ++ "/" ++ segAdmin ++ "/" ++ pathForAdminRoute adminRoute
+
+        Route_Investor investorRoute ->
+            "/" ++ segBasepath ++ "/" ++ segInvestor ++ "/" ++ pathForInvestorRoute investorRoute
 
 
 pathForAdminRoute : RouteInAdmin -> String
@@ -92,6 +108,13 @@ pathForAdminRoute route =
                     prefix ++ "/" ++ segWithdraw
 
 
+pathForInvestorRoute : RouteInInvestor -> String
+pathForInvestorRoute route =
+    case route of
+        RouteInInvestor_Home ->
+            ""
+
+
 segBasepath =
     "a"
 
@@ -102,6 +125,10 @@ segAdmin =
 
 segAccounts =
     "accounts"
+
+
+segInvestor =
+    "investor"
 
 
 segInvite =

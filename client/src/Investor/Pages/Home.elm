@@ -20,9 +20,9 @@ type Msg
     = NoOp
 
 
-init : Flags.Flags -> ( Model, Cmd Msg )
-init flags =
-    ( initialModel flags, Cmd.none )
+init : Context -> ( Model, Cmd Msg )
+init context =
+    ( initialModel context.flags, Cmd.none )
 
 
 update : Context -> Msg -> Model -> ( Model, Cmd Msg )

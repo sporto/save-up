@@ -9,7 +9,9 @@ import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
-import Shared exposing (Model, Msg(..), Page(..), PageAdmin(..))
+import Investor
+import Investor.Pages.Home
+import Shared exposing (Model, Msg(..), Page(..), PageAdmin(..), PageInvestor(..))
 import Shared.AppLocation as AppLocation
 import Shared.Context exposing (Context)
 import Shared.Flags as Flags exposing (Flags)
@@ -129,6 +131,23 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        PageInvestorHomeMsg sub ->
+            case model.page of
+                Page_Investor (PageInvestor_Home pageModel) ->
+                    let
+                        ( newPageModel, pageCmd ) =
+                            Investor.Pages.Home.update
+                                context
+                                sub
+                                pageModel
+                    in
+                    ( { model | page = Page_Investor (PageInvestor_Home newPageModel) }
+                    , Cmd.map PageInvestorHomeMsg pageCmd
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
+
 
 newContext : Model -> Context
 newContext model =
@@ -144,6 +163,10 @@ initCurrentPage context model =
                 Routes.Route_Admin subRoute ->
                     initCurrentAdminPage context subRoute
                         |> Return.mapModel Page_Admin
+
+                Routes.Route_Investor subRoute ->
+                    initCurrentInvestorPage context subRoute
+                        |> Return.mapModel Page_Investor
 
                 Routes.Route_NotFound ->
                     ( Page_NotFound, Cmd.none )
@@ -171,6 +194,15 @@ initCurrentAdminPage context adminRoute =
                 |> Return.mapBoth PageAdmin_Invite PageAdminInviteMsg
 
 
+initCurrentInvestorPage : Context -> Routes.RouteInInvestor -> ( PageInvestor, Cmd Msg )
+initCurrentInvestorPage context route =
+    case route of
+        Routes.RouteInInvestor_Home ->
+            Investor.Pages.Home.init
+                context
+                |> Return.mapBoth PageInvestor_Home PageInvestorHomeMsg
+
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
     let
@@ -181,6 +213,9 @@ subscriptions model =
 
                 Page_Admin adminPage ->
                     Admin.subscriptions adminPage
+
+                Page_Investor page ->
+                    Investor.subscriptions page
     in
     Sub.batch [ pageSub ]
 
@@ -200,6 +235,9 @@ bodyFor context model =
 
         Page_Admin adminPage ->
             Admin.view context adminPage
+
+        Page_Investor page ->
+            Investor.view context page
 
 
 contextFor : Model -> Context
