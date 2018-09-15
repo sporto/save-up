@@ -1,6 +1,5 @@
-//@ts-ignore
-import styles from "./styles.css"
-// const styles = require("./styles.css")
+require("@fortawesome/fontawesome-free/css/all.css")
+require("./styles.css")
 
 import * as session from "./sessions"
 import getConfig from "./config"
