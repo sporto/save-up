@@ -1,15 +1,7 @@
-module Shared.Routes exposing (Route(..), parseUrl, pathFor, routeForAccountDeposit, routeForAccountShow, routeForAccountWithdraw)
+module Shared.Routes exposing (Route(..), RouteInAdmin(..), RouteInAdminInAccount(..), isInAnyAdminRoute, parseUrl, pathFor, routeForAdminAccountDeposit, routeForAdminAccountShow, routeForAdminAccountWithdraw, routeForAdminHome, routeForAdminInvite)
 
 import Url exposing (Url)
 import Url.Parser exposing (..)
-
-
-namespace =
-    "a/admin"
-
-
-namespaceAbs =
-    "/" ++ namespace
 
 
 type Route
@@ -31,7 +23,7 @@ type RouteInAdminInAccount
 
 matchers : Parser (Route -> a) a
 matchers =
-    s "a"
+    s segBasepath
         </> oneOf
                 [ map Route_Admin (s segAdmin </> matchersForAdmin)
                 ]
@@ -69,10 +61,10 @@ pathFor : Route -> String
 pathFor route =
     case route of
         Route_NotFound ->
-            "/a/"
+            "/" ++ segBasepath ++ "/"
 
         Route_Admin adminRoute ->
-            "/a/" ++ segAdmin ++ "/" ++ pathForAdminRoute adminRoute
+            "/" ++ segBasepath ++ "/" ++ segAdmin ++ "/" ++ pathForAdminRoute adminRoute
 
 
 pathForAdminRoute : RouteInAdmin -> String
@@ -100,6 +92,10 @@ pathForAdminRoute route =
                     prefix ++ "/" ++ segWithdraw
 
 
+segBasepath =
+    "a"
+
+
 segAdmin =
     "admin"
 
@@ -120,13 +116,47 @@ segWithdraw =
     "withdraw"
 
 
-routeForAccountShow id =
+
+-- Query Routes
+
+
+isInAnyAdminRoute : Route -> Bool
+isInAnyAdminRoute route =
+    case route of
+        Route_Admin _ ->
+            True
+
+        _ ->
+            False
+
+
+
+-- Get Routes
+
+
+routeForAdminHome : Route
+routeForAdminHome =
+    Route_Admin RouteInAdmin_Home
+
+
+routeForAdminInvite : Route
+routeForAdminInvite =
+    Route_Admin RouteInAdmin_Invite
+
+
+routeForAdminAccountShow : Int -> Route
+routeForAdminAccountShow id =
     RouteInAdmin_Account id RouteInAdminInAccount_Top
+        |> Route_Admin
 
 
-routeForAccountDeposit id =
+routeForAdminAccountDeposit : Int -> Route
+routeForAdminAccountDeposit id =
     RouteInAdmin_Account id RouteInAdminInAccount_Deposit
+        |> Route_Admin
 
 
-routeForAccountWithdraw id =
+routeForAdminAccountWithdraw : Int -> Route
+routeForAdminAccountWithdraw id =
     RouteInAdmin_Account id RouteInAdminInAccount_Withdraw
+        |> Route_Admin

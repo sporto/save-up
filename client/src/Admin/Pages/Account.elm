@@ -1,6 +1,5 @@
 module Admin.Pages.Account exposing (Model, Msg, init, subscriptions, update, view)
 
-import Admin.Routes as Routes
 import Api.Mutation
 import Api.Object
 import Api.Object.Account
@@ -18,6 +17,7 @@ import RemoteData
 import Shared.Context exposing (Context)
 import Shared.Css exposing (molecules)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse, MutationError)
+import Shared.Routes as Routes
 import Time exposing (Posix)
 import UI.Empty as Empty
 import UI.Flash as Flash
@@ -121,18 +121,18 @@ type DepositMsg
     | SubmitDeposit
 
 
-init : Context -> ID -> Routes.RouteAccount -> ( Model, Cmd Msg )
+init : Context -> ID -> Routes.RouteInAdminInAccount -> ( Model, Cmd Msg )
 init context accountID route =
     let
         ( subPage, cmd ) =
             case route of
-                Routes.RouteAccount_Top ->
+                Routes.RouteInAdminInAccount_Top ->
                     ( SubPage_Top newTopModel, accountQueryCmd context accountID )
 
-                Routes.RouteAccount_Deposit ->
+                Routes.RouteInAdminInAccount_Deposit ->
                     ( SubPage_Deposit newDepositModel, Cmd.none )
 
-                Routes.RouteAccount_Withdraw ->
+                Routes.RouteInAdminInAccount_Withdraw ->
                     ( SubPage_Withdraw, Cmd.none )
     in
     ( newModel accountID subPage, cmd )
@@ -242,13 +242,13 @@ navigation : Context -> Model -> Html msg
 navigation context model =
     let
         routeShow =
-            Routes.routeForAccountShow model.accountID
+            Routes.routeForAdminAccountShow model.accountID
 
         routeDeposit =
-            Routes.routeForAccountDeposit model.accountID
+            Routes.routeForAdminAccountDeposit model.accountID
 
         routeWithdraw =
-            Routes.routeForAccountWithdraw model.accountID
+            Routes.routeForAdminAccountWithdraw model.accountID
     in
     nav [ class "p-4 bg-indigo-light" ]
         [ navigationLink routeShow "Account"
