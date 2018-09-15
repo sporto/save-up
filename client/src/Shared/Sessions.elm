@@ -1,7 +1,10 @@
-port module Shared.Sessions exposing (SignIn, SignUp, asEmailInSignUp, asNameInSignUp, asPasswordInSignUp, newSignIn, newSignUp, toJsSignOut, toJsUseToken)
+port module Shared.Sessions exposing (SignIn, SignUp, asEmailInSignUp, asNameInSignUp, asPasswordInSignUp, endSession, newSignIn, newSignUp, startSession)
 
 import ApiPub.InputObject
+import Browser.Navigation as Nav
 import Json.Decode as Decode
+import Shared.Globals exposing (..)
+import Shared.Routes as Routes
 
 
 type alias SignUp =
@@ -42,7 +45,42 @@ newSignIn =
     }
 
 
-port toJsUseToken : String -> Cmd msg
+startSession : Nav.Key -> String -> Cmd msg
+startSession navKey token =
+    let
+        role =
+            Admin
+
+        route =
+            case role of
+                Admin ->
+                    Routes.routeForAdminHome
+
+                Investor ->
+                    Routes.routeForInvestorHome
+
+        path =
+            Routes.pathFor route
+    in
+    Cmd.batch
+        [ toJsStoreToken token
+        , Nav.pushUrl navKey path
+        ]
 
 
-port toJsSignOut : () -> Cmd msg
+endSession : Nav.Key -> Cmd msg
+endSession navKey =
+    let
+        path =
+            Routes.pathFor Routes.routeForSignIn
+    in
+    Cmd.batch
+        [ toJsRemoveToken ()
+        , Nav.pushUrl navKey path
+        ]
+
+
+port toJsStoreToken : String -> Cmd msg
+
+
+port toJsRemoveToken : () -> Cmd msg

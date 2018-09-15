@@ -1,5 +1,7 @@
 module Shared.Globals exposing (Authentication, Context, Flags, PublicContext, Role(..), TokenData)
 
+import Browser.Navigation as Nav
+
 
 type alias Flags =
     { apiHost : String
@@ -21,6 +23,7 @@ type Role
 
 type alias PublicContext =
     { flags : Flags
+    , navKey : Nav.Key
     }
 
 

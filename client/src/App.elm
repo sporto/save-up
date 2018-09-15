@@ -28,11 +28,11 @@ import Url exposing (Url)
 
 
 initialModel : Flags -> Url -> Nav.Key -> Model
-initialModel flags url key =
+initialModel flags url navKey =
     { authentication = authenticate flags.token
     , flags = flags
     , currentLocation = AppLocation.fromUrl url
-    , key = key
+    , navKey = navKey
     , page = Page_NotFound
     }
 
@@ -117,8 +117,7 @@ authContext model =
 
         Nothing ->
             AuthContext_Public
-                { flags = model.flags
-                }
+                (newPublicContext model)
 
 
 newContext : Model -> Authentication -> Context
@@ -131,6 +130,7 @@ newContext model auth =
 newPublicContext : Model -> PublicContext
 newPublicContext model =
     { flags = model.flags
+    , navKey = model.navKey
     }
 
 
@@ -138,7 +138,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case ( msg, model.page ) of
         ( SignOut, _ ) ->
-            ( model, Sessions.toJsSignOut () )
+            ( model, Sessions.endSession model.navKey )
 
         ( OnUrlChange url, _ ) ->
             let
@@ -154,7 +154,7 @@ update msg model =
             case urlRequest of
                 Browser.Internal url ->
                     ( model
-                    , Nav.pushUrl model.key (Url.toString url)
+                    , Nav.pushUrl model.navKey (Url.toString url)
                     )
 
                 Browser.External url ->

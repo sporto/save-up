@@ -18,7 +18,7 @@ type alias Model =
     { authentication : Maybe Authentication
     , flags : Flags
     , currentLocation : AppLocation
-    , key : Nav.Key
+    , navKey : Nav.Key
     , page : Page
     }
 

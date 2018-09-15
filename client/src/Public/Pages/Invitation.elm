@@ -93,7 +93,7 @@ update context msg model =
                     case response.token of
                         Just token ->
                             ( { model | response = RemoteData.Success response }
-                            , Sessions.toJsUseToken token
+                            , Sessions.startSession context.navKey token
                             )
 
                         Nothing ->
