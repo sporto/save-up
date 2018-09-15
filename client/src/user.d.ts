@@ -25,12 +25,6 @@ interface Flags {
 	tokenData: TokenData,
 }
 
-interface CommonPorts {
-	toJsSignOut: {
-		subscribe(f: () => void): void,
-	}
-}
-
 interface SignUp {
 	email: string,
 	name: string,
