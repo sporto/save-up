@@ -1,4 +1,4 @@
-module Investor exposing (subscriptions, view)
+module Investor exposing (initCurrentPage, subscriptions, update, view)
 
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Nav
@@ -6,9 +6,8 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Investor.Pages.Home as Home
-import Shared exposing (..)
-import Shared.Context exposing (Context)
-import Shared.Flags as Flags exposing (Flags)
+import Root exposing (..)
+import Shared.Globals exposing (..)
 import Shared.Pages.NotFound as NotFound
 import Shared.Return as Return
 import Shared.Routes as Routes exposing (Route)
@@ -16,6 +15,40 @@ import Shared.Sessions as Sessions
 import UI.Footer as Footer
 import UI.Navigation as Navigation
 import Url exposing (Url)
+
+
+initCurrentPage : Context -> Routes.RouteInInvestor -> ( PageInvestor, Cmd MsgInvestor )
+initCurrentPage context route =
+    case route of
+        Routes.RouteInInvestor_Home ->
+            Home.init
+                context
+                |> Return.mapBoth PageInvestor_Home PageInvestorHomeMsg
+
+
+subscriptions : PageInvestor -> Sub MsgInvestor
+subscriptions page =
+    case page of
+        PageInvestor_Home pageModel ->
+            Sub.map PageInvestorHomeMsg (Home.subscriptions pageModel)
+
+
+update : Context -> MsgInvestor -> PageInvestor -> ( PageInvestor, Cmd MsgInvestor )
+update context msg page =
+    case msg of
+        PageInvestorHomeMsg sub ->
+            case page of
+                PageInvestor_Home pageModel ->
+                    let
+                        ( newPageModel, pageCmd ) =
+                            Home.update
+                                context
+                                sub
+                                pageModel
+                    in
+                    ( PageInvestor_Home newPageModel
+                    , Cmd.map PageInvestorHomeMsg pageCmd
+                    )
 
 
 view : Context -> PageInvestor -> List (Html Msg)
@@ -36,7 +69,7 @@ header_ context =
             , navigationLink Routes.routeForAdminInvite "Invite"
             ]
         , div []
-            [ text context.flags.tokenData.name
+            [ text context.auth.data.name
             , Navigation.signOut SignOut
             ]
         ]
@@ -61,11 +94,4 @@ currentPage context page =
                         |> map PageInvestorHomeMsg
     in
     section [ class "flex-auto" ]
-        [ inner ]
-
-
-subscriptions : PageInvestor -> Sub Msg
-subscriptions page =
-    case page of
-        PageInvestor_Home pageModel ->
-            Sub.map PageInvestorHomeMsg (Home.subscriptions pageModel)
+        [ inner |> map Msg_Investor ]

@@ -11,7 +11,7 @@ import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import RemoteData
-import Shared.Context exposing (Context)
+import Shared.Globals exposing (..)
 import Shared.Css exposing (molecules)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse)
 import Shared.Routes as Routes

@@ -3,15 +3,14 @@ module Investor.Pages.Home exposing (Model, Msg, init, subscriptions, update, vi
 import Html exposing (..)
 import Html.Attributes exposing (class, href, name, src, type_)
 import Html.Events exposing (onClick, onInput, onSubmit)
-import Shared.Context exposing (Context)
-import Shared.Flags as Flags exposing (Flags)
+import Shared.Globals exposing (..)
 
 
 type alias Model =
     ()
 
 
-initialModel : Flags.Flags -> Model
+initialModel : Flags -> Model
 initialModel flags =
     ()
 

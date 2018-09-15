@@ -9,7 +9,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href, name, style, type_, value)
 import Html.Events exposing (onInput, onSubmit)
 import RemoteData
-import Shared.Context exposing (Context)
+import Shared.Globals exposing (..)
 import Shared.Css exposing (molecules)
 import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorSelection, sendMutation)
 import UI.Flash as Flash

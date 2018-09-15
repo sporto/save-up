@@ -1,11 +1,6 @@
-module Shared.Context exposing (Context, PublicContext)
+module Shared.Context exposing (Context)
 
 import Shared.Flags exposing (Flags, PublicFlags)
-
-
-type alias PublicContext =
-    { flags : PublicFlags
-    }
 
 
 type alias Context =

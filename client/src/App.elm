@@ -11,10 +11,13 @@ import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Investor
 import Investor.Pages.Home
-import Shared exposing (Model, Msg(..), Page(..), PageAdmin(..), PageInvestor(..))
+import Public
+import Public.Pages.Invitation
+import Public.Pages.SignIn
+import Public.Pages.SignUp
+import Root exposing (..)
 import Shared.AppLocation as AppLocation
-import Shared.Context exposing (Context)
-import Shared.Flags as Flags exposing (Flags)
+import Shared.Globals exposing (..)
 import Shared.Pages.NotFound as NotFound
 import Shared.Return as Return
 import Shared.Routes as Routes
@@ -26,11 +29,17 @@ import Url exposing (Url)
 
 initialModel : Flags -> Url -> Nav.Key -> Model
 initialModel flags url key =
-    { flags = flags
+    { authentication = authenticate flags.token
+    , flags = flags
     , currentLocation = AppLocation.fromUrl url
     , key = key
     , page = Page_NotFound
     }
+
+
+authenticate : Maybe String -> Maybe Authentication
+authenticate maybeToken =
+    Nothing
 
 
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
@@ -38,27 +47,100 @@ init flags url key =
     let
         model =
             initialModel flags url key
-
-        context =
-            newContext model
     in
     ( model
     , Cmd.none
     )
-        |> Return.andThen (initCurrentPage context)
+        |> Return.andThen initCurrentPage
+
+
+initCurrentPage : Model -> ( Model, Cmd Msg )
+initCurrentPage model =
+    let
+        ( newPage, newCmd ) =
+            case model.currentLocation.route of
+                Routes.Route_Admin subRoute ->
+                    case authContext model of
+                        AuthContext_Admin context ->
+                            Admin.initCurrentPage
+                                context
+                                subRoute
+                                |> Return.mapBoth (Page_Admin context.auth) Msg_Admin
+
+                        _ ->
+                            ( Page_NotFound, Cmd.none )
+
+                Routes.Route_Investor subRoute ->
+                    case authContext model of
+                        AuthContext_Investor context ->
+                            Investor.initCurrentPage context subRoute
+                                |> Return.mapBoth (Page_Investor context.auth) Msg_Investor
+
+                        _ ->
+                            ( Page_NotFound, Cmd.none )
+
+                Routes.Route_Public subRoute ->
+                    case authContext model of
+                        AuthContext_Public context ->
+                            Public.initCurrentPage context subRoute
+                                |> Return.mapBoth Page_Public Msg_Public
+
+                        _ ->
+                            ( Page_NotFound, Cmd.none )
+
+                Routes.Route_NotFound ->
+                    ( Page_NotFound, Cmd.none )
+    in
+    ( { model | page = newPage }, newCmd )
+
+
+type AuthContext
+    = AuthContext_Public PublicContext
+    | AuthContext_Admin Context
+    | AuthContext_Investor Context
+
+
+authContext : Model -> AuthContext
+authContext model =
+    case authenticate model.flags.token of
+        Just authentication ->
+            let
+                context =
+                    newContext model authentication
+            in
+            case authentication.data.role of
+                Admin ->
+                    AuthContext_Admin context
+
+                Investor ->
+                    AuthContext_Investor context
+
+        Nothing ->
+            AuthContext_Public
+                { flags = model.flags
+                }
+
+
+newContext : Model -> Authentication -> Context
+newContext model auth =
+    { flags = model.flags
+    , auth = auth
+    }
+
+
+newPublicContext : Model -> PublicContext
+newPublicContext model =
+    { flags = model.flags
+    }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    let
-        context =
-            newContext model
-    in
-    case msg of
-        SignOut ->
+    case ( msg, model.page ) of
+        ( SignOut, _ ) ->
             ( model, Sessions.toJsSignOut () )
 
-        OnUrlChange url ->
+        ( OnUrlChange url, _ ) ->
             let
                 newLocation =
                     AppLocation.fromUrl url
@@ -66,9 +148,9 @@ update msg model =
             ( { model | currentLocation = newLocation }
             , Cmd.none
             )
-                |> Return.andThen (initCurrentPage context)
+                |> Return.andThen initCurrentPage
 
-        OnUrlRequest urlRequest ->
+        ( OnUrlRequest urlRequest, _ ) ->
             case urlRequest of
                 Browser.Internal url ->
                     ( model
@@ -80,127 +162,29 @@ update msg model =
                     , Nav.load url
                     )
 
-        PageAdminAccountMsg sub ->
-            case model.page of
-                Page_Admin (PageAdmin_Account pageModel) ->
-                    let
-                        ( newPageModel, pageCmd ) =
-                            Admin.Pages.Account.update
-                                context
-                                sub
-                                pageModel
-                    in
-                    ( { model | page = Page_Admin (PageAdmin_Account newPageModel) }
-                    , Cmd.map PageAdminAccountMsg pageCmd
-                    )
+        ( Msg_Admin subMsg, Page_Admin auth page ) ->
+            Admin.update
+                (newContext model auth)
+                subMsg
+                page
+                |> Return.mapBoth (\p -> { model | page = Page_Admin auth p }) Msg_Admin
 
-                _ ->
-                    ( model, Cmd.none )
+        ( Msg_Investor subMsg, Page_Investor auth page ) ->
+            Investor.update
+                (newContext model auth)
+                subMsg
+                page
+                |> Return.mapBoth (\p -> { model | page = Page_Investor auth p }) Msg_Investor
 
-        PageAdminHomeMsg sub ->
-            case model.page of
-                Page_Admin (PageAdmin_Home pageModel) ->
-                    let
-                        ( newPageModel, pageCmd ) =
-                            Admin.Pages.Home.update
-                                context
-                                sub
-                                pageModel
-                    in
-                    ( { model | page = Page_Admin (PageAdmin_Home newPageModel) }
-                    , Cmd.map PageAdminHomeMsg pageCmd
-                    )
+        ( Msg_Public subMsg, Page_Public page ) ->
+            Public.update
+                (newPublicContext model)
+                subMsg
+                page
+                |> Return.mapBoth (\p -> { model | page = Page_Public p }) Msg_Public
 
-                _ ->
-                    ( model, Cmd.none )
-
-        PageAdminInviteMsg sub ->
-            case model.page of
-                Page_Admin (PageAdmin_Invite pageModel) ->
-                    let
-                        ( newPageModel, pageCmd ) =
-                            Admin.Pages.Invite.update
-                                context
-                                sub
-                                pageModel
-                    in
-                    ( { model | page = Page_Admin (PageAdmin_Invite newPageModel) }
-                    , Cmd.map PageAdminInviteMsg pageCmd
-                    )
-
-                _ ->
-                    ( model, Cmd.none )
-
-        PageInvestorHomeMsg sub ->
-            case model.page of
-                Page_Investor (PageInvestor_Home pageModel) ->
-                    let
-                        ( newPageModel, pageCmd ) =
-                            Investor.Pages.Home.update
-                                context
-                                sub
-                                pageModel
-                    in
-                    ( { model | page = Page_Investor (PageInvestor_Home newPageModel) }
-                    , Cmd.map PageInvestorHomeMsg pageCmd
-                    )
-
-                _ ->
-                    ( model, Cmd.none )
-
-
-newContext : Model -> Context
-newContext model =
-    { flags = model.flags
-    }
-
-
-initCurrentPage : Context -> Model -> ( Model, Cmd Msg )
-initCurrentPage context model =
-    let
-        ( newPage, newCmd ) =
-            case model.currentLocation.route of
-                Routes.Route_Admin subRoute ->
-                    initCurrentAdminPage context subRoute
-                        |> Return.mapModel Page_Admin
-
-                Routes.Route_Investor subRoute ->
-                    initCurrentInvestorPage context subRoute
-                        |> Return.mapModel Page_Investor
-
-                Routes.Route_NotFound ->
-                    ( Page_NotFound, Cmd.none )
-    in
-    ( { model | page = newPage }, newCmd )
-
-
-initCurrentAdminPage : Context -> Routes.RouteInAdmin -> ( PageAdmin, Cmd Msg )
-initCurrentAdminPage context adminRoute =
-    case adminRoute of
-        Routes.RouteInAdmin_Account id subRoute ->
-            Admin.Pages.Account.init
-                context
-                id
-                subRoute
-                |> Return.mapBoth PageAdmin_Account PageAdminAccountMsg
-
-        Routes.RouteInAdmin_Home ->
-            Admin.Pages.Home.init
-                context
-                |> Return.mapBoth PageAdmin_Home PageAdminHomeMsg
-
-        Routes.RouteInAdmin_Invite ->
-            Admin.Pages.Invite.init
-                |> Return.mapBoth PageAdmin_Invite PageAdminInviteMsg
-
-
-initCurrentInvestorPage : Context -> Routes.RouteInInvestor -> ( PageInvestor, Cmd Msg )
-initCurrentInvestorPage context route =
-    case route of
-        Routes.RouteInInvestor_Home ->
-            Investor.Pages.Home.init
-                context
-                |> Return.mapBoth PageInvestor_Home PageInvestorHomeMsg
+        _ ->
+            ( model, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -211,11 +195,17 @@ subscriptions model =
                 Page_NotFound ->
                     Sub.none
 
-                Page_Admin adminPage ->
+                Page_Admin _ adminPage ->
                     Admin.subscriptions adminPage
+                        |> Sub.map Msg_Admin
 
-                Page_Investor page ->
+                Page_Investor _ page ->
                     Investor.subscriptions page
+                        |> Sub.map Msg_Investor
+
+                Page_Public page ->
+                    Public.subscriptions page
+                        |> Sub.map Msg_Public
     in
     Sub.batch [ pageSub ]
 
@@ -223,27 +213,24 @@ subscriptions model =
 view : Model -> Browser.Document Msg
 view model =
     { title = "SaveUp"
-    , body = bodyFor (contextFor model) model
+    , body = bodyFor model
     }
 
 
-bodyFor : Context -> Model -> List (Html Msg)
-bodyFor context model =
+bodyFor : Model -> List (Html Msg)
+bodyFor model =
     case model.page of
         Page_NotFound ->
             [ NotFound.view ]
 
-        Page_Admin adminPage ->
-            Admin.view context adminPage
+        Page_Public page ->
+            Public.view (newPublicContext model) page
 
-        Page_Investor page ->
-            Investor.view context page
+        Page_Admin auth page ->
+            Admin.view (newContext model auth) page
 
-
-contextFor : Model -> Context
-contextFor model =
-    { flags = model.flags
-    }
+        Page_Investor auth page ->
+            Investor.view (newContext model auth) page
 
 
 main : Program Flags Model Msg

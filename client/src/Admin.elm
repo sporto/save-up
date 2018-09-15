@@ -1,4 +1,4 @@
-module Admin exposing (subscriptions, view)
+module Admin exposing (initCurrentPage, subscriptions, update, view)
 
 import Admin.Pages.Account as Account
 import Admin.Pages.Home as Home
@@ -8,9 +8,8 @@ import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
-import Shared exposing (..)
-import Shared.Context exposing (Context)
-import Shared.Flags as Flags exposing (Flags)
+import Root exposing (..)
+import Shared.Globals exposing (..)
 import Shared.Pages.NotFound as NotFound
 import Shared.Return as Return
 import Shared.Routes as Routes exposing (Route)
@@ -18,6 +17,94 @@ import Shared.Sessions as Sessions
 import UI.Footer as Footer
 import UI.Navigation as Navigation
 import Url exposing (Url)
+
+
+initCurrentPage : Context -> Routes.RouteInAdmin -> ( PageAdmin, Cmd MsgAdmin )
+initCurrentPage context adminRoute =
+    case adminRoute of
+        Routes.RouteInAdmin_Account id subRoute ->
+            Account.init
+                context
+                id
+                subRoute
+                |> Return.mapBoth PageAdmin_Account PageAdminAccountMsg
+
+        Routes.RouteInAdmin_Home ->
+            Home.init
+                context
+                |> Return.mapBoth PageAdmin_Home PageAdminHomeMsg
+
+        Routes.RouteInAdmin_Invite ->
+            Invite.init
+                |> Return.mapBoth PageAdmin_Invite PageAdminInviteMsg
+
+
+subscriptions : PageAdmin -> Sub MsgAdmin
+subscriptions page =
+    case page of
+        PageAdmin_Home pageModel ->
+            Sub.map PageAdminHomeMsg (Home.subscriptions pageModel)
+
+        PageAdmin_Account pageModel ->
+            Sub.map PageAdminAccountMsg (Account.subscriptions pageModel)
+
+        PageAdmin_Invite pageModel ->
+            Sub.map PageAdminInviteMsg (Invite.subscriptions pageModel)
+
+
+update : Context -> MsgAdmin -> PageAdmin -> ( PageAdmin, Cmd MsgAdmin )
+update context msg page =
+    case msg of
+        PageAdminAccountMsg sub ->
+            case page of
+                PageAdmin_Account pageModel ->
+                    let
+                        ( newPageModel, pageCmd ) =
+                            Account.update
+                                context
+                                sub
+                                pageModel
+                    in
+                    ( PageAdmin_Account newPageModel 
+                    , Cmd.map PageAdminAccountMsg pageCmd
+                    )
+
+                _ ->
+                    ( page, Cmd.none )
+
+        PageAdminHomeMsg sub ->
+            case page of
+                PageAdmin_Home pageModel ->
+                    let
+                        ( newPageModel, pageCmd ) =
+                            Home.update
+                                context
+                                sub
+                                pageModel
+                    in
+                    ( PageAdmin_Home newPageModel
+                    , Cmd.map PageAdminHomeMsg pageCmd
+                    )
+
+                _ ->
+                    ( page, Cmd.none )
+
+        PageAdminInviteMsg sub ->
+            case page of
+                PageAdmin_Invite pageModel ->
+                    let
+                        ( newPageModel, pageCmd ) =
+                            Invite.update
+                                context
+                                sub
+                                pageModel
+                    in
+                    ( PageAdmin_Invite newPageModel
+                    , Cmd.map PageAdminInviteMsg pageCmd
+                    )
+
+                _ ->
+                    ( page, Cmd.none )
 
 
 view : Context -> PageAdmin -> List (Html Msg)
@@ -38,7 +125,7 @@ header_ context =
             , navigationLink Routes.routeForAdminInvite "Invite"
             ]
         , div []
-            [ text context.flags.tokenData.name
+            [ text context.auth.data.name
             , Navigation.signOut SignOut
             ]
         ]
@@ -71,17 +158,4 @@ currentPage context adminPage =
                         |> map PageAdminInviteMsg
     in
     section [ class "flex-auto" ]
-        [ page ]
-
-
-subscriptions : PageAdmin -> Sub Msg
-subscriptions model =
-    case model of
-        PageAdmin_Home pageModel ->
-            Sub.map PageAdminHomeMsg (Home.subscriptions pageModel)
-
-        PageAdmin_Account pageModel ->
-            Sub.map PageAdminAccountMsg (Account.subscriptions pageModel)
-
-        PageAdmin_Invite pageModel ->
-            Sub.map PageAdminInviteMsg (Invite.subscriptions pageModel)
+        [ page |> map Msg_Admin ]

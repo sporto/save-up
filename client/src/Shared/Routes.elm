@@ -1,4 +1,4 @@
-module Shared.Routes exposing (Route(..), RouteInAdmin(..), RouteInAdminInAccount(..), RouteInInvestor(..), isInAnyAdminRoute, parseUrl, pathFor, routeForAdminAccountDeposit, routeForAdminAccountShow, routeForAdminAccountWithdraw, routeForAdminHome, routeForAdminInvite)
+module Shared.Routes exposing (Route(..), RouteInAdmin(..), RouteInAdminInAccount(..), RouteInInvestor(..), RouteInPublic(..), isInAnyAdminRoute, parseUrl, pathFor, routeForAdminAccountDeposit, routeForAdminAccountShow, routeForAdminAccountWithdraw, routeForAdminHome, routeForAdminInvite, routeForSignIn, routeForSignUp)
 
 import Url exposing (Url)
 import Url.Parser exposing (..)
@@ -7,7 +7,14 @@ import Url.Parser exposing (..)
 type Route
     = Route_Admin RouteInAdmin
     | Route_Investor RouteInInvestor
+    | Route_Public RouteInPublic
     | Route_NotFound
+
+
+type RouteInPublic
+    = RouteInPublic_SignIn
+    | RouteInPublic_SignUp
+    | RouteInPublic_Invitation String
 
 
 type RouteInAdmin
@@ -30,7 +37,11 @@ matchers : Parser (Route -> a) a
 matchers =
     s segBasepath
         </> oneOf
-                [ map Route_Admin (s segAdmin </> matchersForAdmin)
+                [ map Route_Public <| map RouteInPublic_SignIn top
+                , map Route_Public <| map RouteInPublic_SignIn <| s segmentSignIn
+                , map Route_Public <| map RouteInPublic_SignUp <| s segmentSignUp
+                , map Route_Public <| map RouteInPublic_Invitation <| s segmentInvitation </> string
+                , map Route_Admin (s segAdmin </> matchersForAdmin)
                 , map Route_Investor (s segInvestor </> matchersForInvestor)
                 ]
 
@@ -72,15 +83,35 @@ parseUrl url =
 
 pathFor : Route -> String
 pathFor route =
+    let
+        prefix =
+            "/" ++ segBasepath ++ "/"
+    in
     case route of
         Route_NotFound ->
-            "/" ++ segBasepath ++ "/"
+            prefix
+
+        Route_Public publicRoute ->
+            prefix ++ pathInPublic publicRoute
 
         Route_Admin adminRoute ->
-            "/" ++ segBasepath ++ "/" ++ segAdmin ++ "/" ++ pathForAdminRoute adminRoute
+            prefix ++ segAdmin ++ "/" ++ pathForAdminRoute adminRoute
 
         Route_Investor investorRoute ->
-            "/" ++ segBasepath ++ "/" ++ segInvestor ++ "/" ++ pathForInvestorRoute investorRoute
+            prefix ++ segInvestor ++ "/" ++ pathForInvestorRoute investorRoute
+
+
+pathInPublic : RouteInPublic -> String
+pathInPublic route =
+    case route of
+        RouteInPublic_SignIn ->
+            segmentSignIn
+
+        RouteInPublic_SignUp ->
+            segmentSignUp
+
+        RouteInPublic_Invitation token ->
+            segmentInvitation ++ "/" ++ token
 
 
 pathForAdminRoute : RouteInAdmin -> String
@@ -113,6 +144,18 @@ pathForInvestorRoute route =
     case route of
         RouteInInvestor_Home ->
             ""
+
+
+segmentSignIn =
+    "sign-in"
+
+
+segmentSignUp =
+    "sign-up"
+
+
+segmentInvitation =
+    "invitation"
 
 
 segBasepath =
@@ -159,6 +202,16 @@ isInAnyAdminRoute route =
 
 
 -- Get Routes
+
+
+routeForSignIn : Route
+routeForSignIn =
+    RouteInPublic_SignIn |> Route_Public
+
+
+routeForSignUp : Route
+routeForSignUp =
+    RouteInPublic_SignUp |> Route_Public
 
 
 routeForAdminHome : Route

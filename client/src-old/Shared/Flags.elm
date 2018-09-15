@@ -1,15 +1,10 @@
-module Shared.Flags exposing (Flags, PublicFlags, TokenData)
-
-
-type alias PublicFlags =
-    { apiHost : String
-    }
+module Shared.Flags exposing (Flags, TokenData)
 
 
 type alias Flags =
     { apiHost : String
-    , tokenData : TokenData
-    , token : String
+    , tokenData : Maybe TokenData
+    , token : Maybe String
     }
 
 
