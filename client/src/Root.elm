@@ -11,6 +11,7 @@ import Public.Pages.SignIn as SignIn
 import Public.Pages.SignUp as SignUp
 import Shared.AppLocation exposing (AppLocation)
 import Shared.Globals exposing (..)
+import Shared.Routes as Routes
 import Url exposing (Url)
 
 
@@ -48,6 +49,7 @@ type PageInvestor
 
 type Msg
     = SignOut
+    | ChangeRoute Routes.Route
     | OnUrlChange Url
     | OnUrlRequest UrlRequest
     | Msg_Admin MsgAdmin

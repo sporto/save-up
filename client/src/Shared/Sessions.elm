@@ -5,9 +5,11 @@ import Browser.Navigation as Nav
 import Json.Decode as Decode exposing (Decoder, field)
 import Json.Decode.Pipeline as P
 import Jwt exposing (JwtError)
+import Process
 import Shared.Actions as Actions exposing (Actions)
 import Shared.Globals exposing (..)
 import Shared.Routes as Routes
+import Task
 import Time exposing (Posix)
 
 
@@ -108,8 +110,8 @@ type alias Model a =
     { a | authentication : Maybe Authentication }
 
 
-startSession : Nav.Key -> String -> Model a -> ( Model a, Cmd msg, Actions msg )
-startSession navKey token model =
+startSession : String -> Model a -> (Routes.Route -> msg) -> ( Model a, Cmd msg, Actions msg )
+startSession token model navigate =
     case authenticate token of
         Just authentication ->
             let
@@ -121,13 +123,14 @@ startSession navKey token model =
                         Investor ->
                             Routes.routeForInvestorHome
 
-                path =
-                    Routes.pathFor route
+                navigateLater =
+                    Process.sleep 100
+                        |> Task.perform (\_ -> navigate route)
             in
             ( { model | authentication = Just authentication }
             , Cmd.batch
                 [ toJsStoreToken token
-                , Nav.pushUrl navKey path
+                , navigateLater
                 ]
             , Actions.none
             )
@@ -136,16 +139,20 @@ startSession navKey token model =
             ( model, Cmd.none, Actions.none )
 
 
-endSession : Nav.Key -> Model a -> ( Model a, Cmd msg, Actions msg )
-endSession navKey model =
+endSession : Model a -> (Routes.Route -> msg) -> ( Model a, Cmd msg, Actions msg )
+endSession model navigate =
     let
         path =
             Routes.pathFor Routes.routeForSignIn
+
+        navigateLater =
+            Process.sleep 100
+                |> Task.perform (\_ -> navigate Routes.routeForSignIn)
     in
     ( { model | authentication = Nothing }
     , Cmd.batch
         [ toJsRemoveToken ()
-        , Nav.pushUrl navKey path
+        , navigateLater
         ]
     , Actions.none
     )

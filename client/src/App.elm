@@ -56,10 +56,13 @@ init flags url key =
 initCurrentPage : Model -> ( Model, Cmd Msg, Actions Msg )
 initCurrentPage model =
     let
+        contextResult =
+            authContext model
+
         ( newPage, newCmd, newAction ) =
             case model.currentLocation.route of
                 Routes.Route_Admin subRoute ->
-                    case authContext model of
+                    case contextResult of
                         AuthContext_Admin context ->
                             Admin.initCurrentPage
                                 context
@@ -70,7 +73,7 @@ initCurrentPage model =
                             ( Page_NotFound, Cmd.none, Actions.none )
 
                 Routes.Route_Investor subRoute ->
-                    case authContext model of
+                    case contextResult of
                         AuthContext_Investor context ->
                             Investor.initCurrentPage context subRoute
                                 |> R3.mapAll (Page_Investor context.auth) Msg_Investor
@@ -79,7 +82,7 @@ initCurrentPage model =
                             ( Page_NotFound, Cmd.none, Actions.none )
 
                 Routes.Route_Public subRoute ->
-                    case authContext model of
+                    case contextResult of
                         AuthContext_Public context ->
                             Public.initCurrentPage context subRoute
                                 |> R3.mapAll Page_Public Msg_Public
@@ -110,7 +113,7 @@ type AuthContext
 
 authContext : Model -> AuthContext
 authContext model =
-    case authenticate model.flags.token of
+    case model.authentication of
         Just authentication ->
             let
                 context =
@@ -151,6 +154,9 @@ update msg model =
 updateWithActions : Msg -> Model -> ( Model, Cmd Msg, Actions Msg )
 updateWithActions msg model =
     case ( msg, model.page ) of
+        ( ChangeRoute route, _ ) ->
+            ( model, Nav.pushUrl model.navKey (Routes.pathFor route), Actions.none )
+
         ( SignOut, _ ) ->
             ( model, Cmd.none, Actions.endSession )
 
@@ -239,6 +245,20 @@ processActions ( model, cmds, actions ) =
                 |> processActions
 
 
+
+-- debugActions : ( Model, Cmd Msg, Actions Msg ) -> ( Model, Cmd Msg, Actions Msg )
+-- debugActions ( model, cmds, actions ) =
+--     let
+--         _ =
+--             Debug.log "model" model
+--         _ =
+--             Debug.log "cmds" cmds
+--         _ =
+--             Debug.log "actions" actions
+--     in
+--     ( model, cmds, actions )
+
+
 {-| An action can return another action
 e.g show a notification
 -}
@@ -247,14 +267,14 @@ processAction action model =
     case action of
         Actions.Action_StartSession token ->
             Sessions.startSession
-                model.navKey
                 token
                 model
+                ChangeRoute
 
         Actions.Action_EndSession ->
             Sessions.endSession
-                model.navKey
                 model
+                ChangeRoute
 
 
 
