@@ -2,7 +2,7 @@ module Admin.Pages.Home exposing (Model, Msg, init, subscriptions, update, view)
 
 import Api.Object
 import Api.Object.Account
-import Api.Object.AdminViewer
+import Api.Object.Admin
 import Api.Object.User
 import Api.Query
 import Graphql.Field as Field
@@ -194,10 +194,10 @@ dataQuery =
         |> with (Api.Query.admin adminNode)
 
 
-adminNode : SelectionSet Data Api.Object.AdminViewer
+adminNode : SelectionSet Data Api.Object.Admin
 adminNode =
-    Api.Object.AdminViewer.selection Data
-        |> with (Api.Object.AdminViewer.investors investorNode)
+    Api.Object.Admin.selection Data
+        |> with (Api.Object.Admin.investors investorNode)
 
 
 investorNode : SelectionSet Investor Api.Object.User

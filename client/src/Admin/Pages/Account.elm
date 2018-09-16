@@ -3,7 +3,7 @@ module Admin.Pages.Account exposing (Model, Msg, init, subscriptions, update, vi
 import Api.Mutation
 import Api.Object
 import Api.Object.Account
-import Api.Object.AdminViewer
+import Api.Object.Admin
 import Api.Object.DepositResponse
 import Api.Object.Transaction
 import Api.Query
@@ -458,10 +458,10 @@ accountQuery accountID =
         |> with (Api.Query.admin <| adminNode accountID)
 
 
-adminNode : ID -> SelectionSet Account Api.Object.AdminViewer
+adminNode : ID -> SelectionSet Account Api.Object.Admin
 adminNode accountID =
-    Api.Object.AdminViewer.selection identity
-        |> with (Api.Object.AdminViewer.account { id = accountID } accountNode)
+    Api.Object.Admin.selection identity
+        |> with (Api.Object.Admin.account { id = accountID } accountNode)
 
 
 accountNode : SelectionSet Account Api.Object.Account
