@@ -19,13 +19,32 @@ graphql_object!(AppQueryRoot: AppContext |&self| {
 	}
 
 	// Only an admin can request this
-	field admin(&executor) -> FieldResult<AdminViewer> {
-		// TODO fail if not admin
+	field admin(&executor) -> FieldResult<Admin> {
+		let context = &executor.context();
+		let current_user = &context.user;
 
-	 	Ok(AdminViewer {
+		if current_user.role != Role::Admin {
+			return Err(FieldError::from("Unauthorized"))
+		};
+
+	 	Ok(Admin {
 			investors: vec![],
 			account: None,
 	 	})
+	}
+
+	field investor(&executor) -> FieldResult<Investor> {
+		let context = &executor.context();
+		let current_user = &context.user;
+
+		if current_user.role != Role::Investor {
+			return Err(FieldError::from("Unauthorized"))
+		};
+
+		Ok(Investor {
+			accounts: vec![],
+			account: None,
+		})
 	}
 
 	field timezones(&executor) -> FieldResult<Vec<String>> {
@@ -40,12 +59,12 @@ graphql_object!(AppQueryRoot: AppContext |&self| {
 	}
 });
 
-struct AdminViewer {
+struct Admin {
 	investors: Vec<User>,
 	account: Option<Account>,
 }
 
-graphql_object!(AdminViewer: AppContext |&self| {
+graphql_object!(Admin: AppContext |&self| {
 
 	field investors(&executor) -> FieldResult<Vec<User>> {
 		let context = &executor.context();
@@ -82,12 +101,12 @@ graphql_object!(AdminViewer: AppContext |&self| {
 
 });
 
-struct InvestorViewer {
+struct Investor {
 	accounts: Vec<Account>,
 	account: Option<Account>,
 }
 
-graphql_object!(InvestorViewer: AppContext |&self| {
+graphql_object!(Investor: AppContext |&self| {
 
 	field accounts(&executor) -> FieldResult<Vec<Account>> {
 		let context = &executor.context();

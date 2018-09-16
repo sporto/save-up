@@ -2,19 +2,23 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object exposing (Account(..), AdminViewer(..), DepositResponse(..), InvitationResponse(..), MutationError(..), RequestWithdrawalResponse(..), ResolveTransactionRequestResponse(..), Transaction(..), TransactionRequest(..), User(..), WithdrawalResponse(..))
+module Api.Object exposing (Account(..), Admin(..), DepositResponse(..), Investor(..), InvitationResponse(..), MutationError(..), RequestWithdrawalResponse(..), ResolveTransactionRequestResponse(..), Transaction(..), TransactionRequest(..), User(..), WithdrawalResponse(..))
 
 
 type Account
     = Account
 
 
-type AdminViewer
-    = AdminViewer
+type Admin
+    = Admin
 
 
 type DepositResponse
     = DepositResponse
+
+
+type Investor
+    = Investor
 
 
 type InvitationResponse
