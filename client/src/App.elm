@@ -229,7 +229,15 @@ subscriptions model =
 
 processActions : ( Model, Cmd Msg, Actions Msg ) -> ( Model, Cmd Msg )
 processActions ( model, cmds, actions ) =
-    ( model, cmds )
+    actions
+        |> List.foldl
+            (\action returns -> returns |> Return.andThen (processAction action))
+            ( model, cmds )
+
+
+processAction : Actions.Action Msg -> Model -> ( Model, Cmd Msg )
+processAction action model =
+    ( model, Cmd.none )
 
 
 

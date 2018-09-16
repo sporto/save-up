@@ -1,4 +1,4 @@
-module Shared.Actions exposing (Actions, batch, endSession, map, none, startSession)
+module Shared.Actions exposing (Action, Actions, batch, endSession, map, none, startSession)
 
 
 type alias Actions msg =
