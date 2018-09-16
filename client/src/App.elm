@@ -292,7 +292,7 @@ bodyFor : Model -> List (Html Msg)
 bodyFor model =
     case model.page of
         Page_NotFound ->
-            [ NotFound.view ]
+            [ NotFound.view model.authentication ]
 
         Page_Public page ->
             Public.view (newPublicContext model) page
