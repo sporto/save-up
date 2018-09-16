@@ -59,39 +59,42 @@ initCurrentPage model =
         contextResult =
             authContext model
 
+        currentRoute =
+            model.currentLocation.route
+
+        notFound =
+            ( Page_NotFound, Cmd.none, Actions.none )
+
         ( newPage, newCmd, newAction ) =
-            case model.currentLocation.route of
-                Routes.Route_Admin subRoute ->
-                    case contextResult of
-                        AuthContext_Admin context ->
-                            Admin.initCurrentPage
-                                context
-                                subRoute
-                                |> R3.mapAll (Page_Admin context.auth) Msg_Admin
+            case ( contextResult, currentRoute ) of
+                ( AuthContext_Admin context, Routes.Route_Admin subRoute ) ->
+                    Admin.initCurrentPage
+                        context
+                        subRoute
+                        |> R3.mapAll (Page_Admin context.auth) Msg_Admin
 
-                        _ ->
-                            ( Page_NotFound, Cmd.none, Actions.none )
+                ( AuthContext_Admin _, Routes.Route_Public Routes.RouteInPublic_SignIn ) ->
+                    ( Page_NotFound
+                    , Nav.replaceUrl model.navKey (Routes.pathFor Routes.routeForAdminHome)
+                    , Actions.none
+                    )
 
-                Routes.Route_Investor subRoute ->
-                    case contextResult of
-                        AuthContext_Investor context ->
-                            Investor.initCurrentPage context subRoute
-                                |> R3.mapAll (Page_Investor context.auth) Msg_Investor
+                ( AuthContext_Investor context, Routes.Route_Investor subRoute ) ->
+                    Investor.initCurrentPage context subRoute
+                        |> R3.mapAll (Page_Investor context.auth) Msg_Investor
 
-                        _ ->
-                            ( Page_NotFound, Cmd.none, Actions.none )
+                ( AuthContext_Investor _, Routes.Route_Public Routes.RouteInPublic_SignIn ) ->
+                    ( Page_NotFound
+                    , Nav.replaceUrl model.navKey (Routes.pathFor Routes.routeForInvestorHome)
+                    , Actions.none
+                    )
 
-                Routes.Route_Public subRoute ->
-                    case contextResult of
-                        AuthContext_Public context ->
-                            Public.initCurrentPage context subRoute
-                                |> R3.mapAll Page_Public Msg_Public
+                ( AuthContext_Public context, Routes.Route_Public subRoute ) ->
+                    Public.initCurrentPage context subRoute
+                        |> R3.mapAll Page_Public Msg_Public
 
-                        _ ->
-                            ( Page_NotFound, Cmd.none, Actions.none )
-
-                Routes.Route_NotFound ->
-                    ( Page_NotFound, Cmd.none, Actions.none )
+                ( _, _ ) ->
+                    notFound
     in
     ( { model | page = newPage }
     , newCmd
@@ -292,7 +295,7 @@ bodyFor : Model -> List (Html Msg)
 bodyFor model =
     case model.page of
         Page_NotFound ->
-            [ NotFound.view model.authentication ]
+            [ NotFound.view model.authentication model.currentLocation ]
 
         Page_Public page ->
             Public.view (newPublicContext model) page
