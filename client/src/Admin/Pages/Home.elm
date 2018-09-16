@@ -77,7 +77,7 @@ update context msg model =
 view : Context -> Model -> Html msg
 view context model =
     section [ class molecules.page.container ]
-        [ h1 [ class "mt-4" ] [ text "Welcome" ]
+        [ h1 [ class molecules.page.title ] [ text "Welcome" ]
         , investors context model
         ]
 

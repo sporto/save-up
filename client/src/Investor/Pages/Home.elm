@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href, name, src, type_)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Shared.Actions as Actions
+import Shared.Css exposing (molecules)
 import Shared.Globals exposing (..)
 
 
@@ -42,8 +43,8 @@ subscriptions model =
 
 view : Context -> Model -> Html Msg
 view context model =
-    div []
-        [ h1 [ class "mt-6" ] [ text "Your account" ]
+    section [ class molecules.page.container ]
+        [ h1 [ class molecules.page.title ] [ text "Your account" ]
         , div [ class "mt-8 flex justify-center" ]
             [ img [ src "https://via.placeholder.com/600x320" ] []
             ]
