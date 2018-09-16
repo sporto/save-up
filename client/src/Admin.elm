@@ -107,7 +107,7 @@ view context adminPage =
 
 header_ : Context -> Html Msg
 header_ context =
-    nav [ class "flex p-4 bg-grey-darkest text-white" ]
+    nav [ class "flex p-4 bg-grey-darkest text-white flex-no-shrink" ]
         [ Navigation.logo
         , div
             [ class "ml-8 flex-grow" ]

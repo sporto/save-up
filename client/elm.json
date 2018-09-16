@@ -17,11 +17,13 @@
             "elm/time": "1.0.0",
             "elm/url": "1.0.0",
             "elm-community/result-extra": "2.2.1",
+            "jweir/sparkline": "4.0.0",
             "krisajenkins/remotedata": "5.0.0",
             "simonh1000/elm-jwt": "6.0.0",
             "stoeffel/elm-verify": "5.0.0"
         },
         "indirect": {
+            "elm/svg": "1.0.1",
             "elm/virtual-dom": "1.0.0",
             "elm-community/list-extra": "8.0.0",
             "lukewestby/elm-string-interpolate": "1.0.3",

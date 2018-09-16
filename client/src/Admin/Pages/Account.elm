@@ -20,6 +20,7 @@ import Shared.Globals exposing (..)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse, MutationError)
 import Shared.Routes as Routes
 import Time exposing (Posix)
+import UI.Chart as Chart
 import UI.Empty as Empty
 import UI.Flash as Flash
 import UI.Icons as Icons
@@ -334,7 +335,7 @@ accountWithData context account =
         , span [ class "text-3xl font-semibold" ] [ text (String.fromInt balance) ]
         , span [ class "ml-2" ] [ Icons.money ]
         ]
-    , img [ src "https://via.placeholder.com/600x320" ] []
+    , Chart.view account.transactions
     ]
 
 
