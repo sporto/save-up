@@ -152,7 +152,7 @@ updateWithActions : Msg -> Model -> ( Model, Cmd Msg, Actions Msg )
 updateWithActions msg model =
     case ( msg, model.page ) of
         ( SignOut, _ ) ->
-            Sessions.endSession model.navKey model
+            ( model, Cmd.none, Actions.endSession )
 
         ( OnUrlChange url, _ ) ->
             let
@@ -229,15 +229,32 @@ subscriptions model =
 
 processActions : ( Model, Cmd Msg, Actions Msg ) -> ( Model, Cmd Msg )
 processActions ( model, cmds, actions ) =
-    actions
-        |> List.foldl
-            (\action returns -> returns |> Return.andThen (processAction action))
+    case actions of
+        [] ->
             ( model, cmds )
 
+        action :: restActions ->
+            ( model, cmds, restActions )
+                |> R3.andThen (processAction action)
+                |> processActions
 
-processAction : Actions.Action Msg -> Model -> ( Model, Cmd Msg )
+
+{-| An action can return another action
+e.g show a notification
+-}
+processAction : Actions.Action Msg -> Model -> ( Model, Cmd Msg, Actions Msg )
 processAction action model =
-    ( model, Cmd.none )
+    case action of
+        Actions.Action_StartSession token ->
+            Sessions.startSession
+                model.navKey
+                token
+                model
+
+        Actions.Action_EndSession ->
+            Sessions.endSession
+                model.navKey
+                model
 
 
 

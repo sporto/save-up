@@ -1,4 +1,4 @@
-module Shared.Actions exposing (Action, Actions, batch, endSession, map, none, startSession)
+module Shared.Actions exposing (Action(..), Actions, batch, endSession, map, none, startSession)
 
 
 type alias Actions msg =
@@ -6,8 +6,8 @@ type alias Actions msg =
 
 
 type Action msg
-    = StartSession String
-    | EndSession
+    = Action_StartSession String
+    | Action_EndSession
 
 
 none : Actions a
@@ -16,11 +16,11 @@ none =
 
 
 startSession token =
-    [ StartSession token ]
+    [ Action_StartSession token ]
 
 
 endSession =
-    [ EndSession ]
+    [ Action_EndSession ]
 
 
 batch : List (Actions a) -> Actions a
@@ -36,8 +36,8 @@ map tagger =
 mapAction : (a -> b) -> Action a -> Action b
 mapAction tagger action =
     case action of
-        StartSession token ->
-            StartSession token
+        Action_StartSession token ->
+            Action_StartSession token
 
-        EndSession ->
-            EndSession
+        Action_EndSession ->
+            Action_EndSession
