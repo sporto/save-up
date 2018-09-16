@@ -1,10 +1,11 @@
-port module Shared.Sessions exposing (SignIn, SignUp, asEmailInSignUp, asNameInSignUp, asPasswordInSignUp, decodeToken, endSession, newSignIn, newSignUp, startSession)
+port module Shared.Sessions exposing (SignIn, SignUp, asEmailInSignUp, asNameInSignUp, asPasswordInSignUp, authenticate, decodeToken, endSession, newSignIn, newSignUp, startSession)
 
 import ApiPub.InputObject
 import Browser.Navigation as Nav
 import Json.Decode as Decode exposing (Decoder, field)
 import Json.Decode.Pipeline as P
 import Jwt exposing (JwtError)
+import Shared.Actions as Actions exposing (Actions)
 import Shared.Globals exposing (..)
 import Shared.Routes as Routes
 import Time exposing (Posix)
@@ -90,39 +91,64 @@ decodeRole =
             )
 
 
-startSession : Nav.Key -> String -> Cmd msg
-startSession navKey token =
-    let
-        role =
-            Admin
+authenticate : String -> Maybe Authentication
+authenticate token =
+    case decodeToken token of
+        Ok data ->
+            Just
+                { token = token
+                , data = data
+                }
 
-        route =
-            case role of
-                Admin ->
-                    Routes.routeForAdminHome
-
-                Investor ->
-                    Routes.routeForInvestorHome
-
-        path =
-            Routes.pathFor route
-    in
-    Cmd.batch
-        [ toJsStoreToken token
-        , Nav.pushUrl navKey path
-        ]
+        Err e ->
+            Nothing
 
 
-endSession : Nav.Key -> Cmd msg
-endSession navKey =
+type alias Model a =
+    { a | authentication : Maybe Authentication }
+
+
+startSession : Nav.Key -> String -> Model a -> ( Model a, Cmd msg, Actions msg )
+startSession navKey token model =
+    case authenticate token of
+        Just authentication ->
+            let
+                route =
+                    case authentication.data.role of
+                        Admin ->
+                            Routes.routeForAdminHome
+
+                        Investor ->
+                            Routes.routeForInvestorHome
+
+                path =
+                    Routes.pathFor route
+            in
+            ( { model | authentication = Just authentication }
+            , Cmd.batch
+                [ toJsStoreToken token
+                , Nav.pushUrl navKey path
+                ]
+            , Actions.none
+            )
+
+        Nothing ->
+            ( model, Cmd.none, Actions.none )
+
+
+endSession : Nav.Key -> Model a -> ( Model a, Cmd msg, Actions msg )
+endSession navKey model =
     let
         path =
             Routes.pathFor Routes.routeForSignIn
     in
-    Cmd.batch
+    ( { model | authentication = Nothing }
+    , Cmd.batch
         [ toJsRemoveToken ()
         , Nav.pushUrl navKey path
         ]
+    , Actions.none
+    )
 
 
 port toJsStoreToken : String -> Cmd msg

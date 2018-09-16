@@ -9,9 +9,10 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Root exposing (..)
+import Shared.Actions as Actions
 import Shared.Globals exposing (..)
 import Shared.Pages.NotFound as NotFound
-import Shared.Return as Return
+import Shared.Return3 as Return
 import Shared.Routes as Routes exposing (Route)
 import Shared.Sessions as Sessions
 import UI.Footer as Footer
@@ -19,7 +20,11 @@ import UI.Navigation as Navigation
 import Url exposing (Url)
 
 
-initCurrentPage : Context -> Routes.RouteInAdmin -> ( PageAdmin, Cmd MsgAdmin )
+type alias Returns =
+    ( PageAdmin, Cmd MsgAdmin, Actions.Actions MsgAdmin )
+
+
+initCurrentPage : Context -> Routes.RouteInAdmin -> Returns
 initCurrentPage context adminRoute =
     case adminRoute of
         Routes.RouteInAdmin_Account id subRoute ->
@@ -27,16 +32,16 @@ initCurrentPage context adminRoute =
                 context
                 id
                 subRoute
-                |> Return.mapBoth PageAdmin_Account PageAdminAccountMsg
+                |> Return.mapAll PageAdmin_Account PageAdminAccountMsg
 
         Routes.RouteInAdmin_Home ->
             Home.init
                 context
-                |> Return.mapBoth PageAdmin_Home PageAdminHomeMsg
+                |> Return.mapAll PageAdmin_Home PageAdminHomeMsg
 
         Routes.RouteInAdmin_Invite ->
             Invite.init
-                |> Return.mapBoth PageAdmin_Invite PageAdminInviteMsg
+                |> Return.mapAll PageAdmin_Invite PageAdminInviteMsg
 
 
 subscriptions : PageAdmin -> Sub MsgAdmin
@@ -52,59 +57,44 @@ subscriptions page =
             Sub.map PageAdminInviteMsg (Invite.subscriptions pageModel)
 
 
-update : Context -> MsgAdmin -> PageAdmin -> ( PageAdmin, Cmd MsgAdmin )
+update : Context -> MsgAdmin -> PageAdmin -> Returns
 update context msg page =
     case msg of
         PageAdminAccountMsg sub ->
             case page of
                 PageAdmin_Account pageModel ->
-                    let
-                        ( newPageModel, pageCmd ) =
-                            Account.update
-                                context
-                                sub
-                                pageModel
-                    in
-                    ( PageAdmin_Account newPageModel 
-                    , Cmd.map PageAdminAccountMsg pageCmd
-                    )
+                    Account.update
+                        context
+                        sub
+                        pageModel
+                        |> Return.mapAll PageAdmin_Account PageAdminAccountMsg
 
                 _ ->
-                    ( page, Cmd.none )
+                    ( page, Cmd.none, Actions.none )
 
         PageAdminHomeMsg sub ->
             case page of
                 PageAdmin_Home pageModel ->
-                    let
-                        ( newPageModel, pageCmd ) =
-                            Home.update
-                                context
-                                sub
-                                pageModel
-                    in
-                    ( PageAdmin_Home newPageModel
-                    , Cmd.map PageAdminHomeMsg pageCmd
-                    )
+                    Home.update
+                        context
+                        sub
+                        pageModel
+                        |> Return.mapAll PageAdmin_Home PageAdminHomeMsg
 
                 _ ->
-                    ( page, Cmd.none )
+                    ( page, Cmd.none, Actions.none )
 
         PageAdminInviteMsg sub ->
             case page of
                 PageAdmin_Invite pageModel ->
-                    let
-                        ( newPageModel, pageCmd ) =
-                            Invite.update
-                                context
-                                sub
-                                pageModel
-                    in
-                    ( PageAdmin_Invite newPageModel
-                    , Cmd.map PageAdminInviteMsg pageCmd
-                    )
+                    Invite.update
+                        context
+                        sub
+                        pageModel
+                        |> Return.mapAll PageAdmin_Invite PageAdminInviteMsg
 
                 _ ->
-                    ( page, Cmd.none )
+                    ( page, Cmd.none, Actions.none )
 
 
 view : Context -> PageAdmin -> List (Html Msg)

@@ -11,8 +11,9 @@ import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import RemoteData
-import Shared.Globals exposing (..)
+import Shared.Actions as Actions
 import Shared.Css exposing (molecules)
+import Shared.Globals exposing (..)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse)
 import Shared.Routes as Routes
 import UI.Empty as Empty
@@ -34,9 +35,13 @@ newModel =
     }
 
 
-init : Context -> ( Model, Cmd Msg )
+type alias Returns =
+    ( Model, Cmd Msg, Actions.Actions Msg )
+
+
+init : Context -> Returns
 init context =
-    ( newModel, getData context )
+    ( newModel, getData context, Actions.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -44,11 +49,11 @@ subscriptions model =
     Sub.none
 
 
-update : Context -> Msg -> Model -> ( Model, Cmd Msg )
+update : Context -> Msg -> Model -> Returns
 update context msg model =
     case msg of
         NoOp ->
-            ( model, Cmd.none )
+            ( model, Cmd.none, Actions.none )
 
         OnData result ->
             case result of
@@ -57,6 +62,7 @@ update context msg model =
                         | data = RemoteData.Failure e
                       }
                     , Cmd.none
+                    , Actions.none
                     )
 
                 Ok data ->
@@ -64,6 +70,7 @@ update context msg model =
                         | data = RemoteData.Success data
                       }
                     , Cmd.none
+                    , Actions.none
                     )
 
 

@@ -16,10 +16,12 @@ import Public.Pages.Invitation
 import Public.Pages.SignIn
 import Public.Pages.SignUp
 import Root exposing (..)
+import Shared.Actions as Actions exposing (Actions)
 import Shared.AppLocation as AppLocation
 import Shared.Globals exposing (..)
 import Shared.Pages.NotFound as NotFound
 import Shared.Return as Return
+import Shared.Return3 as R3
 import Shared.Routes as Routes
 import Shared.Sessions as Sessions
 import UI.Footer as Footer
@@ -37,11 +39,6 @@ initialModel flags url navKey =
     }
 
 
-authenticate : Maybe String -> Maybe Authentication
-authenticate maybeToken =
-    Nothing
-
-
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     let
@@ -50,14 +47,16 @@ init flags url key =
     in
     ( model
     , Cmd.none
+    , Actions.none
     )
-        |> Return.andThen initCurrentPage
+        |> R3.andThen initCurrentPage
+        |> processActions
 
 
-initCurrentPage : Model -> ( Model, Cmd Msg )
+initCurrentPage : Model -> ( Model, Cmd Msg, Actions Msg )
 initCurrentPage model =
     let
-        ( newPage, newCmd ) =
+        ( newPage, newCmd, newAction ) =
             case model.currentLocation.route of
                 Routes.Route_Admin subRoute ->
                     case authContext model of
@@ -65,33 +64,42 @@ initCurrentPage model =
                             Admin.initCurrentPage
                                 context
                                 subRoute
-                                |> Return.mapBoth (Page_Admin context.auth) Msg_Admin
+                                |> R3.mapAll (Page_Admin context.auth) Msg_Admin
 
                         _ ->
-                            ( Page_NotFound, Cmd.none )
+                            ( Page_NotFound, Cmd.none, Actions.none )
 
                 Routes.Route_Investor subRoute ->
                     case authContext model of
                         AuthContext_Investor context ->
                             Investor.initCurrentPage context subRoute
-                                |> Return.mapBoth (Page_Investor context.auth) Msg_Investor
+                                |> R3.mapAll (Page_Investor context.auth) Msg_Investor
 
                         _ ->
-                            ( Page_NotFound, Cmd.none )
+                            ( Page_NotFound, Cmd.none, Actions.none )
 
                 Routes.Route_Public subRoute ->
                     case authContext model of
                         AuthContext_Public context ->
                             Public.initCurrentPage context subRoute
-                                |> Return.mapBoth Page_Public Msg_Public
+                                |> R3.mapAll Page_Public Msg_Public
 
                         _ ->
-                            ( Page_NotFound, Cmd.none )
+                            ( Page_NotFound, Cmd.none, Actions.none )
 
                 Routes.Route_NotFound ->
-                    ( Page_NotFound, Cmd.none )
+                    ( Page_NotFound, Cmd.none, Actions.none )
     in
-    ( { model | page = newPage }, newCmd )
+    ( { model | page = newPage }
+    , newCmd
+    , newAction
+    )
+
+
+authenticate : Maybe String -> Maybe Authentication
+authenticate maybeToken =
+    maybeToken
+        |> Maybe.andThen Sessions.authenticate
 
 
 type AuthContext
@@ -136,9 +144,15 @@ newPublicContext model =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
+    updateWithActions msg model
+        |> processActions
+
+
+updateWithActions : Msg -> Model -> ( Model, Cmd Msg, Actions Msg )
+updateWithActions msg model =
     case ( msg, model.page ) of
         ( SignOut, _ ) ->
-            ( model, Sessions.endSession model.navKey )
+            Sessions.endSession model.navKey model
 
         ( OnUrlChange url, _ ) ->
             let
@@ -147,19 +161,22 @@ update msg model =
             in
             ( { model | currentLocation = newLocation }
             , Cmd.none
+            , Actions.none
             )
-                |> Return.andThen initCurrentPage
+                |> R3.andThen initCurrentPage
 
         ( OnUrlRequest urlRequest, _ ) ->
             case urlRequest of
                 Browser.Internal url ->
                     ( model
                     , Nav.pushUrl model.navKey (Url.toString url)
+                    , Actions.none
                     )
 
                 Browser.External url ->
                     ( model
                     , Nav.load url
+                    , Actions.none
                     )
 
         ( Msg_Admin subMsg, Page_Admin auth page ) ->
@@ -167,24 +184,24 @@ update msg model =
                 (newContext model auth)
                 subMsg
                 page
-                |> Return.mapBoth (\p -> { model | page = Page_Admin auth p }) Msg_Admin
+                |> R3.mapAll (\p -> { model | page = Page_Admin auth p }) Msg_Admin
 
         ( Msg_Investor subMsg, Page_Investor auth page ) ->
             Investor.update
                 (newContext model auth)
                 subMsg
                 page
-                |> Return.mapBoth (\p -> { model | page = Page_Investor auth p }) Msg_Investor
+                |> R3.mapAll (\p -> { model | page = Page_Investor auth p }) Msg_Investor
 
         ( Msg_Public subMsg, Page_Public page ) ->
             Public.update
                 (newPublicContext model)
                 subMsg
                 page
-                |> Return.mapBoth (\p -> { model | page = Page_Public p }) Msg_Public
+                |> R3.mapAll (\p -> { model | page = Page_Public p }) Msg_Public
 
         _ ->
-            ( model, Cmd.none )
+            ( model, Cmd.none, Actions.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -208,6 +225,15 @@ subscriptions model =
                         |> Sub.map Msg_Public
     in
     Sub.batch [ pageSub ]
+
+
+processActions : ( Model, Cmd Msg, Actions Msg ) -> ( Model, Cmd Msg )
+processActions ( model, cmds, actions ) =
+    ( model, cmds )
+
+
+
+-- VIEWS
 
 
 view : Model -> Browser.Document Msg

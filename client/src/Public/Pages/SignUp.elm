@@ -13,6 +13,7 @@ import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
 import RemoteData
+import Shared.Actions as Actions
 import Shared.Css exposing (molecules)
 import Shared.Globals exposing (..)
 import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorPublicSelection, sendPublicMutation)
@@ -48,9 +49,16 @@ asSignUpInModel model signUp =
     { model | signUp = signUp }
 
 
-init : Flags -> ( Model, Cmd Msg )
+type alias Returns =
+    ( Model, Cmd Msg, Actions.Actions Msg )
+
+
+init : Flags -> Returns
 init flags =
-    ( initialModel flags, Cmd.none )
+    ( initialModel flags
+    , Cmd.none
+    , Actions.none
+    )
 
 
 type Msg
@@ -61,7 +69,7 @@ type Msg
     | OnSubmitResponse (GraphResponse SignUpResponse)
 
 
-update : PublicContext -> Msg -> Model -> ( Model, Cmd Msg )
+update : PublicContext -> Msg -> Model -> Returns
 update context msg model =
     case msg of
         ChangeEmail email ->
@@ -69,6 +77,7 @@ update context msg model =
                 |> Sessions.asEmailInSignUp model.signUp
                 |> asSignUpInModel model
             , Cmd.none
+            , Actions.none
             )
 
         ChangeName name ->
@@ -76,6 +85,7 @@ update context msg model =
                 |> Sessions.asNameInSignUp model.signUp
                 |> asSignUpInModel model
             , Cmd.none
+            , Actions.none
             )
 
         ChangePassword password ->
@@ -83,28 +93,35 @@ update context msg model =
                 |> Sessions.asPasswordInSignUp model.signUp
                 |> asSignUpInModel model
             , Cmd.none
+            , Actions.none
             )
 
         Submit ->
             ( { model | response = RemoteData.Loading }
             , sendCreateSignUpMutation context model.signUp
+            , Actions.none
             )
 
         OnSubmitResponse result ->
             case result of
                 Err e ->
-                    ( { model | response = RemoteData.Failure e }, Cmd.none )
+                    ( { model | response = RemoteData.Failure e }
+                    , Cmd.none
+                    , Actions.none
+                    )
 
                 Ok response ->
                     case response.token of
                         Just token ->
                             ( { model | response = RemoteData.Success response }
-                            , Sessions.startSession context.navKey token
+                            , Cmd.none
+                            , Actions.startSession token
                             )
 
                         Nothing ->
                             ( { model | response = RemoteData.Success response }
                             , Cmd.none
+                            , Actions.none
                             )
 
 

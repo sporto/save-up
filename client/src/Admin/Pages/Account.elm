@@ -14,8 +14,9 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href, src, style, type_, value)
 import Html.Events exposing (onInput, onSubmit)
 import RemoteData
-import Shared.Globals exposing (..)
+import Shared.Actions as Actions
 import Shared.Css exposing (molecules)
+import Shared.Globals exposing (..)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse, MutationError)
 import Shared.Routes as Routes
 import Time exposing (Posix)
@@ -121,7 +122,11 @@ type DepositMsg
     | SubmitDeposit
 
 
-init : Context -> ID -> Routes.RouteInAdminInAccount -> ( Model, Cmd Msg )
+type alias Returns =
+    ( Model, Cmd Msg, Actions.Actions Msg )
+
+
+init : Context -> ID -> Routes.RouteInAdminInAccount -> Returns
 init context accountID route =
     let
         ( subPage, cmd ) =
@@ -135,7 +140,10 @@ init context accountID route =
                 Routes.RouteInAdminInAccount_Withdraw ->
                     ( SubPage_Withdraw, Cmd.none )
     in
-    ( newModel accountID subPage, cmd )
+    ( newModel accountID subPage
+    , cmd
+    , Actions.none
+    )
 
 
 subscriptions : Model -> Sub Msg
@@ -143,11 +151,11 @@ subscriptions model =
     Sub.none
 
 
-update : Context -> Msg -> Model -> ( Model, Cmd Msg )
+update : Context -> Msg -> Model -> Returns
 update context msg model =
     case msg of
         NoOp ->
-            ( model, Cmd.none )
+            ( model, Cmd.none, Actions.none )
 
         Msg_Desposit subMsg ->
             case model.subPage of
@@ -160,10 +168,13 @@ update context msg model =
                                 subMsg
                                 depositModel
                     in
-                    ( { model | subPage = SubPage_Deposit nextDepositModel }, Cmd.map Msg_Desposit newCmd )
+                    ( { model | subPage = SubPage_Deposit nextDepositModel }
+                    , Cmd.map Msg_Desposit newCmd
+                    , Actions.none
+                    )
 
                 _ ->
-                    ( model, Cmd.none )
+                    ( model, Cmd.none, Actions.none )
 
         OnAccountData result ->
             case result of
@@ -172,6 +183,7 @@ update context msg model =
                         | subPage = SubPage_Top { data = RemoteData.Failure e }
                       }
                     , Cmd.none
+                    , Actions.none
                     )
 
                 Ok data ->
@@ -179,6 +191,7 @@ update context msg model =
                         | subPage = SubPage_Top { data = RemoteData.Success data }
                       }
                     , Cmd.none
+                    , Actions.none
                     )
 
 

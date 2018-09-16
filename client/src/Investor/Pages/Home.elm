@@ -3,6 +3,7 @@ module Investor.Pages.Home exposing (Model, Msg, init, subscriptions, update, vi
 import Html exposing (..)
 import Html.Attributes exposing (class, href, name, src, type_)
 import Html.Events exposing (onClick, onInput, onSubmit)
+import Shared.Actions as Actions
 import Shared.Globals exposing (..)
 
 
@@ -19,16 +20,20 @@ type Msg
     = NoOp
 
 
-init : Context -> ( Model, Cmd Msg )
+type alias Returns =
+    ( Model, Cmd Msg, Actions.Actions Msg )
+
+
+init : Context -> Returns
 init context =
-    ( initialModel context.flags, Cmd.none )
+    ( initialModel context.flags, Cmd.none, Actions.none )
 
 
-update : Context -> Msg -> Model -> ( Model, Cmd Msg )
+update : Context -> Msg -> Model -> Returns
 update context msg model =
     case msg of
         NoOp ->
-            ( model, Cmd.none )
+            ( model, Cmd.none, Actions.none )
 
 
 subscriptions model =

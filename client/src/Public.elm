@@ -9,31 +9,36 @@ import Public.Pages.Invitation as Invitation
 import Public.Pages.SignIn as SignIn
 import Public.Pages.SignUp as SignUp
 import Root exposing (..)
+import Shared.Actions as Actions
 import Shared.Globals exposing (..)
-import Shared.Return as Return
+import Shared.Return3 as Return
 import Shared.Routes as Routes exposing (Route)
 import Shared.Sessions as Sessions
 import Url exposing (Url)
 
 
-initCurrentPage : PublicContext -> Routes.RouteInPublic -> ( PagePublic, Cmd MsgPublic )
+type alias Returns =
+    ( PagePublic, Cmd MsgPublic, Actions.Actions MsgPublic )
+
+
+initCurrentPage : PublicContext -> Routes.RouteInPublic -> Returns
 initCurrentPage context route =
     case route of
         Routes.RouteInPublic_SignIn ->
             SignIn.init context.flags
-                |> Return.mapBoth
+                |> Return.mapAll
                     PagePublic_SignIn
                     PageSignInMsg
 
         Routes.RouteInPublic_SignUp ->
             SignUp.init context.flags
-                |> Return.mapBoth
+                |> Return.mapAll
                     PagePublic_SignUp
                     PageSignUpMsg
 
         Routes.RouteInPublic_Invitation token ->
             Invitation.init context.flags token
-                |> Return.mapBoth
+                |> Return.mapAll
                     PagePublic_Invitation
                     PageInvitationMsg
 
@@ -51,59 +56,44 @@ subscriptions page =
             Sub.map PageInvitationMsg (Invitation.subscriptions pageModel)
 
 
-update : PublicContext -> MsgPublic -> PagePublic -> ( PagePublic, Cmd MsgPublic )
+update : PublicContext -> MsgPublic -> PagePublic -> Returns
 update context msg page =
     case msg of
         PageSignInMsg sub ->
             case page of
                 PagePublic_SignIn pageModel ->
-                    let
-                        ( newPageModel, pageCmd ) =
-                            SignIn.update
-                                context
-                                sub
-                                pageModel
-                    in
-                    ( PagePublic_SignIn newPageModel
-                    , Cmd.map PageSignInMsg pageCmd
-                    )
+                    SignIn.update
+                        context
+                        sub
+                        pageModel
+                        |> Return.mapAll PagePublic_SignIn PageSignInMsg
 
                 _ ->
-                    ( page, Cmd.none )
+                    ( page, Cmd.none, Actions.none )
 
         PageSignUpMsg sub ->
             case page of
                 PagePublic_SignUp pageModel ->
-                    let
-                        ( newPageModel, pageCmd ) =
-                            SignUp.update
-                                context
-                                sub
-                                pageModel
-                    in
-                    ( PagePublic_SignUp newPageModel
-                    , Cmd.map PageSignUpMsg pageCmd
-                    )
+                    SignUp.update
+                        context
+                        sub
+                        pageModel
+                        |> Return.mapAll PagePublic_SignUp PageSignUpMsg
 
                 _ ->
-                    ( page, Cmd.none )
+                    ( page, Cmd.none, Actions.none )
 
         PageInvitationMsg sub ->
             case page of
                 PagePublic_Invitation pageModel ->
-                    let
-                        ( newPageModel, pageCmd ) =
-                            Invitation.update
-                                context
-                                sub
-                                pageModel
-                    in
-                    ( PagePublic_Invitation newPageModel
-                    , Cmd.map PageInvitationMsg pageCmd
-                    )
+                    Invitation.update
+                        context
+                        sub
+                        pageModel
+                        |> Return.mapAll PagePublic_Invitation PageInvitationMsg
 
                 _ ->
-                    ( page, Cmd.none )
+                    ( page, Cmd.none, Actions.none )
 
 
 view : PublicContext -> PagePublic -> List (Html Msg)

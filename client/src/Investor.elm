@@ -7,9 +7,10 @@ import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Investor.Pages.Home as Home
 import Root exposing (..)
+import Shared.Actions as Actions
 import Shared.Globals exposing (..)
 import Shared.Pages.NotFound as NotFound
-import Shared.Return as Return
+import Shared.Return3 as Return
 import Shared.Routes as Routes exposing (Route)
 import Shared.Sessions as Sessions
 import UI.Footer as Footer
@@ -17,13 +18,17 @@ import UI.Navigation as Navigation
 import Url exposing (Url)
 
 
-initCurrentPage : Context -> Routes.RouteInInvestor -> ( PageInvestor, Cmd MsgInvestor )
+type alias Returns =
+    ( PageInvestor, Cmd MsgInvestor, Actions.Actions MsgInvestor )
+
+
+initCurrentPage : Context -> Routes.RouteInInvestor -> Returns
 initCurrentPage context route =
     case route of
         Routes.RouteInInvestor_Home ->
             Home.init
                 context
-                |> Return.mapBoth PageInvestor_Home PageInvestorHomeMsg
+                |> Return.mapAll PageInvestor_Home PageInvestorHomeMsg
 
 
 subscriptions : PageInvestor -> Sub MsgInvestor
@@ -33,22 +38,17 @@ subscriptions page =
             Sub.map PageInvestorHomeMsg (Home.subscriptions pageModel)
 
 
-update : Context -> MsgInvestor -> PageInvestor -> ( PageInvestor, Cmd MsgInvestor )
+update : Context -> MsgInvestor -> PageInvestor -> Returns
 update context msg page =
     case msg of
         PageInvestorHomeMsg sub ->
             case page of
                 PageInvestor_Home pageModel ->
-                    let
-                        ( newPageModel, pageCmd ) =
-                            Home.update
-                                context
-                                sub
-                                pageModel
-                    in
-                    ( PageInvestor_Home newPageModel
-                    , Cmd.map PageInvestorHomeMsg pageCmd
-                    )
+                    Home.update
+                        context
+                        sub
+                        pageModel
+                        |> Return.mapAll PageInvestor_Home PageInvestorHomeMsg
 
 
 view : Context -> PageInvestor -> List (Html Msg)

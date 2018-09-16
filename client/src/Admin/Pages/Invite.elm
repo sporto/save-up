@@ -9,8 +9,9 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href, name, style, type_, value)
 import Html.Events exposing (onInput, onSubmit)
 import RemoteData
-import Shared.Globals exposing (..)
+import Shared.Actions as Actions
 import Shared.Css exposing (molecules)
+import Shared.Globals exposing (..)
 import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorSelection, sendMutation)
 import UI.Flash as Flash
 import UI.Icons as Icons
@@ -41,9 +42,13 @@ type alias InvitationResponse =
     }
 
 
-init : ( Model, Cmd Msg )
+type alias Returns =
+    ( Model, Cmd Msg, Actions.Actions Msg )
+
+
+init : Returns
 init =
-    ( newModel, Cmd.none )
+    ( newModel, Cmd.none, Actions.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -51,21 +56,28 @@ subscriptions model =
     Sub.none
 
 
-update : Context -> Msg -> Model -> ( Model, Cmd Msg )
+update : Context -> Msg -> Model -> Returns
 update context msg model =
     case msg of
         ChangeEmail email ->
-            ( { model | email = email }, Cmd.none )
+            ( { model | email = email }
+            , Cmd.none
+            , Actions.none
+            )
 
         Submit ->
             ( { model | response = RemoteData.Loading }
             , createMutationCmd context model.email
+            , Actions.none
             )
 
         OnSubmitResponse result ->
             case result of
                 Err e ->
-                    ( { model | response = RemoteData.Failure e }, Cmd.none )
+                    ( { model | response = RemoteData.Failure e }
+                    , Cmd.none
+                    , Actions.none
+                    )
 
                 Ok response ->
                     if response.success then
@@ -74,11 +86,13 @@ update context msg model =
                             , email = ""
                           }
                         , Cmd.none
+                        , Actions.none
                         )
 
                     else
                         ( { model | response = RemoteData.Success response }
                         , Cmd.none
+                        , Actions.none
                         )
 
 
