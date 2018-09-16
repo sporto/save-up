@@ -81,3 +81,42 @@ graphql_object!(AdminViewer: AppContext |&self| {
 	}
 
 });
+
+struct InvestorViewer {
+	accounts: Vec<Account>,
+	account: Option<Account>,
+}
+
+graphql_object!(InvestorViewer: AppContext |&self| {
+
+	field accounts(&executor) -> FieldResult<Vec<Account>> {
+		let context = &executor.context();
+		let user_id = context.user.id;
+		let conn = &context.conn;
+
+		let filter = db::accounts
+			::user_id.eq(user_id);
+
+		db::accounts::table
+			.filter(filter)
+			.load::<Account>(conn)
+			.map_err(|e| FieldError::from(e))
+	}
+
+	field account(&executor, id: i32) -> FieldResult<Account> {
+		let ctx = &executor.context();
+		let conn = &ctx.conn;
+		let current_user = &ctx.user;
+
+		// Authorise
+		let can = actions::accounts::authorise::can_access(conn, id, current_user)?;
+
+		if can == false {
+			return Err(FieldError::from("Unauthorized"))
+		};
+
+		Account::find(conn, id)
+			.map_err(|e| FieldError::from(e))
+	}
+
+});

@@ -65,7 +65,7 @@ header_ context =
         [ Navigation.logo
         , div
             [ class "ml-8 flex-grow" ]
-            [ navigationLink Routes.routeForAdminHome "Home"
+            [ navigationLink Routes.routeForInvestorHome "Home"
             ]
         , div []
             [ text context.auth.data.name
