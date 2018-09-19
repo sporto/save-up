@@ -106,6 +106,12 @@ impl User {
 			.filter(users::email.eq(email))
 			.first::<User>(conn)
 	}
+
+	#[allow(dead_code)]
+	pub fn find_by_username_or_email(conn: &PgConnection, input: &str) -> Result<User, Error> {
+		let filter = users::username.eq(input).or(users::email.eq(input));
+		users::table.filter(filter).first::<User>(conn)
+	}
 }
 
 #[cfg(test)]
