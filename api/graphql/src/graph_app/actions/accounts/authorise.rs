@@ -83,7 +83,7 @@ mod tests {
 
 	fn is_true_for_admin() {
 		tests::with_db(|conn| {
-			let (account, user, client) = tests::account(&conn);
+			let (account, _user, client) = tests::account(&conn);
 
 			let admin = tests::admin_for(&conn, &client);
 

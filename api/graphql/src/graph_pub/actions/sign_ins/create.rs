@@ -100,7 +100,7 @@ mod tests {
 
 			let client = models::client::factories::client_attrs().save(conn);
 
-			let user = models::user::factories::user_attrs(&client)
+			let _user = models::user::factories::user_attrs(&client)
 				.email(Some(email.clone()))
 				.password_hash(&password_hash)
 				.save(conn);

@@ -10,15 +10,16 @@ extern crate juniper;
 extern crate serde_derive;
 #[macro_use]
 extern crate validator_derive;
-
+#[macro_use]
+extern crate lazy_static;
 extern crate aws_lambda as lambda;
 extern crate bigdecimal;
 extern crate chrono;
 extern crate range_check;
+extern crate regex;
 extern crate serde;
 extern crate url;
 extern crate validator;
-
 use failure::Error;
 use lambda::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
 use std::collections::HashMap;

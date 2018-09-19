@@ -10,6 +10,8 @@ extern crate serde_derive;
 extern crate serde_json;
 #[macro_use]
 extern crate validator_derive;
+#[macro_use]
+extern crate lazy_static;
 extern crate aws_lambda as lambda;
 extern crate bigdecimal;
 extern crate chrono;
@@ -17,6 +19,7 @@ extern crate chrono_tz;
 extern crate jsonwebtoken as jwt;
 extern crate libreauth;
 extern crate range_check;
+extern crate regex;
 extern crate rusoto_core;
 extern crate rusoto_sns;
 extern crate serde;

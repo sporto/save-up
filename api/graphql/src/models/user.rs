@@ -6,7 +6,12 @@ use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
+use regex::Regex;
 use validator::Validate;
+
+lazy_static! {
+	pub static ref USERNAME_RE: Regex = Regex::new(r"^[A-Za-z0-9]+(?:[_-][A-Za-z0-9]+)*$").unwrap();
+}
 
 #[derive(Queryable, Debug, Clone)]
 pub struct User {
@@ -22,7 +27,7 @@ pub struct User {
 	pub username: String,
 }
 
-#[derive(Insertable, Validate)]
+#[derive(Insertable, Validate, Clone)]
 #[table_name = "users"]
 pub struct UserAttrs {
 	pub client_id: i32,
@@ -34,7 +39,8 @@ pub struct UserAttrs {
 	pub role: Role,
 	pub email_confirmation_token: Option<String>,
 	pub email_confirmed_at: Option<NaiveDateTime>,
-	#[validate(length(min = "1"))]
+	#[validate(length(min = "5"))]
+	#[validate(regex = "USERNAME_RE")]
 	pub username: String,
 }
 
@@ -121,29 +127,51 @@ pub mod factories {
 		}
 	}
 
+	pub fn user_attrs_alone() -> UserAttrs {
+		UserAttrs {
+			client_id: 1,
+			email: None,
+			password_hash: "abc".to_owned(),
+			name: "Sam".to_owned(),
+			role: Role::Admin,
+			email_confirmation_token: None,
+			email_confirmed_at: None,
+			username: "sam".to_owned(),
+		}
+	}
+
 	impl UserAttrs {
 		pub fn save(self, conn: &PgConnection) -> User {
 			User::create(conn, self).unwrap()
 		}
 
-		pub fn email(mut self, email: Option<String>) -> Self {
-			self.email = email;
-			self
+		pub fn email(self, email: Option<String>) -> Self {
+			UserAttrs { email, ..self }
 		}
 
-		pub fn role(mut self, role: Role) -> Self {
-			self.role = role;
-			self
+		pub fn username(self, username: &str) -> Self {
+			UserAttrs {
+				username: username.to_string(),
+				..self
+			}
 		}
 
-		pub fn password_hash(mut self, ph: &str) -> Self {
-			self.password_hash = ph.to_owned();
-			self
+		pub fn role(self, role: Role) -> Self {
+			UserAttrs { role, ..self }
 		}
 
-		pub fn email_confirmation_token(mut self, token: &str) -> Self {
-			self.email_confirmation_token = Some(token.into());
-			self
+		pub fn password_hash(self, password_hash: &str) -> Self {
+			UserAttrs {
+				password_hash: password_hash.to_string(),
+				..self
+			}
+		}
+
+		pub fn email_confirmation_token(self, token: &str) -> Self {
+			UserAttrs {
+				email_confirmation_token: Some(token.to_string()),
+				..self
+			}
 		}
 	}
 
@@ -151,5 +179,22 @@ pub mod factories {
 		pub fn delete_all(conn: &PgConnection) -> Result<usize, Error> {
 			diesel::delete(users::table).execute(conn)
 		}
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	#[test]
+	fn it_validates_username() {
+		let attrs = factories::user_attrs_alone().username("sammma");
+		assert!(attrs.validate().is_ok());
+	}
+
+	#[test]
+	fn it_rejects_invalid() {
+		let attrs = factories::user_attrs_alone().username("sam mma");
+		assert!(attrs.validate().is_err());
 	}
 }

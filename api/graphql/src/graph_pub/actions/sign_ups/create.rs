@@ -98,6 +98,22 @@ mod tests {
 	}
 
 	#[test]
+	fn it_fails_with_invalid_username() {
+		tests::with_db(|conn| {
+			let attrs = SignUp {
+				name: "Sam".to_string(),
+				email: "sam@sample.com".to_string(),
+				username: "Hello world".to_string(),
+				password: "password".to_string(),
+			};
+
+			let result = call(conn, attrs);
+
+			assert!(result.is_err());
+		})
+	}
+
+	#[test]
 	fn it_fails_with_invalid_email() {
 		tests::with_db(|conn| {
 			let attrs = SignUp {
