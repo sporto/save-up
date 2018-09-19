@@ -12,3 +12,4 @@ export DATABASE_URL=postgres://postgres@localhost/db_name
 export DATABASE_USER_TEST=postgres
 export SYSTEM_EMAIL=foo@example.com
 export SYSTEM_JWT=abc
+export RUSTFLAGS="-Aproc-macro-derive-resolution-fallback"
