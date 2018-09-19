@@ -1,5 +1,6 @@
 module Public.Pages.Invitation exposing (Model, Msg, init, subscriptions, update, view)
 
+import ApiPub.InputObject
 import ApiPub.Mutation
 import ApiPub.Object
 import ApiPub.Object.RedeemInvitationResponse
@@ -222,8 +223,10 @@ sendRedeemMutation context signUp invitationToken =
 createRedeemMutation : SignUp -> String -> SelectionSet RedeemInvitationResponse RootMutation
 createRedeemMutation signUp invitationToken =
     let
+        input : ApiPub.InputObject.RedeemInvitationInput
         input =
             { name = signUp.name
+            , username = signUp.username
             , password = signUp.password
             , token = invitationToken
             }

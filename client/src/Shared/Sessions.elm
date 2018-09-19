@@ -21,6 +21,7 @@ newSignUp : SignUp
 newSignUp =
     { email = ""
     , name = ""
+    , username = ""
     , password = ""
     }
 
@@ -35,6 +36,11 @@ asNameInSignUp signUp name =
     { signUp | name = name }
 
 
+asUserameInSignUp : SignUp -> String -> SignUp
+asUserameInSignUp signUp username =
+    { signUp | username = username }
+
+
 asPasswordInSignUp : SignUp -> String -> SignUp
 asPasswordInSignUp signUp password =
     { signUp | password = password }
@@ -46,7 +52,7 @@ type alias SignIn =
 
 newSignIn : SignIn
 newSignIn =
-    { email = ""
+    { usernameOrEmail = ""
     , password = ""
     }
 

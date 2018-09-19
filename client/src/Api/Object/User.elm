@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.User exposing (accounts, email, id, name, selection)
+module Api.Object.User exposing (accounts, email, id, name, selection, username)
 
 import Api.InputObject
 import Api.Interface
@@ -25,19 +25,24 @@ selection constructor =
     Object.selection constructor
 
 
-id : Field String Api.Object.User
+id : Field Int Api.Object.User
 id =
-    Object.fieldDecoder "id" [] Decode.string
+    Object.fieldDecoder "id" [] Decode.int
 
 
-email : Field Int Api.Object.User
+email : Field (Maybe String) Api.Object.User
 email =
-    Object.fieldDecoder "email" [] Decode.int
+    Object.fieldDecoder "email" [] (Decode.string |> Decode.nullable)
 
 
 name : Field String Api.Object.User
 name =
     Object.fieldDecoder "name" [] Decode.string
+
+
+username : Field String Api.Object.User
+username =
+    Object.fieldDecoder "username" [] Decode.string
 
 
 accounts : SelectionSet decodesTo Api.Object.Account -> Field (List decodesTo) Api.Object.User

@@ -45,9 +45,9 @@ type alias SignInResponse =
     }
 
 
-asEmailInSignIn : SignIn -> String -> SignIn
-asEmailInSignIn signUp email =
-    { signUp | email = email }
+asUsernameInSignIn : SignIn -> String -> SignIn
+asUsernameInSignIn signIn usernameOrEmail =
+    { signIn | usernameOrEmail = usernameOrEmail }
 
 
 asPasswordInSignIn : SignIn -> String -> SignIn
@@ -73,7 +73,7 @@ init flags =
 
 
 type Msg
-    = ChangeEmail String
+    = ChangeUsernameOrEmail String
     | ChangePassword String
     | OnSubmitResponse (GraphResponse SignInResponse)
     | Submit
@@ -82,9 +82,9 @@ type Msg
 update : PublicContext -> Msg -> Model -> Returns
 update context msg model =
     case msg of
-        ChangeEmail email ->
-            ( email
-                |> asEmailInSignIn model.signIn
+        ChangeUsernameOrEmail usernameOrEmail ->
+            ( usernameOrEmail
+                |> asUsernameInSignIn model.signIn
                 |> asSignInInModel model
             , Cmd.none
             , Actions.none
@@ -147,13 +147,13 @@ view context model =
                 [ maybeErrors model
                 , p []
                     [ label [ class molecules.form.label ]
-                        [ text "Email"
+                        [ text "Username or email"
                         ]
                     , input
                         [ class molecules.form.input
                         , type_ "email"
                         , name "email"
-                        , onInput ChangeEmail
+                        , onInput ChangeUsernameOrEmail
                         ]
                         []
                     ]

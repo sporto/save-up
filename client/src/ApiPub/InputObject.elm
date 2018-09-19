@@ -42,17 +42,17 @@ encodeConfirmEmailInput input =
 
 buildRedeemInvitationInput : RedeemInvitationInputRequiredFields -> RedeemInvitationInput
 buildRedeemInvitationInput required =
-    { name = required.name, password = required.password, token = required.token }
+    { username = required.username, name = required.name, password = required.password, token = required.token }
 
 
 type alias RedeemInvitationInputRequiredFields =
-    { name : String, password : String, token : String }
+    { username : String, name : String, password : String, token : String }
 
 
 {-| Type for the RedeemInvitationInput input object.
 -}
 type alias RedeemInvitationInput =
-    { name : String, password : String, token : String }
+    { username : String, name : String, password : String, token : String }
 
 
 {-| Encode a RedeemInvitationInput into a value that can be used as an argument.
@@ -60,22 +60,22 @@ type alias RedeemInvitationInput =
 encodeRedeemInvitationInput : RedeemInvitationInput -> Value
 encodeRedeemInvitationInput input =
     Encode.maybeObject
-        [ ( "name", Encode.string input.name |> Just ), ( "password", Encode.string input.password |> Just ), ( "token", Encode.string input.token |> Just ) ]
+        [ ( "username", Encode.string input.username |> Just ), ( "name", Encode.string input.name |> Just ), ( "password", Encode.string input.password |> Just ), ( "token", Encode.string input.token |> Just ) ]
 
 
 buildSignIn : SignInRequiredFields -> SignIn
 buildSignIn required =
-    { email = required.email, password = required.password }
+    { usernameOrEmail = required.usernameOrEmail, password = required.password }
 
 
 type alias SignInRequiredFields =
-    { email : String, password : String }
+    { usernameOrEmail : String, password : String }
 
 
 {-| Type for the SignIn input object.
 -}
 type alias SignIn =
-    { email : String, password : String }
+    { usernameOrEmail : String, password : String }
 
 
 {-| Encode a SignIn into a value that can be used as an argument.
@@ -83,22 +83,22 @@ type alias SignIn =
 encodeSignIn : SignIn -> Value
 encodeSignIn input =
     Encode.maybeObject
-        [ ( "email", Encode.string input.email |> Just ), ( "password", Encode.string input.password |> Just ) ]
+        [ ( "usernameOrEmail", Encode.string input.usernameOrEmail |> Just ), ( "password", Encode.string input.password |> Just ) ]
 
 
 buildSignUp : SignUpRequiredFields -> SignUp
 buildSignUp required =
-    { name = required.name, email = required.email, password = required.password }
+    { name = required.name, username = required.username, email = required.email, password = required.password }
 
 
 type alias SignUpRequiredFields =
-    { name : String, email : String, password : String }
+    { name : String, username : String, email : String, password : String }
 
 
 {-| Type for the SignUp input object.
 -}
 type alias SignUp =
-    { name : String, email : String, password : String }
+    { name : String, username : String, email : String, password : String }
 
 
 {-| Encode a SignUp into a value that can be used as an argument.
@@ -106,4 +106,4 @@ type alias SignUp =
 encodeSignUp : SignUp -> Value
 encodeSignUp input =
     Encode.maybeObject
-        [ ( "name", Encode.string input.name |> Just ), ( "email", Encode.string input.email |> Just ), ( "password", Encode.string input.password |> Just ) ]
+        [ ( "name", Encode.string input.name |> Just ), ( "username", Encode.string input.username |> Just ), ( "email", Encode.string input.email |> Just ), ( "password", Encode.string input.password |> Just ) ]
