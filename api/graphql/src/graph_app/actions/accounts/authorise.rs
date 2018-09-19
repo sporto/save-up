@@ -8,7 +8,11 @@ use models::account::Account;
 use models::schema as db;
 use models::user::{Role, User};
 
-pub fn can_access(conn: &PgConnection, account_id: i32, current_user: &User) -> Result<bool, Error> {
+pub fn can_access(
+	conn: &PgConnection,
+	account_id: i32,
+	current_user: &User,
+) -> Result<bool, Error> {
 	// Ok if account holder
 	let account = Account::find(&conn, account_id)?;
 
@@ -59,7 +63,7 @@ mod tests {
 		tests::with_db(|conn| {
 			let (account, user, _) = tests::account(&conn);
 
-			let response = call(conn, account.id, &user).unwrap();
+			let response = can_access(conn, account.id, &user).unwrap();
 
 			assert!(response);
 		})
@@ -71,7 +75,7 @@ mod tests {
 
 			let (other_user, _) = tests::user(&conn);
 
-			let response = call(conn, account.id, &other_user).unwrap();
+			let response = can_access(conn, account.id, &other_user).unwrap();
 
 			assert!(response == false);
 		})
@@ -83,7 +87,7 @@ mod tests {
 
 			let admin = tests::admin_for(&conn, &client);
 
-			let response = call(conn, account.id, &admin).unwrap();
+			let response = can_access(conn, account.id, &admin).unwrap();
 
 			assert!(response);
 		})
@@ -97,7 +101,7 @@ mod tests {
 
 			let other_admin = tests::admin_for(&conn, &other_client);
 
-			let response = call(conn, account.id, &other_admin).unwrap();
+			let response = can_access(conn, account.id, &other_admin).unwrap();
 
 			assert!(response);
 		})
