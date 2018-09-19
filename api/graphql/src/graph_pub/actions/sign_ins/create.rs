@@ -7,11 +7,12 @@ use models::user::User;
 pub fn call(conn: &PgConnection, sign_in: SignIn) -> Result<User, Error> {
 	let invalid = "Invalid email or password";
 
-	let user = User::find_by_email(conn, &sign_in.email).map_err(|e| format_err!("{}", e))
-		.map_err(|_| format_err!("{}", invalid) )?;
+	let user = User::find_by_email(conn, &sign_in.username_or_email)
+		.map_err(|e| format_err!("{}", e))
+		.map_err(|_| format_err!("{}", invalid))?;
 
 	let valid = passwords::verify::call(&sign_in.password, &user.password_hash)
-		.map_err(|_| format_err!("{}", invalid) )?;
+		.map_err(|_| format_err!("{}", invalid))?;
 
 	if valid {
 		Ok(user)
@@ -32,16 +33,19 @@ mod tests {
 		tests::with_db(|conn| {
 			let password = "password".to_string();
 
+			let email = "sam@sample.com".to_owned();
+
 			let password_hash = passwords::encrypt::call(&password).unwrap();
 
 			let client = models::client::factories::client_attrs().save(conn);
 
 			let user = models::user::factories::user_attrs(&client)
+				.email(Some(email.clone()))
 				.password_hash(&password_hash)
 				.save(conn);
 
 			let sign_in = SignIn {
-				email: user.email.clone(),
+				username_or_email: email,
 				password: password,
 			};
 
@@ -60,16 +64,19 @@ mod tests {
 		tests::with_db(|conn| {
 			let password = "password".to_string();
 
+			let email = "sam@sample.com".to_owned();
+
 			let password_hash = passwords::encrypt::call(&password).unwrap();
 
 			let client = models::client::factories::client_attrs().save(conn);
 
 			let user = models::user::factories::user_attrs(&client)
+				.email(Some(email.clone()))
 				.password_hash(&password_hash)
 				.save(conn);
 
 			let sign_in = SignIn {
-				email: user.email.clone(),
+				username_or_email: email,
 				password: "other".to_owned(),
 			};
 

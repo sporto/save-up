@@ -21,7 +21,7 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 		client_id: 1, // Just to validate
 		role: Role::Admin,
 		name: sign_up.name.clone(),
-		email: sign_up.email.clone(),
+		email: Some(sign_up.email.clone()),
 		password_hash: password_hash.clone(),
 		email_confirmation_token: None,
 		email_confirmed_at: None,
@@ -53,15 +53,14 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 				client_id: client.id,
 				role: Role::Admin,
 				name: sign_up.name,
-				email: sign_up.email,
+				email: Some(sign_up.email),
 				password_hash: password_hash,
 				email_confirmation_token: Some(confirmation_token),
 				email_confirmed_at: None,
 			};
 
 			User::create(conn, user_attrs)
-		})
-		.map_err(|e| format_err!("{}", e))?;
+		}).map_err(|e| format_err!("{}", e))?;
 
 	emails::email_confirmation::call(&user)?;
 
@@ -90,7 +89,7 @@ mod tests {
 			// println!("{:?}", user.password_hash);
 
 			assert_eq!(user.name, "Sam".to_owned());
-			assert_eq!(user.email, "sam@sample.com".to_owned());
+			assert_eq!(user.email, Some("sam@sample.com".to_owned()));
 			assert_eq!(user.role, Role::Admin);
 		})
 	}

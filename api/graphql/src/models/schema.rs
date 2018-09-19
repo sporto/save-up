@@ -55,7 +55,7 @@ table! {
         id -> Int4,
         created_at -> Timestamp,
         client_id -> Int4,
-        email -> Varchar,
+        email -> Nullable<Varchar>,
         password_hash -> Varchar,
         name -> Varchar,
         role -> Varchar,

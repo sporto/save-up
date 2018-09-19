@@ -1,18 +1,18 @@
-use graph_app::context::AppContext;
-use models::user::User;
-use models::account::Account;
-use juniper::{FieldError, FieldResult};
-use models::schema as db;
 use diesel::prelude::*;
+use graph_app::context::AppContext;
+use juniper::{FieldError, FieldResult};
+use models::account::Account;
+use models::schema as db;
+use models::user::User;
 
 // Move to model file
 graphql_object!(User: AppContext |&self| {
-	field id() -> &str {
-		self.email.as_str()
+	field id() -> i32 {
+		self.id
 	}
 
-	field email() -> i32 {
-		self.id
+	field email() -> Option<String> {
+		self.clone().email
 	}
 
 	field name() -> &str {

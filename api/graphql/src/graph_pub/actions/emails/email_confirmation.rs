@@ -9,8 +9,13 @@ pub fn call(user: &User) -> Result<(), Error> {
 		.email_confirmation_token
 		.ok_or(format_err!("Missing email_confirmation_token"))?;
 
+	let email = match user.email {
+		Some(ref email) => email,
+		None => return Ok(()),
+	};
+
 	let email_kind = EmailKind::ConfirmEmail {
-		email: user.clone().email,
+		email: email.to_string(),
 		confirmation_token: confirmation_token.to_string(),
 	};
 

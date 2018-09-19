@@ -13,7 +13,7 @@ pub struct User {
 	pub id: i32,
 	pub created_at: NaiveDateTime,
 	pub client_id: i32,
-	pub email: String,
+	pub email: Option<String>,
 	pub password_hash: String,
 	pub name: String,
 	pub role: Role,
@@ -26,7 +26,7 @@ pub struct User {
 pub struct UserAttrs {
 	pub client_id: i32,
 	#[validate(email)]
-	pub email: String,
+	pub email: Option<String>,
 	pub password_hash: String,
 	#[validate(length(min = "1"))]
 	pub name: String,
@@ -39,7 +39,7 @@ pub struct UserAttrs {
 pub struct TokenClaims {
 	#[serde(rename = "userId")]
 	pub user_id: i32,
-	pub email: String,
+	pub email: Option<String>,
 	pub name: String,
 	pub role: Role,
 	pub exp: i64,
@@ -52,7 +52,7 @@ pub fn system_user() -> User {
 	User {
 		id: 0,
 		created_at: created_at,
-		email: "app@kicinv.co".to_owned(),
+		email: Some("app@kicinv.co".to_owned()),
 		client_id: 0,
 		password_hash: "".to_owned(),
 		name: "SYSTEM".to_owned(),
@@ -106,7 +106,7 @@ pub mod factories {
 	pub fn user_attrs(client: &Client) -> UserAttrs {
 		UserAttrs {
 			client_id: client.id,
-			email: "sam@sample.com".to_owned(),
+			email: None,
 			password_hash: "abc".to_owned(),
 			name: "Sam".to_owned(),
 			role: Role::Admin,
@@ -118,6 +118,11 @@ pub mod factories {
 	impl UserAttrs {
 		pub fn save(self, conn: &PgConnection) -> User {
 			User::create(conn, self).unwrap()
+		}
+
+		pub fn email(mut self, email: Option<String>) -> Self {
+			self.email = email;
+			self
 		}
 
 		pub fn role(mut self, role: Role) -> Self {
