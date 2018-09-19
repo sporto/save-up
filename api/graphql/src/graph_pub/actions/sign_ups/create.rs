@@ -20,6 +20,7 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 	let temp_user_attrs = UserAttrs {
 		client_id: 1, // Just to validate
 		role: Role::Admin,
+		username: sign_up.username.clone(),
 		name: sign_up.name.clone(),
 		email: Some(sign_up.email.clone()),
 		password_hash: password_hash.clone(),
@@ -52,6 +53,7 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 			let user_attrs = UserAttrs {
 				client_id: client.id,
 				role: Role::Admin,
+				username: sign_up.username,
 				name: sign_up.name,
 				email: Some(sign_up.email),
 				password_hash: password_hash,
@@ -77,6 +79,7 @@ mod tests {
 		tests::with_db(|conn| {
 			let attrs = SignUp {
 				name: "Sam".to_string(),
+				username: "username".to_string(),
 				email: "sam@sample.com".to_string(),
 				password: "password".to_string(),
 			};
@@ -100,6 +103,7 @@ mod tests {
 			let attrs = SignUp {
 				name: "Sam".to_string(),
 				email: "flamingo".to_string(),
+				username: "username".to_string(),
 				password: "password".to_string(),
 			};
 

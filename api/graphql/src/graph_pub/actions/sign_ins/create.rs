@@ -59,6 +59,36 @@ mod tests {
 		})
 	}
 
+	// fn it_can_sign_in_with_username() {
+	// 	tests::with_db(|conn| {
+	// 		let password = "password".to_string();
+
+	// 		let email = "sam@sample.com".to_owned();
+
+	// 		let password_hash = passwords::encrypt::call(&password).unwrap();
+
+	// 		let client = models::client::factories::client_attrs().save(conn);
+
+	// 		let user = models::user::factories::user_attrs(&client)
+	// 			.email(Some(email.clone()))
+	// 			.password_hash(&password_hash)
+	// 			.save(conn);
+
+	// 		let sign_in = SignIn {
+	// 			username_or_email: email,
+	// 			password: password,
+	// 		};
+
+	// 		let result = call(&conn, sign_in);
+
+	// 		assert!(result.is_ok());
+
+	// 		let returned_user = result.unwrap();
+
+	// 		assert_eq!(returned_user.email, user.email);
+	// 	})
+	// }
+
 	#[test]
 	fn it_cant_sign_in_with_wrong_password() {
 		tests::with_db(|conn| {

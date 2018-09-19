@@ -16,6 +16,7 @@ use models::user::{self, Role, User, UserAttrs};
 
 #[derive(Deserialize, Clone, GraphQLInputObject)]
 pub struct RedeemInvitationInput {
+	pub username: String,
 	pub name: String,
 	pub password: String,
 	pub token: String,
@@ -40,6 +41,7 @@ pub fn call(conn: &PgConnection, input: &RedeemInvitationInput) -> Result<User, 
 	let user_attrs = UserAttrs {
 		client_id: inviter.client_id,
 		role: Role::Investor,
+		username: input.clone().username,
 		name: input.clone().name,
 		email: Some(invitation.email),
 		password_hash: password_hash,
@@ -90,6 +92,7 @@ mod tests {
 
 			let input = RedeemInvitationInput {
 				name: "Julia".into(),
+				username: "username".to_string(),
 				password: "password".into(),
 				token: invitation_token.into(),
 			};

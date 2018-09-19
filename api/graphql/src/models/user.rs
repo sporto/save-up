@@ -19,6 +19,7 @@ pub struct User {
 	pub role: Role,
 	pub email_confirmation_token: Option<String>,
 	pub email_confirmed_at: Option<NaiveDateTime>,
+	pub username: String,
 }
 
 #[derive(Insertable, Validate)]
@@ -33,14 +34,17 @@ pub struct UserAttrs {
 	pub role: Role,
 	pub email_confirmation_token: Option<String>,
 	pub email_confirmed_at: Option<NaiveDateTime>,
+	#[validate(length(min = "1"))]
+	pub username: String,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct TokenClaims {
 	#[serde(rename = "userId")]
 	pub user_id: i32,
-	pub email: Option<String>,
+	pub username: String,
 	pub name: String,
+	pub email: Option<String>,
 	pub role: Role,
 	pub exp: i64,
 }
@@ -52,10 +56,11 @@ pub fn system_user() -> User {
 	User {
 		id: 0,
 		created_at: created_at,
-		email: Some("app@kicinv.co".to_owned()),
+		email: Some("app@saveup.app".to_owned()),
+		username: "SYSTEM".to_owned(),
+		name: "SYSTEM".to_owned(),
 		client_id: 0,
 		password_hash: "".to_owned(),
-		name: "SYSTEM".to_owned(),
 		role: Role::Admin,
 		email_confirmation_token: None,
 		email_confirmed_at: None,
@@ -112,6 +117,7 @@ pub mod factories {
 			role: Role::Admin,
 			email_confirmation_token: None,
 			email_confirmed_at: None,
+			username: "sam".to_owned(),
 		}
 	}
 

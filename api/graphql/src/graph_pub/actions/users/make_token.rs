@@ -1,11 +1,11 @@
 use jwt::{encode, Header};
 use serde_json;
 
+use chrono::prelude::*;
+use chrono::Duration;
 use failure::Error;
 use models::user::{TokenClaims, User};
 use utils::config;
-use chrono::prelude::*;
-use chrono::Duration;
 
 pub fn call(user: User) -> Result<String, Error> {
 	let config = config::get()?;
@@ -18,6 +18,7 @@ pub fn call(user: User) -> Result<String, Error> {
 	let data = TokenClaims {
 		user_id: user.id,
 		email: user.email,
+		username: user.username,
 		name: user.name,
 		role: user.role,
 		exp: exp.timestamp(),

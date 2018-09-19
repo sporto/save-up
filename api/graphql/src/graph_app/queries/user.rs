@@ -19,6 +19,10 @@ graphql_object!(User: AppContext |&self| {
 		self.name.as_str()
 	}
 
+	field username() -> &str {
+		self.username.as_str()
+	}
+
 	field accounts(&executor) -> FieldResult<Vec<Account>> {
 		let context = &executor.context();
 		let client_id = context.user.client_id;
