@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.InputObject exposing (DepositInput, DepositInputRequiredFields, InvitationInput, InvitationInputRequiredFields, RequestWithdrawalInput, RequestWithdrawalInputRequiredFields, ResolveTransactionRequestInput, ResolveTransactionRequestInputRequiredFields, WithdrawalInput, WithdrawalInputRequiredFields, buildDepositInput, buildInvitationInput, buildRequestWithdrawalInput, buildResolveTransactionRequestInput, buildWithdrawalInput, encodeDepositInput, encodeInvitationInput, encodeRequestWithdrawalInput, encodeResolveTransactionRequestInput, encodeWithdrawalInput)
+module Api.InputObject exposing (CreateUserInput, CreateUserInputOptionalFields, CreateUserInputRequiredFields, DepositInput, DepositInputRequiredFields, InvitationInput, InvitationInputRequiredFields, RequestWithdrawalInput, RequestWithdrawalInputRequiredFields, ResolveTransactionRequestInput, ResolveTransactionRequestInputRequiredFields, WithdrawalInput, WithdrawalInputRequiredFields, buildCreateUserInput, buildDepositInput, buildInvitationInput, buildRequestWithdrawalInput, buildResolveTransactionRequestInput, buildWithdrawalInput, encodeCreateUserInput, encodeDepositInput, encodeInvitationInput, encodeRequestWithdrawalInput, encodeResolveTransactionRequestInput, encodeWithdrawalInput)
 
 import Api.Enum.TransactionRequestState
 import Api.Interface
@@ -16,6 +16,38 @@ import Graphql.Internal.Encode as Encode exposing (Value)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
+
+
+buildCreateUserInput : CreateUserInputRequiredFields -> (CreateUserInputOptionalFields -> CreateUserInputOptionalFields) -> CreateUserInput
+buildCreateUserInput required fillOptionals =
+    let
+        optionals =
+            fillOptionals
+                { email = Absent }
+    in
+    { email = optionals.email, username = required.username, name = required.name, password = required.password }
+
+
+type alias CreateUserInputRequiredFields =
+    { username : String, name : String, password : String }
+
+
+type alias CreateUserInputOptionalFields =
+    { email : OptionalArgument String }
+
+
+{-| Type for the CreateUserInput input object.
+-}
+type alias CreateUserInput =
+    { email : OptionalArgument String, username : String, name : String, password : String }
+
+
+{-| Encode a CreateUserInput into a value that can be used as an argument.
+-}
+encodeCreateUserInput : CreateUserInput -> Value
+encodeCreateUserInput input =
+    Encode.maybeObject
+        [ ( "email", Encode.string |> Encode.optional input.email ), ( "username", Encode.string input.username |> Just ), ( "name", Encode.string input.name |> Just ), ( "password", Encode.string input.password |> Just ) ]
 
 
 buildDepositInput : DepositInputRequiredFields -> DepositInput
