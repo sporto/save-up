@@ -7,9 +7,8 @@ use diesel::prelude::*;
 use diesel::result::Error as DieselError;
 use failure::Error;
 
+use graph_common::actions::passwords;
 use models::account::{Account, AccountAttrs};
-// use models::cents::Cents;
-use graph_pub::actions::passwords;
 use models::invitation;
 use models::schema::invitations;
 use models::user::{self, Role, User, UserAttrs};

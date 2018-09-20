@@ -1,6 +1,6 @@
 use diesel::pg::PgConnection;
 use failure::Error;
-use graph_pub::actions::passwords;
+use graph_common::actions::passwords;
 use models::sign_in::SignIn;
 use models::user::User;
 
