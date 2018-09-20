@@ -31,7 +31,7 @@ type alias CreateUserRequiredArguments =
     { input : Api.InputObject.CreateUserInput }
 
 
-createUser : CreateUserRequiredArguments -> SelectionSet decodesTo Api.Object.CreateUserResonse -> Field decodesTo RootMutation
+createUser : CreateUserRequiredArguments -> SelectionSet decodesTo Api.Object.CreateUserResponse -> Field decodesTo RootMutation
 createUser requiredArgs object_ =
     Object.selectionField "createUser" [ Argument.required "input" requiredArgs.input Api.InputObject.encodeCreateUserInput ] object_ identity
 

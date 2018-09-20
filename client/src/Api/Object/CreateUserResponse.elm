@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.CreateUserResonse exposing (errors, selection, success, user)
+module Api.Object.CreateUserResponse exposing (errors, selection, success, user)
 
 import Api.InputObject
 import Api.Interface
@@ -20,21 +20,21 @@ import Json.Decode as Decode
 
 {-| Select fields to build up a SelectionSet for this object.
 -}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.CreateUserResonse
+selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.CreateUserResponse
 selection constructor =
     Object.selection constructor
 
 
-success : Field Bool Api.Object.CreateUserResonse
+success : Field Bool Api.Object.CreateUserResponse
 success =
     Object.fieldDecoder "success" [] Decode.bool
 
 
-errors : SelectionSet decodesTo Api.Object.MutationError -> Field (List decodesTo) Api.Object.CreateUserResonse
+errors : SelectionSet decodesTo Api.Object.MutationError -> Field (List decodesTo) Api.Object.CreateUserResponse
 errors object_ =
     Object.selectionField "errors" [] object_ (identity >> Decode.list)
 
 
-user : SelectionSet decodesTo Api.Object.User -> Field (Maybe decodesTo) Api.Object.CreateUserResonse
+user : SelectionSet decodesTo Api.Object.User -> Field (Maybe decodesTo) Api.Object.CreateUserResponse
 user object_ =
     Object.selectionField "user" [] object_ (identity >> Decode.nullable)

@@ -8,7 +8,7 @@ pub struct AppMutationRoot;
 graphql_object!(AppMutationRoot: AppContext | &self | {
 
 	field createUser(&executor, input: mutations::create_user::CreateUserInput) ->
-	FieldResult<mutations::create_user::CreateUserResonse> {
+	FieldResult<mutations::create_user::CreateUserResponse> {
 		mutations::create_user::call(executor, input)
 	}
 

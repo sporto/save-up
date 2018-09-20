@@ -16,13 +16,13 @@ pub struct CreateUserInput {
 }
 
 #[derive(Clone)]
-pub struct CreateUserResonse {
+pub struct CreateUserResponse {
 	success: bool,
 	errors: Vec<MutationError>,
 	user: Option<User>,
 }
 
-graphql_object!(CreateUserResonse: AppContext |&self| {
+graphql_object!(CreateUserResponse: AppContext |&self| {
 	field success() -> bool {
 		self.success
 	}
@@ -39,7 +39,7 @@ graphql_object!(CreateUserResonse: AppContext |&self| {
 pub fn call(
 	executor: &Executor<AppContext>,
 	input: CreateUserInput,
-) -> FieldResult<CreateUserResonse> {
+) -> FieldResult<CreateUserResponse> {
 	let context = executor.context();
 	let conn = &context.conn;
 	let current_user = &context.user;
@@ -68,12 +68,12 @@ pub fn call(
 	let user_result = actions::users::create::call(&conn, user_attrs);
 
 	let response = match user_result {
-		Ok(user) => CreateUserResonse {
+		Ok(user) => CreateUserResponse {
 			success: true,
 			errors: vec![],
 			user: Some(user),
 		},
-		Err(e) => CreateUserResonse {
+		Err(e) => CreateUserResponse {
 			success: false,
 			errors: failure_to_mutation_errors(e),
 			user: None,

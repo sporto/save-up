@@ -1,6 +1,7 @@
 module Admin exposing (initCurrentPage, subscriptions, update, view)
 
 import Admin.Pages.Account as Account
+import Admin.Pages.CreateUser as CreateUser
 import Admin.Pages.Home as Home
 import Admin.Pages.Invite as Invite
 import Browser exposing (UrlRequest)
