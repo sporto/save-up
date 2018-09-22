@@ -24,6 +24,7 @@ import Time exposing (Posix)
 import UI.Chart as Chart
 import UI.Empty as Empty
 import UI.Flash as Flash
+import UI.Forms as Forms
 import UI.Icons as Icons
 import Verify exposing (Validator, validate, verify)
 
@@ -168,12 +169,10 @@ view context model =
             [ h1 [ class molecules.page.title ] [ text "Create user" ]
             , form [ class "mt-2", onSubmit Submit ]
                 [ flash model
-                , p [ class molecules.form.fieldset ]
-                    [ label
-                        [ class molecules.form.label
-                        ]
-                        [ text "Name" ]
-                    , input
+                , Forms.set
+                    Field_Name
+                    "Name"
+                    (input
                         [ class molecules.form.input
                         , type_ "text"
                         , name "name"
@@ -181,13 +180,12 @@ view context model =
                         , onInput ChangeName
                         ]
                         []
-                    ]
-                , p [ class molecules.form.fieldset ]
-                    [ label
-                        [ class molecules.form.label
-                        ]
-                        [ text "Username" ]
-                    , input
+                    )
+                    model.validationErrors
+                , Forms.set
+                    Field_Username
+                    "Username"
+                    (input
                         [ class molecules.form.input
                         , type_ "text"
                         , name "username"
@@ -195,13 +193,12 @@ view context model =
                         , onInput ChangeUsername
                         ]
                         []
-                    ]
-                , p [ class molecules.form.fieldset ]
-                    [ label
-                        [ class molecules.form.label
-                        ]
-                        [ text "Email (optional)" ]
-                    , input
+                    )
+                    model.validationErrors
+                , Forms.set
+                    Field_Email
+                    "Email (optional)"
+                    (input
                         [ class molecules.form.input
                         , type_ "email"
                         , name "email"
@@ -209,13 +206,12 @@ view context model =
                         , onInput ChangeEmail
                         ]
                         []
-                    ]
-                , p [ class molecules.form.fieldset ]
-                    [ label
-                        [ class molecules.form.label
-                        ]
-                        [ text "Password" ]
-                    , input
+                    )
+                    model.validationErrors
+                , Forms.set
+                    Field_Password
+                    "Password"
+                    (input
                         [ class molecules.form.input
                         , type_ "password"
                         , name "password"
@@ -223,7 +219,8 @@ view context model =
                         , onInput ChangePassword
                         ]
                         []
-                    ]
+                    )
+                    model.validationErrors
                 , p [ class molecules.form.actions ]
                     [ submit model
                     ]
@@ -239,7 +236,18 @@ submit model =
             Icons.spinner
 
         _ ->
-            button [ class molecules.form.submit ] [ i [ class "fas fa-envelope mr-2" ] [], text "Create" ]
+            let
+                isValid =
+                    case formValidator model.form of
+                        Ok _ ->
+                            True
+
+                        Err _ ->
+                            False
+            in
+            button
+                [ class molecules.form.submit ]
+                [ i [ class "fas fa-envelope mr-2" ] [], text "Create" ]
 
 
 flash : Model -> Html msg
