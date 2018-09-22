@@ -7,16 +7,19 @@ import Api.Object.CreateUserResponse
 import Api.Object.User
 import Graphql.Field as Field
 import Graphql.Operation exposing (RootMutation, RootQuery)
+import Graphql.OptionalArgument as OptionalArgument
 import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, name, src, style, type_, value)
 import Html.Events exposing (onInput, onSubmit)
+import Regex
 import RemoteData
 import Shared.Actions as Actions
 import Shared.Css exposing (molecules)
 import Shared.Globals exposing (..)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorSelection, sendMutation)
 import Shared.Routes as Routes
+import String.Verify
 import Time exposing (Posix)
 import UI.Chart as Chart
 import UI.Empty as Empty
@@ -37,6 +40,7 @@ type Msg
 type alias Model =
     { form : Form
     , response : GraphData CreateUserResponse
+    , validationErrors : Maybe ( ValidationError, List ValidationError )
     }
 
 
@@ -44,11 +48,16 @@ newModel : Model
 newModel =
     { form = newForm
     , response = RemoteData.NotAsked
+    , validationErrors = Nothing
     }
 
 
 type alias Form =
-    { email : String, username : String, name : String, password : String }
+    { email : String
+    , username : String
+    , name : String
+    , password : String
+    }
 
 
 newForm : Form
@@ -58,6 +67,13 @@ newForm =
     , name = ""
     , password = ""
     }
+
+
+type Field
+    = Field_Email
+    | Field_Username
+    | Field_Name
+    | Field_Password
 
 
 type alias Returns =
@@ -102,10 +118,23 @@ update context msg model =
                 |> justModel
 
         Submit ->
-            ( { model | response = RemoteData.Loading }
-            , createMutationCmd context model.form
-            , Actions.none
-            )
+            case formValidator model.form of
+                Err errors ->
+                    ( { model
+                        | validationErrors = Just errors
+                      }
+                    , Cmd.none
+                    , Actions.none
+                    )
+
+                Ok input ->
+                    ( { model
+                        | response = RemoteData.Loading
+                        , validationErrors = Nothing
+                      }
+                    , createMutationCmd context input
+                    , Actions.none
+                    )
 
         OnResponse result ->
             case result of
@@ -119,7 +148,7 @@ update context msg model =
                     if response.success then
                         ( { model
                             | response = RemoteData.Success response
-                            , email = ""
+                            , form = newForm
                           }
                         , Cmd.none
                         , Actions.none
@@ -230,6 +259,73 @@ flash model =
 
         _ ->
             text ""
+
+
+type alias ValidationError =
+    ( Field, String )
+
+
+formValidator : Validator ValidationError Form CreateUserInput
+formValidator =
+    validate CreateUserInput
+        |> verify .email verifyEmail
+        |> verify .username verifyUsername
+        |> verify .name verifyName
+        |> verify .password verifyPassword
+
+
+verifyEmail : Validator ValidationError String (OptionalArgument.OptionalArgument String)
+verifyEmail email =
+    if String.isEmpty email then
+        Ok OptionalArgument.Absent
+
+    else if isValidEmail email then
+        Ok (OptionalArgument.Present email)
+
+    else
+        Err
+            ( ( Field_Email, "Invalid email" )
+            , []
+            )
+
+
+emailRe =
+    Regex.fromString "^.+@.+\\..+"
+        |> Maybe.withDefault Regex.never
+
+
+isValidEmail : String -> Bool
+isValidEmail email =
+    Regex.contains emailRe email
+
+
+
+-- mustBeEmail : error -> Validator error String String
+-- mustBeEmail error input =
+--     let
+--         pattern =
+--             Regex.fromString "^.+@.+\\..+"
+--                 |> Maybe.withDefault Regex.never
+--     in
+--     if Regex.contains pattern input then
+--         Ok input
+--     else
+--         Err ( error, [] )
+
+
+verifyUsername : Validator ValidationError String String
+verifyUsername =
+    String.Verify.notBlank ( Field_Username, "Enter a username" )
+
+
+verifyName : Validator ValidationError String String
+verifyName =
+    String.Verify.notBlank ( Field_Name, "Enter a name" )
+
+
+verifyPassword : Validator ValidationError String String
+verifyPassword =
+    String.Verify.notBlank ( Field_Password, "Enter a password" )
 
 
 
