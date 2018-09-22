@@ -1,4 +1,4 @@
-module Admin.Pages.CreateUser exposing (Model, Msg)
+module Admin.Pages.CreateInvestor exposing (Model, Msg, init, subscriptions, update, view)
 
 import Api.InputObject exposing (CreateUserInput)
 import Api.Mutation
@@ -166,7 +166,7 @@ view : Context -> Model -> Html Msg
 view context model =
     section [ class molecules.page.container, class "flex justify-center" ]
         [ div [ style "width" "24rem" ]
-            [ h1 [ class molecules.page.title ] [ text "Create user" ]
+            [ h1 [ class molecules.page.title ] [ text "Create investor" ]
             , form [ class "mt-2", onSubmit Submit ]
                 [ flash model
                 , Forms.set
@@ -196,19 +196,6 @@ view context model =
                     )
                     model.validationErrors
                 , Forms.set
-                    Field_Email
-                    "Email (optional)"
-                    (input
-                        [ class molecules.form.input
-                        , type_ "email"
-                        , name "email"
-                        , value model.form.email
-                        , onInput ChangeEmail
-                        ]
-                        []
-                    )
-                    model.validationErrors
-                , Forms.set
                     Field_Password
                     "Password"
                     (input
@@ -217,6 +204,19 @@ view context model =
                         , name "password"
                         , value model.form.password
                         , onInput ChangePassword
+                        ]
+                        []
+                    )
+                    model.validationErrors
+                , Forms.set
+                    Field_Email
+                    "Email (optional)"
+                    (input
+                        [ class molecules.form.input
+                        , type_ "email"
+                        , name "email"
+                        , value model.form.email
+                        , onInput ChangeEmail
                         ]
                         []
                     )

@@ -35,7 +35,7 @@ flattenErrors maybeErrors =
 
 set : f -> String -> Html msg -> Maybe ( Error f, List (Error f) ) -> Html msg
 set field label_ input_ errors =
-    fieldset [ class "mb-6" ]
+    fieldset [ class "mt-6" ]
         [ p []
             [ label [ class molecules.form.label ]
                 [ text label_

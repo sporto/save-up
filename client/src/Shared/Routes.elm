@@ -1,4 +1,4 @@
-module Shared.Routes exposing (Route(..), RouteInAdmin(..), RouteInAdminInAccount(..), RouteInInvestor(..), RouteInPublic(..), isInAnyAdminRoute, parseUrl, pathFor, routeForAdminAccountDeposit, routeForAdminAccountShow, routeForAdminAccountWithdraw, routeForAdminHome, routeForAdminInvite, routeForInvestorHome, routeForSignIn, routeForSignUp)
+module Shared.Routes exposing (Route(..), RouteInAdmin(..), RouteInAdminInAccount(..), RouteInInvestor(..), RouteInPublic(..), isInAnyAdminRoute, parseUrl, pathFor, routeForAdminAccountDeposit, routeForAdminAccountShow, routeForAdminAccountWithdraw, routeForAdminCreateInvestor, routeForAdminHome, routeForAdminInvite, routeForInvestorHome, routeForSignIn, routeForSignUp)
 
 import Url exposing (Url)
 import Url.Parser exposing (..)
@@ -20,6 +20,7 @@ type RouteInPublic
 type RouteInAdmin
     = RouteInAdmin_Home
     | RouteInAdmin_Invite
+    | RouteInAdmin_CreateInvestor
     | RouteInAdmin_Account Int RouteInAdminInAccount
 
 
@@ -51,6 +52,7 @@ matchersForAdmin =
     oneOf
         [ map RouteInAdmin_Home top
         , map RouteInAdmin_Invite (s segInvite)
+        , map RouteInAdmin_CreateInvestor (s segInvestors </> s segNew)
         , map RouteInAdmin_Account (s segAccounts </> int </> matchersForAdminInAccount)
         ]
 
@@ -123,6 +125,9 @@ pathForAdminRoute route =
         RouteInAdmin_Invite ->
             segInvite
 
+        RouteInAdmin_CreateInvestor ->
+            segInvestors ++ "/" ++ segNew
+
         RouteInAdmin_Account id sub ->
             let
                 prefix =
@@ -174,12 +179,20 @@ segInvestor =
     "investor"
 
 
+segInvestors =
+    "investors"
+
+
 segInvite =
     "invite"
 
 
 segDeposit =
     "deposit"
+
+
+segNew =
+    "new"
 
 
 segWithdraw =
@@ -222,6 +235,11 @@ routeForAdminHome =
 routeForAdminInvite : Route
 routeForAdminInvite =
     Route_Admin RouteInAdmin_Invite
+
+
+routeForAdminCreateInvestor : Route
+routeForAdminCreateInvestor =
+    Route_Admin RouteInAdmin_CreateInvestor
 
 
 routeForAdminAccountShow : Int -> Route

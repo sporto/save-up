@@ -1,6 +1,7 @@
 module Root exposing (Model, Msg(..), MsgAdmin(..), MsgInvestor(..), MsgPublic(..), Page(..), PageAdmin(..), PageInvestor(..), PagePublic(..))
 
 import Admin.Pages.Account
+import Admin.Pages.CreateInvestor
 import Admin.Pages.Home
 import Admin.Pages.Invite
 import Browser exposing (UrlRequest)
@@ -41,6 +42,7 @@ type PageAdmin
     = PageAdmin_Home Admin.Pages.Home.Model
     | PageAdmin_Account Admin.Pages.Account.Model
     | PageAdmin_Invite Admin.Pages.Invite.Model
+    | PageAdmin_CreateInvestor Admin.Pages.CreateInvestor.Model
 
 
 type PageInvestor
@@ -67,6 +69,7 @@ type MsgAdmin
     = PageAdminAccountMsg Admin.Pages.Account.Msg
     | PageAdminHomeMsg Admin.Pages.Home.Msg
     | PageAdminInviteMsg Admin.Pages.Invite.Msg
+    | PageAdminCreateInvestorMsg Admin.Pages.CreateInvestor.Msg
 
 
 type MsgInvestor

@@ -1,7 +1,7 @@
 module Admin exposing (initCurrentPage, subscriptions, update, view)
 
 import Admin.Pages.Account as Account
-import Admin.Pages.CreateUser as CreateUser
+import Admin.Pages.CreateInvestor as CreateInvestor
 import Admin.Pages.Home as Home
 import Admin.Pages.Invite as Invite
 import Browser exposing (UrlRequest)
@@ -44,6 +44,10 @@ initCurrentPage context adminRoute =
             Invite.init
                 |> Return.mapAll PageAdmin_Invite PageAdminInviteMsg
 
+        Routes.RouteInAdmin_CreateInvestor ->
+            CreateInvestor.init
+                |> Return.mapAll PageAdmin_CreateInvestor PageAdminCreateInvestorMsg
+
 
 subscriptions : PageAdmin -> Sub MsgAdmin
 subscriptions page =
@@ -56,6 +60,9 @@ subscriptions page =
 
         PageAdmin_Invite pageModel ->
             Sub.map PageAdminInviteMsg (Invite.subscriptions pageModel)
+
+        PageAdmin_CreateInvestor pageModel ->
+            Sub.map PageAdminCreateInvestorMsg (CreateInvestor.subscriptions pageModel)
 
 
 update : Context -> MsgAdmin -> PageAdmin -> Returns
@@ -97,6 +104,18 @@ update context msg page =
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
+        PageAdminCreateInvestorMsg sub ->
+            case page of
+                PageAdmin_CreateInvestor pageModel ->
+                    CreateInvestor.update
+                        context
+                        sub
+                        pageModel
+                        |> Return.mapAll PageAdmin_CreateInvestor PageAdminCreateInvestorMsg
+
+                _ ->
+                    ( page, Cmd.none, Actions.none )
+
 
 view : Context -> PageAdmin -> List (Html Msg)
 view context adminPage =
@@ -114,6 +133,7 @@ header_ context =
             [ class "ml-8 flex-grow" ]
             [ navigationLink Routes.routeForAdminHome "Home"
             , navigationLink Routes.routeForAdminInvite "Invite"
+            , navigationLink Routes.routeForAdminCreateInvestor "Create investor"
             ]
         , div []
             [ text context.auth.data.name
@@ -126,7 +146,7 @@ navigationLink : Route -> String -> Html Msg
 navigationLink route label =
     a
         [ href (Routes.pathFor route)
-        , class "text-white mr-4 no-underline"
+        , class "text-white mr-6 no-underline"
         ]
         [ text label ]
 
@@ -147,6 +167,10 @@ currentPage context adminPage =
                 PageAdmin_Invite pageModel ->
                     Invite.view context pageModel
                         |> map PageAdminInviteMsg
+
+                PageAdmin_CreateInvestor pageModel ->
+                    CreateInvestor.view context pageModel
+                        |> map PageAdminCreateInvestorMsg
     in
     section [ class "flex-auto" ]
         [ page |> map Msg_Admin ]

@@ -8,3 +8,4 @@ elm-package.json
 .rpt2_cache
 elm-out
 .cache
+.overmind.sock
