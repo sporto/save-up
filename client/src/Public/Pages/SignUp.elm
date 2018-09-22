@@ -1,5 +1,6 @@
 module Public.Pages.SignUp exposing (Model, Msg, init, subscriptions, update, view)
 
+import ApiPub.InputObject exposing (SignUp)
 import ApiPub.Mutation
 import ApiPub.Object
 import ApiPub.Object.SignUpResponse
@@ -7,7 +8,7 @@ import Browser
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
-import Html.Attributes exposing (class, href, name, type_)
+import Html.Attributes exposing (class, href, name, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Json.Decode as Decode
@@ -18,22 +19,30 @@ import Shared.Css exposing (molecules)
 import Shared.Globals exposing (..)
 import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorPublicSelection, sendPublicMutation)
 import Shared.Routes as Routes
-import Shared.Sessions as Sessions exposing (SignUp)
+import Shared.Sessions as Sessions
+import String.Verify
 import UI.Flash as Flash
 import UI.Forms as Forms
 import UI.Icons as Icons
+import Verify exposing (Validator, validate, verify)
 
 
 type alias Model =
-    { signUp : SignUp
+    { form : SignUp
     , response : GraphData SignUpResponse
+    , validationErrors : Maybe ( ValidationError, List ValidationError )
     }
+
+
+type alias ValidationError =
+    ( Field, String )
 
 
 initialModel : Flags -> Model
 initialModel flags =
-    { signUp = Sessions.newSignUp
+    { form = Sessions.newSignUp
     , response = RemoteData.NotAsked
+    , validationErrors = Nothing
     }
 
 
@@ -45,8 +54,8 @@ type alias SignUpResponse =
 
 
 asSignUpInModel : Model -> SignUp -> Model
-asSignUpInModel model signUp =
-    { model | signUp = signUp }
+asSignUpInModel model form =
+    { model | form = form }
 
 
 type alias Returns =
@@ -64,6 +73,7 @@ init flags =
 type Msg
     = ChangeEmail String
     | ChangeName String
+    | ChangeUsername String
     | ChangePassword String
     | Submit
     | OnSubmitResponse (GraphResponse SignUpResponse)
@@ -74,7 +84,7 @@ update context msg model =
     case msg of
         ChangeEmail email ->
             ( email
-                |> Sessions.asEmailInSignUp model.signUp
+                |> Sessions.asEmailInSignUp model.form
                 |> asSignUpInModel model
             , Cmd.none
             , Actions.none
@@ -82,7 +92,15 @@ update context msg model =
 
         ChangeName name ->
             ( name
-                |> Sessions.asNameInSignUp model.signUp
+                |> Sessions.asNameInSignUp model.form
+                |> asSignUpInModel model
+            , Cmd.none
+            , Actions.none
+            )
+
+        ChangeUsername name ->
+            ( name
+                |> Sessions.asUsernameInSignUp model.form
                 |> asSignUpInModel model
             , Cmd.none
             , Actions.none
@@ -90,17 +108,27 @@ update context msg model =
 
         ChangePassword password ->
             ( password
-                |> Sessions.asPasswordInSignUp model.signUp
+                |> Sessions.asPasswordInSignUp model.form
                 |> asSignUpInModel model
             , Cmd.none
             , Actions.none
             )
 
         Submit ->
-            ( { model | response = RemoteData.Loading }
-            , sendCreateSignUpMutation context model.signUp
-            , Actions.none
-            )
+            case formValidator model.form of
+                Err errors ->
+                    ( { model
+                        | validationErrors = Just errors
+                      }
+                    , Cmd.none
+                    , Actions.none
+                    )
+
+                Ok input ->
+                    ( { model | response = RemoteData.Loading }
+                    , sendCreateSignUpMutation context input
+                    , Actions.none
+                    )
 
         OnSubmitResponse result ->
             case result of
@@ -129,6 +157,13 @@ subscriptions model =
     Sub.none
 
 
+type Field
+    = Field_Name
+    | Field_Email
+    | Field_Username
+    | Field_Password
+
+
 
 -- VIEW
 -- TODO add html validation
@@ -137,50 +172,61 @@ subscriptions model =
 view : PublicContext -> Model -> Html Msg
 view context model =
     div [ class "flex items-center justify-center pt-16" ]
-        [ div []
+        [ div [ class "w-1/3" ]
             [ h1 []
                 [ text "Sign up" ]
             , form
                 [ class "bg-white shadow-md rounded p-8 mt-3", onSubmit Submit ]
                 [ maybeErrors model
-                , p []
-                    [ label
-                        [ class molecules.form.label ]
-                        [ text "Name"
-                        ]
-                    , input
+                , Forms.set
+                    Field_Name
+                    "Name"
+                    (input
                         [ class molecules.form.input
                         , onInput ChangeName
                         , name "name"
+                        , value model.form.name
                         ]
                         []
-                    ]
-                , p [ class "mt-6" ]
-                    [ label
-                        [ class molecules.form.label ]
-                        [ text "Email"
-                        ]
-                    , input
+                    )
+                    model.validationErrors
+                , Forms.set
+                    Field_Username
+                    "Username"
+                    (input
                         [ class molecules.form.input
-                        , type_ "email"
+                        , onInput ChangeUsername
+                        , name "username"
+                        , value model.form.username
+                        ]
+                        []
+                    )
+                    model.validationErrors
+                , Forms.set
+                    Field_Email
+                    "Email"
+                    (input
+                        [ class molecules.form.input
                         , onInput ChangeEmail
                         , name "email"
+                        , value model.form.email
                         ]
                         []
-                    ]
-                , p [ class "mt-6" ]
-                    [ label
-                        [ class molecules.form.label ]
-                        [ text "Password"
-                        ]
-                    , input
+                    )
+                    model.validationErrors
+                , Forms.set
+                    Field_Password
+                    "Password"
+                    (input
                         [ class molecules.form.input
                         , type_ "password"
                         , onInput ChangePassword
                         , name "password"
+                        , value model.form.password
                         ]
                         []
-                    ]
+                    )
+                    model.validationErrors
                 , p [ class "mt-6" ]
                     [ submit model
                     ]
@@ -197,6 +243,15 @@ submit model =
             Icons.spinner
 
         _ ->
+            let
+                isValid =
+                    case formValidator model.form of
+                        Ok _ ->
+                            True
+
+                        Err _ ->
+                            False
+            in
             button [ class molecules.form.submit ] [ text "Sign up" ]
 
 
@@ -227,30 +282,43 @@ links =
 
 
 
+-- Validations
+
+
+formValidator : Validator ValidationError SignUp SignUp
+formValidator =
+    validate SignUp
+        |> verify .name (Forms.verifyName Field_Name)
+        |> verify .username (Forms.verifyUsername Field_Username)
+        |> verify .email (Forms.verifyEmail Field_Email)
+        |> verify .password (Forms.verifyPassword Field_Password)
+
+
+
 -- GraphQL data
 
 
 sendCreateSignUpMutation : PublicContext -> SignUp -> Cmd Msg
-sendCreateSignUpMutation context signUp =
+sendCreateSignUpMutation context form =
     sendPublicMutation
         context
         "create-sign-up"
-        (createSignUpMutation signUp)
+        (createSignUpMutation form)
         OnSubmitResponse
 
 
 createSignUpMutation : SignUp -> SelectionSet SignUpResponse RootMutation
-createSignUpMutation signUp =
+createSignUpMutation form =
     ApiPub.Mutation.selection identity
         |> with
             (ApiPub.Mutation.signUp
-                { signUp = signUp }
-                signUpResponseSelection
+                { signUp = form }
+                formResponseSelection
             )
 
 
-signUpResponseSelection : SelectionSet SignUpResponse ApiPub.Object.SignUpResponse
-signUpResponseSelection =
+formResponseSelection : SelectionSet SignUpResponse ApiPub.Object.SignUpResponse
+formResponseSelection =
     ApiPub.Object.SignUpResponse.selection SignUpResponse
         |> with ApiPub.Object.SignUpResponse.success
         |> with (ApiPub.Object.SignUpResponse.errors mutationErrorPublicSelection)

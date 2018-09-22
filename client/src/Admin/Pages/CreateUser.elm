@@ -287,7 +287,7 @@ verifyEmail email =
     if String.isEmpty email then
         Ok OptionalArgument.Absent
 
-    else if isValidEmail email then
+    else if Forms.isValidEmail email then
         Ok (OptionalArgument.Present email)
 
     else
@@ -295,30 +295,6 @@ verifyEmail email =
             ( ( Field_Email, "Invalid email" )
             , []
             )
-
-
-emailRe =
-    Regex.fromString "^.+@.+\\..+"
-        |> Maybe.withDefault Regex.never
-
-
-isValidEmail : String -> Bool
-isValidEmail email =
-    Regex.contains emailRe email
-
-
-
--- mustBeEmail : error -> Validator error String String
--- mustBeEmail error input =
---     let
---         pattern =
---             Regex.fromString "^.+@.+\\..+"
---                 |> Maybe.withDefault Regex.never
---     in
---     if Regex.contains pattern input then
---         Ok input
---     else
---         Err ( error, [] )
 
 
 verifyUsername : Validator ValidationError String String

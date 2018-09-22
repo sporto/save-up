@@ -1,6 +1,6 @@
-port module Shared.Sessions exposing (SignIn, SignUp, asEmailInSignUp, asNameInSignUp, asPasswordInSignUp, authenticate, decodeToken, endSession, newSignIn, newSignUp, startSession)
+port module Shared.Sessions exposing (SignIn, asEmailInSignUp, asNameInSignUp, asPasswordInSignUp, asUsernameInSignUp, authenticate, decodeToken, endSession, newSignIn, newSignUp, startSession)
 
-import ApiPub.InputObject
+import ApiPub.InputObject exposing (SignUp)
 import Browser.Navigation as Nav
 import Json.Decode as Decode exposing (Decoder, field)
 import Json.Decode.Pipeline as P
@@ -11,10 +11,6 @@ import Shared.Globals exposing (..)
 import Shared.Routes as Routes
 import Task
 import Time exposing (Posix)
-
-
-type alias SignUp =
-    ApiPub.InputObject.SignUp
 
 
 newSignUp : SignUp
@@ -34,6 +30,11 @@ asEmailInSignUp signUp email =
 asNameInSignUp : SignUp -> String -> SignUp
 asNameInSignUp signUp name =
     { signUp | name = name }
+
+
+asUsernameInSignUp : SignUp -> String -> SignUp
+asUsernameInSignUp signUp username =
+    { signUp | username = username }
 
 
 asUserameInSignUp : SignUp -> String -> SignUp

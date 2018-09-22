@@ -1,6 +1,6 @@
 module Public.Pages.Invitation exposing (Model, Msg, init, subscriptions, update, view)
 
-import ApiPub.InputObject
+import ApiPub.InputObject exposing (SignUp)
 import ApiPub.Mutation
 import ApiPub.Object
 import ApiPub.Object.RedeemInvitationResponse
@@ -19,7 +19,7 @@ import Shared.Css exposing (molecules)
 import Shared.Globals exposing (..)
 import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorPublicSelection, sendPublicMutation)
 import Shared.Routes as Routes
-import Shared.Sessions as Sessions exposing (SignUp)
+import Shared.Sessions as Sessions
 import UI.Flash as Flash
 import UI.Forms as Forms
 import UI.Icons as Icons
