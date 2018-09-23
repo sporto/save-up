@@ -1,5 +1,3 @@
-use bigdecimal::BigDecimal;
-use bigdecimal::FromPrimitive;
 use chrono::prelude::*;
 use diesel;
 use diesel::pg::PgConnection;
@@ -7,8 +5,8 @@ use diesel::prelude::*;
 use diesel::result::Error as DieselError;
 use failure::Error;
 
+use graph_common::actions::accounts;
 use graph_common::actions::passwords;
-use models::account::{Account, AccountAttrs};
 use models::invitation;
 use models::schema::invitations;
 use models::user::{self, Role, User, UserAttrs};
@@ -52,14 +50,7 @@ pub fn call(conn: &PgConnection, input: &RedeemInvitationInput) -> Result<User, 
 
 	let user = User::create(conn, user_attrs).map_err(|e| format_err!("{}", e))?;
 
-	// Create an account for this user´
-	let account_attrs = AccountAttrs {
-		user_id: user.id,
-		name: "Default".into(),
-		yearly_interest: BigDecimal::from_u8(20).unwrap(),
-	};
-
-	Account::create(conn, account_attrs).map_err(|e| format_err!("{}", e))?;
+	let _account = accounts::create::call(conn, &user)?;
 
 	let now = Utc::now().naive_utc();
 

@@ -7,6 +7,8 @@ use diesel::result::Error;
 use models::schema::accounts;
 use validator::Validate;
 
+pub const DEFAULT_YEARLY_INTEREST: u8 = 20;
+
 #[derive(Queryable)]
 pub struct Account {
 	pub id: i32,
