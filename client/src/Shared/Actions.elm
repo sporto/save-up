@@ -1,4 +1,6 @@
-module Shared.Actions exposing (Action(..), Actions, batch, endSession, map, none, startSession)
+module Shared.Actions exposing (Action(..), Actions, addNotification, batch, endSession, map, none, startSession)
+
+import Notifications
 
 
 type alias Actions msg =
@@ -8,11 +10,17 @@ type alias Actions msg =
 type Action msg
     = Action_StartSession String
     | Action_EndSession
+    | Action_AddNotification Notifications.Notification
 
 
 none : Actions a
 none =
     []
+
+
+addNotification : Notifications.Notification -> Actions a
+addNotification notification =
+    [ Action_AddNotification notification ]
 
 
 startSession token =
@@ -41,3 +49,6 @@ mapAction tagger action =
 
         Action_EndSession ->
             Action_EndSession
+
+        Action_AddNotification not ->
+            Action_AddNotification not

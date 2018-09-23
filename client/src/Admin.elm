@@ -9,6 +9,7 @@ import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
+import Notifications
 import Root exposing (..)
 import Shared.Actions as Actions
 import Shared.Globals exposing (..)
@@ -65,9 +66,21 @@ subscriptions page =
             Sub.map PageAdminCreateInvestorMsg (CreateInvestor.subscriptions pageModel)
 
 
+not =
+    Notifications.newSuccess
+        Notifications.args
+        "Hello"
+
+
 update : Context -> MsgAdmin -> PageAdmin -> Returns
 update context msg page =
     case msg of
+        OpenNotification ->
+            ( page
+            , Cmd.none
+            , Actions.addNotification not
+            )
+
         PageAdminAccountMsg sub ->
             case page of
                 PageAdmin_Account pageModel ->
@@ -116,17 +129,21 @@ update context msg page =
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
+        MsgAdmin_SignOut ->
+            ( page, Cmd.none, Actions.endSession )
 
-view : Context -> PageAdmin -> Html Msg
+
+view : Context -> PageAdmin -> Html MsgAdmin
 view context adminPage =
     section []
         [ header_ context
+        , button [ onClick OpenNotification ] [ text "Notify" ]
         , currentPage context adminPage
         , Footer.view
         ]
 
 
-header_ : Context -> Html Msg
+header_ : Context -> Html MsgAdmin
 header_ context =
     nav [ class "flex p-4 bg-grey-darkest text-white flex-no-shrink" ]
         [ Navigation.logo
@@ -138,12 +155,12 @@ header_ context =
             ]
         , div []
             [ text context.auth.data.name
-            , Navigation.signOut SignOut
+            , Navigation.signOut MsgAdmin_SignOut
             ]
         ]
 
 
-navigationLink : Route -> String -> Html Msg
+navigationLink : Route -> String -> Html MsgAdmin
 navigationLink route label =
     a
         [ href (Routes.pathFor route)
@@ -152,7 +169,7 @@ navigationLink route label =
         [ text label ]
 
 
-currentPage : Context -> PageAdmin -> Html Msg
+currentPage : Context -> PageAdmin -> Html MsgAdmin
 currentPage context adminPage =
     let
         page =
@@ -174,4 +191,4 @@ currentPage context adminPage =
                         |> map PageAdminCreateInvestorMsg
     in
     section [ class "flex-auto" ]
-        [ page |> map Msg_Admin ]
+        [ page ]

@@ -1,4 +1,4 @@
-module Notifications exposing (Model, Msg, add, addError, addInfo, addSuccess, init, update, view)
+module Notifications exposing (Model, Msg, Notification, add, args, init, newError, newInfo, newSuccess, update, view)
 
 import Html exposing (..)
 import Process
@@ -19,7 +19,8 @@ newModel =
 
 
 type alias Notification =
-    { level : Level
+    { args : Args
+    , level : Level
     , message : String
     }
 
@@ -46,8 +47,13 @@ type alias Args =
     { dismissIn : Float }
 
 
-add : Args -> Notification -> Model -> ( Model, Cmd Msg )
-add args not model =
+args : Args
+args =
+    { dismissIn = 2000 }
+
+
+add : Notification -> Model -> ( Model, Cmd Msg )
+add not model =
     let
         nextModel =
             { model
@@ -59,47 +65,32 @@ add args not model =
             ( model.nextId, not ) :: model.notifications
 
         cmd =
-            Process.sleep args.dismissIn
+            Process.sleep not.args.dismissIn
                 |> Task.perform (\_ -> Dismiss model.nextId)
     in
     ( nextModel, cmd )
 
 
-addError : Args -> String -> Model -> ( Model, Cmd Msg )
-addError args message model =
-    model
-        |> add args (newError message)
-
-
-addSuccess : Args -> String -> Model -> ( Model, Cmd Msg )
-addSuccess args message model =
-    model
-        |> add args (newSuccess message)
-
-
-addInfo : Args -> String -> Model -> ( Model, Cmd Msg )
-addInfo args message model =
-    model
-        |> add args (newInfo message)
-
-
-newError : String -> Notification
-newError message =
-    { level = LevelError
+newError : Args -> String -> Notification
+newError arguments message =
+    { args = arguments
+    , level = LevelError
     , message = message
     }
 
 
-newSuccess : String -> Notification
-newSuccess message =
-    { level = LevelSuccess
+newSuccess : Args -> String -> Notification
+newSuccess arguments message =
+    { args = arguments
+    , level = LevelSuccess
     , message = message
     }
 
 
-newInfo : String -> Notification
-newInfo message =
-    { level = LevelInfo
+newInfo : Args -> String -> Notification
+newInfo arguments message =
+    { args = arguments
+    , level = LevelInfo
     , message = message
     }
 

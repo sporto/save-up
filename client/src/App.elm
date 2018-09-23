@@ -171,6 +171,16 @@ updateWithActions msg model =
         ( SignOut, _ ) ->
             ( model, Cmd.none, Actions.endSession )
 
+        ( NotificationsMsg subMsg, _ ) ->
+            let
+                ( notifications, cmd ) =
+                    Notifications.update subMsg model.notifications
+            in
+            ( { model | notifications = notifications }
+            , Cmd.map NotificationsMsg cmd
+            , Actions.none
+            )
+
         ( OnUrlChange url, _ ) ->
             let
                 newLocation =
@@ -287,6 +297,16 @@ processAction action model =
                 model
                 ChangeRoute
 
+        Actions.Action_AddNotification notification ->
+            let
+                ( notifications, cmd ) =
+                    Notifications.add notification model.notifications
+            in
+            ( { model | notifications = notifications }
+            , Cmd.map NotificationsMsg cmd
+            , Actions.none
+            )
+
 
 
 -- VIEWS
@@ -312,6 +332,7 @@ bodyFor model =
 
                 Page_Admin auth pageModel ->
                     Admin.view (newContext model auth) pageModel
+                        |> Html.map Msg_Admin
 
                 Page_Investor auth pageModel ->
                     Investor.view (newContext model auth) pageModel

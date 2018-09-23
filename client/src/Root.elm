@@ -73,6 +73,8 @@ type MsgAdmin
     | PageAdminHomeMsg Admin.Pages.Home.Msg
     | PageAdminInviteMsg Admin.Pages.Invite.Msg
     | PageAdminCreateInvestorMsg Admin.Pages.CreateInvestor.Msg
+    | OpenNotification
+    | MsgAdmin_SignOut
 
 
 type MsgInvestor
