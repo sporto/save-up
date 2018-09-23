@@ -65,6 +65,7 @@ pub fn call(conn: &PgConnection, input: &RedeemInvitationInput) -> Result<User, 
 #[cfg(test)]
 mod tests {
 	use super::*;
+	use models::account::Account;
 	use models::client;
 	use utils::tests;
 
