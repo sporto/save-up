@@ -12,6 +12,7 @@ import Html.Events exposing (onClick)
 import Notifications
 import Root exposing (..)
 import Shared.Actions as Actions
+import Shared.Css as Css
 import Shared.Globals exposing (..)
 import Shared.Pages.NotFound as NotFound
 import Shared.Return3 as Return
@@ -66,21 +67,9 @@ subscriptions page =
             Sub.map PageAdminCreateInvestorMsg (CreateInvestor.subscriptions pageModel)
 
 
-not =
-    Notifications.newSuccess
-        Notifications.args
-        "Hello"
-
-
 update : Context -> MsgAdmin -> PageAdmin -> Returns
 update context msg page =
     case msg of
-        OpenNotification ->
-            ( page
-            , Cmd.none
-            , Actions.addNotification not
-            )
-
         PageAdminAccountMsg sub ->
             case page of
                 PageAdmin_Account pageModel ->
@@ -135,9 +124,8 @@ update context msg page =
 
 view : Context -> PageAdmin -> Html MsgAdmin
 view context adminPage =
-    section []
+    section [ class "flex flex-col h-full" ]
         [ header_ context
-        , button [ onClick OpenNotification ] [ text "Notify" ]
         , currentPage context adminPage
         , Footer.view
         ]

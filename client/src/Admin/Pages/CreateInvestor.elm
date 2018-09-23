@@ -5,6 +5,7 @@ import Api.Mutation
 import Api.Object
 import Api.Object.CreateUserResponse
 import Api.Object.User
+import Browser.Navigation as Nav
 import Graphql.Field as Field
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.OptionalArgument as OptionalArgument
@@ -12,10 +13,11 @@ import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, name, src, style, type_, value)
 import Html.Events exposing (onInput, onSubmit)
+import Notifications
 import Regex
 import RemoteData
 import Shared.Actions as Actions
-import Shared.Css exposing (molecules)
+import Shared.Css as Css exposing (molecules)
 import Shared.Globals exposing (..)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorSelection, sendMutation)
 import Shared.Routes as Routes
@@ -151,8 +153,8 @@ update context msg model =
                             | response = RemoteData.Success response
                             , form = newForm
                           }
-                        , Cmd.none
-                        , Actions.none
+                        , Nav.pushUrl context.navKey (Routes.pathFor Routes.routeForAdminHome)
+                        , Actions.addNotification successNotification
                         )
 
                     else
@@ -160,6 +162,12 @@ update context msg model =
                         , Cmd.none
                         , Actions.none
                         )
+
+
+successNotification =
+    Notifications.newSuccess
+        Css.notificationArgs
+        "Investor created"
 
 
 view : Context -> Model -> Html Msg

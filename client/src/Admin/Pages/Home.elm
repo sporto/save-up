@@ -110,7 +110,7 @@ investorsData context data =
 
 investorView : Investor -> Html msg
 investorView investor =
-    div [ class "border p-4 rounded shadow-md" ]
+    div [ class "border p-4 rounded shadow-md mb-6" ]
         [ div [ class "text-xl" ] [ text investor.name ]
         , div [ class "mt-2" ] (List.map accountView investor.accounts)
         ]

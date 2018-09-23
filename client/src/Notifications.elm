@@ -1,6 +1,7 @@
-module Notifications exposing (Model, Msg, Notification, add, args, init, newError, newInfo, newSuccess, update, view)
+module Notifications exposing (Args, Model, Msg, Notification, add, args, init, newError, newInfo, newSuccess, update, view, withContainerClass, withErrorClass, withInfoClass, withSuccessClass)
 
 import Html exposing (..)
+import Html.Attributes exposing (class, style)
 import Process
 import Task
 
@@ -44,12 +45,50 @@ type Msg
 
 
 type alias Args =
-    { dismissIn : Float }
+    { dismissIn : Float
+    , containerClass : String
+    , containerClassSuccess : String
+    , containerClassInfo : String
+    , containerClassError : String
+    }
 
 
 args : Args
 args =
-    { dismissIn = 2000 }
+    { dismissIn = 3000
+    , containerClass = ""
+    , containerClassSuccess = ""
+    , containerClassInfo = ""
+    , containerClassError = ""
+    }
+
+
+withContainerClass : String -> Args -> Args
+withContainerClass val arguments =
+    { arguments
+        | containerClass = val
+    }
+
+
+withSuccessClass : String -> Args -> Args
+withSuccessClass val arguments =
+    { arguments
+        | containerClassSuccess = val
+    }
+
+
+withInfoClass : String -> Args -> Args
+withInfoClass val arguments =
+    { arguments
+        | containerClassInfo = val
+    }
+
+
+withErrorClass : String -> Args -> Args
+withErrorClass val arguments =
+    { arguments
+        | containerClassError = val
+    }
 
 
 add : Notification -> Model -> ( Model, Cmd Msg )
@@ -120,11 +159,28 @@ update msg model =
 
 view : Model -> Html msg
 view model =
-    div [] (List.map notification model.notifications)
+    div
+        [ style "position" "absolute"
+        , style "top" "8px"
+        , style "right" "8px"
+        ]
+        (List.map notification model.notifications)
 
 
 notification : ( Int, Notification ) -> Html msg
 notification ( id, not ) =
-    div []
+    let
+        classes =
+            case not.level of
+                LevelInfo ->
+                    not.args.containerClassInfo
+
+                LevelError ->
+                    not.args.containerClassError
+
+                LevelSuccess ->
+                    not.args.containerClassSuccess
+    in
+    div [ class not.args.containerClass, class classes ]
         [ text not.message
         ]

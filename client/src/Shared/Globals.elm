@@ -24,6 +24,7 @@ type alias PublicContext =
 type alias Context =
     { flags : Flags
     , auth : Authentication
+    , navKey : Nav.Key
     }
 
 

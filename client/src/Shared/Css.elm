@@ -1,4 +1,6 @@
-module Shared.Css exposing (molecules)
+module Shared.Css exposing (molecules, notificationArgs)
+
+import Notifications
 
 
 buttonBase =
@@ -21,3 +23,12 @@ molecules =
         , title = "mt-6"
         }
     }
+
+
+notificationArgs : Notifications.Args
+notificationArgs =
+    Notifications.args
+        |> Notifications.withContainerClass "p-4 border w-64 text-center"
+        |> Notifications.withSuccessClass "text-green border-green bg-green-lightest"
+        |> Notifications.withErrorClass "text-red border-red bg-red-lightest"
+        |> Notifications.withInfoClass "text-blue border-blue bg-blue-lightest"

@@ -146,6 +146,7 @@ newContext : Model -> Authentication -> Context
 newContext model auth =
     { flags = model.flags
     , auth = auth
+    , navKey = model.navKey
     }
 
 
