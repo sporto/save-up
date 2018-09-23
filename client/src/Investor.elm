@@ -51,12 +51,13 @@ update context msg page =
                         |> Return.mapAll PageInvestor_Home PageInvestorHomeMsg
 
 
-view : Context -> PageInvestor -> List (Html Msg)
+view : Context -> PageInvestor -> Html Msg
 view context page =
-    [ header_ context
-    , currentPage context page
-    , Footer.view
-    ]
+    section []
+        [ header_ context
+        , currentPage context page
+        , Footer.view
+        ]
 
 
 header_ : Context -> Html Msg

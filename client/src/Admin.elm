@@ -117,12 +117,13 @@ update context msg page =
                     ( page, Cmd.none, Actions.none )
 
 
-view : Context -> PageAdmin -> List (Html Msg)
+view : Context -> PageAdmin -> Html Msg
 view context adminPage =
-    [ header_ context
-    , currentPage context adminPage
-    , Footer.view
-    ]
+    section []
+        [ header_ context
+        , currentPage context adminPage
+        , Footer.view
+        ]
 
 
 header_ : Context -> Html Msg

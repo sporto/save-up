@@ -11,6 +11,7 @@ import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Investor
 import Investor.Pages.Home
+import Notifications
 import Public
 import Public.Pages.Invitation
 import Public.Pages.SignIn
@@ -29,12 +30,13 @@ import UI.Navigation as Navigation
 import Url exposing (Url)
 
 
-initialModel : Flags -> Url -> Nav.Key -> Model
-initialModel flags url navKey =
+initialModel : Flags -> Url -> Nav.Key -> Notifications.Model -> Model
+initialModel flags url navKey notModel =
     { authentication = authenticate flags.token
     , flags = flags
     , currentLocation = AppLocation.fromUrl url
     , navKey = navKey
+    , notifications = notModel
     , page = Page_NotFound
     }
 
@@ -42,11 +44,17 @@ initialModel flags url navKey =
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     let
+        ( notModel, notCmd ) =
+            Notifications.init
+
         model =
-            initialModel flags url key
+            initialModel flags url key notModel
+
+        cmd =
+            Cmd.map NotificationsMsg notCmd
     in
     ( model
-    , Cmd.none
+    , cmd
     , Actions.none
     )
         |> R3.andThen initCurrentPage
@@ -293,18 +301,24 @@ view model =
 
 bodyFor : Model -> List (Html Msg)
 bodyFor model =
-    case model.page of
-        Page_NotFound ->
-            [ NotFound.view model.authentication model.currentLocation ]
+    let
+        page =
+            case model.page of
+                Page_NotFound ->
+                    NotFound.view model.authentication model.currentLocation
 
-        Page_Public page ->
-            Public.view (newPublicContext model) page
+                Page_Public pageModel ->
+                    Public.view (newPublicContext model) pageModel
 
-        Page_Admin auth page ->
-            Admin.view (newContext model auth) page
+                Page_Admin auth pageModel ->
+                    Admin.view (newContext model auth) pageModel
 
-        Page_Investor auth page ->
-            Investor.view (newContext model auth) page
+                Page_Investor auth pageModel ->
+                    Investor.view (newContext model auth) pageModel
+    in
+    [ Notifications.view model.notifications
+    , page
+    ]
 
 
 main : Program Flags Model Msg

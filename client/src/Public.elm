@@ -96,13 +96,8 @@ update context msg page =
                     ( page, Cmd.none, Actions.none )
 
 
-view : PublicContext -> PagePublic -> List (Html Msg)
+view : PublicContext -> PagePublic -> Html Msg
 view context page =
-    [ currentPage context page ]
-
-
-currentPage : PublicContext -> PagePublic -> Html Msg
-currentPage context page =
     let
         inner =
             case page of

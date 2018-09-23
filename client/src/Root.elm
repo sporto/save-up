@@ -7,6 +7,7 @@ import Admin.Pages.Invite
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Nav
 import Investor.Pages.Home
+import Notifications
 import Public.Pages.Invitation as Invitation
 import Public.Pages.SignIn as SignIn
 import Public.Pages.SignUp as SignUp
@@ -21,6 +22,7 @@ type alias Model =
     , flags : Flags
     , currentLocation : AppLocation
     , navKey : Nav.Key
+    , notifications : Notifications.Model
     , page : Page
     }
 
@@ -57,6 +59,7 @@ type Msg
     | Msg_Admin MsgAdmin
     | Msg_Investor MsgInvestor
     | Msg_Public MsgPublic
+    | NotificationsMsg Notifications.Msg
 
 
 type MsgPublic
