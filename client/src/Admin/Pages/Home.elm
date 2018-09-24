@@ -1,20 +1,23 @@
 module Admin.Pages.Home exposing (Model, Msg, init, subscriptions, update, view)
 
+import Api.Mutation
 import Api.Object
 import Api.Object.Account
 import Api.Object.Admin
+import Api.Object.ArchiveUserResponse
 import Api.Object.User
 import Api.Query
 import Graphql.Field as Field
-import Graphql.Operation exposing (RootQuery)
+import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
+import Html.Events exposing (onClick)
 import RemoteData
 import Shared.Actions as Actions
 import Shared.Css exposing (molecules)
 import Shared.Globals exposing (..)
-import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse)
+import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse, MutationError)
 import Shared.Routes as Routes
 import UI.Empty as Empty
 import UI.Icons as Icons
@@ -23,6 +26,11 @@ import UI.Icons as Icons
 type Msg
     = NoOp
     | OnData (GraphResponse Data)
+    | ArchiveInvestor Int
+
+
+type alias ID =
+    Int
 
 
 type alias Model =
@@ -55,6 +63,12 @@ update context msg model =
         NoOp ->
             ( model, Cmd.none, Actions.none )
 
+        ArchiveInvestor id ->
+            ( model
+            , Cmd.none
+            , Actions.none
+            )
+
         OnData result ->
             case result of
                 Err e ->
@@ -74,7 +88,7 @@ update context msg model =
                     )
 
 
-view : Context -> Model -> Html msg
+view : Context -> Model -> Html Msg
 view context model =
     section [ class molecules.page.container ]
         [ h1 [ class molecules.page.title ] [ text "Welcome" ]
@@ -82,7 +96,7 @@ view context model =
         ]
 
 
-investors : Context -> Model -> Html msg
+investors : Context -> Model -> Html Msg
 investors context model =
     case model.data of
         RemoteData.NotAsked ->
@@ -98,7 +112,7 @@ investors context model =
             investorsData context data
 
 
-investorsData : Context -> Data -> Html msg
+investorsData : Context -> Data -> Html Msg
 investorsData context data =
     if List.isEmpty data.investors then
         p [ class "mt-4" ] [ text "You don't have any investors, please create one using the invite link above." ]
@@ -108,10 +122,13 @@ investorsData context data =
             (List.map investorView data.investors)
 
 
-investorView : Investor -> Html msg
+investorView : Investor -> Html Msg
 investorView investor =
     div [ class "border p-4 rounded shadow-md mb-6" ]
-        [ div [ class "text-xl" ] [ text investor.name ]
+        [ div [ class "text-xl" ]
+            [ text investor.name
+            , button [ onClick (ArchiveInvestor investor.id) ] [ text "Archive" ]
+            ]
         , div [ class "mt-2" ] (List.map accountView investor.accounts)
         ]
 
@@ -167,8 +184,10 @@ type alias Data =
 
 
 type alias Investor =
-    { accounts : List Account
+    { id : Int
+    , accounts : List Account
     , name : String
+    , isArchived : Bool
     }
 
 
@@ -203,8 +222,10 @@ adminNode =
 investorNode : SelectionSet Investor Api.Object.User
 investorNode =
     Api.Object.User.selection Investor
+        |> with Api.Object.User.id
         |> with (Api.Object.User.accounts accountNode)
         |> with Api.Object.User.name
+        |> with Api.Object.User.isArchived
 
 
 accountNode : SelectionSet Account Api.Object.Account
@@ -213,3 +234,30 @@ accountNode =
         |> with Api.Object.Account.id
         |> with (Api.Object.Account.balanceInCents |> Field.map round)
         |> with Api.Object.Account.name
+
+
+
+-- Archive mutation
+
+
+type alias ArchiveUserResponse =
+    { success : Bool
+    , errors : List MutationError
+    }
+
+
+archiveMutation : ID -> SelectionSet ArchiveUserResponse RootMutation
+archiveMutation userID =
+    Api.Mutation.selection identity
+        |> with
+            (Api.Mutation.archiveUser
+                { userId = userID }
+                archiveResponseSelection
+            )
+
+
+archiveResponseSelection : SelectionSet ArchiveUserResponse Api.Object.ArchiveUserResponse
+archiveResponseSelection =
+    Api.Object.ArchiveUserResponse.selection ArchiveUserResponse
+        |> with Api.Object.ArchiveUserResponse.success
+        |> with (Api.Object.ArchiveUserResponse.errors GraphQl.mutationErrorSelection)

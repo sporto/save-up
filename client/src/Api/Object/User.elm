@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.User exposing (accounts, email, id, name, selection, username)
+module Api.Object.User exposing (accounts, email, id, isArchived, name, selection, username)
 
 import Api.InputObject
 import Api.Interface
@@ -38,6 +38,11 @@ email =
 name : Field String Api.Object.User
 name =
     Object.fieldDecoder "name" [] Decode.string
+
+
+isArchived : Field Bool Api.Object.User
+isArchived =
+    Object.fieldDecoder "isArchived" [] Decode.bool
 
 
 username : Field String Api.Object.User
