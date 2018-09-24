@@ -12,6 +12,11 @@ graphql_object!(AppMutationRoot: AppContext | &self | {
 		mutations::create_user::call(executor, input)
 	}
 
+	field archiveUser(&executor, user_id: i32) ->
+	FieldResult<mutations::archive_user::ArchiveUserResponse> {
+		mutations::archive_user::call(executor, user_id)
+	}
+
 	field invite(&executor, input: mutations::invite::InvitationInput) -> FieldResult<mutations::invite::InvitationResponse> {
 		mutations::invite::call(executor, input)
 	}
