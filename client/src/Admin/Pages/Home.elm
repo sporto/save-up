@@ -28,7 +28,7 @@ type Msg
     = NoOp
     | OnData (GraphResponse Data)
     | ArchiveInvestor Int
-    | OnArchiveUserResponse (GraphResponse ArchiveUserResponse)
+    | OnArchiveUserResponse Int (GraphResponse ArchiveUserResponse)
 
 
 type alias ID =
@@ -71,7 +71,7 @@ update context msg model =
             , Actions.none
             )
 
-        OnArchiveUserResponse result ->
+        OnArchiveUserResponse userID result ->
             case result of
                 Err e ->
                     ( model
@@ -81,7 +81,24 @@ update context msg model =
 
                 Ok response ->
                     if response.success then
-                        ( model
+                        let
+                            nextModel =
+                                { model | data = RemoteData.map updateData model.data }
+
+                            updateData : Data -> Data
+                            updateData data =
+                                { data
+                                    | investors = List.map setArchived data.investors
+                                }
+
+                            setArchived user =
+                                if user.id == userID then
+                                    { user | isArchived = True }
+
+                                else
+                                    user
+                        in
+                        ( nextModel
                         , Cmd.none
                         , Actions.addNotification successfulArchiveNotification
                         )
@@ -156,12 +173,20 @@ investorsData context data =
 
 investorView : Investor -> Html Msg
 investorView investor =
+    let
+        btnArchive =
+            if investor.isArchived then
+                text ""
+
+            else
+                button [ onClick (ArchiveInvestor investor.id), class molecules.button.secondary, class "ml-3" ] [ text "Archive" ]
+    in
     div [ class "border p-4 rounded shadow-md mb-6" ]
         [ div [ class "text-xl" ]
             [ text investor.name
-            , button [ onClick (ArchiveInvestor investor.id) ] [ text "Archive" ]
+            , btnArchive
             ]
-        , div [ class "mt-2" ] (List.map accountView investor.accounts)
+        , div [ class "mt-5" ] (List.map accountView investor.accounts)
         ]
 
 
@@ -284,7 +309,7 @@ archiveMutationCmd context userID =
         context
         "archive-user"
         (archiveMutation userID)
-        OnArchiveUserResponse
+        (OnArchiveUserResponse userID)
 
 
 archiveMutation : ID -> SelectionSet ArchiveUserResponse RootMutation

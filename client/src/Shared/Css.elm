@@ -10,6 +10,7 @@ buttonBase =
 molecules =
     { button =
         { primary = buttonBase ++ "bg-indigo hover:bg-indigo-dark text-white"
+        , secondary = buttonBase ++ "border border-grey text-grey"
         }
     , form =
         { label = "blocktext-sm font-bold"
