@@ -13,9 +13,10 @@ import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
+import Notifications
 import RemoteData
 import Shared.Actions as Actions
-import Shared.Css exposing (molecules)
+import Shared.Css as Css exposing (molecules)
 import Shared.Globals exposing (..)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse, MutationError)
 import Shared.Routes as Routes
@@ -27,6 +28,7 @@ type Msg
     = NoOp
     | OnData (GraphResponse Data)
     | ArchiveInvestor Int
+    | OnArchiveUserResponse (GraphResponse ArchiveUserResponse)
 
 
 type alias ID =
@@ -65,9 +67,27 @@ update context msg model =
 
         ArchiveInvestor id ->
             ( model
-            , Cmd.none
+            , archiveMutationCmd context id
             , Actions.none
             )
+
+        OnArchiveUserResponse result ->
+            case result of
+                Err e ->
+                    ( model
+                    , Cmd.none
+                    , Actions.addNotification failedArchiveNotification
+                    )
+
+                Ok response ->
+                    if response.success then
+                        ( model
+                        , Cmd.none
+                        , Actions.addNotification successfulArchiveNotification
+                        )
+
+                    else
+                        ( model, Cmd.none, Actions.addNotification failedArchiveNotification )
 
         OnData result ->
             case result of
@@ -86,6 +106,18 @@ update context msg model =
                     , Cmd.none
                     , Actions.none
                     )
+
+
+successfulArchiveNotification =
+    Notifications.newSuccess
+        Css.notificationArgs
+        "Investor archived"
+
+
+failedArchiveNotification =
+    Notifications.newError
+        Css.notificationArgs
+        "Failed archiving investor"
 
 
 view : Context -> Model -> Html Msg
@@ -244,6 +276,15 @@ type alias ArchiveUserResponse =
     { success : Bool
     , errors : List MutationError
     }
+
+
+archiveMutationCmd : Context -> ID -> Cmd Msg
+archiveMutationCmd context userID =
+    GraphQl.sendMutation
+        context
+        "archive-user"
+        (archiveMutation userID)
+        OnArchiveUserResponse
 
 
 archiveMutation : ID -> SelectionSet ArchiveUserResponse RootMutation
