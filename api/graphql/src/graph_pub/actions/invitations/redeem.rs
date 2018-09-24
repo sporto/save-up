@@ -44,6 +44,7 @@ pub fn call(conn: &PgConnection, input: &RedeemInvitationInput) -> Result<User, 
 		password_hash: password_hash,
 		email_confirmed_at: email_confirmed_at,
 		email_confirmation_token: None,
+		archived_at: None,
 	};
 
 	// Transaction should be here

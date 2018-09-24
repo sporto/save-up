@@ -62,6 +62,7 @@ table! {
         email_confirmation_token -> Nullable<Varchar>,
         email_confirmed_at -> Nullable<Timestamp>,
         username -> Varchar,
+        archived_at -> Nullable<Timestamp>,
     }
 }
 

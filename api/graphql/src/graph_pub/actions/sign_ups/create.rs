@@ -26,6 +26,7 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 		password_hash: password_hash.clone(),
 		email_confirmation_token: None,
 		email_confirmed_at: None,
+		archived_at: None,
 	};
 
 	temp_user_attrs
@@ -59,6 +60,7 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 				password_hash: password_hash,
 				email_confirmation_token: Some(confirmation_token),
 				email_confirmed_at: None,
+				archived_at: None,
 			};
 
 			User::create(conn, user_attrs)

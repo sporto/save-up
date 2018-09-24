@@ -24,6 +24,7 @@ pub struct User {
 	pub email_confirmation_token: Option<String>,
 	pub email_confirmed_at: Option<NaiveDateTime>,
 	pub username: String,
+	pub archived_at: Option<NaiveDateTime>,
 }
 
 #[derive(Insertable, Validate, Clone)]
@@ -41,6 +42,7 @@ pub struct UserAttrs {
 	#[validate(length(min = "5"))]
 	#[validate(regex = "USERNAME_RE")]
 	pub username: String,
+	pub archived_at: Option<NaiveDateTime>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -69,6 +71,7 @@ pub fn system_user() -> User {
 		role: Role::Admin,
 		email_confirmation_token: None,
 		email_confirmed_at: None,
+		archived_at: None,
 	}
 }
 
@@ -129,6 +132,7 @@ pub mod factories {
 			email_confirmation_token: None,
 			email_confirmed_at: None,
 			username: "sam".to_owned(),
+			archived_at: None,
 		}
 	}
 
@@ -142,6 +146,7 @@ pub mod factories {
 			email_confirmation_token: None,
 			email_confirmed_at: None,
 			username: "sam".to_owned(),
+			archived_at: None,
 		}
 	}
 
