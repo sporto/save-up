@@ -233,18 +233,40 @@ investorsData context data =
         p [ class "mt-4" ] [ text "You don't have any investors, please create one using the invite link above." ]
 
     else
+        let
+            ( archived, unarchived ) =
+                List.partition (\inv -> inv.isArchived) data.investors
+
+            archivedTitle =
+                if List.isEmpty archived then
+                    text ""
+
+                else
+                    h3 [ class "mt-8 mb-3 text-grey-dark" ] [ text "Archived" ]
+        in
         div [ class "mt-4" ]
-            (List.map investorView data.investors)
+            [ div [] (List.map investorView unarchived)
+            , archivedTitle
+            , div [] (List.map investorView archived)
+            ]
 
 
 investorView : Investor -> Html Msg
 investorView investor =
+    let
+        accounts =
+            if investor.isArchived then
+                text ""
+
+            else
+                div [ class "mt-5" ] (List.map accountView investor.accounts)
+    in
     div [ class "border p-4 rounded shadow-md mb-6" ]
         [ div [ class "text-xl flex items-center" ]
             [ text investor.name
             , investorActions investor
             ]
-        , div [ class "mt-5" ] (List.map accountView investor.accounts)
+        , accounts
         ]
 
 
