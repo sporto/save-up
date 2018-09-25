@@ -45,6 +45,12 @@ pub struct UserAttrs {
 	pub archived_at: Option<NaiveDateTime>,
 }
 
+#[derive(AsChangeset)]
+#[table_name = "users"]
+pub struct UserChangeset {
+	pub archived_at: Option<Option<NaiveDateTime>>,
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct TokenClaims {
 	#[serde(rename = "userId")]

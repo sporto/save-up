@@ -12,7 +12,6 @@ use juniper::{Executor, FieldError, FieldResult};
 pub struct ArchiveUserResponse {
 	success: bool,
 	errors: Vec<MutationError>,
-	// user: Option<User>,
 }
 
 graphql_object!(ArchiveUserResponse: AppContext |&self| {
