@@ -4,13 +4,13 @@ import Notifications
 
 
 buttonBase =
-    "font-bold py-2 px-4 rounded no-underline "
+    "py-2 px-4 rounded no-underline "
 
 
 molecules =
     { button =
-        { primary = buttonBase ++ "bg-indigo hover:bg-indigo-dark text-white"
-        , secondary = buttonBase ++ "border border-grey text-grey"
+        { primary = buttonBase ++ "font-bold bg-indigo hover:bg-indigo-dark text-white"
+        , secondary = buttonBase ++ "border border-grey text-grey-dark hover:text-grey-darker"
         }
     , form =
         { label = "blocktext-sm font-bold"

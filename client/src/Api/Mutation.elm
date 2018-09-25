@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Mutation exposing (ArchiveUserRequiredArguments, CreateUserRequiredArguments, DepositRequiredArguments, InviteRequiredArguments, RequestWithdrawRequiredArguments, ResolveTransactionRequestRequiredArguments, WithdrawRequiredArguments, archiveUser, createUser, deposit, invite, requestWithdraw, resolveTransactionRequest, selection, withdraw)
+module Api.Mutation exposing (ArchiveUserRequiredArguments, CreateUserRequiredArguments, DepositRequiredArguments, InviteRequiredArguments, RequestWithdrawRequiredArguments, ResolveTransactionRequestRequiredArguments, UnarchiveUserRequiredArguments, WithdrawRequiredArguments, archiveUser, createUser, deposit, invite, requestWithdraw, resolveTransactionRequest, selection, unarchiveUser, withdraw)
 
 import Api.InputObject
 import Api.Interface
@@ -43,6 +43,15 @@ type alias ArchiveUserRequiredArguments =
 archiveUser : ArchiveUserRequiredArguments -> SelectionSet decodesTo Api.Object.ArchiveUserResponse -> Field decodesTo RootMutation
 archiveUser requiredArgs object_ =
     Object.selectionField "archiveUser" [ Argument.required "userId" requiredArgs.userId Encode.int ] object_ identity
+
+
+type alias UnarchiveUserRequiredArguments =
+    { userId : Int }
+
+
+unarchiveUser : UnarchiveUserRequiredArguments -> SelectionSet decodesTo Api.Object.UnarchiveUserResponse -> Field decodesTo RootMutation
+unarchiveUser requiredArgs object_ =
+    Object.selectionField "unarchiveUser" [ Argument.required "userId" requiredArgs.userId Encode.int ] object_ identity
 
 
 type alias InviteRequiredArguments =
