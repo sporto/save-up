@@ -5,11 +5,12 @@ import Api.Object
 import Api.Object.Account
 import Api.Object.Admin
 import Api.Object.ArchiveUserResponse
+import Api.Object.UnarchiveUserResponse
 import Api.Object.User
 import Api.Query
 import Graphql.Field as Field
 import Graphql.Operation exposing (RootMutation, RootQuery)
-import Graphql.SelectionSet exposing (SelectionSet, with)
+import Graphql.SelectionSet exposing (SelectionSet, hardcoded, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
@@ -29,6 +30,8 @@ type Msg
     | OnData (GraphResponse Data)
     | ArchiveInvestor Int
     | OnArchiveUserResponse Int (GraphResponse ArchiveUserResponse)
+    | OnUnarchiveUserResponse Int (GraphResponse UnarchiveUserResponse)
+    | UnarchiveInvestor Int
 
 
 type alias ID =
@@ -66,7 +69,7 @@ update context msg model =
             ( model, Cmd.none, Actions.none )
 
         ArchiveInvestor id ->
-            ( model
+            ( setInvestorBusy id True model
             , archiveMutationCmd context id
             , Actions.none
             )
@@ -74,7 +77,7 @@ update context msg model =
         OnArchiveUserResponse userID result ->
             case result of
                 Err e ->
-                    ( model
+                    ( setInvestorBusy userID False model
                     , Cmd.none
                     , Actions.addNotification failedArchiveNotification
                     )
@@ -83,20 +86,9 @@ update context msg model =
                     if response.success then
                         let
                             nextModel =
-                                { model | data = RemoteData.map updateData model.data }
-
-                            updateData : Data -> Data
-                            updateData data =
-                                { data
-                                    | investors = List.map setArchived data.investors
-                                }
-
-                            setArchived user =
-                                if user.id == userID then
-                                    { user | isArchived = True }
-
-                                else
-                                    user
+                                model
+                                    |> setInvestorBusy userID False
+                                    |> mapInvestorWithID userID (\inv -> { inv | isArchived = True })
                         in
                         ( nextModel
                         , Cmd.none
@@ -104,7 +96,37 @@ update context msg model =
                         )
 
                     else
-                        ( model, Cmd.none, Actions.addNotification failedArchiveNotification )
+                        ( setInvestorBusy userID False model, Cmd.none, Actions.addNotification failedArchiveNotification )
+
+        UnarchiveInvestor userID ->
+            ( setInvestorBusy userID True model
+            , unarchiveMutationCmd context userID
+            , Actions.none
+            )
+
+        OnUnarchiveUserResponse userID result ->
+            case result of
+                Err e ->
+                    ( setInvestorBusy userID False model
+                    , Cmd.none
+                    , Actions.addNotification failedUnarchiveNotification
+                    )
+
+                Ok response ->
+                    if response.success then
+                        let
+                            nextModel =
+                                model
+                                    |> setInvestorBusy userID False
+                                    |> mapInvestorWithID userID (\inv -> { inv | isArchived = False })
+                        in
+                        ( nextModel
+                        , Cmd.none
+                        , Actions.addNotification successfulUnarchiveNotification
+                        )
+
+                    else
+                        ( setInvestorBusy userID False model, Cmd.none, Actions.addNotification failedUnarchiveNotification )
 
         OnData result ->
             case result of
@@ -135,6 +157,50 @@ failedArchiveNotification =
     Notifications.newError
         Css.notificationArgs
         "Failed archiving investor"
+
+
+successfulUnarchiveNotification =
+    Notifications.newSuccess
+        Css.notificationArgs
+        "Investor unarchived"
+
+
+failedUnarchiveNotification =
+    Notifications.newError
+        Css.notificationArgs
+        "Failed unarchiving investor"
+
+
+setInvestorBusy : Int -> Bool -> Model -> Model
+setInvestorBusy id value model =
+    mapInvestorWithID id
+        (\inv -> { inv | isBusy = value })
+        model
+
+
+mapInvestorWithID : Int -> (Investor -> Investor) -> Model -> Model
+mapInvestorWithID id change model =
+    mapInvestors
+        (\inv ->
+            if inv.id == id then
+                change inv
+
+            else
+                inv
+        )
+        model
+
+
+mapInvestors : (Investor -> Investor) -> Model -> Model
+mapInvestors change model =
+    let
+        updateData : Data -> Data
+        updateData data =
+            { data
+                | investors = List.map change data.investors
+            }
+    in
+    { model | data = RemoteData.map updateData model.data }
 
 
 view : Context -> Model -> Html Msg
@@ -173,21 +239,44 @@ investorsData context data =
 
 investorView : Investor -> Html Msg
 investorView investor =
-    let
-        btnArchive =
-            if investor.isArchived then
-                text ""
-
-            else
-                button [ onClick (ArchiveInvestor investor.id), class molecules.button.secondary, class "ml-3" ] [ text "Archive" ]
-    in
     div [ class "border p-4 rounded shadow-md mb-6" ]
-        [ div [ class "text-xl" ]
+        [ div [ class "text-xl flex items-center" ]
             [ text investor.name
-            , btnArchive
+            , investorActions investor
             ]
         , div [ class "mt-5" ] (List.map accountView investor.accounts)
         ]
+
+
+investorActions : Investor -> Html Msg
+investorActions investor =
+    let
+        actions =
+            if investor.isBusy then
+                [ Icons.spinner ]
+
+            else
+                [ btnArchive investor
+                , btnUnarchive investor
+                ]
+    in
+    div [ class "ml-2" ] actions
+
+
+btnArchive investor =
+    if investor.isArchived then
+        text ""
+
+    else
+        button [ onClick (ArchiveInvestor investor.id), class molecules.button.secondary, class "ml-3" ] [ text "Archive" ]
+
+
+btnUnarchive investor =
+    if investor.isArchived then
+        button [ onClick (UnarchiveInvestor investor.id), class molecules.button.secondary, class "ml-3" ] [ text "Unarchive" ]
+
+    else
+        text ""
 
 
 accountView : Account -> Html msg
@@ -245,6 +334,7 @@ type alias Investor =
     , accounts : List Account
     , name : String
     , isArchived : Bool
+    , isBusy : Bool
     }
 
 
@@ -283,6 +373,7 @@ investorNode =
         |> with (Api.Object.User.accounts accountNode)
         |> with Api.Object.User.name
         |> with Api.Object.User.isArchived
+        |> hardcoded False
 
 
 accountNode : SelectionSet Account Api.Object.Account
@@ -327,3 +418,39 @@ archiveResponseSelection =
     Api.Object.ArchiveUserResponse.selection ArchiveUserResponse
         |> with Api.Object.ArchiveUserResponse.success
         |> with (Api.Object.ArchiveUserResponse.errors GraphQl.mutationErrorSelection)
+
+
+
+-- Unarchive mutation
+
+
+type alias UnarchiveUserResponse =
+    { success : Bool
+    , errors : List MutationError
+    }
+
+
+unarchiveMutationCmd : Context -> ID -> Cmd Msg
+unarchiveMutationCmd context userID =
+    GraphQl.sendMutation
+        context
+        "unarchive-user"
+        (unarchiveMutation userID)
+        (OnUnarchiveUserResponse userID)
+
+
+unarchiveMutation : ID -> SelectionSet UnarchiveUserResponse RootMutation
+unarchiveMutation userID =
+    Api.Mutation.selection identity
+        |> with
+            (Api.Mutation.unarchiveUser
+                { userId = userID }
+                unarchiveResponseSelection
+            )
+
+
+unarchiveResponseSelection : SelectionSet UnarchiveUserResponse Api.Object.UnarchiveUserResponse
+unarchiveResponseSelection =
+    Api.Object.UnarchiveUserResponse.selection UnarchiveUserResponse
+        |> with Api.Object.UnarchiveUserResponse.success
+        |> with (Api.Object.UnarchiveUserResponse.errors GraphQl.mutationErrorSelection)
