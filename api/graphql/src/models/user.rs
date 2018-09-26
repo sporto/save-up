@@ -25,6 +25,7 @@ pub struct User {
 	pub email_confirmed_at: Option<NaiveDateTime>,
 	pub username: String,
 	pub archived_at: Option<NaiveDateTime>,
+	pub password_reset_token: Option<String>,
 }
 
 #[derive(Insertable, Validate, Clone)]
@@ -43,6 +44,7 @@ pub struct UserAttrs {
 	#[validate(regex = "USERNAME_RE")]
 	pub username: String,
 	pub archived_at: Option<NaiveDateTime>,
+	pub password_reset_token: Option<String>,
 }
 
 #[derive(AsChangeset)]
@@ -78,6 +80,7 @@ pub fn system_user() -> User {
 		email_confirmation_token: None,
 		email_confirmed_at: None,
 		archived_at: None,
+		password_reset_token: None,
 	}
 }
 
@@ -139,6 +142,7 @@ pub mod factories {
 			email_confirmed_at: None,
 			username: "sam".to_owned(),
 			archived_at: None,
+			password_reset_token: None,
 		}
 	}
 
@@ -153,6 +157,7 @@ pub mod factories {
 			email_confirmed_at: None,
 			username: "sam".to_owned(),
 			archived_at: None,
+			password_reset_token: None,
 		}
 	}
 

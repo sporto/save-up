@@ -64,6 +64,7 @@ pub fn call(
 		email_confirmed_at: None,
 		username: input.username,
 		archived_at: None,
+		password_reset_token: None,
 	};
 
 	let user_result = actions::users::create::call(&conn, user_attrs);

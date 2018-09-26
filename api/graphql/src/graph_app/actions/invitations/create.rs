@@ -38,6 +38,7 @@ pub fn call(
 mod tests {
 	use super::*;
 	use models;
+	use models::role::Role;
 	use utils::tests;
 
 	#[test]
@@ -47,7 +48,7 @@ mod tests {
 			let user = models::user::factories::user_attrs(&client).save(conn);
 			let email = "samantha@sample.com".to_owned();
 
-			let result = call(&conn, &user, &email);
+			let result = call(&conn, &user, &email, Role::Investor);
 
 			assert!(result.is_ok());
 

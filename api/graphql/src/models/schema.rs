@@ -63,6 +63,7 @@ table! {
         email_confirmed_at -> Nullable<Timestamp>,
         username -> Varchar,
         archived_at -> Nullable<Timestamp>,
+        password_reset_token -> Nullable<Varchar>,
     }
 }
 

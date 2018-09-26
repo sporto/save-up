@@ -27,6 +27,7 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 		email_confirmation_token: None,
 		email_confirmed_at: None,
 		archived_at: None,
+		password_reset_token: None,
 	};
 
 	temp_user_attrs
@@ -61,6 +62,7 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 				email_confirmation_token: Some(confirmation_token),
 				email_confirmed_at: None,
 				archived_at: None,
+				password_reset_token: None,
 			};
 
 			User::create(conn, user_attrs)

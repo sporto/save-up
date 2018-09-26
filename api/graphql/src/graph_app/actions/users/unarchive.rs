@@ -1,4 +1,3 @@
-use chrono::prelude::*;
 use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
