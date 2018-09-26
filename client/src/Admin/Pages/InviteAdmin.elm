@@ -1,4 +1,4 @@
-module Admin.Pages.Invite exposing (InvitationResponse, Model, Msg(..), createMutation, createMutationCmd, init, invitationResponseSelection, newModel, submit, subscriptions, update, view)
+module Admin.Pages.InviteAdmin exposing (InvitationResponse, Model, Msg(..), createMutation, createMutationCmd, init, invitationResponseSelection, newModel, submit, subscriptions, update, view)
 
 import Api.Mutation
 import Api.Object
@@ -100,10 +100,10 @@ view : Context -> Model -> Html Msg
 view context model =
     section [ class molecules.page.container, class "flex justify-center" ]
         [ div [ style "width" "24rem" ]
-            [ h1 [ class molecules.page.title ] [ text "Invite" ]
+            [ h1 [ class molecules.page.title ] [ text "Invite admin" ]
             , form [ class "mt-2", onSubmit Submit ]
                 [ p [ class "text-grey-dark leading-normal" ]
-                    [ text "Invite your children so they can have an account in SaveUp."
+                    [ text "You can invite another parent to manage these accounts with you."
                     ]
                 , flash model
                 , p [ class molecules.form.fieldset ]
@@ -174,7 +174,7 @@ createMutation : String -> SelectionSet InvitationResponse RootMutation
 createMutation email =
     Api.Mutation.selection identity
         |> with
-            (Api.Mutation.invite
+            (Api.Mutation.inviteAdmin
                 { input = { email = email } }
                 invitationResponseSelection
             )

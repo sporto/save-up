@@ -3,7 +3,7 @@ module Admin exposing (initCurrentPage, subscriptions, update, view)
 import Admin.Pages.Account as Account
 import Admin.Pages.CreateInvestor as CreateInvestor
 import Admin.Pages.Home as Home
-import Admin.Pages.Invite as Invite
+import Admin.Pages.InviteAdmin as InviteAdmin
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Nav
 import Html exposing (..)
@@ -42,9 +42,9 @@ initCurrentPage context adminRoute =
                 context
                 |> Return.mapAll PageAdmin_Home PageAdminHomeMsg
 
-        Routes.RouteInAdmin_Invite ->
-            Invite.init
-                |> Return.mapAll PageAdmin_Invite PageAdminInviteMsg
+        Routes.RouteInAdmin_InviteAdmin ->
+            InviteAdmin.init
+                |> Return.mapAll PageAdmin_InviteAdmin PageAdminInviteAdminMsg
 
         Routes.RouteInAdmin_CreateInvestor ->
             CreateInvestor.init
@@ -60,8 +60,8 @@ subscriptions page =
         PageAdmin_Account pageModel ->
             Sub.map PageAdminAccountMsg (Account.subscriptions pageModel)
 
-        PageAdmin_Invite pageModel ->
-            Sub.map PageAdminInviteMsg (Invite.subscriptions pageModel)
+        PageAdmin_InviteAdmin pageModel ->
+            Sub.map PageAdminInviteAdminMsg (InviteAdmin.subscriptions pageModel)
 
         PageAdmin_CreateInvestor pageModel ->
             Sub.map PageAdminCreateInvestorMsg (CreateInvestor.subscriptions pageModel)
@@ -94,14 +94,14 @@ update context msg page =
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
-        PageAdminInviteMsg sub ->
+        PageAdminInviteAdminMsg sub ->
             case page of
-                PageAdmin_Invite pageModel ->
-                    Invite.update
+                PageAdmin_InviteAdmin pageModel ->
+                    InviteAdmin.update
                         context
                         sub
                         pageModel
-                        |> Return.mapAll PageAdmin_Invite PageAdminInviteMsg
+                        |> Return.mapAll PageAdmin_InviteAdmin PageAdminInviteAdminMsg
 
                 _ ->
                     ( page, Cmd.none, Actions.none )
@@ -138,7 +138,7 @@ header_ context =
         , div
             [ class "ml-8 flex-grow" ]
             [ navigationLink Routes.routeForAdminHome "Home"
-            , navigationLink Routes.routeForAdminInvite "Invite"
+            , navigationLink Routes.routeForAdminInviteAdmin "InviteAdmin"
             , navigationLink Routes.routeForAdminCreateInvestor "Create investor"
             ]
         , div []
@@ -170,9 +170,9 @@ currentPage context adminPage =
                     Account.view context pageModel
                         |> map PageAdminAccountMsg
 
-                PageAdmin_Invite pageModel ->
-                    Invite.view context pageModel
-                        |> map PageAdminInviteMsg
+                PageAdmin_InviteAdmin pageModel ->
+                    InviteAdmin.view context pageModel
+                        |> map PageAdminInviteAdminMsg
 
                 PageAdmin_CreateInvestor pageModel ->
                     CreateInvestor.view context pageModel

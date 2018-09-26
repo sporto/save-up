@@ -22,8 +22,8 @@ graphql_object!(AppMutationRoot: AppContext | &self | {
 		mutations::unarchive_user::call(executor, user_id)
 	}
 
-	field invite(&executor, input: mutations::invite::InvitationInput) -> FieldResult<mutations::invite::InvitationResponse> {
-		mutations::invite::call(executor, input)
+	field inviteAdmin(&executor, input: mutations::invite_admin::InvitationInput) -> FieldResult<mutations::invite_admin::InvitationResponse> {
+		mutations::invite_admin::call(executor, input)
 	}
 
 	field requestWithdraw(&executor, input: mutations::request_withdrawal::RequestWithdrawalInput) -> FieldResult<mutations::request_withdrawal::RequestWithdrawalResponse> {

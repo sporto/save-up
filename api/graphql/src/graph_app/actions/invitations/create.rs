@@ -6,13 +6,18 @@ use models::user::{Role, User};
 use uuid::Uuid;
 use validator::Validate;
 
-pub fn call(conn: &PgConnection, user: &User, email: &str) -> Result<Invitation, Error> {
+pub fn call(
+	conn: &PgConnection,
+	user: &User,
+	email: &str,
+	role: Role,
+) -> Result<Invitation, Error> {
 	let token = Uuid::new_v4();
 
 	let invitation_attrs = InvitationAttrs {
 		user_id: user.id,
 		email: email.to_string(),
-		role: Role::Investor,
+		role: role,
 		token: token.to_string(),
 		used_at: None,
 	};

@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Mutation exposing (ArchiveUserRequiredArguments, CreateUserRequiredArguments, DepositRequiredArguments, InviteRequiredArguments, RequestWithdrawRequiredArguments, ResolveTransactionRequestRequiredArguments, UnarchiveUserRequiredArguments, WithdrawRequiredArguments, archiveUser, createUser, deposit, invite, requestWithdraw, resolveTransactionRequest, selection, unarchiveUser, withdraw)
+module Api.Mutation exposing (ArchiveUserRequiredArguments, CreateUserRequiredArguments, DepositRequiredArguments, InviteAdminRequiredArguments, RequestWithdrawRequiredArguments, ResolveTransactionRequestRequiredArguments, UnarchiveUserRequiredArguments, WithdrawRequiredArguments, archiveUser, createUser, deposit, inviteAdmin, requestWithdraw, resolveTransactionRequest, selection, unarchiveUser, withdraw)
 
 import Api.InputObject
 import Api.Interface
@@ -54,13 +54,13 @@ unarchiveUser requiredArgs object_ =
     Object.selectionField "unarchiveUser" [ Argument.required "userId" requiredArgs.userId Encode.int ] object_ identity
 
 
-type alias InviteRequiredArguments =
+type alias InviteAdminRequiredArguments =
     { input : Api.InputObject.InvitationInput }
 
 
-invite : InviteRequiredArguments -> SelectionSet decodesTo Api.Object.InvitationResponse -> Field decodesTo RootMutation
-invite requiredArgs object_ =
-    Object.selectionField "invite" [ Argument.required "input" requiredArgs.input Api.InputObject.encodeInvitationInput ] object_ identity
+inviteAdmin : InviteAdminRequiredArguments -> SelectionSet decodesTo Api.Object.InvitationResponse -> Field decodesTo RootMutation
+inviteAdmin requiredArgs object_ =
+    Object.selectionField "inviteAdmin" [ Argument.required "input" requiredArgs.input Api.InputObject.encodeInvitationInput ] object_ identity
 
 
 type alias RequestWithdrawRequiredArguments =

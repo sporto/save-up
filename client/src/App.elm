@@ -3,7 +3,7 @@ module App exposing (main)
 import Admin
 import Admin.Pages.Account
 import Admin.Pages.Home
-import Admin.Pages.Invite
+import Admin.Pages.InviteAdmin
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Nav
 import Html exposing (..)

@@ -1,4 +1,4 @@
-module Shared.Routes exposing (Route(..), RouteInAdmin(..), RouteInAdminInAccount(..), RouteInInvestor(..), RouteInPublic(..), isInAnyAdminRoute, parseUrl, pathFor, routeForAdminAccountDeposit, routeForAdminAccountShow, routeForAdminAccountWithdraw, routeForAdminCreateInvestor, routeForAdminHome, routeForAdminInvite, routeForInvestorHome, routeForSignIn, routeForSignUp)
+module Shared.Routes exposing (Route(..), RouteInAdmin(..), RouteInAdminInAccount(..), RouteInInvestor(..), RouteInPublic(..), isInAnyAdminRoute, parseUrl, pathFor, routeForAdminAccountDeposit, routeForAdminAccountShow, routeForAdminAccountWithdraw, routeForAdminCreateInvestor, routeForAdminHome, routeForAdminInviteAdmin, routeForInvestorHome, routeForSignIn, routeForSignUp)
 
 import Url exposing (Url)
 import Url.Parser exposing (..)
@@ -19,7 +19,7 @@ type RouteInPublic
 
 type RouteInAdmin
     = RouteInAdmin_Home
-    | RouteInAdmin_Invite
+    | RouteInAdmin_InviteAdmin
     | RouteInAdmin_CreateInvestor
     | RouteInAdmin_Account Int RouteInAdminInAccount
 
@@ -51,7 +51,7 @@ matchersForAdmin : Parser (RouteInAdmin -> a) a
 matchersForAdmin =
     oneOf
         [ map RouteInAdmin_Home top
-        , map RouteInAdmin_Invite (s segInvite)
+        , map RouteInAdmin_InviteAdmin (s segInvite)
         , map RouteInAdmin_CreateInvestor (s segInvestors </> s segNew)
         , map RouteInAdmin_Account (s segAccounts </> int </> matchersForAdminInAccount)
         ]
@@ -122,7 +122,7 @@ pathForAdminRoute route =
         RouteInAdmin_Home ->
             ""
 
-        RouteInAdmin_Invite ->
+        RouteInAdmin_InviteAdmin ->
             segInvite
 
         RouteInAdmin_CreateInvestor ->
@@ -232,9 +232,9 @@ routeForAdminHome =
     Route_Admin RouteInAdmin_Home
 
 
-routeForAdminInvite : Route
-routeForAdminInvite =
-    Route_Admin RouteInAdmin_Invite
+routeForAdminInviteAdmin : Route
+routeForAdminInviteAdmin =
+    Route_Admin RouteInAdmin_InviteAdmin
 
 
 routeForAdminCreateInvestor : Route

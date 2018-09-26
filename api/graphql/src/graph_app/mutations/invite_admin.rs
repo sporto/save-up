@@ -4,6 +4,7 @@ use graph_app::context::AppContext;
 use graph_common::mutations::failure_to_mutation_errors;
 use graph_common::mutations::MutationError;
 use juniper::{Executor, FieldError, FieldResult};
+use models::role::Role;
 
 #[derive(Deserialize, Clone, GraphQLInputObject)]
 pub struct InvitationInput {
@@ -31,7 +32,8 @@ pub fn call(
 		return Err(FieldError::from("Unauthorised"));
 	}
 
-	let invitation_result = invitations::create::call(&conn, &current_user, &input.email);
+	let invitation_result =
+		invitations::create::call(&conn, &current_user, &input.email, Role::Admin);
 
 	match invitation_result {
 		Ok(invitation) => invitation,
