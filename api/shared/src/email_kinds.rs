@@ -4,6 +4,10 @@ pub enum EmailKind {
 		email: String,
 		confirmation_token: String,
 	},
+	ResetPassword {
+		email: String,
+		token: String,
+	},
 	Invite {
 		email: String,
 		inviter_name: String,
