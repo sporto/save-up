@@ -1,3 +1,3 @@
 pub mod encrypt;
-pub mod reset;
+pub mod request_reset;
 pub mod verify;

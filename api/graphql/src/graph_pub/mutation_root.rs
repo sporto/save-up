@@ -37,10 +37,10 @@ graphql_object!(PublicMutationRoot: PublicContext | &self | {
 			::call(executor, input)
 	}
 
-	field reset_password(&executor, input: mutations::reset_password::ResetPasswordInput) -> FieldResult<mutations::reset_password::ResetPasswordResponse> {
+	field request_password_reset(&executor, input: mutations::request_password_reset::RequestPasswordResetInput) -> FieldResult<mutations::request_password_reset::ResetPasswordResetResponse> {
 
 		mutations
-			::reset_password
+			::request_password_reset
 			::call(executor, input)
 	}
 

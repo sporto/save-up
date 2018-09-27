@@ -5,12 +5,12 @@ use graph_pub::context::PublicContext;
 use juniper::{Executor, FieldResult};
 
 #[derive(Deserialize, Clone, GraphQLInputObject)]
-pub struct ResetPasswordInput {
+pub struct RequestPasswordResetInput {
 	username_or_email: String,
 }
 
 #[derive(GraphQLObject, Clone)]
-pub struct ResetPasswordResponse {
+pub struct ResetPasswordResetResponse {
 	success: bool,
 	errors: Vec<MutationError>,
 	token: Option<String>,
@@ -18,14 +18,14 @@ pub struct ResetPasswordResponse {
 
 pub fn call(
 	executor: &Executor<PublicContext>,
-	input: ResetPasswordInput,
-) -> FieldResult<ResetPasswordResponse> {
+	input: RequestPasswordResetInput,
+) -> FieldResult<ResetPasswordResetResponse> {
 	let context = executor.context();
 
-	let result = passwords::reset::call(&context.conn, &input.username_or_email);
+	let result = passwords::request_reset::call(&context.conn, &input.username_or_email);
 
 	let response = match result {
-		Ok(token) => ResetPasswordResponse {
+		Ok(token) => ResetPasswordResetResponse {
 			success: true,
 			errors: vec![],
 			token: Some(token),
@@ -36,8 +36,8 @@ pub fn call(
 	Ok(response)
 }
 
-fn other_error(error: Error) -> ResetPasswordResponse {
-	ResetPasswordResponse {
+fn other_error(error: Error) -> ResetPasswordResetResponse {
+	ResetPasswordResetResponse {
 		success: false,
 		errors: failure_to_mutation_errors(error),
 		token: None,
