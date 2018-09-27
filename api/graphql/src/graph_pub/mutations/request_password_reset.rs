@@ -10,7 +10,7 @@ pub struct RequestPasswordResetInput {
 }
 
 #[derive(GraphQLObject, Clone)]
-pub struct ResetPasswordResetResponse {
+pub struct RequestPasswordResetResponse {
 	success: bool,
 	errors: Vec<MutationError>,
 	token: Option<String>,
@@ -19,13 +19,13 @@ pub struct ResetPasswordResetResponse {
 pub fn call(
 	executor: &Executor<PublicContext>,
 	input: RequestPasswordResetInput,
-) -> FieldResult<ResetPasswordResetResponse> {
+) -> FieldResult<RequestPasswordResetResponse> {
 	let context = executor.context();
 
 	let result = passwords::request_reset::call(&context.conn, &input.username_or_email);
 
 	let response = match result {
-		Ok(token) => ResetPasswordResetResponse {
+		Ok(token) => RequestPasswordResetResponse {
 			success: true,
 			errors: vec![],
 			token: Some(token),
@@ -36,8 +36,8 @@ pub fn call(
 	Ok(response)
 }
 
-fn other_error(error: Error) -> ResetPasswordResetResponse {
-	ResetPasswordResetResponse {
+fn other_error(error: Error) -> RequestPasswordResetResponse {
+	RequestPasswordResetResponse {
 		success: false,
 		errors: failure_to_mutation_errors(error),
 		token: None,

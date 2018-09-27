@@ -123,6 +123,13 @@ impl User {
 		let filter = users::username.eq(input).or(users::email.eq(input));
 		users::table.filter(filter).first::<User>(conn)
 	}
+
+	#[allow(dead_code)]
+	pub fn find_by_password_reset_token(conn: &PgConnection, token: &str) -> Result<User, Error> {
+		users::table
+			.filter(users::password_reset_token.eq(token))
+			.first::<User>(conn)
+	}
 }
 
 #[cfg(test)]
