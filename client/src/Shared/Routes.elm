@@ -15,6 +15,7 @@ type RouteInPublic
     = RouteInPublic_SignIn
     | RouteInPublic_SignUp
     | RouteInPublic_Invitation String
+    | RouteInPublic_RequestPasswordReset
 
 
 type RouteInAdmin
@@ -42,6 +43,7 @@ matchers =
                 , map Route_Public <| map RouteInPublic_SignIn <| s segmentSignIn
                 , map Route_Public <| map RouteInPublic_SignUp <| s segmentSignUp
                 , map Route_Public <| map RouteInPublic_Invitation <| s segmentInvitation </> string
+                , map Route_Public <| map RouteInPublic_RequestPasswordReset <| s segmentPasswordResets </> s segNew
                 , map Route_Admin (s segAdmin </> matchersForAdmin)
                 , map Route_Investor (s segInvestor </> matchersForInvestor)
                 ]
@@ -114,6 +116,9 @@ pathInPublic route =
 
         RouteInPublic_Invitation token ->
             segmentInvitation ++ "/" ++ token
+
+        RouteInPublic_RequestPasswordReset ->
+            segmentPasswordResets ++ "/" ++ segNew
 
 
 pathForAdminRoute : RouteInAdmin -> String
@@ -193,6 +198,10 @@ segDeposit =
 
 segNew =
     "new"
+
+
+segmentPasswordResets =
+    "password-resets"
 
 
 segWithdraw =

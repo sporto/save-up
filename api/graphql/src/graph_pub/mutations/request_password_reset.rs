@@ -13,7 +13,6 @@ pub struct RequestPasswordResetInput {
 pub struct RequestPasswordResetResponse {
 	success: bool,
 	errors: Vec<MutationError>,
-	token: Option<String>,
 }
 
 pub fn call(
@@ -28,7 +27,6 @@ pub fn call(
 		Ok(token) => RequestPasswordResetResponse {
 			success: true,
 			errors: vec![],
-			token: Some(token),
 		},
 		Err(e) => other_error(e),
 	};
@@ -40,6 +38,5 @@ fn other_error(error: Error) -> RequestPasswordResetResponse {
 	RequestPasswordResetResponse {
 		success: false,
 		errors: failure_to_mutation_errors(error),
-		token: None,
 	}
 }

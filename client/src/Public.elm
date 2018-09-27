@@ -6,6 +6,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Public.Pages.Invitation as Invitation
+import Public.Pages.RequestPassword as RequestPassword
 import Public.Pages.SignIn as SignIn
 import Public.Pages.SignUp as SignUp
 import Root exposing (..)
@@ -42,6 +43,12 @@ initCurrentPage context route =
                     PagePublic_Invitation
                     PageInvitationMsg
 
+        Routes.RouteInPublic_RequestPasswordReset ->
+            RequestPassword.init context.flags
+                |> Return.mapAll
+                    PagePublic_RequestPassword
+                    PageRequestPasswordMsg
+
 
 subscriptions : PagePublic -> Sub MsgPublic
 subscriptions page =
@@ -54,6 +61,9 @@ subscriptions page =
 
         PagePublic_Invitation pageModel ->
             Sub.map PageInvitationMsg (Invitation.subscriptions pageModel)
+
+        PagePublic_RequestPassword pageModel ->
+            Sub.map PageRequestPasswordMsg (RequestPassword.subscriptions pageModel)
 
 
 update : PublicContext -> MsgPublic -> PagePublic -> Returns
@@ -95,6 +105,18 @@ update context msg page =
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
+        PageRequestPasswordMsg sub ->
+            case page of
+                PagePublic_RequestPassword pageModel ->
+                    RequestPassword.update
+                        context
+                        sub
+                        pageModel
+                        |> Return.mapAll PagePublic_RequestPassword PageRequestPasswordMsg
+
+                _ ->
+                    ( page, Cmd.none, Actions.none )
+
 
 view : PublicContext -> PagePublic -> Html Msg
 view context page =
@@ -112,6 +134,10 @@ view context page =
                 PagePublic_Invitation pageModel ->
                     Invitation.view context pageModel
                         |> map PageInvitationMsg
+
+                PagePublic_RequestPassword pageModel ->
+                    RequestPassword.view context pageModel
+                        |> map PageRequestPasswordMsg
     in
     section [ class "p-4" ]
         [ inner |> map Msg_Public ]
