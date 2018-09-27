@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module ApiPub.Object.SignInResponse exposing (errors, jwt, selection, success)
+module ApiPub.Object.ResetPasswordResponse exposing (errors, jwt, selection, success)
 
 import ApiPub.InputObject
 import ApiPub.Interface
@@ -20,21 +20,21 @@ import Json.Decode as Decode
 
 {-| Select fields to build up a SelectionSet for this object.
 -}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) ApiPub.Object.SignInResponse
+selection : (a -> constructor) -> SelectionSet (a -> constructor) ApiPub.Object.ResetPasswordResponse
 selection constructor =
     Object.selection constructor
 
 
-success : Field Bool ApiPub.Object.SignInResponse
+success : Field Bool ApiPub.Object.ResetPasswordResponse
 success =
     Object.fieldDecoder "success" [] Decode.bool
 
 
-errors : SelectionSet decodesTo ApiPub.Object.MutationError -> Field (List decodesTo) ApiPub.Object.SignInResponse
+errors : SelectionSet decodesTo ApiPub.Object.MutationError -> Field (List decodesTo) ApiPub.Object.ResetPasswordResponse
 errors object_ =
     Object.selectionField "errors" [] object_ (identity >> Decode.list)
 
 
-jwt : Field (Maybe String) ApiPub.Object.SignInResponse
+jwt : Field (Maybe String) ApiPub.Object.ResetPasswordResponse
 jwt =
     Object.fieldDecoder "jwt" [] (Decode.string |> Decode.nullable)

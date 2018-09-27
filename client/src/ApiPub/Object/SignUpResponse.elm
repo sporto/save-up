@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module ApiPub.Object.SignUpResponse exposing (errors, selection, success, token)
+module ApiPub.Object.SignUpResponse exposing (errors, jwt, selection, success)
 
 import ApiPub.InputObject
 import ApiPub.Interface
@@ -35,6 +35,6 @@ errors object_ =
     Object.selectionField "errors" [] object_ (identity >> Decode.list)
 
 
-token : Field (Maybe String) ApiPub.Object.SignUpResponse
-token =
-    Object.fieldDecoder "token" [] (Decode.string |> Decode.nullable)
+jwt : Field (Maybe String) ApiPub.Object.SignUpResponse
+jwt =
+    Object.fieldDecoder "jwt" [] (Decode.string |> Decode.nullable)

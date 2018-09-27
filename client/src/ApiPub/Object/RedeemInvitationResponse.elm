@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module ApiPub.Object.RedeemInvitationResponse exposing (errors, selection, success, token)
+module ApiPub.Object.RedeemInvitationResponse exposing (errors, jwt, selection, success)
 
 import ApiPub.InputObject
 import ApiPub.Interface
@@ -35,6 +35,6 @@ errors object_ =
     Object.selectionField "errors" [] object_ (identity >> Decode.list)
 
 
-token : Field (Maybe String) ApiPub.Object.RedeemInvitationResponse
-token =
-    Object.fieldDecoder "token" [] (Decode.string |> Decode.nullable)
+jwt : Field (Maybe String) ApiPub.Object.RedeemInvitationResponse
+jwt =
+    Object.fieldDecoder "jwt" [] (Decode.string |> Decode.nullable)

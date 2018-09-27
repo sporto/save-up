@@ -43,7 +43,7 @@ initialModel flags invitationToken =
 type alias RedeemInvitationResponse =
     { success : Bool
     , errors : List MutationError
-    , token : Maybe String
+    , jwt : Maybe String
     }
 
 
@@ -105,11 +105,11 @@ update context msg model =
                     )
 
                 Ok response ->
-                    case response.token of
-                        Just token ->
+                    case response.jwt of
+                        Just jwt ->
                             ( { model | response = RemoteData.Success response }
                             , Cmd.none
-                            , Actions.startSession token
+                            , Actions.startSession jwt
                             )
 
                         Nothing ->
@@ -244,4 +244,4 @@ redeemResponseSelection =
     ApiPub.Object.RedeemInvitationResponse.selection RedeemInvitationResponse
         |> with ApiPub.Object.RedeemInvitationResponse.success
         |> with (ApiPub.Object.RedeemInvitationResponse.errors mutationErrorPublicSelection)
-        |> with ApiPub.Object.RedeemInvitationResponse.token
+        |> with ApiPub.Object.RedeemInvitationResponse.jwt

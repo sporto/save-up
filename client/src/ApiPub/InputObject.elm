@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module ApiPub.InputObject exposing (ConfirmEmailInput, ConfirmEmailInputRequiredFields, RedeemInvitationInput, RedeemInvitationInputRequiredFields, SignIn, SignInRequiredFields, SignUp, SignUpRequiredFields, buildConfirmEmailInput, buildRedeemInvitationInput, buildSignIn, buildSignUp, encodeConfirmEmailInput, encodeRedeemInvitationInput, encodeSignIn, encodeSignUp)
+module ApiPub.InputObject exposing (ConfirmEmailInput, ConfirmEmailInputRequiredFields, RedeemInvitationInput, RedeemInvitationInputRequiredFields, RequestPasswordResetInput, RequestPasswordResetInputRequiredFields, ResetPasswordInput, ResetPasswordInputRequiredFields, SignIn, SignInRequiredFields, SignUp, SignUpRequiredFields, buildConfirmEmailInput, buildRedeemInvitationInput, buildRequestPasswordResetInput, buildResetPasswordInput, buildSignIn, buildSignUp, encodeConfirmEmailInput, encodeRedeemInvitationInput, encodeRequestPasswordResetInput, encodeResetPasswordInput, encodeSignIn, encodeSignUp)
 
 import ApiPub.Interface
 import ApiPub.Object
@@ -61,6 +61,52 @@ encodeRedeemInvitationInput : RedeemInvitationInput -> Value
 encodeRedeemInvitationInput input =
     Encode.maybeObject
         [ ( "username", Encode.string input.username |> Just ), ( "name", Encode.string input.name |> Just ), ( "password", Encode.string input.password |> Just ), ( "token", Encode.string input.token |> Just ) ]
+
+
+buildRequestPasswordResetInput : RequestPasswordResetInputRequiredFields -> RequestPasswordResetInput
+buildRequestPasswordResetInput required =
+    { usernameOrEmail = required.usernameOrEmail }
+
+
+type alias RequestPasswordResetInputRequiredFields =
+    { usernameOrEmail : String }
+
+
+{-| Type for the RequestPasswordResetInput input object.
+-}
+type alias RequestPasswordResetInput =
+    { usernameOrEmail : String }
+
+
+{-| Encode a RequestPasswordResetInput into a value that can be used as an argument.
+-}
+encodeRequestPasswordResetInput : RequestPasswordResetInput -> Value
+encodeRequestPasswordResetInput input =
+    Encode.maybeObject
+        [ ( "usernameOrEmail", Encode.string input.usernameOrEmail |> Just ) ]
+
+
+buildResetPasswordInput : ResetPasswordInputRequiredFields -> ResetPasswordInput
+buildResetPasswordInput required =
+    { token = required.token, password = required.password }
+
+
+type alias ResetPasswordInputRequiredFields =
+    { token : String, password : String }
+
+
+{-| Type for the ResetPasswordInput input object.
+-}
+type alias ResetPasswordInput =
+    { token : String, password : String }
+
+
+{-| Encode a ResetPasswordInput into a value that can be used as an argument.
+-}
+encodeResetPasswordInput : ResetPasswordInput -> Value
+encodeResetPasswordInput input =
+    Encode.maybeObject
+        [ ( "token", Encode.string input.token |> Just ), ( "password", Encode.string input.password |> Just ) ]
 
 
 buildSignIn : SignInRequiredFields -> SignIn

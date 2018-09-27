@@ -41,7 +41,7 @@ initialModel flags =
 type alias SignInResponse =
     { success : Bool
     , errors : List MutationError
-    , token : Maybe String
+    , jwt : Maybe String
     }
 
 
@@ -113,11 +113,11 @@ update context msg model =
                     )
 
                 Ok response ->
-                    case response.token of
-                        Just token ->
+                    case response.jwt of
+                        Just jwt ->
                             ( { model | response = RemoteData.Success response }
                             , Cmd.none
-                            , Actions.startSession token
+                            , Actions.startSession jwt
                             )
 
                         Nothing ->
@@ -235,4 +235,4 @@ signInResponseSelection =
     ApiPub.Object.SignInResponse.selection SignInResponse
         |> with ApiPub.Object.SignInResponse.success
         |> with (ApiPub.Object.SignInResponse.errors mutationErrorPublicSelection)
-        |> with ApiPub.Object.SignInResponse.token
+        |> with ApiPub.Object.SignInResponse.jwt
