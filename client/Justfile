@@ -25,5 +25,5 @@ build-prod:
 	NODE_ENV=production npx webpack --config webpack.prod.js --progress
 
 start:
-	npx webpack-dev-server --config ./webpack.dev.js --hot
+	npx parcel -p 8080 src/app.html
 
