@@ -1,24 +1,23 @@
 use failure::Error;
 use graph_common::mutations::{failure_to_mutation_errors, MutationError};
+use graph_pub::actions::invitations::redeem;
+pub use graph_pub::actions::invitations::redeem::RedeemInvitationInput;
+use graph_pub::actions::users::make_jwt;
 use graph_pub::context::PublicContext;
 use juniper::{Executor, FieldResult};
 use models::user::User;
-use graph_pub::actions::invitations::redeem;
-use graph_pub::actions::users::make_token;
-pub use graph_pub::actions::invitations::redeem::RedeemInvitationInput;
 
 #[derive(GraphQLObject, Clone)]
 pub struct RedeemInvitationResponse {
 	success: bool,
 	errors: Vec<MutationError>,
-	token: Option<String>,
+	jwt: Option<String>,
 }
 
 pub fn call(
 	executor: &Executor<PublicContext>,
 	input: RedeemInvitationInput,
 ) -> FieldResult<RedeemInvitationResponse> {
-
 	let context = executor.context();
 
 	let result = redeem::call(&context.conn, &input);
@@ -35,21 +34,21 @@ fn other_error(error: Error) -> RedeemInvitationResponse {
 	RedeemInvitationResponse {
 		success: false,
 		errors: failure_to_mutation_errors(error),
-		token: None,
+		jwt: None,
 	}
 }
 
 fn with_user(user: User) -> RedeemInvitationResponse {
-	let token_result = make_token::call(user);
+	let jwt_result = make_jwt::call(user);
 
-	let token = match token_result {
-		Ok(token) => token,
+	let jwt = match jwt_result {
+		Ok(jwt) => jwt,
 		Err(e) => return other_error(e),
 	};
 
 	RedeemInvitationResponse {
 		success: true,
 		errors: vec![],
-		token: Some(token),
+		jwt: Some(jwt),
 	}
 }

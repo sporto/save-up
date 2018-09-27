@@ -1,7 +1,7 @@
 use failure::Error;
 use graph_common::actions::passwords;
 use graph_common::mutations::{failure_to_mutation_errors, MutationError};
-use graph_pub::actions::users::make_token;
+use graph_pub::actions::users::make_jwt;
 use graph_pub::context::PublicContext;
 use juniper::{Executor, FieldResult};
 
@@ -31,7 +31,7 @@ pub fn call(
 		Err(e) => return Ok(other_error(e)),
 	};
 
-	let token_result = make_token::call(user);
+	let token_result = make_jwt::call(user);
 
 	let token = match token_result {
 		Ok(token) => token,

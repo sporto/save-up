@@ -1,2 +1,2 @@
 pub mod confirm_email;
-pub mod make_token;
+pub mod make_jwt;

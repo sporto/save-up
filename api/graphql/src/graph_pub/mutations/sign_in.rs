@@ -1,16 +1,16 @@
+use graph_common::mutations::failure_to_mutation_errors;
 use graph_common::mutations::MutationError;
 use graph_pub::actions::sign_ins;
-use graph_pub::actions::users::make_token;
+use graph_pub::actions::users::make_jwt;
 use graph_pub::context::PublicContext;
 use juniper::{Executor, FieldResult};
 use models::sign_in::SignIn;
-use graph_common::mutations::failure_to_mutation_errors;
 
 #[derive(GraphQLObject, Clone)]
 pub struct SignInResponse {
 	success: bool,
 	errors: Vec<MutationError>,
-	token: Option<String>,
+	jwt: Option<String>,
 }
 
 pub fn call(executor: &Executor<PublicContext>, sign_in: SignIn) -> FieldResult<SignInResponse> {
@@ -20,28 +20,32 @@ pub fn call(executor: &Executor<PublicContext>, sign_in: SignIn) -> FieldResult<
 
 	let user = match user_result {
 		Ok(user) => user,
-		Err(e) => return Ok(SignInResponse {
-			success: false,
-			errors: failure_to_mutation_errors(e),
-			token: None,
-		}),
+		Err(e) => {
+			return Ok(SignInResponse {
+				success: false,
+				errors: failure_to_mutation_errors(e),
+				jwt: None,
+			})
+		}
 	};
 
-	let token_result = make_token::call(user);
+	let jwt_result = make_jwt::call(user);
 
-	let token = match token_result {
-		Ok(token) => token,
-		Err(e) => return Ok(SignInResponse {
-			success: false,
-			errors: failure_to_mutation_errors(e),
-			token: None,
-		}),
+	let jwt = match jwt_result {
+		Ok(jwt) => jwt,
+		Err(e) => {
+			return Ok(SignInResponse {
+				success: false,
+				errors: failure_to_mutation_errors(e),
+				jwt: None,
+			})
+		}
 	};
 
 	let response = SignInResponse {
 		success: true,
 		errors: vec![],
-		token: Some(token),
+		jwt: Some(jwt),
 	};
 
 	Ok(response)

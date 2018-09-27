@@ -1,7 +1,7 @@
 use failure::Error;
 use graph_common::mutations::{failure_to_mutation_errors, MutationError};
 use graph_pub::actions::sign_ups;
-use graph_pub::actions::users::make_token;
+use graph_pub::actions::users::make_jwt;
 use graph_pub::context::PublicContext;
 use juniper::{Executor, FieldResult};
 use models::sign_up::SignUp;
@@ -10,7 +10,7 @@ use models::sign_up::SignUp;
 pub struct SignUpResponse {
 	success: bool,
 	errors: Vec<MutationError>,
-	token: Option<String>,
+	jwt: Option<String>,
 }
 
 pub fn call(executor: &Executor<PublicContext>, sign_up: SignUp) -> FieldResult<SignUpResponse> {
@@ -18,7 +18,7 @@ pub fn call(executor: &Executor<PublicContext>, sign_up: SignUp) -> FieldResult<
 		SignUpResponse {
 			success: false,
 			errors: failure_to_mutation_errors(error),
-			token: None,
+			jwt: None,
 		}
 	}
 
@@ -31,17 +31,17 @@ pub fn call(executor: &Executor<PublicContext>, sign_up: SignUp) -> FieldResult<
 		Err(e) => return Ok(other_error(e)),
 	};
 
-	let token_result = make_token::call(user);
+	let jwt_result = make_jwt::call(user);
 
-	let token = match token_result {
-		Ok(token) => token,
+	let jwt = match jwt_result {
+		Ok(jwt) => jwt,
 		Err(e) => return Ok(other_error(e)),
 	};
 
 	let response = SignUpResponse {
 		success: true,
 		errors: vec![],
-		token: Some(token),
+		jwt: Some(jwt),
 	};
 
 	Ok(response)
