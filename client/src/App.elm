@@ -17,6 +17,7 @@ import Shared.Return as Return
 import Shared.Return3 as R3
 import Shared.Routes as Routes
 import Shared.Sessions as Sessions
+import UI.Boilerplate
 import UI.Footer as Footer
 import UI.Navigation as Navigation
 import Url exposing (Url)
