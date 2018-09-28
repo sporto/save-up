@@ -18,7 +18,7 @@ view context =
                 |> Maybe.Extra.values
                 |> List.map (p [ class "mt-2" ])
     in
-    div [ class "mt-4" ]
+    div [ class "mt-4 text-sm" ]
         links
 
 
