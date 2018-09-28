@@ -1,4 +1,4 @@
-module Investor exposing (Msg, PageInvestor, initCurrentPage, subscriptions, update, view)
+module Investor exposing (Msg, Page, initCurrentPage, subscriptions, update, view)
 
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Nav
@@ -17,17 +17,17 @@ import UI.Navigation as Navigation
 import Url exposing (Url)
 
 
-type PageInvestor
-    = PageInvestor_Home Home.Model
+type Page
+    = Page_Home Home.Model
 
 
 type Msg
-    = PageInvestorHomeMsg Home.Msg
+    = PageHomeMsg Home.Msg
     | SignOut
 
 
 type alias Returns =
-    ( PageInvestor, Cmd Msg, Actions.Actions Msg )
+    ( Page, Cmd Msg, Actions.Actions Msg )
 
 
 initCurrentPage : Context -> Routes.RouteInInvestor -> Returns
@@ -36,33 +36,33 @@ initCurrentPage context route =
         Routes.RouteInInvestor_Home ->
             Home.init
                 context
-                |> Return.mapAll PageInvestor_Home PageInvestorHomeMsg
+                |> Return.mapAll Page_Home PageHomeMsg
 
 
-subscriptions : PageInvestor -> Sub Msg
+subscriptions : Page -> Sub Msg
 subscriptions page =
     case page of
-        PageInvestor_Home pageModel ->
-            Sub.map PageInvestorHomeMsg (Home.subscriptions pageModel)
+        Page_Home pageModel ->
+            Sub.map PageHomeMsg (Home.subscriptions pageModel)
 
 
-update : Context -> Msg -> PageInvestor -> Returns
+update : Context -> Msg -> Page -> Returns
 update context msg page =
     case msg of
-        PageInvestorHomeMsg sub ->
+        PageHomeMsg sub ->
             case page of
-                PageInvestor_Home pageModel ->
+                Page_Home pageModel ->
                     Home.update
                         context
                         sub
                         pageModel
-                        |> Return.mapAll PageInvestor_Home PageInvestorHomeMsg
+                        |> Return.mapAll Page_Home PageHomeMsg
 
         SignOut ->
             ( page, Cmd.none, Actions.endSession )
 
 
-view : Context -> PageInvestor -> Html Msg
+view : Context -> Page -> Html Msg
 view context page =
     section []
         [ header_ context
@@ -95,14 +95,14 @@ navigationLink route label =
         [ text label ]
 
 
-currentPage : Context -> PageInvestor -> Html Msg
+currentPage : Context -> Page -> Html Msg
 currentPage context page =
     let
         inner =
             case page of
-                PageInvestor_Home pageModel ->
+                Page_Home pageModel ->
                     Home.view context pageModel
-                        |> map PageInvestorHomeMsg
+                        |> map PageHomeMsg
     in
     section [ class "flex-auto" ]
         [ inner ]

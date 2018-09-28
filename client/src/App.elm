@@ -33,9 +33,9 @@ type alias Model =
 
 
 type Area
-    = Area_Admin Authentication Admin.PageAdmin
-    | Area_Investor Authentication Investor.PageInvestor
-    | Area_Public Public.PagePublic
+    = Area_Admin Authentication Admin.Page
+    | Area_Investor Authentication Investor.Page
+    | Area_Public Public.Page
     | Area_NotFound
 
 

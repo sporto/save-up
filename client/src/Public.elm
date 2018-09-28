@@ -1,4 +1,4 @@
-module Public exposing (Msg, PagePublic, initCurrentPage, subscriptions, update, view)
+module Public exposing (Msg, Page, initCurrentPage, subscriptions, update, view)
 
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Nav
@@ -17,11 +17,11 @@ import Shared.Sessions as Sessions
 import Url exposing (Url)
 
 
-type PagePublic
-    = PagePublic_RedeemInvitation RedeemInvitation.Model
-    | PagePublic_SignIn SignIn.Model
-    | PagePublic_SignUp SignUp.Model
-    | PagePublic_RequestPassword RequestPassword.Model
+type Page
+    = Page_RedeemInvitation RedeemInvitation.Model
+    | Page_SignIn SignIn.Model
+    | Page_SignUp SignUp.Model
+    | Page_RequestPassword RequestPassword.Model
 
 
 type Msg
@@ -32,7 +32,7 @@ type Msg
 
 
 type alias Returns =
-    ( PagePublic, Cmd Msg, Actions.Actions Msg )
+    ( Page, Cmd Msg, Actions.Actions Msg )
 
 
 initCurrentPage : PublicContext -> Routes.RouteInPublic -> Returns
@@ -41,114 +41,114 @@ initCurrentPage context route =
         Routes.RouteInPublic_SignIn ->
             SignIn.init context.flags
                 |> Return.mapAll
-                    PagePublic_SignIn
+                    Page_SignIn
                     PageSignInMsg
 
         Routes.RouteInPublic_SignUp ->
             SignUp.init context.flags
                 |> Return.mapAll
-                    PagePublic_SignUp
+                    Page_SignUp
                     PageSignUpMsg
 
         Routes.RouteInPublic_Invitation token ->
             RedeemInvitation.init context.flags token
                 |> Return.mapAll
-                    PagePublic_RedeemInvitation
+                    Page_RedeemInvitation
                     PageRedeemInvitationMsg
 
         Routes.RouteInPublic_RequestPasswordReset ->
             RequestPassword.init context.flags
                 |> Return.mapAll
-                    PagePublic_RequestPassword
+                    Page_RequestPassword
                     PageRequestPasswordMsg
 
 
-subscriptions : PagePublic -> Sub Msg
+subscriptions : Page -> Sub Msg
 subscriptions page =
     case page of
-        PagePublic_SignIn pageModel ->
+        Page_SignIn pageModel ->
             Sub.map PageSignInMsg (SignIn.subscriptions pageModel)
 
-        PagePublic_SignUp pageModel ->
+        Page_SignUp pageModel ->
             Sub.map PageSignUpMsg (SignUp.subscriptions pageModel)
 
-        PagePublic_RedeemInvitation pageModel ->
+        Page_RedeemInvitation pageModel ->
             Sub.map PageRedeemInvitationMsg (RedeemInvitation.subscriptions pageModel)
 
-        PagePublic_RequestPassword pageModel ->
+        Page_RequestPassword pageModel ->
             Sub.map PageRequestPasswordMsg (RequestPassword.subscriptions pageModel)
 
 
-update : PublicContext -> Msg -> PagePublic -> Returns
+update : PublicContext -> Msg -> Page -> Returns
 update context msg page =
     case msg of
         PageSignInMsg sub ->
             case page of
-                PagePublic_SignIn pageModel ->
+                Page_SignIn pageModel ->
                     SignIn.update
                         context
                         sub
                         pageModel
-                        |> Return.mapAll PagePublic_SignIn PageSignInMsg
+                        |> Return.mapAll Page_SignIn PageSignInMsg
 
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
         PageSignUpMsg sub ->
             case page of
-                PagePublic_SignUp pageModel ->
+                Page_SignUp pageModel ->
                     SignUp.update
                         context
                         sub
                         pageModel
-                        |> Return.mapAll PagePublic_SignUp PageSignUpMsg
+                        |> Return.mapAll Page_SignUp PageSignUpMsg
 
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
         PageRedeemInvitationMsg sub ->
             case page of
-                PagePublic_RedeemInvitation pageModel ->
+                Page_RedeemInvitation pageModel ->
                     RedeemInvitation.update
                         context
                         sub
                         pageModel
-                        |> Return.mapAll PagePublic_RedeemInvitation PageRedeemInvitationMsg
+                        |> Return.mapAll Page_RedeemInvitation PageRedeemInvitationMsg
 
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
         PageRequestPasswordMsg sub ->
             case page of
-                PagePublic_RequestPassword pageModel ->
+                Page_RequestPassword pageModel ->
                     RequestPassword.update
                         context
                         sub
                         pageModel
-                        |> Return.mapAll PagePublic_RequestPassword PageRequestPasswordMsg
+                        |> Return.mapAll Page_RequestPassword PageRequestPasswordMsg
 
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
 
-view : PublicContext -> PagePublic -> Html Msg
+view : PublicContext -> Page -> Html Msg
 view context page =
     let
         inner =
             case page of
-                PagePublic_SignIn pageModel ->
+                Page_SignIn pageModel ->
                     SignIn.view context pageModel
                         |> map PageSignInMsg
 
-                PagePublic_SignUp pageModel ->
+                Page_SignUp pageModel ->
                     SignUp.view context pageModel
                         |> map PageSignUpMsg
 
-                PagePublic_RedeemInvitation pageModel ->
+                Page_RedeemInvitation pageModel ->
                     RedeemInvitation.view context pageModel
                         |> map PageRedeemInvitationMsg
 
-                PagePublic_RequestPassword pageModel ->
+                Page_RequestPassword pageModel ->
                     RequestPassword.view context pageModel
                         |> map PageRequestPasswordMsg
     in
