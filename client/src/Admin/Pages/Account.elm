@@ -11,7 +11,7 @@ import Graphql.Field as Field
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
-import Html.Attributes exposing (class, href, src, style, type_, value)
+import Html.Attributes exposing (class, href, name, src, style, type_, value)
 import Html.Events exposing (onInput, onSubmit)
 import RemoteData
 import Shared.Actions as Actions
@@ -23,6 +23,7 @@ import Time exposing (Posix)
 import UI.Chart as Chart
 import UI.Empty as Empty
 import UI.Flash as Flash
+import UI.Forms as Forms
 import UI.Icons as Icons
 import Verify exposing (Validator, validate, verify)
 
@@ -76,12 +77,16 @@ type alias Transaction =
 type alias DepositModel =
     { form : DepositForm
     , response : GraphData DepositResponse
-    , validationErrors : Maybe ValidationErrors
+    , validationErrors : Maybe ( ValidationError, List ValidationError )
     }
 
 
-type alias ValidationErrors =
-    ( String, List String )
+type alias ValidationError =
+    ( Field, String )
+
+
+type Field
+    = Field_Amount
 
 
 newDepositModel : DepositModel
@@ -228,7 +233,7 @@ updateDeposit context accountID msg model =
                         )
 
         SubmitDeposit ->
-            case depositValidator model.form of
+            case validateDeposit model.form of
                 Ok form ->
                     ( { model
                         | response = RemoteData.Loading
@@ -347,68 +352,53 @@ deposit : Context -> DepositModel -> Html DepositMsg
 deposit context model =
     div [ class molecules.page.container, class "flex justify-center" ]
         [ div [ style "width" "24rem" ]
-            [ h1 [ class molecules.page.title ] [ text "Make a deposit" ]
-            , form [ class "mt-2", onSubmit SubmitDeposit ]
-                [ flashDeposit model
-                , validationErrorsView model.validationErrors
-                , p [ class molecules.form.fieldset ]
-                    [ label [ class molecules.form.label ] [ text "Amount" ]
-                    , input
-                        [ class molecules.form.input
-                        , type_ "number"
-                        , onInput ChangeDepositAmount
-                        , value model.form.amount
-                        ]
-                        []
-                    ]
-                , p [ class molecules.form.actions ]
-                    [ submitDeposit model
-                    ]
-                ]
-            ]
+            [ Forms.form_ (formArgsDeposit model) ]
         ]
 
 
-submitDeposit : DepositModel -> Html msg
-submitDeposit model =
-    case model.response of
-        RemoteData.Loading ->
-            Icons.spinner
-
-        _ ->
-            button [ class molecules.button.primary ]
-                [ span [ class "mr-2" ] [ Icons.deposit ]
-                , text "Deposit"
-                ]
+formArgsDeposit : DepositModel -> Forms.Args DepositResponse DepositMsg
+formArgsDeposit model =
+    { title = "Make a deposit"
+    , intro = text ""
+    , submitContent = submitContentDeposit
+    , fields = formFieldsDeposit model
+    , onSubmit = SubmitDeposit
+    , response = model.response
+    }
 
 
-flashDeposit : DepositModel -> Html msg
-flashDeposit model =
-    case model.response of
-        RemoteData.Success response ->
-            if response.success then
-                Flash.success
-                    "Deposit saved"
+submitContentDeposit =
+    [ span [ class "mr-2" ] [ Icons.deposit ]
+    , text "Deposit"
+    ]
 
-            else
-                text ""
 
-        RemoteData.Failure e ->
-            Flash.error
-                "Something went wrong"
-
-        _ ->
-            text ""
+formFieldsDeposit : DepositModel -> List (Html DepositMsg)
+formFieldsDeposit model =
+    [ Forms.set
+        Field_Amount
+        "Amount"
+        (input
+            [ class molecules.form.input
+            , onInput ChangeDepositAmount
+            , type_ "number"
+            , name "amount"
+            , value model.form.amount
+            ]
+            []
+        )
+        model.validationErrors
+    ]
 
 
 
 -- Verify deposit
 
 
-depositValidator : Validator String DepositForm VerifiedDepositForm
-depositValidator =
+validateDeposit : Validator ValidationError DepositForm VerifiedDepositForm
+validateDeposit =
     validate VerifiedDepositForm
-        |> verify .amount (validateAmount "Invalid amount")
+        |> verify .amount (validateAmount ( Field_Amount, "Invalid amount" ))
 
 
 validateAmount : error -> Validator error String Int
@@ -423,20 +413,6 @@ validateAmount error input =
 
         Nothing ->
             Err ( error, [] )
-
-
-
--- Common views
-
-
-validationErrorsView : Maybe ValidationErrors -> Html msg
-validationErrorsView maybeValidationErrorsView =
-    case maybeValidationErrorsView of
-        Nothing ->
-            text ""
-
-        Just ( firstError, other ) ->
-            Flash.error firstError
 
 
 

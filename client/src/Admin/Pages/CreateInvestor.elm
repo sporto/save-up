@@ -144,7 +144,8 @@ update context msg model =
                 Err e ->
                     ( { model | response = RemoteData.Failure e }
                     , Cmd.none
-                    , Actions.none
+                    , Actions.addErrorNotification
+                        "Something went wrong"
                     )
 
                 Ok response ->
@@ -154,7 +155,7 @@ update context msg model =
                             , form = newForm
                           }
                         , Nav.pushUrl context.navKey (Routes.pathFor Routes.routeForAdminHome)
-                        , Actions.addNotification successNotification
+                        , Actions.addSuccessNotification "Investor created"
                         )
 
                     else
@@ -164,37 +165,12 @@ update context msg model =
                         )
 
 
-successNotification =
-    Notifications.newSuccess
-        Css.notificationArgs
-        "Investor created"
-
-
 view : Context -> Model -> Html Msg
 view context model =
     section [ class molecules.page.container, class "flex justify-center" ]
         [ div [ style "width" "24rem" ]
             [ Forms.form_ (formArgs model) ]
         ]
-
-
-flash : Model -> Html msg
-flash model =
-    case model.response of
-        RemoteData.Success response ->
-            if response.success then
-                Flash.success
-                    "User created"
-
-            else
-                text ""
-
-        RemoteData.Failure e ->
-            Flash.error
-                "Something went wrong"
-
-        _ ->
-            text ""
 
 
 formArgs : Model -> Forms.Args CreateUserResponse Msg
