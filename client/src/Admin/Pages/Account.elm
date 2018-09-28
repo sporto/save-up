@@ -65,6 +65,7 @@ newTopModel =
 type alias Account =
     { balanceInCents : Int
     , transactions : List Transaction
+    , yearlyInterest : Float
     }
 
 
@@ -351,6 +352,9 @@ accountWithData context account =
         [ text "Balance: "
         , span [ class "text-3xl font-semibold" ] [ text (String.fromInt balance) ]
         , span [ class "ml-2" ] [ Icons.money ]
+        , span [ class "ml-8" ] [ text "Yearly interest" ]
+        , span [ class "ml-2 text-2xl font-semibold" ] [ text (String.fromFloat account.yearlyInterest) ]
+        , span [ class "" ] [ text "%" ]
         ]
     , Chart.view account.transactions
     ]
@@ -449,14 +453,15 @@ accountQuery accountID =
 adminNode : ID -> SelectionSet Account Api.Object.Admin
 adminNode accountID =
     Api.Object.Admin.selection identity
-        |> with (Api.Object.Admin.account { id = accountID } accountNode)
+        |> with (Api.Object.Admin.account { id = accountID } accountSelection)
 
 
-accountNode : SelectionSet Account Api.Object.Account
-accountNode =
+accountSelection : SelectionSet Account Api.Object.Account
+accountSelection =
     Api.Object.Account.selection Account
         |> with (Api.Object.Account.balanceInCents |> Field.map round)
         |> with (Api.Object.Account.transactions { since = 0 } transactionNode)
+        |> with Api.Object.Account.yearlyInterest
 
 
 transactionNode : SelectionSet Transaction Api.Object.Transaction
