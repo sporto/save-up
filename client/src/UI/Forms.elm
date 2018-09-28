@@ -43,13 +43,18 @@ type alias Args resp msg =
 form_ : Args resp msg -> Html msg
 form_ args =
     form [ onSubmit args.onSubmit ]
-        [ h2 [] [ text args.title ]
+        [ title args
         , intro args
         , responseErrors args
         , div [] args.fields
         , p [ class "mt-6" ]
             [ submit args ]
         ]
+
+
+title : Args resp msg -> Html msg
+title args =
+    h2 [ class "" ] [ text args.title ]
 
 
 intro : Args resp msg -> Html msg

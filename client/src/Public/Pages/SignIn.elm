@@ -23,6 +23,7 @@ import String.Verify
 import UI.Flash as Flash
 import UI.Forms as Forms
 import UI.Icons as Icons
+import UI.PublicLinks as PublicLinks
 import Verify exposing (Validator, validate, verify)
 
 
@@ -198,7 +199,7 @@ view context model =
             [ div [ class "bg-white shadow-md rounded p-8 mt-3" ]
                 [ Forms.form_ (formArgs model)
                 ]
-            , links
+            , PublicLinks.view context
             ]
         ]
 
@@ -241,12 +242,6 @@ formFields model =
         )
         model.validationErrors
     ]
-
-
-links =
-    p [ class "mt-6" ]
-        [ a [ href (Routes.pathFor Routes.routeForSignUp) ] [ text "Sign up" ]
-        ]
 
 
 maybeErrors : Model -> Html msg

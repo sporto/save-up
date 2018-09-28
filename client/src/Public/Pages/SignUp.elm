@@ -24,6 +24,7 @@ import String.Verify
 import UI.Flash as Flash
 import UI.Forms as Forms
 import UI.Icons as Icons
+import UI.PublicLinks as PublicLinks
 import Verify exposing (Validator, validate, verify)
 
 
@@ -180,7 +181,7 @@ view context model =
                 [ class "bg-white shadow-md rounded p-8 mt-3" ]
                 [ Forms.form_ (formArgs model)
                 ]
-            , links
+            , PublicLinks.view context
             ]
         ]
 
@@ -266,13 +267,6 @@ maybeErrors model =
 
         _ ->
             text ""
-
-
-links =
-    p [ class "mt-6" ]
-        [ text "Already signed up? "
-        , a [ href (Routes.pathFor Routes.routeForSignIn) ] [ text "Sign in" ]
-        ]
 
 
 

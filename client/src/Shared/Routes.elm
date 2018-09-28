@@ -1,4 +1,4 @@
-module Shared.Routes exposing (Route(..), RouteInAdmin(..), RouteInAdminInAccount(..), RouteInInvestor(..), RouteInPublic(..), isInAnyAdminRoute, parseUrl, pathFor, routeForAdminAccountDeposit, routeForAdminAccountShow, routeForAdminAccountWithdraw, routeForAdminCreateInvestor, routeForAdminHome, routeForAdminInviteAdmin, routeForInvestorHome, routeForSignIn, routeForSignUp)
+module Shared.Routes exposing (Route(..), RouteInAdmin(..), RouteInAdminInAccount(..), RouteInInvestor(..), RouteInPublic(..), isInAnyAdminRoute, parseUrl, pathFor, routeForAdminAccountDeposit, routeForAdminAccountShow, routeForAdminAccountWithdraw, routeForAdminCreateInvestor, routeForAdminHome, routeForAdminInviteAdmin, routeForInvestorHome, routeForRequestPasswordReset, routeForSignIn, routeForSignUp)
 
 import Url exposing (Url)
 import Url.Parser exposing (..)
@@ -234,6 +234,11 @@ routeForSignIn =
 routeForSignUp : Route
 routeForSignUp =
     RouteInPublic_SignUp |> Route_Public
+
+
+routeForRequestPasswordReset : Route
+routeForRequestPasswordReset =
+    RouteInPublic_RequestPasswordReset |> Route_Public
 
 
 routeForAdminHome : Route

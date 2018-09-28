@@ -1,6 +1,7 @@
 module Shared.Globals exposing (Authentication, Context, Flags, PublicContext, Role(..), TokenData)
 
 import Browser.Navigation as Nav
+import Shared.AppLocation exposing (AppLocation)
 import Time exposing (Posix)
 
 
@@ -18,6 +19,7 @@ type Role
 type alias PublicContext =
     { flags : Flags
     , navKey : Nav.Key
+    , currentLocation : AppLocation
     }
 
 

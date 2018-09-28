@@ -154,6 +154,7 @@ newPublicContext : Model -> PublicContext
 newPublicContext model =
     { flags = model.flags
     , navKey = model.navKey
+    , currentLocation = model.currentLocation
     }
 
 

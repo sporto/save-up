@@ -19,6 +19,7 @@ import String.Verify
 import UI.Flash as Flash
 import UI.Forms as Forms
 import UI.Icons as Icons
+import UI.PublicLinks as PublicLinks
 import Verify exposing (Validator, validate, verify)
 
 
@@ -141,7 +142,14 @@ subscriptions model =
 view : PublicContext -> Model -> Html Msg
 view context model =
     div [ class "flex items-center justify-center pt-16" ]
-        [ Forms.form_ (formArgs model) ]
+        [ div [ class "w-1/3" ]
+            [ div
+                [ class "bg-white shadow-md rounded p-8 mt-3" ]
+                [ Forms.form_ (formArgs model)
+                ]
+            , PublicLinks.view context
+            ]
+        ]
 
 
 formArgs : Model -> Forms.Args RequestPasswordResetResponse Msg
