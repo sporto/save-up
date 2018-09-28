@@ -23,6 +23,7 @@ import Shared.Sessions as Sessions
 import UI.Flash as Flash
 import UI.Forms as Forms
 import UI.Icons as Icons
+import UI.PublicLinks as PublicLinks
 import Verify exposing (Validator, keep, validate, verify)
 
 
@@ -166,7 +167,7 @@ view context model =
     div [ class "flex items-center justify-center pt-16" ]
         [ div [ class "bg-white shadow-md rounded p-8 mt-3" ]
             [ Forms.form_ (formArgs model)
-            , links
+            , PublicLinks.view context
             ]
         ]
 
@@ -207,13 +208,6 @@ formFields model =
         )
         model.validationErrors
     ]
-
-
-links =
-    p [ class "mt-6" ]
-        [ text "Already signed up? "
-        , a [ href (Routes.pathFor Routes.routeForSignUp) ] [ text "Sign in" ]
-        ]
 
 
 
