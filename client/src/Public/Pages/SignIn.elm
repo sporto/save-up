@@ -8,7 +8,7 @@ import Debug
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
-import Html.Attributes exposing (class, href, name, type_)
+import Html.Attributes exposing (class, href, name, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Json.Decode as Decode
@@ -194,51 +194,51 @@ subscriptions model =
 view : PublicContext -> Model -> Html Msg
 view context model =
     div [ class "flex items-center justify-center pt-16" ]
-        [ div []
-            [ h1 []
-                [ text "Sign in" ]
-            , form
-                [ class "bg-white shadow-md rounded p-8 mt-3", onSubmit Submit ]
-                [ maybeErrors model
-                , p []
-                    [ label [ class molecules.form.label ]
-                        [ text "Username or email"
-                        ]
-                    , input
-                        [ class molecules.form.input
-                        , type_ "email"
-                        , name "email"
-                        , onInput ChangeUsernameOrEmail
-                        ]
-                        []
-                    ]
-                , p [ class "mt-6" ]
-                    [ label [ class molecules.form.label ]
-                        [ text "Password"
-                        ]
-                    , input
-                        [ class molecules.form.input
-                        , type_ "password"
-                        , name "password"
-                        , onInput ChangePassword
-                        ]
-                        []
-                    ]
-                , p [ class "mt-6" ] [ submit model ]
-                ]
+        [ div [ class "bg-white shadow-md rounded p-8 mt-3" ]
+            [ Forms.form_ (formArgs model)
             , links
             ]
         ]
 
 
-submit : Model -> Html Msg
-submit model =
-    case model.response of
-        RemoteData.Loading ->
-            Icons.spinner
+formArgs : Model -> Forms.Args SignInResponse Msg
+formArgs model =
+    { title = "Sign in"
+    , intro = text ""
+    , submitContent = [ text "Sign in" ]
+    , fields = formFields model
+    , onSubmit = Submit
+    , response = model.response
+    }
 
-        _ ->
-            button [ class molecules.form.submit ] [ text "Sign in" ]
+
+formFields model =
+    [ Forms.set
+        Field_UsernameOrEmail
+        "Email"
+        (input
+            [ class molecules.form.input
+            , onInput ChangeUsernameOrEmail
+            , type_ "text"
+            , value model.form.usernameOrEmail
+            ]
+            []
+        )
+        model.validationErrors
+    , Forms.set
+        Field_Password
+        "Email"
+        (input
+            [ class molecules.form.input
+            , onInput ChangePassword
+            , type_ "password"
+            , name "password"
+            , value model.form.password
+            ]
+            []
+        )
+        model.validationErrors
+    ]
 
 
 links =

@@ -197,20 +197,6 @@ formFields model =
 
 
 
--- flash : Model -> Html msg
--- flash model =
---     case model.response of
---         RemoteData.Success response ->
---             if response.success then
---                 Flash.success
---                     "The invitation was sent"
---             else
---                 text ""
---         RemoteData.Failure e ->
---             Flash.error
---                 "Something went wrong"
---         _ ->
---             text ""
 -- GraphQl
 
 

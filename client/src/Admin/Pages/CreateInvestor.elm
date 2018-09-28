@@ -174,88 +174,8 @@ view : Context -> Model -> Html Msg
 view context model =
     section [ class molecules.page.container, class "flex justify-center" ]
         [ div [ style "width" "24rem" ]
-            [ h1 [ class molecules.page.title ] [ text "Create investor" ]
-            , form [ class "mt-2", onSubmit Submit ]
-                [ flash model
-                , Forms.set
-                    Field_Name
-                    "Name"
-                    (input
-                        [ class molecules.form.input
-                        , type_ "text"
-                        , name "name"
-                        , value model.form.name
-                        , onInput ChangeName
-                        ]
-                        []
-                    )
-                    model.validationErrors
-                , Forms.set
-                    Field_Username
-                    "Username"
-                    (input
-                        [ class molecules.form.input
-                        , type_ "text"
-                        , name "username"
-                        , value model.form.username
-                        , onInput ChangeUsername
-                        ]
-                        []
-                    )
-                    model.validationErrors
-                , Forms.set
-                    Field_Password
-                    "Password"
-                    (input
-                        [ class molecules.form.input
-                        , type_ "password"
-                        , name "password"
-                        , value model.form.password
-                        , onInput ChangePassword
-                        ]
-                        []
-                    )
-                    model.validationErrors
-                , Forms.set
-                    Field_Email
-                    "Email (optional)"
-                    (input
-                        [ class molecules.form.input
-                        , type_ "email"
-                        , name "email"
-                        , value model.form.email
-                        , onInput ChangeEmail
-                        ]
-                        []
-                    )
-                    model.validationErrors
-                , p [ class molecules.form.actions ]
-                    [ submit model
-                    ]
-                ]
-            ]
+            [ Forms.form_ (formArgs model) ]
         ]
-
-
-submit : Model -> Html Msg
-submit model =
-    case model.response of
-        RemoteData.Loading ->
-            Icons.spinner
-
-        _ ->
-            let
-                isValid =
-                    case formValidator model.form of
-                        Ok _ ->
-                            True
-
-                        Err _ ->
-                            False
-            in
-            button
-                [ class molecules.form.submit ]
-                [ i [ class "fas fa-envelope mr-2" ] [], text "Create" ]
 
 
 flash : Model -> Html msg
@@ -275,6 +195,77 @@ flash model =
 
         _ ->
             text ""
+
+
+formArgs : Model -> Forms.Args CreateUserResponse Msg
+formArgs model =
+    { title = "Create investor"
+    , intro = text ""
+    , submitContent = submitContent
+    , fields = formFields model
+    , onSubmit = Submit
+    , response = model.response
+    }
+
+
+submitContent =
+    [ i [ class "fas fa-envelope mr-2" ] [], text "Create" ]
+
+
+formFields model =
+    [ Forms.set
+        Field_Name
+        "Name"
+        (input
+            [ class molecules.form.input
+            , type_ "text"
+            , name "name"
+            , value model.form.name
+            , onInput ChangeName
+            ]
+            []
+        )
+        model.validationErrors
+    , Forms.set
+        Field_Username
+        "Username"
+        (input
+            [ class molecules.form.input
+            , type_ "text"
+            , name "username"
+            , value model.form.username
+            , onInput ChangeUsername
+            ]
+            []
+        )
+        model.validationErrors
+    , Forms.set
+        Field_Password
+        "Password"
+        (input
+            [ class molecules.form.input
+            , type_ "password"
+            , name "password"
+            , value model.form.password
+            , onInput ChangePassword
+            ]
+            []
+        )
+        model.validationErrors
+    , Forms.set
+        Field_Email
+        "Email (optional)"
+        (input
+            [ class molecules.form.input
+            , type_ "email"
+            , name "email"
+            , value model.form.email
+            , onInput ChangeEmail
+            ]
+            []
+        )
+        model.validationErrors
+    ]
 
 
 type alias ValidationError =
