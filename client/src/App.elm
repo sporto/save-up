@@ -1,16 +1,12 @@
 module App exposing (main)
 
 import Admin
-import Admin.Pages.Account
-import Admin.Pages.Home
-import Admin.Pages.InviteAdmin
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Investor
-import Investor.Pages.Home
 import Notifications
 import Public
 import Shared.Actions as Actions exposing (Actions)
@@ -32,15 +28,15 @@ type alias Model =
     , currentLocation : AppLocation.AppLocation
     , navKey : Nav.Key
     , notifications : Notifications.Model
-    , page : Page
+    , area : Area
     }
 
 
-type Page
-    = Page_Admin Authentication Admin.PageAdmin
-    | Page_Investor Authentication Investor.PageInvestor
-    | Page_Public Public.PagePublic
-    | Page_NotFound
+type Area
+    = Area_Admin Authentication Admin.PageAdmin
+    | Area_Investor Authentication Investor.PageInvestor
+    | Area_Public Public.PagePublic
+    | Area_NotFound
 
 
 type Msg
@@ -61,7 +57,7 @@ initialModel flags url navKey notModel =
     , currentLocation = AppLocation.fromUrl url
     , navKey = navKey
     , notifications = notModel
-    , page = Page_NotFound
+    , area = Area_NotFound
     }
 
 
@@ -95,7 +91,7 @@ initCurrentPage model =
             model.currentLocation.route
 
         notFound =
-            ( Page_NotFound, Cmd.none, Actions.none )
+            ( Area_NotFound, Cmd.none, Actions.none )
 
         ( newPage, newCmd, newAction ) =
             case ( contextResult, currentRoute ) of
@@ -103,32 +99,32 @@ initCurrentPage model =
                     Admin.initCurrentPage
                         context
                         subRoute
-                        |> R3.mapAll (Page_Admin context.auth) Msg_Admin
+                        |> R3.mapAll (Area_Admin context.auth) Msg_Admin
 
                 ( AuthContext_Admin _, Routes.Route_Public Routes.RouteInPublic_SignIn ) ->
-                    ( Page_NotFound
+                    ( Area_NotFound
                     , Nav.replaceUrl model.navKey (Routes.pathFor Routes.routeForAdminHome)
                     , Actions.none
                     )
 
                 ( AuthContext_Investor context, Routes.Route_Investor subRoute ) ->
                     Investor.initCurrentPage context subRoute
-                        |> R3.mapAll (Page_Investor context.auth) Msg_Investor
+                        |> R3.mapAll (Area_Investor context.auth) Msg_Investor
 
                 ( AuthContext_Investor _, Routes.Route_Public Routes.RouteInPublic_SignIn ) ->
-                    ( Page_NotFound
+                    ( Area_NotFound
                     , Nav.replaceUrl model.navKey (Routes.pathFor Routes.routeForInvestorHome)
                     , Actions.none
                     )
 
                 ( AuthContext_Public context, Routes.Route_Public subRoute ) ->
                     Public.initCurrentPage context subRoute
-                        |> R3.mapAll Page_Public Msg_Public
+                        |> R3.mapAll Area_Public Msg_Public
 
                 ( _, _ ) ->
                     notFound
     in
-    ( { model | page = newPage }
+    ( { model | area = newPage }
     , newCmd
     , newAction
     )
@@ -190,7 +186,7 @@ update msg model =
 
 updateWithActions : Msg -> Model -> ( Model, Cmd Msg, Actions Msg )
 updateWithActions msg model =
-    case ( msg, model.page ) of
+    case ( msg, model.area ) of
         ( ChangeRoute route, _ ) ->
             ( model, Nav.pushUrl model.navKey (Routes.pathFor route), Actions.none )
 
@@ -232,26 +228,26 @@ updateWithActions msg model =
                     , Actions.none
                     )
 
-        ( Msg_Admin subMsg, Page_Admin auth page ) ->
+        ( Msg_Admin subMsg, Area_Admin auth page ) ->
             Admin.update
                 (newContext model auth)
                 subMsg
                 page
-                |> R3.mapAll (\p -> { model | page = Page_Admin auth p }) Msg_Admin
+                |> R3.mapAll (\p -> { model | area = Area_Admin auth p }) Msg_Admin
 
-        ( Msg_Investor subMsg, Page_Investor auth page ) ->
+        ( Msg_Investor subMsg, Area_Investor auth page ) ->
             Investor.update
                 (newContext model auth)
                 subMsg
                 page
-                |> R3.mapAll (\p -> { model | page = Page_Investor auth p }) Msg_Investor
+                |> R3.mapAll (\p -> { model | area = Area_Investor auth p }) Msg_Investor
 
-        ( Msg_Public subMsg, Page_Public page ) ->
+        ( Msg_Public subMsg, Area_Public page ) ->
             Public.update
                 (newPublicContext model)
                 subMsg
                 page
-                |> R3.mapAll (\p -> { model | page = Page_Public p }) Msg_Public
+                |> R3.mapAll (\p -> { model | area = Area_Public p }) Msg_Public
 
         _ ->
             ( model, Cmd.none, Actions.none )
@@ -261,19 +257,19 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     let
         pageSub =
-            case model.page of
-                Page_NotFound ->
+            case model.area of
+                Area_NotFound ->
                     Sub.none
 
-                Page_Admin _ adminPage ->
+                Area_Admin _ adminPage ->
                     Admin.subscriptions adminPage
                         |> Sub.map Msg_Admin
 
-                Page_Investor _ page ->
+                Area_Investor _ page ->
                     Investor.subscriptions page
                         |> Sub.map Msg_Investor
 
-                Page_Public page ->
+                Area_Public page ->
                     Public.subscriptions page
                         |> Sub.map Msg_Public
     in
@@ -348,25 +344,25 @@ view model =
 bodyFor : Model -> List (Html Msg)
 bodyFor model =
     let
-        page =
-            case model.page of
-                Page_NotFound ->
+        area =
+            case model.area of
+                Area_NotFound ->
                     NotFound.view model.authentication model.currentLocation
 
-                Page_Public pageModel ->
+                Area_Public pageModel ->
                     Public.view (newPublicContext model) pageModel
                         |> Html.map Msg_Public
 
-                Page_Admin auth pageModel ->
+                Area_Admin auth pageModel ->
                     Admin.view (newContext model auth) pageModel
                         |> Html.map Msg_Admin
 
-                Page_Investor auth pageModel ->
+                Area_Investor auth pageModel ->
                     Investor.view (newContext model auth) pageModel
                         |> Html.map Msg_Investor
     in
     [ Notifications.view model.notifications
-    , page
+    , area
     ]
 
 
