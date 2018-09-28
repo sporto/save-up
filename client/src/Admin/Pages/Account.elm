@@ -14,7 +14,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href, name, src, style, type_, value)
 import Html.Events exposing (onInput, onSubmit)
 import RemoteData
-import Shared.Actions as Actions
+import Shared.Actions as Actions exposing (Actions)
 import Shared.Css exposing (molecules)
 import Shared.Globals exposing (..)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse, MutationError)
@@ -167,7 +167,7 @@ update context msg model =
             case model.subPage of
                 SubPage_Deposit depositModel ->
                     let
-                        ( nextDepositModel, newCmd ) =
+                        ( nextDepositModel, newCmd, newAction ) =
                             updateDeposit
                                 context
                                 model.accountID
@@ -176,7 +176,7 @@ update context msg model =
                     in
                     ( { model | subPage = SubPage_Deposit nextDepositModel }
                     , Cmd.map Msg_Desposit newCmd
-                    , Actions.none
+                    , Actions.map Msg_Desposit newAction
                     )
 
                 _ ->
@@ -201,7 +201,7 @@ update context msg model =
                     )
 
 
-updateDeposit : Context -> ID -> DepositMsg -> DepositModel -> ( DepositModel, Cmd DepositMsg )
+updateDeposit : Context -> ID -> DepositMsg -> DepositModel -> ( DepositModel, Cmd DepositMsg, Actions DepositMsg )
 updateDeposit context accountID msg model =
     case msg of
         ChangeDepositAmount amount ->
@@ -209,12 +209,17 @@ updateDeposit context accountID msg model =
                 |> asAmountInDepositForm model.form
                 |> asFormInDepositModel model
             , Cmd.none
+            , Actions.none
             )
 
         OnDepositResponse result ->
             case result of
                 Err e ->
-                    ( { model | response = RemoteData.Failure e }, Cmd.none )
+                    ( { model | response = RemoteData.Failure e }
+                    , Cmd.none
+                    , Actions.addErrorNotification
+                        "Something went wrong"
+                    )
 
                 Ok response ->
                     if response.success then
@@ -225,11 +230,14 @@ updateDeposit context accountID msg model =
                                     |> asAmountInDepositForm model.form
                           }
                         , Cmd.none
+                        , Actions.addSuccessNotification
+                            "Deposit sucessful"
                         )
 
                     else
                         ( { model | response = RemoteData.Success response }
                         , Cmd.none
+                        , Actions.none
                         )
 
         SubmitDeposit ->
@@ -243,10 +251,14 @@ updateDeposit context accountID msg model =
                         context
                         accountID
                         (form.amount * 100)
+                    , Actions.none
                     )
 
                 Err errors ->
-                    ( { model | validationErrors = Just errors }, Cmd.none )
+                    ( { model | validationErrors = Just errors }
+                    , Cmd.none
+                    , Actions.none
+                    )
 
 
 view : Context -> Model -> Html Msg

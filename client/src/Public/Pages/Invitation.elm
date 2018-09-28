@@ -8,7 +8,7 @@ import Browser
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
-import Html.Attributes exposing (class, href, name, type_)
+import Html.Attributes exposing (class, href, name, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Json.Decode as Decode
@@ -23,21 +23,34 @@ import Shared.Sessions as Sessions
 import UI.Flash as Flash
 import UI.Forms as Forms
 import UI.Icons as Icons
+import Verify exposing (Validator, keep, validate, verify)
 
 
 type alias Model =
-    { signUp : SignUp
+    { form : SignUp
     , invitationToken : String
     , response : GraphData RedeemInvitationResponse
+    , validationErrors : Maybe ( ValidationError, List ValidationError )
     }
 
 
-initialModel : Flags -> String -> Model
-initialModel flags invitationToken =
-    { signUp = Sessions.newSignUp
+newModel : Flags -> String -> Model
+newModel flags invitationToken =
+    { form = Sessions.newSignUp
     , invitationToken = invitationToken
     , response = RemoteData.NotAsked
+    , validationErrors = Nothing
     }
+
+
+type alias ValidationError =
+    ( Field, String )
+
+
+type Field
+    = Field_Name
+    | Field_Username
+    | Field_Password
 
 
 type alias RedeemInvitationResponse =
@@ -47,9 +60,9 @@ type alias RedeemInvitationResponse =
     }
 
 
-asSignUpInModel : Model -> SignUp -> Model
-asSignUpInModel model signUp =
-    { model | signUp = signUp }
+asFormInModel : Model -> SignUp -> Model
+asFormInModel model form =
+    { model | form = form }
 
 
 type alias Returns =
@@ -58,7 +71,7 @@ type alias Returns =
 
 init : Flags -> String -> Returns
 init flags invitationToken =
-    ( initialModel flags invitationToken
+    ( newModel flags invitationToken
     , Cmd.none
     , Actions.none
     )
@@ -76,32 +89,48 @@ update context msg model =
     case msg of
         ChangeName name ->
             ( name
-                |> Sessions.asNameInSignUp model.signUp
-                |> asSignUpInModel model
+                |> Sessions.asNameInSignUp model.form
+                |> asFormInModel model
             , Cmd.none
             , Actions.none
             )
 
         ChangePassword password ->
             ( password
-                |> Sessions.asPasswordInSignUp model.signUp
-                |> asSignUpInModel model
+                |> Sessions.asPasswordInSignUp model.form
+                |> asFormInModel model
             , Cmd.none
             , Actions.none
             )
 
         Submit ->
-            ( { model | response = RemoteData.Loading }
-            , sendRedeemMutation context model.signUp model.invitationToken
-            , Actions.none
-            )
+            case validateForm model.form of
+                Err errors ->
+                    ( { model
+                        | validationErrors = Just errors
+                      }
+                    , Cmd.none
+                    , Actions.none
+                    )
+
+                Ok input ->
+                    ( { model
+                        | response = RemoteData.Loading
+                        , validationErrors = Nothing
+                      }
+                    , sendRedeemMutation context
+                        model.form
+                        model.invitationToken
+                    , Actions.none
+                    )
 
         OnSubmitResponse result ->
             case result of
                 Err e ->
                     ( { model | response = RemoteData.Failure e }
                     , Cmd.none
-                    , Actions.none
+                    , Actions.addErrorNotification
+                        "Something went wrong"
                     )
 
                 Ok response ->
@@ -119,85 +148,65 @@ update context msg model =
                             )
 
 
+validateForm : Validator ValidationError SignUp SignUp
+validateForm =
+    validate SignUp
+        |> verify .name (Forms.verifyName Field_Name)
+        |> verify .username (Forms.verifyUsername Field_Username)
+        |> keep .email
+        |> verify .password (Forms.verifyPassword Field_Password)
+
+
 subscriptions model =
     Sub.none
-
-
-
--- VIEW
--- TODO add html validation
 
 
 view : PublicContext -> Model -> Html Msg
 view context model =
     div [ class "flex items-center justify-center pt-16" ]
-        [ div []
-            [ h1 []
-                [ text "Sign up" ]
-            , form
-                [ class "bg-white shadow-md rounded p-8 mt-3", onSubmit Submit ]
-                [ maybeErrors model
-                , p []
-                    [ label
-                        [ class molecules.form.label ]
-                        [ text "Name"
-                        ]
-                    , input
-                        [ class molecules.form.input
-                        , onInput ChangeName
-                        , name "name"
-                        ]
-                        []
-                    ]
-                , p [ class "mt-6" ]
-                    [ label
-                        [ class molecules.form.label ]
-                        [ text "Password"
-                        ]
-                    , input
-                        [ class molecules.form.input
-                        , type_ "password"
-                        , onInput ChangePassword
-                        , name "password"
-                        ]
-                        []
-                    ]
-                , p [ class "mt-6" ]
-                    [ submit model
-                    ]
-                ]
+        [ div [ class "bg-white shadow-md rounded p-8 mt-3" ]
+            [ Forms.form_ (formArgs model)
             , links
             ]
         ]
 
 
-submit : Model -> Html Msg
-submit model =
-    case model.response of
-        RemoteData.Loading ->
-            Icons.spinner
+formArgs : Model -> Forms.Args RedeemInvitationResponse Msg
+formArgs model =
+    { title = "Sign up"
+    , intro = text ""
+    , submitContent = [ text "Sign up" ]
+    , fields = formFields model
+    , onSubmit = Submit
+    , response = model.response
+    }
 
-        _ ->
-            button [ class molecules.form.submit ] [ text "Sign up" ]
 
-
-maybeErrors : Model -> Html msg
-maybeErrors model =
-    case model.response of
-        RemoteData.Success response ->
-            if List.isEmpty response.errors then
-                text ""
-
-            else
-                Forms.mutationError
-                    "other"
-                    response.errors
-
-        RemoteData.Failure err ->
-            Flash.error "Error"
-
-        _ ->
-            text ""
+formFields model =
+    [ Forms.set
+        Field_Name
+        "Name"
+        (input
+            [ class molecules.form.input
+            , onInput ChangeName
+            , value model.form.name
+            ]
+            []
+        )
+        model.validationErrors
+    , Forms.set
+        Field_Password
+        "Password"
+        (input
+            [ class molecules.form.input
+            , onInput ChangePassword
+            , type_ "password"
+            , value model.form.password
+            ]
+            []
+        )
+        model.validationErrors
+    ]
 
 
 links =

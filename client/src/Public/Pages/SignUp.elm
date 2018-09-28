@@ -53,8 +53,8 @@ type alias SignUpResponse =
     }
 
 
-asSignUpInModel : Model -> SignUp -> Model
-asSignUpInModel model form =
+asFormInModel : Model -> SignUp -> Model
+asFormInModel model form =
     { model | form = form }
 
 
@@ -85,7 +85,7 @@ update context msg model =
         ChangeEmail email ->
             ( email
                 |> Sessions.asEmailInSignUp model.form
-                |> asSignUpInModel model
+                |> asFormInModel model
             , Cmd.none
             , Actions.none
             )
@@ -93,7 +93,7 @@ update context msg model =
         ChangeName name ->
             ( name
                 |> Sessions.asNameInSignUp model.form
-                |> asSignUpInModel model
+                |> asFormInModel model
             , Cmd.none
             , Actions.none
             )
@@ -101,7 +101,7 @@ update context msg model =
         ChangeUsername name ->
             ( name
                 |> Sessions.asUsernameInSignUp model.form
-                |> asSignUpInModel model
+                |> asFormInModel model
             , Cmd.none
             , Actions.none
             )
@@ -109,7 +109,7 @@ update context msg model =
         ChangePassword password ->
             ( password
                 |> Sessions.asPasswordInSignUp model.form
-                |> asSignUpInModel model
+                |> asFormInModel model
             , Cmd.none
             , Actions.none
             )
@@ -138,7 +138,8 @@ update context msg model =
                 Err e ->
                     ( { model | response = RemoteData.Failure e }
                     , Cmd.none
-                    , Actions.none
+                    , Actions.addErrorNotification
+                        "Something went wrong"
                     )
 
                 Ok response ->
@@ -244,25 +245,6 @@ formFields model =
         )
         model.validationErrors
     ]
-
-
-submit : Model -> Html Msg
-submit model =
-    case model.response of
-        RemoteData.Loading ->
-            Icons.spinner
-
-        _ ->
-            let
-                isValid =
-                    case validateForm model.form of
-                        Ok _ ->
-                            True
-
-                        Err _ ->
-                            False
-            in
-            button [ class molecules.form.submit ] [ text "Sign up" ]
 
 
 maybeErrors : Model -> Html msg

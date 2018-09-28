@@ -7,7 +7,7 @@ import ApiPub.Object.RequestPasswordResetResponse
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
-import Html.Attributes exposing (class, href, name, type_)
+import Html.Attributes exposing (class, href, name, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Notifications
 import RemoteData
@@ -162,6 +162,7 @@ formFields model =
         (input
             [ class molecules.form.input
             , onInput ChangeUsername
+            , value model.form.usernameOrEmail
             ]
             []
         )
