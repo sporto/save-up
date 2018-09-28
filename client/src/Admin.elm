@@ -30,11 +30,11 @@ type Page
 
 
 type Msg
-    = PageAccountMsg Account.Msg
-    | PageHomeMsg Home.Msg
-    | PageInviteAdminMsg InviteAdmin.Msg
-    | PageCreateInvestorMsg CreateInvestor.Msg
-    | MsgAdmin_SignOut
+    = Msg_PageAccount Account.Msg
+    | Msg_PageHome Home.Msg
+    | Msg_PageInviteAdmin InviteAdmin.Msg
+    | Msg_PageCreateInvestor CreateInvestor.Msg
+    | SignOut
 
 
 type alias Returns =
@@ -49,90 +49,90 @@ initCurrentPage context adminRoute =
                 context
                 id
                 subRoute
-                |> Return.mapAll Page_Account PageAccountMsg
+                |> Return.mapAll Page_Account Msg_PageAccount
 
         Routes.RouteInAdmin_Home ->
             Home.init
                 context
-                |> Return.mapAll Page_Home PageHomeMsg
+                |> Return.mapAll Page_Home Msg_PageHome
 
         Routes.RouteInAdmin_InviteAdmin ->
             InviteAdmin.init
-                |> Return.mapAll Page_InviteAdmin PageInviteAdminMsg
+                |> Return.mapAll Page_InviteAdmin Msg_PageInviteAdmin
 
         Routes.RouteInAdmin_CreateInvestor ->
             CreateInvestor.init
-                |> Return.mapAll Page_CreateInvestor PageCreateInvestorMsg
+                |> Return.mapAll Page_CreateInvestor Msg_PageCreateInvestor
 
 
 subscriptions : Page -> Sub Msg
 subscriptions page =
     case page of
         Page_Home pageModel ->
-            Sub.map PageHomeMsg (Home.subscriptions pageModel)
+            Sub.map Msg_PageHome (Home.subscriptions pageModel)
 
         Page_Account pageModel ->
-            Sub.map PageAccountMsg (Account.subscriptions pageModel)
+            Sub.map Msg_PageAccount (Account.subscriptions pageModel)
 
         Page_InviteAdmin pageModel ->
-            Sub.map PageInviteAdminMsg (InviteAdmin.subscriptions pageModel)
+            Sub.map Msg_PageInviteAdmin (InviteAdmin.subscriptions pageModel)
 
         Page_CreateInvestor pageModel ->
-            Sub.map PageCreateInvestorMsg (CreateInvestor.subscriptions pageModel)
+            Sub.map Msg_PageCreateInvestor (CreateInvestor.subscriptions pageModel)
 
 
 update : Context -> Msg -> Page -> Returns
 update context msg page =
     case msg of
-        PageAccountMsg sub ->
+        Msg_PageAccount sub ->
             case page of
                 Page_Account pageModel ->
                     Account.update
                         context
                         sub
                         pageModel
-                        |> Return.mapAll Page_Account PageAccountMsg
+                        |> Return.mapAll Page_Account Msg_PageAccount
 
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
-        PageHomeMsg sub ->
+        Msg_PageHome sub ->
             case page of
                 Page_Home pageModel ->
                     Home.update
                         context
                         sub
                         pageModel
-                        |> Return.mapAll Page_Home PageHomeMsg
+                        |> Return.mapAll Page_Home Msg_PageHome
 
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
-        PageInviteAdminMsg sub ->
+        Msg_PageInviteAdmin sub ->
             case page of
                 Page_InviteAdmin pageModel ->
                     InviteAdmin.update
                         context
                         sub
                         pageModel
-                        |> Return.mapAll Page_InviteAdmin PageInviteAdminMsg
+                        |> Return.mapAll Page_InviteAdmin Msg_PageInviteAdmin
 
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
-        PageCreateInvestorMsg sub ->
+        Msg_PageCreateInvestor sub ->
             case page of
                 Page_CreateInvestor pageModel ->
                     CreateInvestor.update
                         context
                         sub
                         pageModel
-                        |> Return.mapAll Page_CreateInvestor PageCreateInvestorMsg
+                        |> Return.mapAll Page_CreateInvestor Msg_PageCreateInvestor
 
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
-        MsgAdmin_SignOut ->
+        SignOut ->
             ( page, Cmd.none, Actions.endSession )
 
 
@@ -157,7 +157,7 @@ header_ context =
             ]
         , div []
             [ text context.auth.data.name
-            , Navigation.signOut MsgAdmin_SignOut
+            , Navigation.signOut SignOut
             ]
         ]
 
@@ -178,19 +178,19 @@ currentPage context adminPage =
             case adminPage of
                 Page_Home pageModel ->
                     Home.view context pageModel
-                        |> map PageHomeMsg
+                        |> map Msg_PageHome
 
                 Page_Account pageModel ->
                     Account.view context pageModel
-                        |> map PageAccountMsg
+                        |> map Msg_PageAccount
 
                 Page_InviteAdmin pageModel ->
                     InviteAdmin.view context pageModel
-                        |> map PageInviteAdminMsg
+                        |> map Msg_PageInviteAdmin
 
                 Page_CreateInvestor pageModel ->
                     CreateInvestor.view context pageModel
-                        |> map PageCreateInvestorMsg
+                        |> map Msg_PageCreateInvestor
     in
     section [ class "flex-auto" ]
         [ page ]

@@ -47,7 +47,7 @@ type Msg
     | Msg_Admin Admin.Msg
     | Msg_Investor Investor.Msg
     | Msg_Public Public.Msg
-    | NotificationsMsg Notifications.Msg
+    | Msg_Notifications Notifications.Msg
 
 
 initialModel : Flags -> Url -> Nav.Key -> Notifications.Model -> Model
@@ -71,7 +71,7 @@ init flags url key =
             initialModel flags url key notModel
 
         cmd =
-            Cmd.map NotificationsMsg notCmd
+            Cmd.map Msg_Notifications notCmd
     in
     ( model
     , cmd
@@ -193,13 +193,13 @@ updateWithActions msg model =
         ( SignOut, _ ) ->
             ( model, Cmd.none, Actions.endSession )
 
-        ( NotificationsMsg subMsg, _ ) ->
+        ( Msg_Notifications subMsg, _ ) ->
             let
                 ( notifications, cmd ) =
                     Notifications.update subMsg model.notifications
             in
             ( { model | notifications = notifications }
-            , Cmd.map NotificationsMsg cmd
+            , Cmd.map Msg_Notifications cmd
             , Actions.none
             )
 
@@ -325,7 +325,7 @@ processAction action model =
                     Notifications.add notification model.notifications
             in
             ( { model | notifications = notifications }
-            , Cmd.map NotificationsMsg cmd
+            , Cmd.map Msg_Notifications cmd
             , Actions.none
             )
 

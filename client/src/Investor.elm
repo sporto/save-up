@@ -22,7 +22,7 @@ type Page
 
 
 type Msg
-    = PageHomeMsg Home.Msg
+    = Msg_PageHome Home.Msg
     | SignOut
 
 
@@ -36,27 +36,27 @@ initCurrentPage context route =
         Routes.RouteInInvestor_Home ->
             Home.init
                 context
-                |> Return.mapAll Page_Home PageHomeMsg
+                |> Return.mapAll Page_Home Msg_PageHome
 
 
 subscriptions : Page -> Sub Msg
 subscriptions page =
     case page of
         Page_Home pageModel ->
-            Sub.map PageHomeMsg (Home.subscriptions pageModel)
+            Sub.map Msg_PageHome (Home.subscriptions pageModel)
 
 
 update : Context -> Msg -> Page -> Returns
 update context msg page =
     case msg of
-        PageHomeMsg sub ->
+        Msg_PageHome sub ->
             case page of
                 Page_Home pageModel ->
                     Home.update
                         context
                         sub
                         pageModel
-                        |> Return.mapAll Page_Home PageHomeMsg
+                        |> Return.mapAll Page_Home Msg_PageHome
 
         SignOut ->
             ( page, Cmd.none, Actions.endSession )
@@ -102,7 +102,7 @@ currentPage context page =
             case page of
                 Page_Home pageModel ->
                     Home.view context pageModel
-                        |> map PageHomeMsg
+                        |> map Msg_PageHome
     in
     section [ class "flex-auto" ]
         [ inner ]
