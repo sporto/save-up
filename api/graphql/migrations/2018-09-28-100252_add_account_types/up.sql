@@ -1,0 +1,2 @@
+ALTER TABLE accounts
+ADD COLUMN kind VARCHAR;

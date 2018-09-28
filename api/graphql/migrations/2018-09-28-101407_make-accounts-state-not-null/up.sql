@@ -1,0 +1,2 @@
+ALTER TABLE accounts
+ALTER COLUMN state SET NOT NULL;
