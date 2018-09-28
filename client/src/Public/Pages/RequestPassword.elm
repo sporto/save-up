@@ -147,7 +147,7 @@ view context model =
 formArgs : Model -> Forms.Args RequestPasswordResetResponse Msg
 formArgs model =
     { title = "Reset your password"
-    , intro = text ""
+    , intro = Nothing
     , submitContent = [ text "Request" ]
     , fields = formFields model
     , onSubmit = Submit

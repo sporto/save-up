@@ -32,7 +32,7 @@ type alias Error field =
 
 type alias Args resp msg =
     { title : String
-    , intro : Html msg
+    , intro : Maybe (List (Html msg))
     , fields : List (Html msg)
     , submitContent : List (Html msg)
     , onSubmit : msg
@@ -44,12 +44,22 @@ form_ : Args resp msg -> Html msg
 form_ args =
     form [ onSubmit args.onSubmit ]
         [ h2 [] [ text args.title ]
-        , args.intro
+        , intro args
         , responseErrors args
         , div [] args.fields
         , p [ class "mt-6" ]
             [ submit args ]
         ]
+
+
+intro : Args resp msg -> Html msg
+intro args =
+    case args.intro of
+        Nothing ->
+            text ""
+
+        Just children ->
+            div [ class "mt-4" ] children
 
 
 responseErrors : Args resp msg -> Html msg

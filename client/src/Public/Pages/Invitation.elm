@@ -174,7 +174,7 @@ view context model =
 formArgs : Model -> Forms.Args RedeemInvitationResponse Msg
 formArgs model =
     { title = "Sign up"
-    , intro = text ""
+    , intro = Nothing
     , submitContent = [ text "Sign up" ]
     , fields = formFields model
     , onSubmit = Submit

@@ -138,7 +138,7 @@ header_ context =
         , div
             [ class "ml-8 flex-grow" ]
             [ navigationLink Routes.routeForAdminHome "Home"
-            , navigationLink Routes.routeForAdminInviteAdmin "InviteAdmin"
+            , navigationLink Routes.routeForAdminInviteAdmin "Invite admin"
             , navigationLink Routes.routeForAdminCreateInvestor "Create investor"
             ]
         , div []

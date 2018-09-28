@@ -175,18 +175,20 @@ type Field
 view : PublicContext -> Model -> Html Msg
 view context model =
     div [ class "flex items-center justify-center pt-16" ]
-        [ div
-            [ class "w-1/3 bg-white shadow-md rounded p-8 mt-3" ]
-            [ Forms.form_ (formArgs model)
+        [ div [ class "w-1/3" ]
+            [ div
+                [ class "bg-white shadow-md rounded p-8 mt-3" ]
+                [ Forms.form_ (formArgs model)
+                ]
+            , links
             ]
-        , links
         ]
 
 
 formArgs : Model -> Forms.Args SignUpResponse Msg
 formArgs model =
     { title = "Sign up"
-    , intro = text ""
+    , intro = Nothing
     , submitContent = [ text "Sign up" ]
     , fields = formFields model
     , onSubmit = Submit

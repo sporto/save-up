@@ -160,7 +160,7 @@ view context model =
 formArgs : Model -> Forms.Args InvitationResponse Msg
 formArgs model =
     { title = "Invite admin"
-    , intro = intro
+    , intro = Just intro
     , submitContent = submitContent
     , fields = formFields model
     , onSubmit = Submit
@@ -169,9 +169,10 @@ formArgs model =
 
 
 intro =
-    p [ class "text-grey-dark leading-normal" ]
+    [ p [ class "text-grey-dark leading-normal" ]
         [ text "You can invite another parent to manage these accounts with you."
         ]
+    ]
 
 
 submitContent =

@@ -371,7 +371,7 @@ deposit context model =
 formArgsDeposit : DepositModel -> Forms.Args DepositResponse DepositMsg
 formArgsDeposit model =
     { title = "Make a deposit"
-    , intro = text ""
+    , intro = Nothing
     , submitContent = submitContentDeposit
     , fields = formFieldsDeposit model
     , onSubmit = SubmitDeposit

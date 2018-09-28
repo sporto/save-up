@@ -176,7 +176,7 @@ view context model =
 formArgs : Model -> Forms.Args CreateUserResponse Msg
 formArgs model =
     { title = "Create investor"
-    , intro = text ""
+    , intro = Nothing
     , submitContent = submitContent
     , fields = formFields model
     , onSubmit = Submit
