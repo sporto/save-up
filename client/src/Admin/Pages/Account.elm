@@ -347,14 +347,25 @@ accountWithData context account =
     let
         balance =
             account.balanceInCents // 100
+
+        balanceEl =
+            div []
+                [ text "Balance: "
+                , span [ class "text-3xl font-semibold" ] [ text (String.fromInt balance) ]
+                , span [ class "ml-2" ] [ Icons.money ]
+                ]
+
+        interestEl =
+            div []
+                [ span [ class "ml-8" ] [ text "Yearly interest" ]
+                , span [ class "ml-2 text-2xl font-semibold" ] [ text (String.fromFloat account.yearlyInterest) ]
+                , span [ class "ml-1 mr-2" ] [ text "%" ]
+                , button [] [ Icons.edit ]
+                ]
     in
-    [ div []
-        [ text "Balance: "
-        , span [ class "text-3xl font-semibold" ] [ text (String.fromInt balance) ]
-        , span [ class "ml-2" ] [ Icons.money ]
-        , span [ class "ml-8" ] [ text "Yearly interest" ]
-        , span [ class "ml-2 text-2xl font-semibold" ] [ text (String.fromFloat account.yearlyInterest) ]
-        , span [ class "" ] [ text "%" ]
+    [ div [ class "flex items-center" ]
+        [ balanceEl
+        , interestEl
         ]
     , Chart.view account.transactions
     ]
