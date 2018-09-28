@@ -7,7 +7,9 @@ use std::io;
 pub const ADMIN: &[u8] = b"ADMIN";
 pub const INVESTOR: &[u8] = b"INVESTOR";
 
-#[derive(Debug, Copy, Clone, FromSqlRow, AsExpression, GraphQLEnum, PartialEq, Deserialize, Serialize)]
+#[derive(
+	Debug, Copy, Clone, FromSqlRow, AsExpression, GraphQLEnum, PartialEq, Deserialize, Serialize,
+)]
 #[sql_type = "Varchar"]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Role {
@@ -30,7 +32,7 @@ impl FromSql<Text, Pg> for Role {
 		match not_none!(bytes) {
 			ADMIN => Ok(Role::Admin),
 			INVESTOR => Ok(Role::Investor),
-			_ => Err("Unrecognized enum variant".into()),
+			_ => Err("Unrecognized Role variant".into()),
 		}
 	}
 }

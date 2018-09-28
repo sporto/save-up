@@ -5,6 +5,8 @@ table! {
         user_id -> Int4,
         name -> Varchar,
         yearly_interest -> Numeric,
+        kind -> Varchar,
+        state -> Varchar,
     }
 }
 

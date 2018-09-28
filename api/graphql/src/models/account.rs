@@ -1,13 +1,20 @@
 use bigdecimal::BigDecimal;
 use chrono::NaiveDateTime;
 use diesel;
+use diesel::deserialize::{self, FromSql};
+use diesel::pg::Pg;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
+use diesel::serialize::{self, IsNull, Output, ToSql};
+use diesel::sql_types::*;
 use models::schema::accounts;
+use std::io;
 use validator::Validate;
 
 pub const DEFAULT_YEARLY_INTEREST: u8 = 20;
+pub const ACTIVE: &[u8] = b"ACTIVE";
+pub const SAVINGS: &[u8] = b"SAVINGS";
 
 #[derive(Queryable)]
 pub struct Account {
@@ -16,6 +23,8 @@ pub struct Account {
 	pub user_id: i32,
 	pub name: String,
 	pub yearly_interest: BigDecimal,
+	pub kind: Kind,
+	pub state: State,
 }
 
 #[derive(Insertable, Validate)]
@@ -24,6 +33,62 @@ pub struct AccountAttrs {
 	pub user_id: i32,
 	pub name: String,
 	pub yearly_interest: BigDecimal,
+	pub kind: Kind,
+	pub state: State,
+}
+
+#[derive(
+	Debug, Copy, Clone, FromSqlRow, AsExpression, GraphQLEnum, PartialEq, Deserialize, Serialize,
+)]
+#[sql_type = "Varchar"]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum Kind {
+	Savings,
+}
+
+impl ToSql<Text, Pg> for Kind {
+	fn to_sql<W: io::Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+		let _v = match *self {
+			Kind::Savings => out.write_all(SAVINGS)?,
+		};
+		Ok(IsNull::No)
+	}
+}
+
+impl FromSql<Text, Pg> for Kind {
+	fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
+		match not_none!(bytes) {
+			SAVINGS => Ok(Kind::Savings),
+			_ => Err("Unrecognized Kind variant".into()),
+		}
+	}
+}
+
+#[derive(
+	Debug, Copy, Clone, FromSqlRow, AsExpression, GraphQLEnum, PartialEq, Deserialize, Serialize,
+)]
+#[sql_type = "Varchar"]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum State {
+	Active,
+}
+
+impl ToSql<Text, Pg> for State {
+	fn to_sql<W: io::Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
+		let _v = match *self {
+			State::Active => out.write_all(ACTIVE)?,
+		};
+		Ok(IsNull::No)
+	}
+}
+
+impl FromSql<Text, Pg> for State {
+	fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
+		match not_none!(bytes) {
+			ACTIVE => Ok(State::Active),
+			_ => Err("Unrecognized State variant".into()),
+		}
+	}
 }
 
 impl Account {
@@ -61,6 +126,8 @@ pub mod factories {
 			user_id: user.id,
 			name: user.clone().name,
 			yearly_interest: yearly_interest,
+			kind: Kind::Savings,
+			state: State::Active,
 		}
 	}
 
