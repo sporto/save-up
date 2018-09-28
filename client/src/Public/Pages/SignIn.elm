@@ -19,23 +19,48 @@ import Shared.Css exposing (molecules)
 import Shared.Globals exposing (..)
 import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorPublicSelection, sendPublicMutation)
 import Shared.Routes as Routes
-import Shared.Sessions as Sessions exposing (SignIn)
+import String.Verify
 import UI.Flash as Flash
 import UI.Forms as Forms
 import UI.Icons as Icons
+import Verify exposing (Validator, validate, verify)
 
 
 type alias Model =
-    { signIn : SignIn
+    { form : Form
     , response : GraphData SignInResponse
+    , validationErrors : Maybe ( ValidationError, List ValidationError )
     }
 
 
-initialModel : Flags -> Model
-initialModel flags =
-    { signIn = Sessions.newSignIn
+newModel : Flags -> Model
+newModel flags =
+    { form = newForm
     , response = RemoteData.NotAsked
+    , validationErrors = Nothing
     }
+
+
+type alias Form =
+    { usernameOrEmail : String
+    , password : String
+    }
+
+
+newForm : Form
+newForm =
+    { usernameOrEmail = ""
+    , password = ""
+    }
+
+
+type alias ValidationError =
+    ( Field, String )
+
+
+type Field
+    = Field_UsernameOrEmail
+    | Field_Password
 
 
 type alias SignInResponse =
@@ -45,19 +70,19 @@ type alias SignInResponse =
     }
 
 
-asUsernameInSignIn : SignIn -> String -> SignIn
-asUsernameInSignIn signIn usernameOrEmail =
+asUsernameInForm : Form -> String -> Form
+asUsernameInForm signIn usernameOrEmail =
     { signIn | usernameOrEmail = usernameOrEmail }
 
 
-asPasswordInSignIn : SignIn -> String -> SignIn
-asPasswordInSignIn signIn password =
+asPasswordInForm : Form -> String -> Form
+asPasswordInForm signIn password =
     { signIn | password = password }
 
 
-asSignInInModel : Model -> SignIn -> Model
-asSignInInModel model signIn =
-    { model | signIn = signIn }
+asFormInModel : Model -> Form -> Model
+asFormInModel model form =
+    { model | form = form }
 
 
 type alias Returns =
@@ -66,7 +91,7 @@ type alias Returns =
 
 init : Flags -> Returns
 init flags =
-    ( initialModel flags
+    ( newModel flags
     , Cmd.none
     , Actions.none
     )
@@ -84,32 +109,46 @@ update context msg model =
     case msg of
         ChangeUsernameOrEmail usernameOrEmail ->
             ( usernameOrEmail
-                |> asUsernameInSignIn model.signIn
-                |> asSignInInModel model
+                |> asUsernameInForm model.form
+                |> asFormInModel model
             , Cmd.none
             , Actions.none
             )
 
         ChangePassword password ->
             ( password
-                |> asPasswordInSignIn model.signIn
-                |> asSignInInModel model
+                |> asPasswordInForm model.form
+                |> asFormInModel model
             , Cmd.none
             , Actions.none
             )
 
         Submit ->
-            ( { model | response = RemoteData.Loading }
-            , sendCreateSignInMutation context model.signIn
-            , Actions.none
-            )
+            case validateForm model.form of
+                Err errors ->
+                    ( { model
+                        | validationErrors = Just errors
+                      }
+                    , Cmd.none
+                    , Actions.none
+                    )
+
+                Ok input ->
+                    ( { model
+                        | response = RemoteData.Loading
+                        , validationErrors = Nothing
+                      }
+                    , sendCreateSignInMutation context model.form
+                    , Actions.none
+                    )
 
         OnSubmitResponse result ->
             case result of
                 Err e ->
                     ( { model | response = RemoteData.Failure e }
                     , Cmd.none
-                    , Actions.none
+                    , Actions.addErrorNotification
+                        "Something went wrong"
                     )
 
                 Ok response ->
@@ -127,13 +166,29 @@ update context msg model =
                             )
 
 
+validateForm : Validator ValidationError Form Form
+validateForm =
+    validate Form
+        |> verify .usernameOrEmail verifyUsername
+        |> verify .password verifyPassword
+
+
+verifyUsername : Validator ValidationError String String
+verifyUsername =
+    String.Verify.notBlank ( Field_UsernameOrEmail, "Enter your username or email" )
+
+
+verifyPassword : Validator ValidationError String String
+verifyPassword =
+    String.Verify.notBlank ( Field_Password, "Enter your password" )
+
+
 subscriptions model =
     Sub.none
 
 
 
 -- VIEW
--- TODO add html validation
 
 
 view : PublicContext -> Model -> Html Msg
@@ -211,7 +266,7 @@ maybeErrors model =
 -- GraphQl data
 
 
-sendCreateSignInMutation : PublicContext -> SignIn -> Cmd Msg
+sendCreateSignInMutation : PublicContext -> Form -> Cmd Msg
 sendCreateSignInMutation context signUp =
     sendPublicMutation
         context
@@ -220,7 +275,7 @@ sendCreateSignInMutation context signUp =
         OnSubmitResponse
 
 
-createSignInMutation : SignIn -> SelectionSet SignInResponse RootMutation
+createSignInMutation : Form -> SelectionSet SignInResponse RootMutation
 createSignInMutation signIn =
     ApiPub.Mutation.selection identity
         |> with

@@ -1,4 +1,4 @@
-port module Shared.Sessions exposing (SignIn, asEmailInSignUp, asNameInSignUp, asPasswordInSignUp, asUsernameInSignUp, authenticate, decodeToken, endSession, newSignIn, newSignUp, startSession)
+port module Shared.Sessions exposing (asEmailInSignUp, asNameInSignUp, asPasswordInSignUp, asUsernameInSignUp, authenticate, decodeToken, endSession, newSignUp, startSession)
 
 import ApiPub.InputObject exposing (SignUp)
 import Browser.Navigation as Nav
@@ -45,17 +45,6 @@ asUserameInSignUp signUp username =
 asPasswordInSignUp : SignUp -> String -> SignUp
 asPasswordInSignUp signUp password =
     { signUp | password = password }
-
-
-type alias SignIn =
-    ApiPub.InputObject.SignIn
-
-
-newSignIn : SignIn
-newSignIn =
-    { usernameOrEmail = ""
-    , password = ""
-    }
 
 
 decodeToken : String -> Result JwtError TokenData
