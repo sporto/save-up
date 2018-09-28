@@ -38,8 +38,8 @@ type alias ValidationError =
     ( Field, String )
 
 
-initialModel : Flags -> Model
-initialModel flags =
+newModel : Flags -> Model
+newModel flags =
     { form = Sessions.newSignUp
     , response = RemoteData.NotAsked
     , validationErrors = Nothing
@@ -64,7 +64,7 @@ type alias Returns =
 
 init : Flags -> Returns
 init flags =
-    ( initialModel flags
+    ( newModel flags
     , Cmd.none
     , Actions.none
     )
@@ -115,7 +115,7 @@ update context msg model =
             )
 
         Submit ->
-            case formValidator model.form of
+            case validateForm model.form of
                 Err errors ->
                     ( { model
                         | validationErrors = Just errors
@@ -125,7 +125,10 @@ update context msg model =
                     )
 
                 Ok input ->
-                    ( { model | response = RemoteData.Loading }
+                    ( { model
+                        | response = RemoteData.Loading
+                        , validationErrors = Nothing
+                      }
                     , sendCreateSignUpMutation context input
                     , Actions.none
                     )
@@ -166,7 +169,6 @@ type Field
 
 
 -- VIEW
--- TODO add html validation
 
 
 view : PublicContext -> Model -> Html Msg
@@ -175,15 +177,16 @@ view context model =
         [ div
             [ class "w-1/3 bg-white shadow-md rounded p-8 mt-3" ]
             [ Forms.form_ (formArgs model)
-            , links
             ]
+        , links
         ]
 
 
 formArgs : Model -> Forms.Args SignUpResponse Msg
 formArgs model =
     { title = "Sign up"
-    , submitLabel = "Sign up"
+    , intro = text ""
+    , submitContent = [ text "Sign up" ]
     , fields = formFields model
     , onSubmit = Submit
     , response = model.response
@@ -252,7 +255,7 @@ submit model =
         _ ->
             let
                 isValid =
-                    case formValidator model.form of
+                    case validateForm model.form of
                         Ok _ ->
                             True
 
@@ -292,8 +295,8 @@ links =
 -- Validations
 
 
-formValidator : Validator ValidationError SignUp SignUp
-formValidator =
+validateForm : Validator ValidationError SignUp SignUp
+validateForm =
     validate SignUp
         |> verify .name (Forms.verifyName Field_Name)
         |> verify .username (Forms.verifyUsername Field_Username)

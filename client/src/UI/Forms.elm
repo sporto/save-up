@@ -32,8 +32,9 @@ type alias Error field =
 
 type alias Args resp msg =
     { title : String
+    , intro : Html msg
     , fields : List (Html msg)
-    , submitLabel : String
+    , submitContent : List (Html msg)
     , onSubmit : msg
     , response : GraphData { resp | errors : List MutationError }
     }
@@ -43,6 +44,7 @@ form_ : Args resp msg -> Html msg
 form_ args =
     form [ onSubmit args.onSubmit ]
         [ h2 [] [ text args.title ]
+        , args.intro
         , responseErrors args
         , div [] args.fields
         , p [ class "mt-6" ]
@@ -78,7 +80,7 @@ submit args =
             button
                 [ class molecules.form.submit
                 ]
-                [ text args.submitLabel ]
+                args.submitContent
 
 
 flattenErrors : Maybe ( Error f, List (Error f) ) -> List (Error f)

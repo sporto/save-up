@@ -1,4 +1,4 @@
-module Admin.Pages.InviteAdmin exposing (InvitationResponse, Model, Msg(..), createMutation, createMutationCmd, init, invitationResponseSelection, newModel, submit, subscriptions, update, view)
+module Admin.Pages.InviteAdmin exposing (InvitationResponse, Model, Msg(..), init, newModel, subscriptions, update, view)
 
 import Api.Mutation
 import Api.Object
@@ -14,7 +14,9 @@ import Shared.Css exposing (molecules)
 import Shared.Globals exposing (..)
 import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorSelection, sendMutation)
 import UI.Flash as Flash
+import UI.Forms as Forms
 import UI.Icons as Icons
+import Verify exposing (Validator, validate, verify)
 
 
 type Msg
@@ -24,22 +26,48 @@ type Msg
 
 
 type alias Model =
-    { email : String
+    { form : Form
     , response : GraphData InvitationResponse
+    , validationErrors : Maybe ( ValidationError, List ValidationError )
     }
 
 
 newModel : Model
 newModel =
-    { email = ""
+    { form = newForm
     , response = RemoteData.NotAsked
+    , validationErrors = Nothing
     }
+
+
+type alias Form =
+    { email : String }
+
+
+newForm =
+    { email = "" }
+
+
+asEmailInForm form email =
+    { form | email = email }
+
+
+asFormInModel model form =
+    { model | form = form }
+
+
+type alias ValidationError =
+    ( Field, String )
 
 
 type alias InvitationResponse =
     { success : Bool
     , errors : List MutationError
     }
+
+
+type Field
+    = Field_Email
 
 
 type alias Returns =
@@ -60,33 +88,52 @@ update : Context -> Msg -> Model -> Returns
 update context msg model =
     case msg of
         ChangeEmail email ->
-            ( { model | email = email }
+            ( email
+                |> asEmailInForm model.form
+                |> asFormInModel model
             , Cmd.none
             , Actions.none
             )
 
         Submit ->
-            ( { model | response = RemoteData.Loading }
-            , createMutationCmd context model.email
-            , Actions.none
-            )
+            case validateForm model.form of
+                Err errors ->
+                    ( { model
+                        | validationErrors = Just errors
+                      }
+                    , Cmd.none
+                    , Actions.none
+                    )
+
+                Ok input ->
+                    ( { model
+                        | response = RemoteData.Loading
+                        , validationErrors = Nothing
+                      }
+                    , createMutationCmd context model.form.email
+                    , Actions.none
+                    )
 
         OnSubmitResponse result ->
             case result of
                 Err e ->
                     ( { model | response = RemoteData.Failure e }
                     , Cmd.none
-                    , Actions.none
+                    , Actions.addErrorNotification
+                        "Something went wrong"
                     )
 
                 Ok response ->
                     if response.success then
                         ( { model
                             | response = RemoteData.Success response
-                            , email = ""
+                            , form =
+                                { email = ""
+                                }
                           }
                         , Cmd.none
-                        , Actions.none
+                        , Actions.addSuccessNotification
+                            "Admin invited"
                         )
 
                     else
@@ -96,68 +143,74 @@ update context msg model =
                         )
 
 
+validateForm : Validator ValidationError Form Form
+validateForm =
+    validate Form
+        |> verify .email (Forms.verifyEmail Field_Email)
+
+
 view : Context -> Model -> Html Msg
 view context model =
     section [ class molecules.page.container, class "flex justify-center" ]
         [ div [ style "width" "24rem" ]
-            [ h1 [ class molecules.page.title ] [ text "Invite admin" ]
-            , form [ class "mt-2", onSubmit Submit ]
-                [ p [ class "text-grey-dark leading-normal" ]
-                    [ text "You can invite another parent to manage these accounts with you."
-                    ]
-                , flash model
-                , p [ class molecules.form.fieldset ]
-                    [ label
-                        [ class molecules.form.label
-                        ]
-                        [ text "Email" ]
-                    , input
-                        [ class molecules.form.input
-                        , type_ "email"
-                        , name "email"
-                        , value model.email
-                        , onInput ChangeEmail
-                        ]
-                        []
-                    ]
-                , p [ class molecules.form.actions ]
-                    [ submit model
-                    ]
-                ]
-            ]
+            [ Forms.form_ (formArgs model) ]
         ]
 
 
-submit : Model -> Html Msg
-submit model =
-    case model.response of
-        RemoteData.Loading ->
-            Icons.spinner
-
-        _ ->
-            button [ class molecules.form.submit ] [ i [ class "fas fa-envelope mr-2" ] [], text "Invite" ]
-
-
-flash : Model -> Html msg
-flash model =
-    case model.response of
-        RemoteData.Success response ->
-            if response.success then
-                Flash.success
-                    "The invitation was sent"
-
-            else
-                text ""
-
-        RemoteData.Failure e ->
-            Flash.error
-                "Something went wrong"
-
-        _ ->
-            text ""
+formArgs : Model -> Forms.Args InvitationResponse Msg
+formArgs model =
+    { title = "Invite admin"
+    , intro = intro
+    , submitContent = submitContent
+    , fields = formFields model
+    , onSubmit = Submit
+    , response = model.response
+    }
 
 
+intro =
+    p [ class "text-grey-dark leading-normal" ]
+        [ text "You can invite another parent to manage these accounts with you."
+        ]
 
+
+submitContent =
+    [ i [ class "fas fa-envelope mr-2" ] [], text "Invite" ]
+
+
+formFields : Model -> List (Html Msg)
+formFields model =
+    [ Forms.set
+        Field_Email
+        "Email"
+        (input
+            [ class molecules.form.input
+            , onInput ChangeEmail
+            , type_ "email"
+            , name "email"
+            , value model.form.email
+            ]
+            []
+        )
+        model.validationErrors
+    ]
+
+
+
+-- flash : Model -> Html msg
+-- flash model =
+--     case model.response of
+--         RemoteData.Success response ->
+--             if response.success then
+--                 Flash.success
+--                     "The invitation was sent"
+--             else
+--                 text ""
+--         RemoteData.Failure e ->
+--             Flash.error
+--                 "Something went wrong"
+--         _ ->
+--             text ""
 -- GraphQl
 
 

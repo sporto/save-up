@@ -1,6 +1,7 @@
-module Shared.Actions exposing (Action(..), Actions, addNotification, batch, endSession, map, none, startSession)
+module Shared.Actions exposing (Action(..), Actions, addErrorNotification, addNotification, addSuccessNotification, batch, endSession, map, none, startSession)
 
 import Notifications
+import Shared.Css as Css
 
 
 type alias Actions msg =
@@ -21,6 +22,16 @@ none =
 addNotification : Notifications.Notification -> Actions a
 addNotification notification =
     [ Action_AddNotification notification ]
+
+
+addErrorNotification : String -> Actions a
+addErrorNotification label =
+    addNotification (Notifications.newError Css.notificationArgs label)
+
+
+addSuccessNotification : String -> Actions a
+addSuccessNotification label =
+    addNotification (Notifications.newSuccess Css.notificationArgs label)
 
 
 startSession token =
