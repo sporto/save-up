@@ -8,7 +8,7 @@ import Browser exposing (UrlRequest)
 import Browser.Navigation as Nav
 import Investor.Pages.Home
 import Notifications
-import Public.Pages.Invitation as Invitation
+import Public.Pages.RedeemInvitation as RedeemInvitation
 import Public.Pages.RequestPassword as RequestPassword
 import Public.Pages.SignIn as SignIn
 import Public.Pages.SignUp as SignUp
@@ -36,7 +36,7 @@ type Page
 
 
 type PagePublic
-    = PagePublic_Invitation Invitation.Model
+    = PagePublic_RedeemInvitation RedeemInvitation.Model
     | PagePublic_SignIn SignIn.Model
     | PagePublic_SignUp SignUp.Model
     | PagePublic_RequestPassword RequestPassword.Model
@@ -65,7 +65,7 @@ type Msg
 
 
 type MsgPublic
-    = PageInvitationMsg Invitation.Msg
+    = PageRedeemInvitationMsg RedeemInvitation.Msg
     | PageSignInMsg SignIn.Msg
     | PageSignUpMsg SignUp.Msg
     | PageRequestPasswordMsg RequestPassword.Msg

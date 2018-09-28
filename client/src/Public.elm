@@ -5,7 +5,7 @@ import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
-import Public.Pages.Invitation as Invitation
+import Public.Pages.RedeemInvitation as RedeemInvitation
 import Public.Pages.RequestPassword as RequestPassword
 import Public.Pages.SignIn as SignIn
 import Public.Pages.SignUp as SignUp
@@ -38,10 +38,10 @@ initCurrentPage context route =
                     PageSignUpMsg
 
         Routes.RouteInPublic_Invitation token ->
-            Invitation.init context.flags token
+            RedeemInvitation.init context.flags token
                 |> Return.mapAll
-                    PagePublic_Invitation
-                    PageInvitationMsg
+                    PagePublic_RedeemInvitation
+                    PageRedeemInvitationMsg
 
         Routes.RouteInPublic_RequestPasswordReset ->
             RequestPassword.init context.flags
@@ -59,8 +59,8 @@ subscriptions page =
         PagePublic_SignUp pageModel ->
             Sub.map PageSignUpMsg (SignUp.subscriptions pageModel)
 
-        PagePublic_Invitation pageModel ->
-            Sub.map PageInvitationMsg (Invitation.subscriptions pageModel)
+        PagePublic_RedeemInvitation pageModel ->
+            Sub.map PageRedeemInvitationMsg (RedeemInvitation.subscriptions pageModel)
 
         PagePublic_RequestPassword pageModel ->
             Sub.map PageRequestPasswordMsg (RequestPassword.subscriptions pageModel)
@@ -93,14 +93,14 @@ update context msg page =
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
-        PageInvitationMsg sub ->
+        PageRedeemInvitationMsg sub ->
             case page of
-                PagePublic_Invitation pageModel ->
-                    Invitation.update
+                PagePublic_RedeemInvitation pageModel ->
+                    RedeemInvitation.update
                         context
                         sub
                         pageModel
-                        |> Return.mapAll PagePublic_Invitation PageInvitationMsg
+                        |> Return.mapAll PagePublic_RedeemInvitation PageRedeemInvitationMsg
 
                 _ ->
                     ( page, Cmd.none, Actions.none )
@@ -131,9 +131,9 @@ view context page =
                     SignUp.view context pageModel
                         |> map PageSignUpMsg
 
-                PagePublic_Invitation pageModel ->
-                    Invitation.view context pageModel
-                        |> map PageInvitationMsg
+                PagePublic_RedeemInvitation pageModel ->
+                    RedeemInvitation.view context pageModel
+                        |> map PageRedeemInvitationMsg
 
                 PagePublic_RequestPassword pageModel ->
                     RequestPassword.view context pageModel

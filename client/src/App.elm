@@ -13,9 +13,6 @@ import Investor
 import Investor.Pages.Home
 import Notifications
 import Public
-import Public.Pages.Invitation
-import Public.Pages.SignIn
-import Public.Pages.SignUp
 import Root exposing (..)
 import Shared.Actions as Actions exposing (Actions)
 import Shared.AppLocation as AppLocation

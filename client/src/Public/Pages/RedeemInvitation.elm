@@ -1,4 +1,4 @@
-module Public.Pages.Invitation exposing (Model, Msg, init, subscriptions, update, view)
+module Public.Pages.RedeemInvitation exposing (Model, Msg, init, subscriptions, update, view)
 
 import ApiPub.InputObject exposing (SignUp)
 import ApiPub.Mutation
