@@ -186,14 +186,17 @@ update msg model =
 
 updateWithActions : Msg -> Model -> ( Model, Cmd Msg, Actions Msg )
 updateWithActions msg model =
-    case ( msg, model.area ) of
-        ( ChangeRoute route, _ ) ->
-            ( model, Nav.pushUrl model.navKey (Routes.pathFor route), Actions.none )
+    case msg of
+        ChangeRoute route ->
+            ( model
+            , Nav.pushUrl model.navKey (Routes.pathFor route)
+            , Actions.none
+            )
 
-        ( SignOut, _ ) ->
+        SignOut ->
             ( model, Cmd.none, Actions.endSession )
 
-        ( Msg_Notifications subMsg, _ ) ->
+        Msg_Notifications subMsg ->
             let
                 ( notifications, cmd ) =
                     Notifications.update subMsg model.notifications
@@ -203,7 +206,7 @@ updateWithActions msg model =
             , Actions.none
             )
 
-        ( OnUrlChange url, _ ) ->
+        OnUrlChange url ->
             let
                 newLocation =
                     AppLocation.fromUrl url
@@ -214,7 +217,7 @@ updateWithActions msg model =
             )
                 |> R3.andThen initCurrentPage
 
-        ( OnUrlRequest urlRequest, _ ) ->
+        OnUrlRequest urlRequest ->
             case urlRequest of
                 Browser.Internal url ->
                     ( model
@@ -228,29 +231,41 @@ updateWithActions msg model =
                     , Actions.none
                     )
 
-        ( Msg_Admin subMsg, Area_Admin auth page ) ->
-            Admin.update
-                (newContext model auth)
-                subMsg
-                page
-                |> R3.mapAll (\p -> { model | area = Area_Admin auth p }) Msg_Admin
+        Msg_Admin subMsg ->
+            case model.area of
+                Area_Admin auth page ->
+                    Admin.update
+                        (newContext model auth)
+                        subMsg
+                        page
+                        |> R3.mapAll (\p -> { model | area = Area_Admin auth p }) Msg_Admin
 
-        ( Msg_Investor subMsg, Area_Investor auth page ) ->
-            Investor.update
-                (newContext model auth)
-                subMsg
-                page
-                |> R3.mapAll (\p -> { model | area = Area_Investor auth p }) Msg_Investor
+                _ ->
+                    R3.noOp model
 
-        ( Msg_Public subMsg, Area_Public page ) ->
-            Public.update
-                (newPublicContext model)
-                subMsg
-                page
-                |> R3.mapAll (\p -> { model | area = Area_Public p }) Msg_Public
+        Msg_Investor subMsg ->
+            case model.area of
+                Area_Investor auth page ->
+                    Investor.update
+                        (newContext model auth)
+                        subMsg
+                        page
+                        |> R3.mapAll (\p -> { model | area = Area_Investor auth p }) Msg_Investor
 
-        _ ->
-            ( model, Cmd.none, Actions.none )
+                _ ->
+                    R3.noOp model
+
+        Msg_Public subMsg ->
+            case model.area of
+                Area_Public page ->
+                    Public.update
+                        (newPublicContext model)
+                        subMsg
+                        page
+                        |> R3.mapAll (\p -> { model | area = Area_Public p }) Msg_Public
+
+                _ ->
+                    R3.noOp model
 
 
 subscriptions : Model -> Sub Msg

@@ -1,10 +1,15 @@
-module Shared.Return3 exposing (andThen, mapAll, mapModel, mapMsg)
+module Shared.Return3 exposing (andThen, mapAll, mapModel, mapMsg, noOp)
 
 import Shared.Actions as Actions
 
 
 type alias R model msg =
     ( model, Cmd msg, Actions.Actions msg )
+
+
+noOp : model -> R model msg
+noOp model =
+    ( model, Cmd.none, Actions.none )
 
 
 mapModel : (model1 -> model2) -> R model1 msg -> R model2 msg
