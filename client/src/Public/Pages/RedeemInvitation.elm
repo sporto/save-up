@@ -69,9 +69,9 @@ type alias Returns =
     ( Model, Cmd Msg, Actions.Actions Msg )
 
 
-init : Flags -> String -> Returns
-init flags invitationToken =
-    ( newModel flags invitationToken
+init : PublicContext -> String -> Returns
+init context invitationToken =
+    ( newModel context.flags invitationToken
     , Cmd.none
     , Actions.none
     )

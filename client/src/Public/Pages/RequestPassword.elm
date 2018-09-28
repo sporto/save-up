@@ -68,8 +68,8 @@ type alias Returns =
     ( Model, Cmd Msg, Actions.Actions Msg )
 
 
-init : Flags -> Returns
-init flags =
+init : PublicContext -> Returns
+init context =
     ( initialModel
     , Cmd.none
     , Actions.none

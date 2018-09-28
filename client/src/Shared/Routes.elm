@@ -16,6 +16,7 @@ type RouteInPublic
     | RouteInPublic_SignUp
     | RouteInPublic_Invitation String
     | RouteInPublic_RequestPasswordReset
+    | RouteInPublic_ResetPassword String
 
 
 type RouteInAdmin
@@ -40,10 +41,11 @@ matchers =
     s segBasepath
         </> oneOf
                 [ map Route_Public <| map RouteInPublic_SignIn top
-                , map Route_Public <| map RouteInPublic_SignIn <| s segmentSignIn
-                , map Route_Public <| map RouteInPublic_SignUp <| s segmentSignUp
-                , map Route_Public <| map RouteInPublic_Invitation <| s segmentInvitation </> string
-                , map Route_Public <| map RouteInPublic_RequestPasswordReset <| s segmentPasswordResets </> s segNew
+                , map Route_Public <| map RouteInPublic_SignIn <| s segSignIn
+                , map Route_Public <| map RouteInPublic_SignUp <| s segSignUp
+                , map Route_Public <| map RouteInPublic_Invitation <| s segInvitation </> string
+                , map Route_Public <| map RouteInPublic_RequestPasswordReset <| s segPasswordResets </> s segNew
+                , map Route_Public <| map RouteInPublic_ResetPassword <| s segPasswordResets </> string
                 , map Route_Admin (s segAdmin </> matchersForAdmin)
                 , map Route_Investor (s segInvestor </> matchersForInvestor)
                 ]
@@ -109,16 +111,19 @@ pathInPublic : RouteInPublic -> String
 pathInPublic route =
     case route of
         RouteInPublic_SignIn ->
-            segmentSignIn
+            segSignIn
 
         RouteInPublic_SignUp ->
-            segmentSignUp
+            segSignUp
 
         RouteInPublic_Invitation token ->
-            segmentInvitation ++ "/" ++ token
+            segInvitation ++ "/" ++ token
 
         RouteInPublic_RequestPasswordReset ->
-            segmentPasswordResets ++ "/" ++ segNew
+            segPasswordResets ++ "/" ++ segNew
+
+        RouteInPublic_ResetPassword token ->
+            segPasswordResets ++ "/" ++ token
 
 
 pathForAdminRoute : RouteInAdmin -> String
@@ -156,15 +161,15 @@ pathForInvestorRoute route =
             ""
 
 
-segmentSignIn =
+segSignIn =
     "sign-in"
 
 
-segmentSignUp =
+segSignUp =
     "sign-up"
 
 
-segmentInvitation =
+segInvitation =
     "invitation"
 
 
@@ -200,7 +205,7 @@ segNew =
     "new"
 
 
-segmentPasswordResets =
+segPasswordResets =
     "password-resets"
 
 

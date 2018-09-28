@@ -7,6 +7,7 @@ import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Public.Pages.RedeemInvitation as RedeemInvitation
 import Public.Pages.RequestPassword as RequestPassword
+import Public.Pages.ResetPassword as ResetPassword
 import Public.Pages.SignIn as SignIn
 import Public.Pages.SignUp as SignUp
 import Shared.Actions as Actions
@@ -21,14 +22,16 @@ type Page
     = Page_RedeemInvitation RedeemInvitation.Model
     | Page_SignIn SignIn.Model
     | Page_SignUp SignUp.Model
-    | Page_RequestPassword RequestPassword.Model
+    | Page_RequestPasswordReset RequestPassword.Model
+    | Page_ResetPassword ResetPassword.Model
 
 
 type Msg
-    = PageRedeemInvitationMsg RedeemInvitation.Msg
-    | PageSignInMsg SignIn.Msg
-    | PageSignUpMsg SignUp.Msg
-    | PageRequestPasswordMsg RequestPassword.Msg
+    = Msg_RedeemInvitation RedeemInvitation.Msg
+    | Msg_SignIn SignIn.Msg
+    | Msg_SignUp SignUp.Msg
+    | Msg_RequestPassword RequestPassword.Msg
+    | Msg_ResetPassword ResetPassword.Msg
 
 
 type alias Returns =
@@ -39,93 +42,114 @@ initCurrentPage : PublicContext -> Routes.RouteInPublic -> Returns
 initCurrentPage context route =
     case route of
         Routes.RouteInPublic_SignIn ->
-            SignIn.init context.flags
+            SignIn.init context
                 |> Return.mapAll
                     Page_SignIn
-                    PageSignInMsg
+                    Msg_SignIn
 
         Routes.RouteInPublic_SignUp ->
-            SignUp.init context.flags
+            SignUp.init context
                 |> Return.mapAll
                     Page_SignUp
-                    PageSignUpMsg
+                    Msg_SignUp
 
         Routes.RouteInPublic_Invitation token ->
-            RedeemInvitation.init context.flags token
+            RedeemInvitation.init context token
                 |> Return.mapAll
                     Page_RedeemInvitation
-                    PageRedeemInvitationMsg
+                    Msg_RedeemInvitation
 
         Routes.RouteInPublic_RequestPasswordReset ->
-            RequestPassword.init context.flags
+            RequestPassword.init context
                 |> Return.mapAll
-                    Page_RequestPassword
-                    PageRequestPasswordMsg
+                    Page_RequestPasswordReset
+                    Msg_RequestPassword
+
+        Routes.RouteInPublic_ResetPassword token ->
+            ResetPassword.init context token
+                |> Return.mapAll
+                    Page_ResetPassword
+                    Msg_ResetPassword
 
 
 subscriptions : Page -> Sub Msg
 subscriptions page =
     case page of
         Page_SignIn pageModel ->
-            Sub.map PageSignInMsg (SignIn.subscriptions pageModel)
+            Sub.map Msg_SignIn (SignIn.subscriptions pageModel)
 
         Page_SignUp pageModel ->
-            Sub.map PageSignUpMsg (SignUp.subscriptions pageModel)
+            Sub.map Msg_SignUp (SignUp.subscriptions pageModel)
 
         Page_RedeemInvitation pageModel ->
-            Sub.map PageRedeemInvitationMsg (RedeemInvitation.subscriptions pageModel)
+            Sub.map Msg_RedeemInvitation (RedeemInvitation.subscriptions pageModel)
 
-        Page_RequestPassword pageModel ->
-            Sub.map PageRequestPasswordMsg (RequestPassword.subscriptions pageModel)
+        Page_RequestPasswordReset pageModel ->
+            Sub.map Msg_RequestPassword (RequestPassword.subscriptions pageModel)
+
+        Page_ResetPassword pageModel ->
+            Sub.map Msg_ResetPassword (ResetPassword.subscriptions pageModel)
 
 
 update : PublicContext -> Msg -> Page -> Returns
 update context msg page =
     case msg of
-        PageSignInMsg sub ->
+        Msg_SignIn sub ->
             case page of
                 Page_SignIn pageModel ->
                     SignIn.update
                         context
                         sub
                         pageModel
-                        |> Return.mapAll Page_SignIn PageSignInMsg
+                        |> Return.mapAll Page_SignIn Msg_SignIn
 
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
-        PageSignUpMsg sub ->
+        Msg_SignUp sub ->
             case page of
                 Page_SignUp pageModel ->
                     SignUp.update
                         context
                         sub
                         pageModel
-                        |> Return.mapAll Page_SignUp PageSignUpMsg
+                        |> Return.mapAll Page_SignUp Msg_SignUp
 
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
-        PageRedeemInvitationMsg sub ->
+        Msg_RedeemInvitation sub ->
             case page of
                 Page_RedeemInvitation pageModel ->
                     RedeemInvitation.update
                         context
                         sub
                         pageModel
-                        |> Return.mapAll Page_RedeemInvitation PageRedeemInvitationMsg
+                        |> Return.mapAll Page_RedeemInvitation Msg_RedeemInvitation
 
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
-        PageRequestPasswordMsg sub ->
+        Msg_RequestPassword sub ->
             case page of
-                Page_RequestPassword pageModel ->
+                Page_RequestPasswordReset pageModel ->
                     RequestPassword.update
                         context
                         sub
                         pageModel
-                        |> Return.mapAll Page_RequestPassword PageRequestPasswordMsg
+                        |> Return.mapAll Page_RequestPasswordReset Msg_RequestPassword
+
+                _ ->
+                    ( page, Cmd.none, Actions.none )
+
+        Msg_ResetPassword sub ->
+            case page of
+                Page_ResetPassword pageModel ->
+                    ResetPassword.update
+                        context
+                        sub
+                        pageModel
+                        |> Return.mapAll Page_ResetPassword Msg_ResetPassword
 
                 _ ->
                     ( page, Cmd.none, Actions.none )
@@ -138,19 +162,23 @@ view context page =
             case page of
                 Page_SignIn pageModel ->
                     SignIn.view context pageModel
-                        |> map PageSignInMsg
+                        |> map Msg_SignIn
 
                 Page_SignUp pageModel ->
                     SignUp.view context pageModel
-                        |> map PageSignUpMsg
+                        |> map Msg_SignUp
 
                 Page_RedeemInvitation pageModel ->
                     RedeemInvitation.view context pageModel
-                        |> map PageRedeemInvitationMsg
+                        |> map Msg_RedeemInvitation
 
-                Page_RequestPassword pageModel ->
+                Page_RequestPasswordReset pageModel ->
                     RequestPassword.view context pageModel
-                        |> map PageRequestPasswordMsg
+                        |> map Msg_RequestPassword
+
+                Page_ResetPassword pageModel ->
+                    ResetPassword.view context pageModel
+                        |> map Msg_ResetPassword
     in
     section [ class "p-4" ]
         [ inner ]
