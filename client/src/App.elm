@@ -13,7 +13,6 @@ import Investor
 import Investor.Pages.Home
 import Notifications
 import Public
-import Root exposing (..)
 import Shared.Actions as Actions exposing (Actions)
 import Shared.AppLocation as AppLocation
 import Shared.Globals exposing (..)
@@ -25,6 +24,34 @@ import Shared.Sessions as Sessions
 import UI.Footer as Footer
 import UI.Navigation as Navigation
 import Url exposing (Url)
+
+
+type alias Model =
+    { authentication : Maybe Authentication
+    , flags : Flags
+    , currentLocation : AppLocation.AppLocation
+    , navKey : Nav.Key
+    , notifications : Notifications.Model
+    , page : Page
+    }
+
+
+type Page
+    = Page_Admin Authentication Admin.PageAdmin
+    | Page_Investor Authentication Investor.PageInvestor
+    | Page_Public Public.PagePublic
+    | Page_NotFound
+
+
+type Msg
+    = SignOut
+    | ChangeRoute Routes.Route
+    | OnUrlChange Url
+    | OnUrlRequest UrlRequest
+    | Msg_Admin Admin.Msg
+    | Msg_Investor Investor.Msg
+    | Msg_Public Public.Msg
+    | NotificationsMsg Notifications.Msg
 
 
 initialModel : Flags -> Url -> Nav.Key -> Notifications.Model -> Model
