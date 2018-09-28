@@ -29,6 +29,7 @@ type alias Model =
     }
 
 
+initialModel : Model
 initialModel =
     { form =
         { usernameOrEmail = ""
@@ -112,33 +113,25 @@ update context msg model =
                         | response = RemoteData.Failure e
                       }
                     , Cmd.none
-                    , Actions.addNotification failedResponseNotification
+                    , Actions.addErrorNotification failedResponseMessage
                     )
 
                 Ok response ->
                     if response.success then
                         ( { model | response = RemoteData.Success response }
                         , Cmd.none
-                        , Actions.addNotification successResponseNotification
+                        , Actions.addSuccessNotification "Reset link sent, please check your email"
                         )
 
                     else
                         ( { model | response = RemoteData.Success response }
                         , Cmd.none
-                        , Actions.addNotification failedResponseNotification
+                        , Actions.addErrorNotification failedResponseMessage
                         )
 
 
-successResponseNotification =
-    Notifications.newSuccess
-        Css.notificationArgs
-        "Reset link sent, please check your email"
-
-
-failedResponseNotification =
-    Notifications.newError
-        Css.notificationArgs
-        "Failed to request password reset"
+failedResponseMessage =
+    "Failed to request password reset"
 
 
 subscriptions model =
@@ -148,59 +141,32 @@ subscriptions model =
 view : PublicContext -> Model -> Html Msg
 view context model =
     div [ class "flex items-center justify-center pt-16" ]
-        [ div []
-            [ h1 [] [ text "Request passsword reset" ]
-            , form_ context model
+        [ Forms.form_ (formArgs model) ]
+
+
+formArgs : Model -> Forms.Args RequestPasswordResetResponse Msg
+formArgs model =
+    { title = "Reset your password"
+    , intro = text ""
+    , submitContent = [ text "Request" ]
+    , fields = formFields model
+    , onSubmit = Submit
+    , response = model.response
+    }
+
+
+formFields model =
+    [ Forms.set
+        Field_Username
+        "Username or email"
+        (input
+            [ class molecules.form.input
+            , onInput ChangeUsername
             ]
-        ]
-
-
-form_ context model =
-    form [ class "bg-white shadow-md rounded p-8 mt-3" ]
-        [ maybeErrors model
-        , Forms.set
-            Field_Username
-            "Username or email"
-            (input
-                [ class molecules.form.input
-                , onInput ChangeUsername
-                ]
-                []
-            )
-            model.validationErrors
-        , p [ class "mt-6" ]
-            [ submit model
-            ]
-        ]
-
-
-submit : Model -> Html Msg
-submit model =
-    case model.response of
-        RemoteData.Loading ->
-            Icons.spinner
-
-        _ ->
-            button [ class molecules.form.submit ] [ text "Request" ]
-
-
-maybeErrors : Model -> Html msg
-maybeErrors model =
-    case model.response of
-        RemoteData.Success response ->
-            if List.isEmpty response.errors then
-                text ""
-
-            else
-                Forms.mutationError
-                    "other"
-                    response.errors
-
-        RemoteData.Failure err ->
-            Flash.error "Error"
-
-        _ ->
-            text ""
+            []
+        )
+        model.validationErrors
+    ]
 
 
 
