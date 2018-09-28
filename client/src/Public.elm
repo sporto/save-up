@@ -1,4 +1,4 @@
-module Public exposing (initCurrentPage, subscriptions, update, view)
+module Public exposing (Msg, PagePublic, initCurrentPage, subscriptions, update, view)
 
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Nav
@@ -9,7 +9,6 @@ import Public.Pages.RedeemInvitation as RedeemInvitation
 import Public.Pages.RequestPassword as RequestPassword
 import Public.Pages.SignIn as SignIn
 import Public.Pages.SignUp as SignUp
-import Root exposing (..)
 import Shared.Actions as Actions
 import Shared.Globals exposing (..)
 import Shared.Return3 as Return
@@ -18,8 +17,22 @@ import Shared.Sessions as Sessions
 import Url exposing (Url)
 
 
+type PagePublic
+    = PagePublic_RedeemInvitation RedeemInvitation.Model
+    | PagePublic_SignIn SignIn.Model
+    | PagePublic_SignUp SignUp.Model
+    | PagePublic_RequestPassword RequestPassword.Model
+
+
+type Msg
+    = PageRedeemInvitationMsg RedeemInvitation.Msg
+    | PageSignInMsg SignIn.Msg
+    | PageSignUpMsg SignUp.Msg
+    | PageRequestPasswordMsg RequestPassword.Msg
+
+
 type alias Returns =
-    ( PagePublic, Cmd MsgPublic, Actions.Actions MsgPublic )
+    ( PagePublic, Cmd Msg, Actions.Actions Msg )
 
 
 initCurrentPage : PublicContext -> Routes.RouteInPublic -> Returns
@@ -50,7 +63,7 @@ initCurrentPage context route =
                     PageRequestPasswordMsg
 
 
-subscriptions : PagePublic -> Sub MsgPublic
+subscriptions : PagePublic -> Sub Msg
 subscriptions page =
     case page of
         PagePublic_SignIn pageModel ->
@@ -66,7 +79,7 @@ subscriptions page =
             Sub.map PageRequestPasswordMsg (RequestPassword.subscriptions pageModel)
 
 
-update : PublicContext -> MsgPublic -> PagePublic -> Returns
+update : PublicContext -> Msg -> PagePublic -> Returns
 update context msg page =
     case msg of
         PageSignInMsg sub ->
@@ -140,4 +153,4 @@ view context page =
                         |> map PageRequestPasswordMsg
     in
     section [ class "p-4" ]
-        [ inner |> map Msg_Public ]
+        [ inner ]

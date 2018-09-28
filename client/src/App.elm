@@ -328,6 +328,7 @@ bodyFor model =
 
                 Page_Public pageModel ->
                     Public.view (newPublicContext model) pageModel
+                        |> Html.map Msg_Public
 
                 Page_Admin auth pageModel ->
                     Admin.view (newContext model auth) pageModel
@@ -335,6 +336,7 @@ bodyFor model =
 
                 Page_Investor auth pageModel ->
                     Investor.view (newContext model auth) pageModel
+                        |> Html.map Msg_Investor
     in
     [ Notifications.view model.notifications
     , page

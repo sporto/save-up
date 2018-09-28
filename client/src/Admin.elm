@@ -1,4 +1,4 @@
-module Admin exposing (initCurrentPage, subscriptions, update, view)
+module Admin exposing (Msg, PageAdmin, initCurrentPage, subscriptions, update, view)
 
 import Admin.Pages.Account as Account
 import Admin.Pages.CreateInvestor as CreateInvestor
@@ -10,7 +10,6 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Notifications
-import Root exposing (..)
 import Shared.Actions as Actions
 import Shared.Css as Css
 import Shared.Globals exposing (..)
@@ -23,8 +22,23 @@ import UI.Navigation as Navigation
 import Url exposing (Url)
 
 
+type PageAdmin
+    = PageAdmin_Home Home.Model
+    | PageAdmin_Account Account.Model
+    | PageAdmin_InviteAdmin InviteAdmin.Model
+    | PageAdmin_CreateInvestor CreateInvestor.Model
+
+
+type Msg
+    = PageAdminAccountMsg Account.Msg
+    | PageAdminHomeMsg Home.Msg
+    | PageAdminInviteAdminMsg InviteAdmin.Msg
+    | PageAdminCreateInvestorMsg CreateInvestor.Msg
+    | MsgAdmin_SignOut
+
+
 type alias Returns =
-    ( PageAdmin, Cmd MsgAdmin, Actions.Actions MsgAdmin )
+    ( PageAdmin, Cmd Msg, Actions.Actions Msg )
 
 
 initCurrentPage : Context -> Routes.RouteInAdmin -> Returns
@@ -51,7 +65,7 @@ initCurrentPage context adminRoute =
                 |> Return.mapAll PageAdmin_CreateInvestor PageAdminCreateInvestorMsg
 
 
-subscriptions : PageAdmin -> Sub MsgAdmin
+subscriptions : PageAdmin -> Sub Msg
 subscriptions page =
     case page of
         PageAdmin_Home pageModel ->
@@ -67,7 +81,7 @@ subscriptions page =
             Sub.map PageAdminCreateInvestorMsg (CreateInvestor.subscriptions pageModel)
 
 
-update : Context -> MsgAdmin -> PageAdmin -> Returns
+update : Context -> Msg -> PageAdmin -> Returns
 update context msg page =
     case msg of
         PageAdminAccountMsg sub ->
@@ -122,7 +136,7 @@ update context msg page =
             ( page, Cmd.none, Actions.endSession )
 
 
-view : Context -> PageAdmin -> Html MsgAdmin
+view : Context -> PageAdmin -> Html Msg
 view context adminPage =
     section [ class "flex flex-col h-full" ]
         [ header_ context
@@ -131,7 +145,7 @@ view context adminPage =
         ]
 
 
-header_ : Context -> Html MsgAdmin
+header_ : Context -> Html Msg
 header_ context =
     nav [ class "flex p-4 bg-grey-darkest text-white flex-no-shrink" ]
         [ Navigation.logo
@@ -148,7 +162,7 @@ header_ context =
         ]
 
 
-navigationLink : Route -> String -> Html MsgAdmin
+navigationLink : Route -> String -> Html Msg
 navigationLink route label =
     a
         [ href (Routes.pathFor route)
@@ -157,7 +171,7 @@ navigationLink route label =
         [ text label ]
 
 
-currentPage : Context -> PageAdmin -> Html MsgAdmin
+currentPage : Context -> PageAdmin -> Html Msg
 currentPage context adminPage =
     let
         page =

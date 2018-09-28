@@ -1,17 +1,11 @@
-module Root exposing (Model, Msg(..), MsgAdmin(..), MsgInvestor(..), MsgPublic(..), Page(..), PageAdmin(..), PageInvestor(..), PagePublic(..))
+module Root exposing (Model, Msg(..), Page(..))
 
-import Admin.Pages.Account
-import Admin.Pages.CreateInvestor
-import Admin.Pages.Home
-import Admin.Pages.InviteAdmin
+import Admin
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Nav
-import Investor.Pages.Home
+import Investor
 import Notifications
-import Public.Pages.RedeemInvitation as RedeemInvitation
-import Public.Pages.RequestPassword as RequestPassword
-import Public.Pages.SignIn as SignIn
-import Public.Pages.SignUp as SignUp
+import Public
 import Shared.AppLocation exposing (AppLocation)
 import Shared.Globals exposing (..)
 import Shared.Routes as Routes
@@ -29,28 +23,10 @@ type alias Model =
 
 
 type Page
-    = Page_Admin Authentication PageAdmin
-    | Page_Investor Authentication PageInvestor
-    | Page_Public PagePublic
+    = Page_Admin Authentication Admin.PageAdmin
+    | Page_Investor Authentication Investor.PageInvestor
+    | Page_Public Public.PagePublic
     | Page_NotFound
-
-
-type PagePublic
-    = PagePublic_RedeemInvitation RedeemInvitation.Model
-    | PagePublic_SignIn SignIn.Model
-    | PagePublic_SignUp SignUp.Model
-    | PagePublic_RequestPassword RequestPassword.Model
-
-
-type PageAdmin
-    = PageAdmin_Home Admin.Pages.Home.Model
-    | PageAdmin_Account Admin.Pages.Account.Model
-    | PageAdmin_InviteAdmin Admin.Pages.InviteAdmin.Model
-    | PageAdmin_CreateInvestor Admin.Pages.CreateInvestor.Model
-
-
-type PageInvestor
-    = PageInvestor_Home Investor.Pages.Home.Model
 
 
 type Msg
@@ -58,26 +34,7 @@ type Msg
     | ChangeRoute Routes.Route
     | OnUrlChange Url
     | OnUrlRequest UrlRequest
-    | Msg_Admin MsgAdmin
-    | Msg_Investor MsgInvestor
-    | Msg_Public MsgPublic
+    | Msg_Admin Admin.Msg
+    | Msg_Investor Investor.Msg
+    | Msg_Public Public.Msg
     | NotificationsMsg Notifications.Msg
-
-
-type MsgPublic
-    = PageRedeemInvitationMsg RedeemInvitation.Msg
-    | PageSignInMsg SignIn.Msg
-    | PageSignUpMsg SignUp.Msg
-    | PageRequestPasswordMsg RequestPassword.Msg
-
-
-type MsgAdmin
-    = PageAdminAccountMsg Admin.Pages.Account.Msg
-    | PageAdminHomeMsg Admin.Pages.Home.Msg
-    | PageAdminInviteAdminMsg Admin.Pages.InviteAdmin.Msg
-    | PageAdminCreateInvestorMsg Admin.Pages.CreateInvestor.Msg
-    | MsgAdmin_SignOut
-
-
-type MsgInvestor
-    = PageInvestorHomeMsg Investor.Pages.Home.Msg

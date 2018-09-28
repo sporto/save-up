@@ -1,4 +1,4 @@
-module Investor exposing (initCurrentPage, subscriptions, update, view)
+module Investor exposing (Msg, PageInvestor, initCurrentPage, subscriptions, update, view)
 
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Nav
@@ -6,7 +6,6 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Investor.Pages.Home as Home
-import Root exposing (..)
 import Shared.Actions as Actions
 import Shared.Globals exposing (..)
 import Shared.Pages.NotFound as NotFound
@@ -18,8 +17,17 @@ import UI.Navigation as Navigation
 import Url exposing (Url)
 
 
+type PageInvestor
+    = PageInvestor_Home Home.Model
+
+
+type Msg
+    = PageInvestorHomeMsg Home.Msg
+    | SignOut
+
+
 type alias Returns =
-    ( PageInvestor, Cmd MsgInvestor, Actions.Actions MsgInvestor )
+    ( PageInvestor, Cmd Msg, Actions.Actions Msg )
 
 
 initCurrentPage : Context -> Routes.RouteInInvestor -> Returns
@@ -31,14 +39,14 @@ initCurrentPage context route =
                 |> Return.mapAll PageInvestor_Home PageInvestorHomeMsg
 
 
-subscriptions : PageInvestor -> Sub MsgInvestor
+subscriptions : PageInvestor -> Sub Msg
 subscriptions page =
     case page of
         PageInvestor_Home pageModel ->
             Sub.map PageInvestorHomeMsg (Home.subscriptions pageModel)
 
 
-update : Context -> MsgInvestor -> PageInvestor -> Returns
+update : Context -> Msg -> PageInvestor -> Returns
 update context msg page =
     case msg of
         PageInvestorHomeMsg sub ->
@@ -49,6 +57,9 @@ update context msg page =
                         sub
                         pageModel
                         |> Return.mapAll PageInvestor_Home PageInvestorHomeMsg
+
+        SignOut ->
+            ( page, Cmd.none, Actions.endSession )
 
 
 view : Context -> PageInvestor -> Html Msg
@@ -94,4 +105,4 @@ currentPage context page =
                         |> map PageInvestorHomeMsg
     in
     section [ class "flex-auto" ]
-        [ inner |> map Msg_Investor ]
+        [ inner ]
