@@ -172,68 +172,75 @@ type Field
 view : PublicContext -> Model -> Html Msg
 view context model =
     div [ class "flex items-center justify-center pt-16" ]
-        [ div [ class "w-1/3" ]
-            [ h1 []
-                [ text "Sign up" ]
-            , form
-                [ class "bg-white shadow-md rounded p-8 mt-3", onSubmit Submit ]
-                [ maybeErrors model
-                , Forms.set
-                    Field_Name
-                    "Name"
-                    (input
-                        [ class molecules.form.input
-                        , onInput ChangeName
-                        , name "name"
-                        , value model.form.name
-                        ]
-                        []
-                    )
-                    model.validationErrors
-                , Forms.set
-                    Field_Username
-                    "Username"
-                    (input
-                        [ class molecules.form.input
-                        , onInput ChangeUsername
-                        , name "username"
-                        , value model.form.username
-                        ]
-                        []
-                    )
-                    model.validationErrors
-                , Forms.set
-                    Field_Email
-                    "Email"
-                    (input
-                        [ class molecules.form.input
-                        , onInput ChangeEmail
-                        , name "email"
-                        , value model.form.email
-                        ]
-                        []
-                    )
-                    model.validationErrors
-                , Forms.set
-                    Field_Password
-                    "Password"
-                    (input
-                        [ class molecules.form.input
-                        , type_ "password"
-                        , onInput ChangePassword
-                        , name "password"
-                        , value model.form.password
-                        ]
-                        []
-                    )
-                    model.validationErrors
-                , p [ class "mt-6" ]
-                    [ submit model
-                    ]
-                ]
+        [ div
+            [ class "w-1/3 bg-white shadow-md rounded p-8 mt-3" ]
+            [ Forms.form_ (formArgs model)
             , links
             ]
         ]
+
+
+formArgs : Model -> Forms.Args SignUpResponse Msg
+formArgs model =
+    { title = "Sign up"
+    , submitLabel = "Sign up"
+    , fields = formFields model
+    , onSubmit = Submit
+    , response = model.response
+    }
+
+
+formFields model =
+    [ Forms.set
+        Field_Name
+        "Name"
+        (input
+            [ class molecules.form.input
+            , onInput ChangeName
+            , name "name"
+            , value model.form.name
+            ]
+            []
+        )
+        model.validationErrors
+    , Forms.set
+        Field_Username
+        "Username"
+        (input
+            [ class molecules.form.input
+            , onInput ChangeUsername
+            , name "username"
+            , value model.form.username
+            ]
+            []
+        )
+        model.validationErrors
+    , Forms.set
+        Field_Email
+        "Email"
+        (input
+            [ class molecules.form.input
+            , onInput ChangeEmail
+            , name "email"
+            , value model.form.email
+            ]
+            []
+        )
+        model.validationErrors
+    , Forms.set
+        Field_Password
+        "Password"
+        (input
+            [ class molecules.form.input
+            , type_ "password"
+            , onInput ChangePassword
+            , name "password"
+            , value model.form.password
+            ]
+            []
+        )
+        model.validationErrors
+    ]
 
 
 submit : Model -> Html Msg

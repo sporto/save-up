@@ -1,13 +1,20 @@
-module UI.Forms exposing (isValidEmail, mustBeEmail, mutationError, set, verifyEmail, verifyName, verifyPassword, verifyUsername)
+module UI.Forms exposing (Args, form_, isValidEmail, mustBeEmail, mutationError, set, verifyEmail, verifyName, verifyPassword, verifyUsername)
 
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import Html.Events exposing (onSubmit)
 import Regex
+import RemoteData
 import Shared.Css exposing (molecules)
-import Shared.GraphQl exposing (MutationError)
+import Shared.GraphQl exposing (GraphData, MutationError)
 import String.Verify
 import UI.Flash as Flash
+import UI.Icons as Icons
 import Verify exposing (Validator)
+
+
+
+-- TODO delete
 
 
 mutationError : String -> List MutationError -> Html msg
@@ -21,6 +28,57 @@ mutationError key errors =
 
 type alias Error field =
     ( field, String )
+
+
+type alias Args resp msg =
+    { title : String
+    , fields : List (Html msg)
+    , submitLabel : String
+    , onSubmit : msg
+    , response : GraphData { resp | errors : List MutationError }
+    }
+
+
+form_ : Args resp msg -> Html msg
+form_ args =
+    form [ onSubmit args.onSubmit ]
+        [ h2 [] [ text args.title ]
+        , responseErrors args
+        , div [] args.fields
+        , p [ class "mt-6" ]
+            [ submit args ]
+        ]
+
+
+responseErrors : Args resp msg -> Html msg
+responseErrors args =
+    case args.response of
+        RemoteData.Success data ->
+            List.map mutationErrorV2 data.errors
+                |> div []
+
+        _ ->
+            text ""
+
+
+mutationErrorV2 : MutationError -> Html msg
+mutationErrorV2 error =
+    error
+        |> (.messages >> String.join ", ")
+        |> Flash.error
+
+
+submit : Args resp msg -> Html msg
+submit args =
+    case args.response of
+        RemoteData.Loading ->
+            Icons.spinner
+
+        _ ->
+            button
+                [ class molecules.form.submit
+                ]
+                [ text args.submitLabel ]
 
 
 flattenErrors : Maybe ( Error f, List (Error f) ) -> List (Error f)
@@ -63,6 +121,10 @@ setError field errors =
 
         Nothing ->
             text ""
+
+
+
+-- Validations
 
 
 mustBeEmail : error -> Validator error String String
