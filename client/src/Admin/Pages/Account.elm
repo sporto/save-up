@@ -1,9 +1,11 @@
 module Admin.Pages.Account exposing (Model, Msg, init, subscriptions, update, view)
 
+import Api.InputObject
 import Api.Mutation
 import Api.Object
 import Api.Object.Account
 import Api.Object.Admin
+import Api.Object.ChangeAccountInterestResponse
 import Api.Object.DepositResponse
 import Api.Object.Transaction
 import Api.Query
@@ -12,12 +14,13 @@ import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, name, src, style, type_, value)
-import Html.Events exposing (onInput, onSubmit)
+import Html.Events exposing (onClick, onInput, onSubmit)
 import RemoteData
 import Shared.Actions as Actions exposing (Actions)
 import Shared.Css exposing (molecules)
 import Shared.Globals exposing (..)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse, MutationError)
+import Shared.Return3 as Return3
 import Shared.Routes as Routes
 import Time exposing (Posix)
 import UI.AccountInfo as AccountInfo
@@ -54,12 +57,23 @@ type SubPage
 
 type alias TopModel =
     { data : GraphData Account
+    , yearlyInterestInput : Maybe String
+    , yearlyInterestResponse : GraphData ChangeAccountInterestResponse
     }
 
 
 newTopModel : TopModel
 newTopModel =
     { data = RemoteData.NotAsked
+    , yearlyInterestInput = Nothing
+    , yearlyInterestResponse = RemoteData.NotAsked
+    }
+
+
+type alias ChangeAccountInterestResponse =
+    { success : Bool
+    , errors : List MutationError
+    , account : Maybe Account
     }
 
 
@@ -120,8 +134,17 @@ asAmountInDepositForm form amount =
 
 type Msg
     = NoOp
+    | Msg_Top TopMsg
     | Msg_Desposit DepositMsg
     | OnAccountData (GraphResponse Account)
+
+
+type TopMsg
+    = EditInterestRate
+    | CancelInterestRate
+    | ChangeInterestRate String
+    | SaveInterestRate String
+    | OnSaveInterestRateResponse (GraphResponse ChangeAccountInterestResponse)
 
 
 type DepositMsg
@@ -165,21 +188,32 @@ update context msg model =
         NoOp ->
             ( model, Cmd.none, Actions.none )
 
+        Msg_Top subMsg ->
+            case model.subPage of
+                SubPage_Top subModel ->
+                    updateTop
+                        context
+                        model.accountID
+                        subMsg
+                        subModel
+                        |> Return3.mapAll
+                            (\p -> { model | subPage = SubPage_Top p })
+                            Msg_Top
+
+                _ ->
+                    ( model, Cmd.none, Actions.none )
+
         Msg_Desposit subMsg ->
             case model.subPage of
                 SubPage_Deposit depositModel ->
-                    let
-                        ( nextDepositModel, newCmd, newAction ) =
-                            updateDeposit
-                                context
-                                model.accountID
-                                subMsg
-                                depositModel
-                    in
-                    ( { model | subPage = SubPage_Deposit nextDepositModel }
-                    , Cmd.map Msg_Desposit newCmd
-                    , Actions.map Msg_Desposit newAction
-                    )
+                    updateDeposit
+                        context
+                        model.accountID
+                        subMsg
+                        depositModel
+                        |> Return3.mapAll
+                            (\p -> { model | subPage = SubPage_Deposit p })
+                            Msg_Desposit
 
                 _ ->
                     ( model, Cmd.none, Actions.none )
@@ -188,7 +222,11 @@ update context msg model =
             case result of
                 Err e ->
                     ( { model
-                        | subPage = SubPage_Top { data = RemoteData.Failure e }
+                        | subPage =
+                            SubPage_Top
+                                { newTopModel
+                                    | data = RemoteData.Failure e
+                                }
                       }
                     , Cmd.none
                     , Actions.none
@@ -196,11 +234,117 @@ update context msg model =
 
                 Ok data ->
                     ( { model
-                        | subPage = SubPage_Top { data = RemoteData.Success data }
+                        | subPage =
+                            SubPage_Top
+                                { newTopModel
+                                    | data = RemoteData.Success data
+                                }
                       }
                     , Cmd.none
                     , Actions.none
                     )
+
+
+updateTop : Context -> ID -> TopMsg -> TopModel -> ( TopModel, Cmd TopMsg, Actions TopMsg )
+updateTop context accountID msg model =
+    case msg of
+        EditInterestRate ->
+            case model.data of
+                RemoteData.Success account ->
+                    ( { model
+                        | yearlyInterestInput = Just (String.fromFloat account.yearlyInterest)
+                      }
+                    , Cmd.none
+                    , Actions.none
+                    )
+
+                _ ->
+                    Return3.noOp model
+
+        CancelInterestRate ->
+            ( { model
+                | yearlyInterestInput = Nothing
+                , yearlyInterestResponse = RemoteData.NotAsked
+              }
+            , Cmd.none
+            , Actions.none
+            )
+
+        ChangeInterestRate rate ->
+            ( { model | yearlyInterestInput = Just rate }
+            , Cmd.none
+            , Actions.none
+            )
+
+        SaveInterestRate rate ->
+            case validateInterestRate rate of
+                Ok float ->
+                    ( { model
+                        | yearlyInterestResponse = RemoteData.Loading
+                      }
+                    , changeInterestMutationCmd
+                        context
+                        accountID
+                        float
+                    , Actions.none
+                    )
+
+                Err ( e, _ ) ->
+                    ( model
+                    , Cmd.none
+                    , Actions.addErrorNotification e
+                    )
+
+        OnSaveInterestRateResponse result ->
+            case result of
+                Err e ->
+                    ( { model | yearlyInterestResponse = RemoteData.Failure e }
+                    , Cmd.none
+                    , Actions.addErrorNotification
+                        "Something went wrong"
+                    )
+
+                Ok response ->
+                    case response.account of
+                        Just account ->
+                            ( { model
+                                | yearlyInterestResponse = RemoteData.Success response
+                                , yearlyInterestInput = Nothing
+                                , data = RemoteData.Success account
+                              }
+                            , Cmd.none
+                            , Actions.addSuccessNotification
+                                "Interest rate updated"
+                            )
+
+                        Nothing ->
+                            ( { model
+                                | yearlyInterestResponse = RemoteData.Success response
+                              }
+                            , Cmd.none
+                            , Actions.none
+                            )
+
+
+validateInterestRate : Validator String String Float
+validateInterestRate input =
+    if String.isEmpty input then
+        Err ( "Enter a yearly rate", [] )
+
+    else
+        case String.toFloat input of
+            Nothing ->
+                Err ( "Not a valid number", [] )
+
+            Just n ->
+                if n < 0 then
+                    Err ( "Cannot be less than zero", [] )
+
+                else if n > 1000 then
+                    Err ( "Cannot be more than 1,000%", [] )
+
+                else
+                    Ok n
 
 
 updateDeposit : Context -> ID -> DepositMsg -> DepositModel -> ( DepositModel, Cmd DepositMsg, Actions DepositMsg )
@@ -306,6 +450,7 @@ currentPage context model =
             accountView
                 context
                 topModel
+                |> map Msg_Top
 
         SubPage_Deposit depositModel ->
             deposit
@@ -323,7 +468,7 @@ currentPage context model =
 -- Account view
 
 
-accountView : Context -> TopModel -> Html msg
+accountView : Context -> TopModel -> Html TopMsg
 accountView context model =
     let
         inner =
@@ -338,14 +483,67 @@ accountView context model =
                     [ Empty.graphError e ]
 
                 RemoteData.Success data ->
-                    accountWithData context data
+                    accountWithData context model data
     in
     div [ class molecules.page.container ] inner
 
 
-accountWithData : Context -> Account -> List (Html msg)
-accountWithData context account =
-    [ AccountInfo.view account
+accountWithData : Context -> TopModel -> Account -> List (Html TopMsg)
+accountWithData context model account =
+    let
+        maybeInputField =
+            case model.yearlyInterestInput of
+                Nothing ->
+                    Nothing
+
+                Just rate ->
+                    let
+                        inputOrSpinner : List (Html TopMsg)
+                        inputOrSpinner =
+                            case model.yearlyInterestResponse of
+                                RemoteData.Loading ->
+                                    [ Icons.spinner ]
+
+                                _ ->
+                                    [ span [ class "w-16" ]
+                                        [ inputField
+                                        ]
+                                    , span [ class "ml-2" ] [ btnSave ]
+                                    , span [ class "ml-2" ] [ btnCancel ]
+                                    ]
+
+                        inputField =
+                            input
+                                [ type_ "text"
+                                , onInput ChangeInterestRate
+                                , value rate
+                                , class molecules.form.input
+                                ]
+                                []
+
+                        btnSave =
+                            button
+                                [ onClick (SaveInterestRate rate)
+                                , class molecules.button.primary
+                                ]
+                                [ text "Save" ]
+
+                        btnCancel =
+                            button
+                                [ onClick CancelInterestRate
+                                , class molecules.button.secondary
+                                ]
+                                [ text "Cancel" ]
+                    in
+                    Just
+                        (div [ class "ml-2 flex items-center" ]
+                            inputOrSpinner
+                        )
+    in
+    [ AccountInfo.view
+        { canAdmin = True, onEdit = EditInterestRate }
+        account
+        maybeInputField
     , Chart.view account.transactions
     ]
 
@@ -491,3 +689,39 @@ depositResponseSelection =
     Api.Object.DepositResponse.selection DepositResponse
         |> with Api.Object.DepositResponse.success
         |> with (Api.Object.DepositResponse.errors GraphQl.mutationErrorSelection)
+
+
+
+-- Change interest mutation
+
+
+changeInterestMutationCmd : Context -> ID -> Float -> Cmd TopMsg
+changeInterestMutationCmd context accountID rate =
+    GraphQl.sendMutation
+        context
+        "change-interest-rate"
+        (changeInterestMutation accountID rate)
+        OnSaveInterestRateResponse
+
+
+changeInterestMutation : ID -> Float -> SelectionSet ChangeAccountInterestResponse RootMutation
+changeInterestMutation accountID rate =
+    let
+        input : Api.InputObject.ChangeAccountInterestInput
+        input =
+            { accountId = accountID, yearlyInterest = rate }
+    in
+    Api.Mutation.selection identity
+        |> with
+            (Api.Mutation.changeAccountInterest
+                { input = input }
+                interestResponseSelection
+            )
+
+
+interestResponseSelection : SelectionSet ChangeAccountInterestResponse Api.Object.ChangeAccountInterestResponse
+interestResponseSelection =
+    Api.Object.ChangeAccountInterestResponse.selection ChangeAccountInterestResponse
+        |> with Api.Object.ChangeAccountInterestResponse.success
+        |> with (Api.Object.ChangeAccountInterestResponse.errors GraphQl.mutationErrorSelection)
+        |> with (Api.Object.ChangeAccountInterestResponse.account accountSelection)
