@@ -505,7 +505,7 @@ accountWithData context model account =
                                     [ Icons.spinner ]
 
                                 _ ->
-                                    [ span [ class "w-16" ]
+                                    [ span [ style "width" "5rem" ]
                                         [ inputField
                                         ]
                                     , span [ class "ml-2" ] [ btnSave ]
@@ -514,7 +514,7 @@ accountWithData context model account =
 
                         inputField =
                             input
-                                [ type_ "text"
+                                [ type_ "number"
                                 , onInput ChangeInterestRate
                                 , value rate
                                 , class molecules.form.input
