@@ -16,7 +16,7 @@ pub const DEFAULT_YEARLY_INTEREST: u8 = 20;
 pub const ACTIVE: &[u8] = b"ACTIVE";
 pub const SAVINGS: &[u8] = b"SAVINGS";
 
-#[derive(Queryable)]
+#[derive(Queryable, Clone)]
 pub struct Account {
 	pub id: i32,
 	pub created_at: NaiveDateTime,

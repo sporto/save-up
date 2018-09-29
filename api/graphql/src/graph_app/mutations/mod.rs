@@ -1,4 +1,5 @@
 pub mod archive_user;
+pub mod change_interest;
 pub mod create_user;
 pub mod deposit;
 pub mod invite_admin;
