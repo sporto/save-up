@@ -24,7 +24,7 @@ pub fn call(
 	let result = passwords::request_reset::call(&context.conn, &input.username_or_email);
 
 	let response = match result {
-		Ok(token) => RequestPasswordResetResponse {
+		Ok(_token) => RequestPasswordResetResponse {
 			success: true,
 			errors: vec![],
 		},

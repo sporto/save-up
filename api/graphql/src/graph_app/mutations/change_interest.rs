@@ -20,6 +20,20 @@ pub struct ChangeAccountInterestResponse {
 	account: Option<Account>,
 }
 
+graphql_object!(ChangeAccountInterestResponse: AppContext |&self| {
+	field success() -> bool {
+		self.success
+	}
+
+	field errors() -> &Vec<MutationError> {
+		&self.errors
+	}
+
+	field account() -> &Option<Account> {
+		&self.account
+	}
+});
+
 pub fn call(
 	executor: &Executor<AppContext>,
 	input: ChangeAccountInterestInput,

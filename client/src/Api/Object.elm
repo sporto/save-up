@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object exposing (Account(..), Admin(..), ArchiveUserResponse(..), CreateUserResponse(..), DepositResponse(..), Investor(..), InvitationResponse(..), MutationError(..), RequestWithdrawalResponse(..), ResolveTransactionRequestResponse(..), Transaction(..), TransactionRequest(..), UnarchiveUserResponse(..), User(..), WithdrawalResponse(..))
+module Api.Object exposing (Account(..), Admin(..), ArchiveUserResponse(..), ChangeAccountInterestResponse(..), CreateUserResponse(..), DepositResponse(..), Investor(..), InvitationResponse(..), MutationError(..), RequestWithdrawalResponse(..), ResolveTransactionRequestResponse(..), Transaction(..), TransactionRequest(..), UnarchiveUserResponse(..), User(..), WithdrawalResponse(..))
 
 
 type Account
@@ -15,6 +15,10 @@ type Admin
 
 type ArchiveUserResponse
     = ArchiveUserResponse
+
+
+type ChangeAccountInterestResponse
+    = ChangeAccountInterestResponse
 
 
 type CreateUserResponse

@@ -2,44 +2,66 @@ use juniper::FieldResult;
 
 use graph_app::context::AppContext;
 use graph_app::mutations;
+use graph_app::mutations::archive_user::{self, ArchiveUserResponse};
+use graph_app::mutations::change_interest::{
+	self, ChangeAccountInterestInput, ChangeAccountInterestResponse,
+};
+use graph_app::mutations::create_user::{self, CreateUserInput, CreateUserResponse};
+use graph_app::mutations::deposit::{self, DepositInput, DepositResponse};
+use graph_app::mutations::invite_admin::{self, InvitationInput, InvitationResponse};
+use graph_app::mutations::request_withdrawal::{
+	self, RequestWithdrawalInput, RequestWithdrawalResponse,
+};
+use graph_app::mutations::resolve_transaction_request::{
+	self, ResolveTransactionRequestInput, ResolveTransactionRequestResponse,
+};
+use graph_app::mutations::unarchive_user::{self, UnarchiveUserResponse};
+use graph_app::mutations::withdraw::{self, WithdrawalInput, WithdrawalResponse};
 
 pub struct AppMutationRoot;
 
 graphql_object!(AppMutationRoot: AppContext | &self | {
 
-	field createUser(&executor, input: mutations::create_user::CreateUserInput) ->
-	FieldResult<mutations::create_user::CreateUserResponse> {
-		mutations::create_user::call(executor, input)
+	// users
+	field createUser(&executor, input: CreateUserInput) ->
+	FieldResult<CreateUserResponse> {
+		create_user::call(executor, input)
 	}
 
 	field archiveUser(&executor, user_id: i32) ->
-	FieldResult<mutations::archive_user::ArchiveUserResponse> {
-		mutations::archive_user::call(executor, user_id)
+	FieldResult<ArchiveUserResponse> {
+		archive_user::call(executor, user_id)
 	}
 
 	field unarchiveUser(&executor, user_id: i32) ->
-	FieldResult<mutations::unarchive_user::UnarchiveUserResponse> {
-		mutations::unarchive_user::call(executor, user_id)
+	FieldResult<UnarchiveUserResponse> {
+		unarchive_user::call(executor, user_id)
 	}
 
-	field inviteAdmin(&executor, input: mutations::invite_admin::InvitationInput) -> FieldResult<mutations::invite_admin::InvitationResponse> {
-		mutations::invite_admin::call(executor, input)
+	field inviteAdmin(&executor, input: InvitationInput) -> FieldResult<InvitationResponse> {
+		invite_admin::call(executor, input)
 	}
 
-	field requestWithdraw(&executor, input: mutations::request_withdrawal::RequestWithdrawalInput) -> FieldResult<mutations::request_withdrawal::RequestWithdrawalResponse> {
-		mutations::request_withdrawal::call(executor, input)
+	// accounts
+	field changeAccountInterest(&executor, input: ChangeAccountInterestInput) -> FieldResult<ChangeAccountInterestResponse> {
+		change_interest::call(executor, input)
 	}
 
-	field resolveTransactionRequest(&executor, input: mutations::resolve_transaction_request::ResolveTransactionRequestInput) -> FieldResult<mutations::resolve_transaction_request::ResolveTransactionRequestResponse> {
-		mutations::resolve_transaction_request::call(executor, input)
+	// transactions
+	field requestWithdraw(&executor, input: RequestWithdrawalInput) -> FieldResult<RequestWithdrawalResponse> {
+		request_withdrawal::call(executor, input)
 	}
 
-	field deposit(&executor, input: mutations::deposit::DepositInput) -> FieldResult<mutations::deposit::DepositResponse> {
-		mutations::deposit::call(executor, input)
+	field resolveTransactionRequest(&executor, input: ResolveTransactionRequestInput) -> FieldResult<ResolveTransactionRequestResponse> {
+		resolve_transaction_request::call(executor, input)
 	}
 
-	field withdraw(&executor, input: mutations::withdraw::WithdrawalInput) -> FieldResult<mutations::withdraw::WithdrawalResponse> {
-		mutations::withdraw::call(executor, input)
+	field deposit(&executor, input: DepositInput) -> FieldResult<DepositResponse> {
+		deposit::call(executor, input)
+	}
+
+	field withdraw(&executor, input: WithdrawalInput) -> FieldResult<WithdrawalResponse> {
+		withdraw::call(executor, input)
 	}
 
 });

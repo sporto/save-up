@@ -2,13 +2,13 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module ApiPub.Object.RequestPasswordResetResponse exposing (errors, selection, success)
+module Api.Object.ChangeAccountInterestResponse exposing (account, errors, selection, success)
 
-import ApiPub.InputObject
-import ApiPub.Interface
-import ApiPub.Object
-import ApiPub.Scalar
-import ApiPub.Union
+import Api.InputObject
+import Api.Interface
+import Api.Object
+import Api.Scalar
+import Api.Union
 import Graphql.Field as Field exposing (Field)
 import Graphql.Internal.Builder.Argument as Argument exposing (Argument)
 import Graphql.Internal.Builder.Object as Object
@@ -20,16 +20,21 @@ import Json.Decode as Decode
 
 {-| Select fields to build up a SelectionSet for this object.
 -}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) ApiPub.Object.RequestPasswordResetResponse
+selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.ChangeAccountInterestResponse
 selection constructor =
     Object.selection constructor
 
 
-success : Field Bool ApiPub.Object.RequestPasswordResetResponse
+success : Field Bool Api.Object.ChangeAccountInterestResponse
 success =
     Object.fieldDecoder "success" [] Decode.bool
 
 
-errors : SelectionSet decodesTo ApiPub.Object.MutationError -> Field (List decodesTo) ApiPub.Object.RequestPasswordResetResponse
+errors : SelectionSet decodesTo Api.Object.MutationError -> Field (List decodesTo) Api.Object.ChangeAccountInterestResponse
 errors object_ =
     Object.selectionField "errors" [] object_ (identity >> Decode.list)
+
+
+account : SelectionSet decodesTo Api.Object.Account -> Field (Maybe decodesTo) Api.Object.ChangeAccountInterestResponse
+account object_ =
+    Object.selectionField "account" [] object_ (identity >> Decode.nullable)

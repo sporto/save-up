@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.InputObject exposing (CreateUserInput, CreateUserInputOptionalFields, CreateUserInputRequiredFields, DepositInput, DepositInputRequiredFields, InvitationInput, InvitationInputRequiredFields, RequestWithdrawalInput, RequestWithdrawalInputRequiredFields, ResolveTransactionRequestInput, ResolveTransactionRequestInputRequiredFields, WithdrawalInput, WithdrawalInputRequiredFields, buildCreateUserInput, buildDepositInput, buildInvitationInput, buildRequestWithdrawalInput, buildResolveTransactionRequestInput, buildWithdrawalInput, encodeCreateUserInput, encodeDepositInput, encodeInvitationInput, encodeRequestWithdrawalInput, encodeResolveTransactionRequestInput, encodeWithdrawalInput)
+module Api.InputObject exposing (ChangeAccountInterestInput, ChangeAccountInterestInputRequiredFields, CreateUserInput, CreateUserInputOptionalFields, CreateUserInputRequiredFields, DepositInput, DepositInputRequiredFields, InvitationInput, InvitationInputRequiredFields, RequestWithdrawalInput, RequestWithdrawalInputRequiredFields, ResolveTransactionRequestInput, ResolveTransactionRequestInputRequiredFields, WithdrawalInput, WithdrawalInputRequiredFields, buildChangeAccountInterestInput, buildCreateUserInput, buildDepositInput, buildInvitationInput, buildRequestWithdrawalInput, buildResolveTransactionRequestInput, buildWithdrawalInput, encodeChangeAccountInterestInput, encodeCreateUserInput, encodeDepositInput, encodeInvitationInput, encodeRequestWithdrawalInput, encodeResolveTransactionRequestInput, encodeWithdrawalInput)
 
 import Api.Enum.TransactionRequestState
 import Api.Interface
@@ -16,6 +16,29 @@ import Graphql.Internal.Encode as Encode exposing (Value)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
+
+
+buildChangeAccountInterestInput : ChangeAccountInterestInputRequiredFields -> ChangeAccountInterestInput
+buildChangeAccountInterestInput required =
+    { accountId = required.accountId, yearlyInterest = required.yearlyInterest }
+
+
+type alias ChangeAccountInterestInputRequiredFields =
+    { accountId : Int, yearlyInterest : Float }
+
+
+{-| Type for the ChangeAccountInterestInput input object.
+-}
+type alias ChangeAccountInterestInput =
+    { accountId : Int, yearlyInterest : Float }
+
+
+{-| Encode a ChangeAccountInterestInput into a value that can be used as an argument.
+-}
+encodeChangeAccountInterestInput : ChangeAccountInterestInput -> Value
+encodeChangeAccountInterestInput input =
+    Encode.maybeObject
+        [ ( "accountId", Encode.int input.accountId |> Just ), ( "yearlyInterest", Encode.float input.yearlyInterest |> Just ) ]
 
 
 buildCreateUserInput : CreateUserInputRequiredFields -> (CreateUserInputOptionalFields -> CreateUserInputOptionalFields) -> CreateUserInput
