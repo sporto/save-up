@@ -20,6 +20,7 @@ import Shared.Globals exposing (..)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse, MutationError)
 import Shared.Routes as Routes
 import Time exposing (Posix)
+import UI.AccountInfo as AccountInfo
 import UI.Chart as Chart
 import UI.Empty as Empty
 import UI.Flash as Flash
@@ -344,29 +345,7 @@ accountView context model =
 
 accountWithData : Context -> Account -> List (Html msg)
 accountWithData context account =
-    let
-        balance =
-            account.balanceInCents // 100
-
-        balanceEl =
-            div []
-                [ text "Balance: "
-                , span [ class "text-3xl font-semibold" ] [ text (String.fromInt balance) ]
-                , span [ class "ml-2" ] [ Icons.money ]
-                ]
-
-        interestEl =
-            div []
-                [ span [ class "ml-8" ] [ text "Yearly interest" ]
-                , span [ class "ml-2 text-2xl font-semibold" ] [ text (String.fromFloat account.yearlyInterest) ]
-                , span [ class "ml-1 mr-2" ] [ text "%" ]
-                , button [] [ Icons.edit ]
-                ]
-    in
-    [ div [ class "flex items-center" ]
-        [ balanceEl
-        , interestEl
-        ]
+    [ AccountInfo.view account
     , Chart.view account.transactions
     ]
 
