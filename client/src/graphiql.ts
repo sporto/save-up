@@ -7,7 +7,7 @@ import getConfig from "./config"
 
 let token = session.getToken()
 
-console.log("token", token)
+if (token == null) throw new Error("Couldn't find token")
 
 function graphQLFetcher(graphQLParams: any) {
 	let config = getConfig()

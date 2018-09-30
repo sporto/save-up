@@ -1,5 +1,8 @@
 start:
-	overmind start
+	hivemind start
+
+graphiql:
+	hivemind Procfile.graphiql
 
 net-login:
 	netlifyctl login
