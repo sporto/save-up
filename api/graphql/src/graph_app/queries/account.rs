@@ -37,7 +37,7 @@ graphql_object!(Account: AppContext |&self| {
 		self.state
 	}
 
-	field balanceInCents(&executor) -> f64 {
+	field balance_in_cents(&executor) -> f64 {
 		let ctx = &executor.context();
 		let conn = &ctx.conn;
 
@@ -45,11 +45,11 @@ graphql_object!(Account: AppContext |&self| {
 			.unwrap_or(0) as f64
 	}
 
-	field yearlyInterest() -> f64 {
+	field yearly_interest() -> f64 {
 		BigDecimal::to_f64(&self.yearly_interest).unwrap()
 	}
 
-		// since POSIX in milliseconds
+	// since POSIX in milliseconds
 	// posix time should be kept in floats, because i32 will reset in the year 2038
 	field transactions(&executor, since: f64) -> Vec<Transaction> {
 		let ctx = &executor.context();

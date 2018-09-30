@@ -19,7 +19,7 @@ graphql_object!(User: AppContext |&self| {
 		self.name.as_str()
 	}
 
-	field isArchived() -> bool {
+	field is_archived() -> bool {
 		self.archived_at != None
 	}
 
