@@ -4,6 +4,7 @@ import Admin.Pages.Account as Account
 import Admin.Pages.CreateInvestor as CreateInvestor
 import Admin.Pages.Home as Home
 import Admin.Pages.InviteAdmin as InviteAdmin
+import Admin.Pages.Requests as Requests
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Nav
 import Html exposing (..)
