@@ -10,6 +10,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href, name, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Notifications
+import Public.Pages.Common as Common
 import RemoteData
 import Shared.Actions as Actions exposing (Actions)
 import Shared.Css as Css exposing (molecules)
@@ -159,14 +160,11 @@ validateForm =
 
 view : PublicContext -> Model -> Html Msg
 view context model =
-    div [ class "flex items-center justify-center pt-16" ]
-        [ div [ class "w-1/3" ]
-            [ div
-                [ class "bg-white shadow-md rounded p-8 mt-3" ]
-                [ Forms.form_ (formArgs model)
-                ]
-            , PublicLinks.view context
-            ]
+    Common.layout
+        context
+        { containerAttributes = [ class "w-80" ]
+        }
+        [ Forms.form_ (formArgs model)
         ]
 
 

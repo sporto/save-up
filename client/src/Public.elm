@@ -180,5 +180,4 @@ view context page =
                     ResetPassword.view context pageModel
                         |> map Msg_ResetPassword
     in
-    section [ class "p-4" ]
-        [ inner ]
+    inner

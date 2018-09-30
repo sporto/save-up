@@ -18,11 +18,8 @@ elm-ts:
 test:
 	npx elm-test
 
-build-dev:
-	npx webpack --config webpack.dev.js --progress --reporter=basic
-
-build-prod:
-	NODE_ENV=production npx webpack --config webpack.prod.js --progress
+build:
+	npx parcel build src/app.html
 
 start:
 	npx parcel -p 8080 src/app.html

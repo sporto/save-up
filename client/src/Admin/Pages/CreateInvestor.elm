@@ -168,7 +168,7 @@ update context msg model =
 view : Context -> Model -> Html Msg
 view context model =
     section [ class molecules.page.container, class "flex justify-center" ]
-        [ div [ style "width" "24rem" ]
+        [ div [ style "width" "24rem", class "mt-6" ]
             [ Forms.form_ (formArgs model) ]
         ]
 

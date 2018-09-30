@@ -13,6 +13,7 @@ import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
+import Public.Pages.Common as Common
 import RemoteData
 import Shared.Actions as Actions
 import Shared.Css exposing (molecules)
@@ -194,13 +195,11 @@ subscriptions model =
 
 view : PublicContext -> Model -> Html Msg
 view context model =
-    div [ class "flex items-center justify-center pt-16" ]
-        [ div [ class "w-1/3" ]
-            [ div [ class "bg-white shadow-md rounded p-8 mt-3" ]
-                [ Forms.form_ (formArgs model)
-                ]
-            , PublicLinks.view context
-            ]
+    Common.layout
+        context
+        { containerAttributes = [ class "w-80" ]
+        }
+        [ Forms.form_ (formArgs model)
         ]
 
 
@@ -218,7 +217,7 @@ formArgs model =
 formFields model =
     [ Forms.set
         Field_UsernameOrEmail
-        "Email"
+        "Username or email"
         (input
             [ class molecules.form.input
             , onInput ChangeUsernameOrEmail
@@ -230,7 +229,7 @@ formFields model =
         model.validationErrors
     , Forms.set
         Field_Password
-        "Email"
+        "Password"
         (input
             [ class molecules.form.input
             , onInput ChangePassword
