@@ -165,8 +165,9 @@ authContext model =
 
 newContext : Model -> Authentication -> Context
 newContext model auth =
-    { flags = model.flags
-    , auth = auth
+    { auth = auth
+    , flags = model.flags
+    , currentLocation = model.currentLocation
     , navKey = model.navKey
     }
 

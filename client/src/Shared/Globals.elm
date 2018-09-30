@@ -17,15 +17,16 @@ type Role
 
 
 type alias PublicContext =
-    { flags : Flags
+    { currentLocation : AppLocation
+    , flags : Flags
     , navKey : Nav.Key
-    , currentLocation : AppLocation
     }
 
 
 type alias Context =
-    { flags : Flags
-    , auth : Authentication
+    { auth : Authentication
+    , currentLocation : AppLocation
+    , flags : Flags
     , navKey : Nav.Key
     }
 

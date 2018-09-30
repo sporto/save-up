@@ -546,17 +546,29 @@ navigation context model =
             Routes.routeForAdminAccountWithdraw model.accountID
     in
     nav [ class "p-4 bg-indigo-light" ]
-        [ navigationLink routeShow "Account"
-        , navigationLink routeDeposit "Deposit"
-        , navigationLink routeWithdraw "Withdraw"
+        [ navigationLink context routeShow "Account"
+        , navigationLink context routeDeposit "Deposit"
+        , navigationLink context routeWithdraw "Withdraw"
         ]
 
 
-navigationLink : Routes.Route -> String -> Html msg
-navigationLink route label =
+navigationLink : Context -> Routes.Route -> String -> Html msg
+navigationLink context route label =
+    let
+        isCurrent =
+            context.currentLocation.route == route
+
+        classCurrent =
+            if isCurrent then
+                "font-extrabold"
+
+            else
+                ""
+    in
     a
         [ href (Routes.pathFor route)
-        , class "text-white mr-6 no-underline"
+        , class "text-white mr-6 no-underline py-2"
+        , class classCurrent
         ]
         [ text label ]
 
