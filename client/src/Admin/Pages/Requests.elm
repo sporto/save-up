@@ -56,7 +56,7 @@ type alias Data =
 
 
 type alias PendingRequest =
-    { amountInCents : Float
+    { amountInCents : Int
     , kind : TransactionKind
     , user : String
     }
@@ -97,10 +97,68 @@ update context msg model =
 
 view : Context -> Model -> Html Msg
 view context model =
-    section [ class molecules.page.container, class "flex justify-center" ]
-        [ div [ style "width" "24rem", class "mt-6" ]
-            []
+    let
+        inner =
+            case model.data of
+                RemoteData.NotAsked ->
+                    Empty.loading
+
+                RemoteData.Loading ->
+                    Empty.loading
+
+                RemoteData.Failure e ->
+                    Empty.graphError e
+
+                RemoteData.Success data ->
+                    viewWithData context model data
+    in
+    section
+        [ class molecules.page.container, class "flex justify-center" ]
+        [ h1 [ class molecules.page.title ] [ text "Welcome" ]
+        , inner
         ]
+
+
+viewWithData : Context -> Model -> Data -> Html Msg
+viewWithData context model data =
+    if List.isEmpty data.pendingRequests then
+        Empty.noData
+
+    else
+        div [] (List.map requestView data.pendingRequests)
+
+
+requestView : PendingRequest -> Html Msg
+requestView request =
+    let
+        name =
+            div [] [ text request.user ]
+
+        amount =
+            div []
+                [ text "Balance: "
+                , span [ class "text-3xl font-semibold" ] [ text formattedAmount ]
+                , span [ class "ml-2" ] [ Icons.money ]
+                ]
+
+        formattedAmount =
+            (request.amountInCents // 100)
+                |> String.fromInt
+
+        actions =
+            div []
+                [ button [ class molecules.button.secondary ] [ text "Approve" ]
+                , button [ class molecules.button.secondary ] [ text "Deny" ]
+                ]
+
+        left =
+            div [ class "flex items-center" ]
+                [ name
+                , amount
+                ]
+    in
+    div [ class "mb-6 flex justify-between" ]
+        [ left, actions ]
 
 
 
@@ -131,7 +189,7 @@ adminNode =
 requestSelection : SelectionSet PendingRequest Api.Object.TransactionRequest
 requestSelection =
     Api.Object.TransactionRequest.selection PendingRequest
-        |> with Api.Object.TransactionRequest.amountInCents
+        |> with (Api.Object.TransactionRequest.amountInCents |> Field.map round)
         |> with Api.Object.TransactionRequest.kind
         |> with (Api.Object.TransactionRequest.account accountSelection)
 
