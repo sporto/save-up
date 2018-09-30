@@ -64,7 +64,7 @@ update context msg page =
 
 view : Context -> Page -> Html Msg
 view context page =
-    section []
+    section [ class "flex flex-col h-full" ]
         [ header_ context
         , currentPage context page
         , Footer.view
