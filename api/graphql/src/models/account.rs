@@ -15,6 +15,7 @@ use validator::Validate;
 
 pub const DEFAULT_YEARLY_INTEREST: u8 = 20;
 pub const ACTIVE: &[u8] = b"ACTIVE";
+pub const ARCHIVED: &[u8] = b"ARCHIVED";
 pub const SAVINGS: &[u8] = b"SAVINGS";
 
 #[derive(Queryable, Associations, Identifiable, Clone)]
@@ -74,12 +75,14 @@ impl FromSql<Text, Pg> for Kind {
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum State {
 	Active,
+	Archived,
 }
 
 impl ToSql<Text, Pg> for State {
 	fn to_sql<W: io::Write>(&self, out: &mut Output<W, Pg>) -> serialize::Result {
 		let _v = match *self {
 			State::Active => out.write_all(ACTIVE)?,
+			State::Archived => out.write_all(ARCHIVED)?,
 		};
 		Ok(IsNull::No)
 	}
@@ -89,6 +92,7 @@ impl FromSql<Text, Pg> for State {
 	fn from_sql(bytes: Option<&[u8]>) -> deserialize::Result<Self> {
 		match not_none!(bytes) {
 			ACTIVE => Ok(State::Active),
+			ARCHIVED => Ok(State::Archived),
 			_ => Err("Unrecognized State variant".into()),
 		}
 	}
