@@ -10,7 +10,7 @@ pub use models::transaction_kind::TransactionKind;
 pub use models::transaction_request_state::TransactionRequestState;
 use validator::Validate;
 
-#[derive(Identifiable, Debug, Queryable, Associations, GraphQLObject, Clone, PartialEq)]
+#[derive(Identifiable, Debug, Queryable, Associations, Clone, PartialEq)]
 #[belongs_to(Account)]
 #[table_name = "transaction_requests"]
 pub struct TransactionRequest {

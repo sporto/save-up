@@ -8,12 +8,26 @@ use graph_common::mutations::failure_to_mutation_errors;
 use graph_common::mutations::MutationError;
 use models::transaction_request::TransactionRequest;
 
-#[derive(GraphQLObject, Clone)]
+#[derive(Clone)]
 pub struct ResolveTransactionRequestResponse {
 	success: bool,
 	errors: Vec<MutationError>,
 	transaction_request: Option<TransactionRequest>,
 }
+
+graphql_object!(ResolveTransactionRequestResponse: AppContext |&self| {
+	field success() -> bool {
+		self.success
+	}
+
+	field errors() -> &Vec<MutationError> {
+		&self.errors
+	}
+
+	field transaction_request() -> &Option<TransactionRequest> {
+		&self.transaction_request
+	}
+});
 
 pub fn call(
 	executor: &Executor<AppContext>,

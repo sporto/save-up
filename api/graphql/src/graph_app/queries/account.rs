@@ -3,12 +3,26 @@ use bigdecimal::ToPrimitive;
 use chrono::NaiveDateTime;
 use graph_app::actions;
 use graph_app::context::AppContext;
+use juniper::{FieldError, FieldResult};
 use models::account::{Account, Kind, State};
 use models::transaction::Transaction;
+use models::user::User;
 
 graphql_object!(Account: AppContext |&self| {
 	field id() -> i32 {
 		self.id
+	}
+
+	field user_id() -> i32 {
+		self.user_id
+	}
+
+	field user(&executor) -> FieldResult<User> {
+		let ctx = &executor.context();
+		let conn = &ctx.conn;
+
+		User::find(conn, self.user_id)
+			.map_err(|e| FieldError::from(e))
 	}
 
 	field name() -> &str {
