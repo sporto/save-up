@@ -3,7 +3,7 @@ use bigdecimal::ToPrimitive;
 use chrono::NaiveDateTime;
 use graph_app::actions;
 use graph_app::context::AppContext;
-use models::account::Account;
+use models::account::{Account, Kind, State};
 use models::transaction::Transaction;
 
 graphql_object!(Account: AppContext |&self| {
@@ -13,6 +13,14 @@ graphql_object!(Account: AppContext |&self| {
 
 	field name() -> &str {
 		self.name.as_str()
+	}
+
+	field kind() -> Kind {
+		self.kind
+	}
+
+	field state() -> State {
+		self.state
 	}
 
 	field balanceInCents(&executor) -> f64 {

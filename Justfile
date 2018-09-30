@@ -1,5 +1,5 @@
 start:
-	hivemind start
+	hivemind
 
 graphiql:
 	hivemind Procfile.graphiql

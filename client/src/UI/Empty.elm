@@ -1,4 +1,4 @@
-module UI.Empty exposing (graphError, loading)
+module UI.Empty exposing (graphError, loading, noData)
 
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -14,4 +14,10 @@ graphError error =
 loading =
     div [ class "my-4 flex justify-center" ]
         [ Icons.spinner
+        ]
+
+
+noData =
+    div [ class "my-4 flex justify-center" ]
+        [ text "Not data found"
         ]

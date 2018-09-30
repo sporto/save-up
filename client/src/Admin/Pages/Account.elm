@@ -832,12 +832,12 @@ accountSelection : SelectionSet Account Api.Object.Account
 accountSelection =
     Api.Object.Account.selection Account
         |> with (Api.Object.Account.balanceInCents |> Field.map round)
-        |> with (Api.Object.Account.transactions { since = 0 } transactionNode)
+        |> with (Api.Object.Account.transactions { since = 0 } transactionSelection)
         |> with Api.Object.Account.yearlyInterest
 
 
-transactionNode : SelectionSet Transaction Api.Object.Transaction
-transactionNode =
+transactionSelection : SelectionSet Transaction Api.Object.Transaction
+transactionSelection =
     Api.Object.Transaction.selection Transaction
         |> with (Api.Object.Transaction.createdAt |> Field.mapOrFail GraphQl.unwrapNaiveDateTime)
         |> with (Api.Object.Transaction.balanceInCents |> Field.map round)
