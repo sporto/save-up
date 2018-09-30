@@ -6,6 +6,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
 import Investor.Pages.Home as Home
+import Investor.Pages.RequestWithdrawal as RequestWithdrawal
 import Shared.Actions as Actions
 import Shared.Globals exposing (..)
 import Shared.Pages.NotFound as NotFound
@@ -19,10 +20,12 @@ import Url exposing (Url)
 
 type Page
     = Page_Home Home.Model
+    | Page_ReqWith RequestWithdrawal.Model
 
 
 type Msg
-    = Msg_PageHome Home.Msg
+    = Msg_Home Home.Msg
+    | Msg_ReqWith RequestWithdrawal.Msg
     | SignOut
 
 
@@ -36,27 +39,50 @@ initCurrentPage context route =
         Routes.RouteInInvestor_Home ->
             Home.init
                 context
-                |> Return.mapAll Page_Home Msg_PageHome
+                |> Return.mapAll Page_Home Msg_Home
+
+        Routes.RouteInInvestor_RequestWithdrawal ->
+            RequestWithdrawal.init
+                context
+                |> Return.mapAll Page_ReqWith Msg_ReqWith
 
 
 subscriptions : Page -> Sub Msg
 subscriptions page =
     case page of
         Page_Home pageModel ->
-            Sub.map Msg_PageHome (Home.subscriptions pageModel)
+            Sub.map Msg_Home (Home.subscriptions pageModel)
+
+        Page_ReqWith pageModel ->
+            Sub.map Msg_ReqWith (RequestWithdrawal.subscriptions pageModel)
 
 
 update : Context -> Msg -> Page -> Returns
 update context msg page =
     case msg of
-        Msg_PageHome sub ->
+        Msg_Home sub ->
             case page of
                 Page_Home pageModel ->
                     Home.update
                         context
                         sub
                         pageModel
-                        |> Return.mapAll Page_Home Msg_PageHome
+                        |> Return.mapAll Page_Home Msg_Home
+
+                _ ->
+                    ( page, Cmd.none, Actions.none )
+
+        Msg_ReqWith sub ->
+            case page of
+                Page_ReqWith pageModel ->
+                    RequestWithdrawal.update
+                        context
+                        sub
+                        pageModel
+                        |> Return.mapAll Page_ReqWith Msg_ReqWith
+
+                _ ->
+                    ( page, Cmd.none, Actions.none )
 
         SignOut ->
             ( page, Cmd.none, Actions.endSession )
@@ -78,6 +104,7 @@ header_ context =
         , div
             [ class "ml-8 flex-grow" ]
             [ navigationLink context Routes.routeForInvestorHome "Home"
+            , navigationLink context Routes.routeForInvestorRequestWithdrawal "Withdraw"
             ]
         , div []
             [ text context.auth.data.name
@@ -114,7 +141,11 @@ currentPage context page =
             case page of
                 Page_Home pageModel ->
                     Home.view context pageModel
-                        |> map Msg_PageHome
+                        |> map Msg_Home
+
+                Page_ReqWith pageModel ->
+                    RequestWithdrawal.view context pageModel
+                        |> map Msg_ReqWith
     in
     section [ class "flex-auto" ]
         [ inner ]

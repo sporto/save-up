@@ -1,4 +1,4 @@
-module Shared.Routes exposing (Route(..), RouteInAdmin(..), RouteInAdminInAccount(..), RouteInInvestor(..), RouteInPublic(..), isInAnyAdminRoute, parseUrl, pathFor, routeForAdminAccountDeposit, routeForAdminAccountShow, routeForAdminAccountWithdraw, routeForAdminCreateInvestor, routeForAdminHome, routeForAdminInviteAdmin, routeForInvestorHome, routeForRequestPasswordReset, routeForSignIn, routeForSignUp)
+module Shared.Routes exposing (Route(..), RouteInAdmin(..), RouteInAdminInAccount(..), RouteInInvestor(..), RouteInPublic(..), isInAnyAdminRoute, parseUrl, pathFor, routeForAdminAccountDeposit, routeForAdminAccountShow, routeForAdminAccountWithdraw, routeForAdminCreateInvestor, routeForAdminHome, routeForAdminInviteAdmin, routeForInvestorHome, routeForInvestorRequestWithdrawal, routeForRequestPasswordReset, routeForSignIn, routeForSignUp)
 
 import Url exposing (Url)
 import Url.Parser exposing (..)
@@ -34,6 +34,7 @@ type RouteInAdminInAccount
 
 type RouteInInvestor
     = RouteInInvestor_Home
+    | RouteInInvestor_RequestWithdrawal
 
 
 matchers : Parser (Route -> a) a
@@ -74,6 +75,7 @@ matchersForInvestor : Parser (RouteInInvestor -> a) a
 matchersForInvestor =
     oneOf
         [ map RouteInInvestor_Home top
+        , map RouteInInvestor_RequestWithdrawal (s segWithdraw)
         ]
 
 
@@ -159,6 +161,9 @@ pathForInvestorRoute route =
     case route of
         RouteInInvestor_Home ->
             ""
+
+        RouteInInvestor_RequestWithdrawal ->
+            segWithdraw
 
 
 segSignIn =
@@ -282,3 +287,8 @@ routeForAdminAccountWithdraw id =
 routeForInvestorHome : Route
 routeForInvestorHome =
     Route_Investor RouteInInvestor_Home
+
+
+routeForInvestorRequestWithdrawal : Route
+routeForInvestorRequestWithdrawal =
+    Route_Investor RouteInInvestor_RequestWithdrawal
