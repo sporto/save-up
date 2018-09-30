@@ -8,7 +8,9 @@ import Api.Object.Admin
 import Api.Object.ChangeAccountInterestResponse
 import Api.Object.DepositResponse
 import Api.Object.Transaction
+import Api.Object.WithdrawalResponse
 import Api.Query
+import Browser.Navigation as Nav
 import Graphql.Field as Field
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)
@@ -52,7 +54,7 @@ newModel accountID subPage =
 type SubPage
     = SubPage_Top TopModel
     | SubPage_Deposit DepositModel
-    | SubPage_Withdraw
+    | SubPage_Withdraw WithdrawModel
 
 
 type alias TopModel =
@@ -97,6 +99,13 @@ type alias DepositModel =
     }
 
 
+type alias WithdrawModel =
+    { form : WithdrawForm
+    , response : GraphData WithdrawalResponse
+    , validationErrors : Maybe ( ValidationError, List ValidationError )
+    }
+
+
 type alias ValidationError =
     ( Field, String )
 
@@ -132,10 +141,38 @@ asAmountInDepositForm form amount =
     { form | amount = amount }
 
 
+newWithdrawModel : WithdrawModel
+newWithdrawModel =
+    { form =
+        { amount = ""
+        }
+    , response = RemoteData.NotAsked
+    , validationErrors = Nothing
+    }
+
+
+asFormInWithdrawModel model form =
+    { model | form = form }
+
+
+type alias WithdrawForm =
+    { amount : String }
+
+
+type alias VerifiedWithdrawForm =
+    { amount : Int
+    }
+
+
+asAmountInWithdrawForm form amount =
+    { form | amount = amount }
+
+
 type Msg
     = NoOp
     | Msg_Top TopMsg
     | Msg_Desposit DepositMsg
+    | Msg_Withdraw WithdrawMsg
     | OnAccountData (GraphResponse Account)
 
 
@@ -151,6 +188,12 @@ type DepositMsg
     = OnDepositResponse (GraphResponse DepositResponse)
     | ChangeDepositAmount String
     | SubmitDeposit
+
+
+type WithdrawMsg
+    = OnWithdrawalResponse (GraphResponse WithdrawalResponse)
+    | ChangeWithdrawAmount String
+    | SubmitWithdraw
 
 
 type alias Returns =
@@ -169,7 +212,7 @@ init context accountID route =
                     ( SubPage_Deposit newDepositModel, Cmd.none )
 
                 Routes.RouteInAdminInAccount_Withdraw ->
-                    ( SubPage_Withdraw, Cmd.none )
+                    ( SubPage_Withdraw newWithdrawModel, Cmd.none )
     in
     ( newModel accountID subPage
     , cmd
@@ -214,6 +257,21 @@ update context msg model =
                         |> Return3.mapAll
                             (\p -> { model | subPage = SubPage_Deposit p })
                             Msg_Desposit
+
+                _ ->
+                    ( model, Cmd.none, Actions.none )
+
+        Msg_Withdraw subMsg ->
+            case model.subPage of
+                SubPage_Withdraw subModel ->
+                    updateWithdraw
+                        context
+                        model.accountID
+                        subMsg
+                        subModel
+                        |> Return3.mapAll
+                            (\p -> { model | subPage = SubPage_Withdraw p })
+                            Msg_Withdraw
 
                 _ ->
                     ( model, Cmd.none, Actions.none )
@@ -375,7 +433,7 @@ updateDeposit context accountID msg model =
                                 ""
                                     |> asAmountInDepositForm model.form
                           }
-                        , Cmd.none
+                        , Nav.pushUrl context.navKey (Routes.pathFor <| Routes.routeForAdminAccountShow accountID)
                         , Actions.addSuccessNotification
                             "Deposit sucessful"
                         )
@@ -394,6 +452,66 @@ updateDeposit context accountID msg model =
                         , validationErrors = Nothing
                       }
                     , depositMutationCmd
+                        context
+                        accountID
+                        (form.amount * 100)
+                    , Actions.none
+                    )
+
+                Err errors ->
+                    ( { model | validationErrors = Just errors }
+                    , Cmd.none
+                    , Actions.none
+                    )
+
+
+updateWithdraw : Context -> ID -> WithdrawMsg -> WithdrawModel -> ( WithdrawModel, Cmd WithdrawMsg, Actions WithdrawMsg )
+updateWithdraw context accountID msg model =
+    case msg of
+        ChangeWithdrawAmount amount ->
+            ( amount
+                |> asAmountInWithdrawForm model.form
+                |> asFormInWithdrawModel model
+            , Cmd.none
+            , Actions.none
+            )
+
+        OnWithdrawalResponse result ->
+            case result of
+                Err e ->
+                    ( { model | response = RemoteData.Failure e }
+                    , Cmd.none
+                    , Actions.addErrorNotification
+                        "Something went wrong"
+                    )
+
+                Ok response ->
+                    if response.success then
+                        ( { model
+                            | response = RemoteData.Success response
+                            , form =
+                                ""
+                                    |> asAmountInWithdrawForm model.form
+                          }
+                        , Nav.pushUrl context.navKey (Routes.pathFor <| Routes.routeForAdminAccountShow accountID)
+                        , Actions.addSuccessNotification
+                            "Withdrawal sucessful"
+                        )
+
+                    else
+                        ( { model | response = RemoteData.Success response }
+                        , Cmd.none
+                        , Actions.none
+                        )
+
+        SubmitWithdraw ->
+            case validateWithdraw model.form of
+                Ok form ->
+                    ( { model
+                        | response = RemoteData.Loading
+                        , validationErrors = Nothing
+                      }
+                    , withdrawMutationCmd
                         context
                         accountID
                         (form.amount * 100)
@@ -458,10 +576,11 @@ currentPage context model =
                 depositModel
                 |> map Msg_Desposit
 
-        SubPage_Withdraw ->
-            div [ class molecules.page.container ]
-                [ h1 [ class molecules.page.title ] [ text "Make a withdrawal" ]
-                ]
+        SubPage_Withdraw subModel ->
+            withdraw
+                context
+                subModel
+                |> map Msg_Withdraw
 
 
 
@@ -596,12 +715,65 @@ formFieldsDeposit model =
 
 
 
+-- Withdraw Views
+
+
+withdraw : Context -> WithdrawModel -> Html WithdrawMsg
+withdraw context model =
+    div [ class molecules.page.container, class "flex justify-center" ]
+        [ div [ style "width" "24rem" ]
+            [ Forms.form_ (formArgsWithdraw model) ]
+        ]
+
+
+formArgsWithdraw : WithdrawModel -> Forms.Args WithdrawalResponse WithdrawMsg
+formArgsWithdraw model =
+    { title = "Make a withdrawal"
+    , intro = Nothing
+    , submitContent = submitContentWithdraw
+    , fields = formFieldsWithdraw model
+    , onSubmit = SubmitWithdraw
+    , response = model.response
+    }
+
+
+submitContentWithdraw =
+    [ span [ class "mr-2" ] [ Icons.withdraw ]
+    , text "Withdraw"
+    ]
+
+
+formFieldsWithdraw : WithdrawModel -> List (Html WithdrawMsg)
+formFieldsWithdraw model =
+    [ Forms.set
+        Field_Amount
+        "Amount"
+        (input
+            [ class molecules.form.input
+            , onInput ChangeWithdrawAmount
+            , type_ "number"
+            , name "amount"
+            , value model.form.amount
+            ]
+            []
+        )
+        model.validationErrors
+    ]
+
+
+
 -- Verify deposit
 
 
 validateDeposit : Validator ValidationError DepositForm VerifiedDepositForm
 validateDeposit =
     validate VerifiedDepositForm
+        |> verify .amount (validateAmount ( Field_Amount, "Invalid amount" ))
+
+
+validateWithdraw : Validator ValidationError WithdrawForm VerifiedWithdrawForm
+validateWithdraw =
+    validate VerifiedWithdrawForm
         |> verify .amount (validateAmount ( Field_Amount, "Invalid amount" ))
 
 
@@ -659,6 +831,10 @@ transactionNode =
         |> with (Api.Object.Transaction.balanceInCents |> Field.map round)
 
 
+
+-- Deposit
+
+
 type alias DepositResponse =
     { success : Bool
     , errors : List MutationError
@@ -689,6 +865,42 @@ depositResponseSelection =
     Api.Object.DepositResponse.selection DepositResponse
         |> with Api.Object.DepositResponse.success
         |> with (Api.Object.DepositResponse.errors GraphQl.mutationErrorSelection)
+
+
+
+-- Withdrawal
+
+
+type alias WithdrawalResponse =
+    { success : Bool
+    , errors : List MutationError
+    }
+
+
+withdrawMutationCmd : Context -> ID -> Int -> Cmd WithdrawMsg
+withdrawMutationCmd context accountID cents =
+    GraphQl.sendMutation
+        context
+        "create-withdrawal"
+        (withdrawMutation accountID cents)
+        OnWithdrawalResponse
+
+
+withdrawMutation : ID -> Int -> SelectionSet WithdrawalResponse RootMutation
+withdrawMutation accountID cents =
+    Api.Mutation.selection identity
+        |> with
+            (Api.Mutation.withdraw
+                { input = { accountId = accountID, cents = cents } }
+                withdrawResponseSelection
+            )
+
+
+withdrawResponseSelection : SelectionSet WithdrawalResponse Api.Object.WithdrawalResponse
+withdrawResponseSelection =
+    Api.Object.WithdrawalResponse.selection WithdrawalResponse
+        |> with Api.Object.WithdrawalResponse.success
+        |> with (Api.Object.WithdrawalResponse.errors GraphQl.mutationErrorSelection)
 
 
 
