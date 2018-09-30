@@ -5,6 +5,7 @@ use diesel;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
+use models::client::Client;
 use regex::Regex;
 use validator::Validate;
 
@@ -12,7 +13,9 @@ lazy_static! {
 	pub static ref USERNAME_RE: Regex = Regex::new(r"^[A-Za-z0-9]+(?:[_-][A-Za-z0-9]+)*$").unwrap();
 }
 
-#[derive(Queryable, Debug, Clone)]
+#[derive(Queryable, Associations, Identifiable, Debug, Clone)]
+#[belongs_to(Client)]
+#[table_name = "users"]
 pub struct User {
 	pub id: i32,
 	pub created_at: NaiveDateTime,

@@ -9,16 +9,17 @@ use diesel::pg::PgConnection;
 #[allow(dead_code)]
 const RESOURCE_KIND: &'static str = "client";
 
-#[derive(Insertable)]
+#[derive(Queryable, Identifiable, GraphQLObject)]
 #[table_name = "clients"]
-pub struct ClientAttrs {
-	pub name: String,
-}
-
-#[derive(Queryable, GraphQLObject)]
 pub struct Client {
 	pub id: i32,
 	pub created_at: NaiveDateTime,
+	pub name: String,
+}
+
+#[derive(Insertable)]
+#[table_name = "clients"]
+pub struct ClientAttrs {
 	pub name: String,
 }
 

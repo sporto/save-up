@@ -3,11 +3,13 @@ use chrono_tz::Australia;
 use diesel::prelude::*;
 use graph_app::actions;
 use graph_app::context::AppContext;
-// use graph_app::queries::*;
 use juniper::{FieldError, FieldResult};
 use models::account::Account;
+use models::client::Client;
 use models::role::Role;
 use models::schema as db;
+use models::transaction_request::TransactionRequest;
+use models::transaction_request_state::TransactionRequestState;
 use models::user::User;
 
 pub struct AppQueryRoot;
@@ -96,6 +98,25 @@ graphql_object!(Admin: AppContext |&self| {
 		};
 
 		Account::find(conn, id)
+			.map_err(|e| FieldError::from(e))
+	}
+
+	field pending_requests(&executor) -> FieldResult<Vec<TransactionRequest>> {
+		let ctx = &executor.context();
+		let conn = &ctx.conn;
+		let current_user = &ctx.user;
+
+		let client = db::clients::table.find(current_user.client_id).first::<Client>(conn)?;
+
+		let users = User::belonging_to(&client).load::<User>(conn)?;
+
+		let accounts = Account::belonging_to(&users).load::<Account>(conn)?;
+
+		let is_pending = db::transaction_requests::state.eq(TransactionRequestState::Pending);
+
+		TransactionRequest::belonging_to(&accounts)
+			.filter(is_pending)
+			.get_results(conn)
 			.map_err(|e| FieldError::from(e))
 	}
 

@@ -9,6 +9,7 @@ use diesel::result::Error;
 use diesel::serialize::{self, IsNull, Output, ToSql};
 use diesel::sql_types::*;
 use models::schema::accounts;
+use models::user::User;
 use std::io;
 use validator::Validate;
 
@@ -16,7 +17,9 @@ pub const DEFAULT_YEARLY_INTEREST: u8 = 20;
 pub const ACTIVE: &[u8] = b"ACTIVE";
 pub const SAVINGS: &[u8] = b"SAVINGS";
 
-#[derive(Queryable, Clone)]
+#[derive(Queryable, Associations, Identifiable, Clone)]
+#[belongs_to(User)]
+#[table_name = "accounts"]
 pub struct Account {
 	pub id: i32,
 	pub created_at: NaiveDateTime,

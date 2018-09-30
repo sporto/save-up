@@ -1,16 +1,18 @@
 use chrono::NaiveDateTime;
 use diesel;
-// use diesel::pg::Pg;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::result::Error;
+use models::account::Account;
 use models::cents::Cents;
 use models::schema::transaction_requests;
 pub use models::transaction_kind::TransactionKind;
 pub use models::transaction_request_state::TransactionRequestState;
 use validator::Validate;
 
-#[derive(Debug, Queryable, GraphQLObject, Clone, PartialEq)]
+#[derive(Identifiable, Debug, Queryable, Associations, GraphQLObject, Clone, PartialEq)]
+#[belongs_to(Account)]
+#[table_name = "transaction_requests"]
 pub struct TransactionRequest {
 	pub id: i32,
 	pub created_at: NaiveDateTime,

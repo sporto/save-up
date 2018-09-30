@@ -1,7 +1,4 @@
-use juniper::FieldResult;
-
 use graph_app::context::AppContext;
-use graph_app::mutations;
 use graph_app::mutations::archive_user::{self, ArchiveUserResponse};
 use graph_app::mutations::change_interest::{
 	self, ChangeAccountInterestInput, ChangeAccountInterestResponse,
@@ -17,6 +14,7 @@ use graph_app::mutations::resolve_transaction_request::{
 };
 use graph_app::mutations::unarchive_user::{self, UnarchiveUserResponse};
 use graph_app::mutations::withdraw::{self, WithdrawalInput, WithdrawalResponse};
+use juniper::FieldResult;
 
 pub struct AppMutationRoot;
 
