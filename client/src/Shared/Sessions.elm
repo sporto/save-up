@@ -57,7 +57,8 @@ tokenDecoder =
     Decode.succeed TokenData
         |> P.required "exp" decodeExp
         |> P.required "userId" Decode.int
-        |> P.required "email" Decode.string
+        |> P.required "username" Decode.string
+        |> P.required "email" (Decode.nullable Decode.string)
         |> P.required "name" Decode.string
         |> P.required "role" decodeRole
 
@@ -132,7 +133,11 @@ startSession token model navigate =
             )
 
         Nothing ->
-            ( model, Cmd.none, Actions.none )
+            ( model
+            , Cmd.none
+            , Actions.addErrorNotification
+                "Unable to start session"
+            )
 
 
 endSession : Model a -> (Routes.Route -> msg) -> ( Model a, Cmd msg, Actions msg )

@@ -40,7 +40,8 @@ type alias Authentication =
 type alias TokenData =
     { exp : Posix
     , userId : Int
-    , email : String
+    , username : String
+    , email : Maybe String
     , name : String
     , role : Role
     }

@@ -9,16 +9,17 @@ import Time
 
 
 token =
-    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InNAcG9ydG81LmNvbSIsImV4cCI6MTU2NzkwNTgzNSwibmFtZSI6IlNlYmFzdGlhbiIsInJvbGUiOiJBRE1JTiIsInVzZXJJZCI6MX0.oM_g37Kyx4Jpy_BkCSxa1WkPr5oTyrZaPpj6qm0mlbI"
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6bnVsbCwiZXhwIjoxNTY5NzI0OTI3LCJuYW1lIjoiS2ltIiwicm9sZSI6IklOVkVTVE9SIiwidXNlcklkIjo3LCJ1c2VybmFtZSI6ImtpbW15In0.ZoL3jWqu6CBsDqnhHiPMkdOzhPfGD9LUTA1eyHcMcOI"
 
 
 decodedToken : TokenData
 decodedToken =
-    { exp = Time.millisToPosix 1567905835000
-    , userId = 1
-    , email = "s@porto5.com"
-    , name = "Sebastian"
-    , role = Admin
+    { exp = Time.millisToPosix 1569724927000
+    , email = Nothing
+    , name = "Kim"
+    , role = Investor
+    , userId = 7
+    , username = "kimmy"
     }
 
 
