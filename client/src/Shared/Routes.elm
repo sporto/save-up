@@ -34,7 +34,7 @@ type RouteInAdminInAccount
 
 type RouteInInvestor
     = RouteInInvestor_Home
-    | RouteInInvestor_RequestWithdrawal
+    | RouteInInvestor_RequestWithdrawal Int
 
 
 matchers : Parser (Route -> a) a
@@ -75,7 +75,7 @@ matchersForInvestor : Parser (RouteInInvestor -> a) a
 matchersForInvestor =
     oneOf
         [ map RouteInInvestor_Home top
-        , map RouteInInvestor_RequestWithdrawal (s segWithdraw)
+        , map RouteInInvestor_RequestWithdrawal (s segAccounts </> int </> s segWithdraw)
         ]
 
 
@@ -162,8 +162,16 @@ pathForInvestorRoute route =
         RouteInInvestor_Home ->
             ""
 
-        RouteInInvestor_RequestWithdrawal ->
-            segWithdraw
+        RouteInInvestor_RequestWithdrawal id ->
+            segAccounts ++ "/" ++ String.fromInt id ++ "/" ++ segWithdraw
+
+
+segAccounts =
+    "accounts"
+
+
+segAdmin =
+    "admin"
 
 
 segSignIn =
@@ -180,14 +188,6 @@ segInvitation =
 
 segBasepath =
     "a"
-
-
-segAdmin =
-    "admin"
-
-
-segAccounts =
-    "accounts"
 
 
 segInvestor =
@@ -289,6 +289,6 @@ routeForInvestorHome =
     Route_Investor RouteInInvestor_Home
 
 
-routeForInvestorRequestWithdrawal : Route
-routeForInvestorRequestWithdrawal =
-    Route_Investor RouteInInvestor_RequestWithdrawal
+routeForInvestorRequestWithdrawal : Int -> Route
+routeForInvestorRequestWithdrawal id =
+    Route_Investor (RouteInInvestor_RequestWithdrawal id)

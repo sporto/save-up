@@ -1,4 +1,4 @@
-module UI.Forms exposing (Args, form_, isValidEmail, mustBeEmail, mutationError, set, verifyEmail, verifyName, verifyPassword, verifyUsername)
+module UI.Forms exposing (Args, form_, isValidEmail, mustBeEmail, mutationError, set, validateAmount, verifyEmail, verifyName, verifyPassword, verifyUsername)
 
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -208,3 +208,17 @@ verifyPassword : field -> Validator ( field, String ) String String
 verifyPassword field =
     String.Verify.notBlank ( field, "Enter a password" )
         |> Verify.compose (String.Verify.minLength 8 ( field, "Enter at least 8 characters" ))
+
+
+validateAmount : error -> Validator error String Int
+validateAmount error input =
+    case String.toInt input of
+        Just int ->
+            if int > 0 then
+                Ok int
+
+            else
+                Err ( error, [] )
+
+        Nothing ->
+            Err ( error, [] )

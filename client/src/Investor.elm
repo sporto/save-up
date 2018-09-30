@@ -41,9 +41,10 @@ initCurrentPage context route =
                 context
                 |> Return.mapAll Page_Home Msg_Home
 
-        Routes.RouteInInvestor_RequestWithdrawal ->
+        Routes.RouteInInvestor_RequestWithdrawal id ->
             RequestWithdrawal.init
                 context
+                id
                 |> Return.mapAll Page_ReqWith Msg_ReqWith
 
 
@@ -104,7 +105,6 @@ header_ context =
         , div
             [ class "ml-8 flex-grow" ]
             [ navigationLink context Routes.routeForInvestorHome "Home"
-            , navigationLink context Routes.routeForInvestorRequestWithdrawal "Withdraw"
             ]
         , div []
             [ text context.auth.data.name

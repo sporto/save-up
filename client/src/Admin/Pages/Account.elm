@@ -780,27 +780,13 @@ formFieldsWithdraw model =
 validateDeposit : Validator ValidationError DepositForm VerifiedDepositForm
 validateDeposit =
     validate VerifiedDepositForm
-        |> verify .amount (validateAmount ( Field_Amount, "Invalid amount" ))
+        |> verify .amount (Forms.validateAmount ( Field_Amount, "Invalid amount" ))
 
 
 validateWithdraw : Validator ValidationError WithdrawForm VerifiedWithdrawForm
 validateWithdraw =
     validate VerifiedWithdrawForm
-        |> verify .amount (validateAmount ( Field_Amount, "Invalid amount" ))
-
-
-validateAmount : error -> Validator error String Int
-validateAmount error input =
-    case String.toInt input of
-        Just int ->
-            if int > 0 then
-                Ok int
-
-            else
-                Err ( error, [] )
-
-        Nothing ->
-            Err ( error, [] )
+        |> verify .amount (Forms.validateAmount ( Field_Amount, "Invalid amount" ))
 
 
 

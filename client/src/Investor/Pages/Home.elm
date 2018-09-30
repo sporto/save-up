@@ -16,6 +16,7 @@ import Shared.Actions as Actions
 import Shared.Css exposing (molecules)
 import Shared.Globals exposing (..)
 import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse, MutationError)
+import Shared.Routes as Routes
 import Time exposing (Posix)
 import UI.AccountInfo as AccountInfo
 import UI.Chart as Chart
@@ -125,7 +126,18 @@ accountView account =
     in
     div [ class "mt-4" ]
         [ info
+        , actions account
         , Chart.view account.transactions
+        ]
+
+
+actions account =
+    p [ class "my-4" ]
+        [ a
+            [ class molecules.button.primary
+            , href (Routes.pathFor (Routes.routeForInvestorRequestWithdrawal account.id))
+            ]
+            [ text "Request a withdrawal" ]
         ]
 
 
