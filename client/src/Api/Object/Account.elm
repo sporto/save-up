@@ -2,8 +2,10 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.Account exposing (TransactionsRequiredArguments, balanceInCents, id, name, selection, transactions, yearlyInterest)
+module Api.Object.Account exposing (TransactionsRequiredArguments, balanceInCents, id, kind, name, selection, state, transactions, user, userId, yearlyInterest)
 
+import Api.Enum.Kind
+import Api.Enum.State
 import Api.InputObject
 import Api.Interface
 import Api.Object
@@ -30,9 +32,29 @@ id =
     Object.fieldDecoder "id" [] Decode.int
 
 
+userId : Field Int Api.Object.Account
+userId =
+    Object.fieldDecoder "userId" [] Decode.int
+
+
+user : SelectionSet decodesTo Api.Object.User -> Field decodesTo Api.Object.Account
+user object_ =
+    Object.selectionField "user" [] object_ identity
+
+
 name : Field String Api.Object.Account
 name =
     Object.fieldDecoder "name" [] Decode.string
+
+
+kind : Field Api.Enum.Kind.Kind Api.Object.Account
+kind =
+    Object.fieldDecoder "kind" [] Api.Enum.Kind.decoder
+
+
+state : Field Api.Enum.State.State Api.Object.Account
+state =
+    Object.fieldDecoder "state" [] Api.Enum.State.decoder
 
 
 balanceInCents : Field Float Api.Object.Account

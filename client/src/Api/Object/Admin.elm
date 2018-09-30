@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.Admin exposing (AccountRequiredArguments, account, investors, selection)
+module Api.Object.Admin exposing (AccountRequiredArguments, account, investors, pendingRequests, selection)
 
 import Api.InputObject
 import Api.Interface
@@ -37,3 +37,8 @@ type alias AccountRequiredArguments =
 account : AccountRequiredArguments -> SelectionSet decodesTo Api.Object.Account -> Field decodesTo Api.Object.Admin
 account requiredArgs object_ =
     Object.selectionField "account" [ Argument.required "id" requiredArgs.id Encode.int ] object_ identity
+
+
+pendingRequests : SelectionSet decodesTo Api.Object.TransactionRequest -> Field (List decodesTo) Api.Object.Admin
+pendingRequests object_ =
+    Object.selectionField "pendingRequests" [] object_ (identity >> Decode.list)
