@@ -77,7 +77,7 @@ header_ context =
         [ Navigation.logo
         , div
             [ class "ml-8 flex-grow" ]
-            [ navigationLink Routes.routeForInvestorHome "Home"
+            [ navigationLink context Routes.routeForInvestorHome "Home"
             ]
         , div []
             [ text context.auth.data.name
@@ -86,11 +86,23 @@ header_ context =
         ]
 
 
-navigationLink : Route -> String -> Html Msg
-navigationLink route label =
+navigationLink : Context -> Route -> String -> Html Msg
+navigationLink context route label =
+    let
+        isCurrent =
+            route == context.currentLocation.route
+
+        currentClass =
+            if isCurrent then
+                "font-extrabold"
+
+            else
+                ""
+    in
     a
         [ href (Routes.pathFor route)
         , class "text-white mr-4 no-underline"
+        , class currentClass
         ]
         [ text label ]
 
