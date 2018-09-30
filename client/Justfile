@@ -24,3 +24,5 @@ build:
 start:
 	npx parcel -p 8080 src/app.html
 
+graphiql:
+	npx parcel -p 8090 src/graphiql.html
