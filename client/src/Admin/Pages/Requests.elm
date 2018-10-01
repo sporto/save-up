@@ -28,6 +28,7 @@ import Shared.Routes as Routes
 import String.Verify
 import Time exposing (Posix)
 import UI.Chart as Chart
+import UI.ConfirmButton as ConfirmButton
 import UI.Empty as Empty
 import UI.Flash as Flash
 import UI.Forms as Forms
@@ -37,16 +38,23 @@ import Verify exposing (Validator, validate, verify)
 
 type Msg
     = OnData (GraphResponse Data)
+    | Approve_Click Int
+    | Approve_Commit Int
+    | Reject_Click Int
+    | Reject_Commit Int
+    | AproveOrReject_Cancel
 
 
 type alias Model =
     { data : GraphData Data
+    , confirmButton : Maybe RequestAction
     }
 
 
 newModel : Model
 newModel =
     { data = RemoteData.NotAsked
+    , confirmButton = Nothing
     }
 
 
@@ -55,8 +63,14 @@ type alias Data =
     }
 
 
+type RequestAction
+    = RequestAction_Approve Int
+    | RequestAction_Reject Int
+
+
 type alias PendingRequest =
-    { amountInCents : Int
+    { id : Int
+    , amountInCents : Int
     , kind : TransactionKind
     , user : String
     }
@@ -94,6 +108,36 @@ update context msg model =
                     , Actions.none
                     )
 
+        Approve_Click id ->
+            ( { model | confirmButton = Just (RequestAction_Approve id) }
+            , Cmd.none
+            , Actions.none
+            )
+
+        Approve_Commit id ->
+            ( model
+            , Cmd.none
+            , Actions.none
+            )
+
+        Reject_Click id ->
+            ( { model | confirmButton = Just (RequestAction_Reject id) }
+            , Cmd.none
+            , Actions.none
+            )
+
+        Reject_Commit id ->
+            ( model
+            , Cmd.none
+            , Actions.none
+            )
+
+        AproveOrReject_Cancel ->
+            ( { model | confirmButton = Nothing }
+            , Cmd.none
+            , Actions.none
+            )
+
 
 view : Context -> Model -> Html Msg
 view context model =
@@ -125,12 +169,15 @@ viewWithData context model data =
         Empty.noData
 
     else
-        div [] (List.map requestView data.pendingRequests)
+        div [] (List.map (requestView model) data.pendingRequests)
 
 
-requestView : PendingRequest -> Html Msg
-requestView request =
+requestView : Model -> PendingRequest -> Html Msg
+requestView model request =
     let
+        id =
+            request.id
+
         name =
             div [ class "text-2xl" ] [ text request.user ]
 
@@ -147,9 +194,43 @@ requestView request =
 
         actions =
             div []
-                [ button [ class molecules.button.secondary ] [ text "Approve" ]
-                , button [ class molecules.button.secondary, class "ml-2" ] [ text "Deny" ]
+                [ btnApprove
+                , span [ class "ml-2" ] [ btnReject ]
                 ]
+
+        btnApprove =
+            ConfirmButton.view
+                "Approve"
+                btnApproveArgs
+                btnApproveState
+
+        btnReject =
+            ConfirmButton.view
+                "Reject"
+                btnRejectArgs
+                btnRejectState
+
+        btnApproveArgs =
+            { click = Approve_Click id
+            , commit = Approve_Commit id
+            , cancel = AproveOrReject_Cancel
+            }
+
+        btnRejectArgs =
+            { click = Reject_Click id
+            , commit = Reject_Commit id
+            , cancel = AproveOrReject_Cancel
+            }
+
+        btnApproveState =
+            btnStateFor
+                model
+                (RequestAction_Approve id)
+
+        btnRejectState =
+            btnStateFor
+                model
+                (RequestAction_Reject id)
 
         left =
             div [ class "flex items-center" ]
@@ -159,6 +240,20 @@ requestView request =
     in
     div [ class "border p-4 rounded shadow-md mb-6 flex justify-between" ]
         [ left, actions ]
+
+
+btnStateFor : Model -> RequestAction -> ConfirmButton.State
+btnStateFor model action =
+    case model.confirmButton of
+        Nothing ->
+            ConfirmButton.Initial
+
+        Just selectedAction ->
+            if selectedAction == action then
+                ConfirmButton.Engaged
+
+            else
+                ConfirmButton.Initial
 
 
 
@@ -189,6 +284,7 @@ adminNode =
 requestSelection : SelectionSet PendingRequest Api.Object.TransactionRequest
 requestSelection =
     Api.Object.TransactionRequest.selection PendingRequest
+        |> with Api.Object.TransactionRequest.id
         |> with (Api.Object.TransactionRequest.amountInCents |> Field.map round)
         |> with Api.Object.TransactionRequest.kind
         |> with (Api.Object.TransactionRequest.account accountSelection)

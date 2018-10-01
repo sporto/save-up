@@ -1,54 +1,33 @@
-module UI.ConfirmButton exposing (Model, Msg, view)
+module UI.ConfirmButton exposing (Args, State(..), view)
 
 import Html exposing (..)
 import Html.Events exposing (onClick)
 
 
-type alias Model =
-    { state : State }
+type alias Args msg =
+    { click : msg
+    , commit : msg
+    , cancel : msg
+    }
 
 
 type State
-    = State_Intial
-    | State_Engaged
+    = Initial
+    | Engaged
 
 
-type Msg
-    = Click
-    | Cancel
-    | Commit
-
-
-init : String -> Model
-init id =
-    { state = State_Intial }
-
-
-update : Msg -> Model -> Model
-update msg model =
-    case msg of
-        Click ->
-            { model | state = State_Engaged }
-
-        Cancel ->
-            { model | state = State_Intial }
-
-        Commit ->
-            { model | state = State_Intial }
-
-
-view : Model -> String -> Html Msg
-view model label =
-    case model.state of
-        State_Intial ->
+view : String -> Args msg -> State -> Html msg
+view label args state =
+    case state of
+        Initial ->
             div []
-                [ button [ onClick Click ]
+                [ button [ onClick args.click ]
                     [ text label
                     ]
                 ]
 
-        State_Engaged ->
+        Engaged ->
             div []
-                [ button [ onClick Commit ] [ text "Yes" ]
-                , button [ onClick Cancel ] [ text "Cancel" ]
+                [ button [ onClick args.commit ] [ text "Yes" ]
+                , button [ onClick args.cancel ] [ text "Cancel" ]
                 ]
