@@ -28,6 +28,7 @@ type Page
     | Page_Account Account.Model
     | Page_InviteAdmin InviteAdmin.Model
     | Page_CreateInvestor CreateInvestor.Model
+    | Page_Requests Requests.Model
 
 
 type Msg
@@ -35,6 +36,7 @@ type Msg
     | Msg_PageHome Home.Msg
     | Msg_PageInviteAdmin InviteAdmin.Msg
     | Msg_PageCreateInvestor CreateInvestor.Msg
+    | Msg_Requests Requests.Msg
     | SignOut
 
 
@@ -65,6 +67,11 @@ initCurrentPage context adminRoute =
             CreateInvestor.init
                 |> Return.mapAll Page_CreateInvestor Msg_PageCreateInvestor
 
+        Routes.RouteInAdmin_Requests ->
+            Requests.init
+                context
+                |> Return.mapAll Page_Requests Msg_Requests
+
 
 subscriptions : Page -> Sub Msg
 subscriptions page =
@@ -80,6 +87,9 @@ subscriptions page =
 
         Page_CreateInvestor pageModel ->
             Sub.map Msg_PageCreateInvestor (CreateInvestor.subscriptions pageModel)
+
+        Page_Requests pageModel ->
+            Sub.map Msg_Requests (Requests.subscriptions pageModel)
 
 
 update : Context -> Msg -> Page -> Returns
@@ -133,6 +143,18 @@ update context msg page =
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
+        Msg_Requests sub ->
+            case page of
+                Page_Requests pageModel ->
+                    Requests.update
+                        context
+                        sub
+                        pageModel
+                        |> Return.mapAll Page_Requests Msg_Requests
+
+                _ ->
+                    ( page, Cmd.none, Actions.none )
+
         SignOut ->
             ( page, Cmd.none, Actions.endSession )
 
@@ -155,6 +177,7 @@ header_ context =
             [ navigationLink context Routes.routeForAdminHome "Home"
             , navigationLink context Routes.routeForAdminInviteAdmin "Invite admin"
             , navigationLink context Routes.routeForAdminCreateInvestor "Create investor"
+            , navigationLink context Routes.routeForAdminRequests "Requests"
             ]
         , div []
             [ text context.auth.data.name
@@ -204,6 +227,10 @@ currentPage context adminPage =
                 Page_CreateInvestor pageModel ->
                     CreateInvestor.view context pageModel
                         |> map Msg_PageCreateInvestor
+
+                Page_Requests pageModel ->
+                    Requests.view context pageModel
+                        |> map Msg_Requests
     in
     section [ class "flex-auto" ]
         [ page ]

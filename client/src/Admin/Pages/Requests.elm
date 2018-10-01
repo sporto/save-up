@@ -113,8 +113,8 @@ view context model =
                     viewWithData context model data
     in
     section
-        [ class molecules.page.container, class "flex justify-center" ]
-        [ h1 [ class molecules.page.title ] [ text "Welcome" ]
+        [ class molecules.page.container ]
+        [ h1 [ class molecules.page.title, class "mb-4" ] [ text "Pending requests" ]
         , inner
         ]
 
@@ -132,7 +132,7 @@ requestView : PendingRequest -> Html Msg
 requestView request =
     let
         name =
-            div [] [ text request.user ]
+            div [ class "text-2xl" ] [ text request.user ]
 
         amount =
             div []
@@ -148,16 +148,16 @@ requestView request =
         actions =
             div []
                 [ button [ class molecules.button.secondary ] [ text "Approve" ]
-                , button [ class molecules.button.secondary ] [ text "Deny" ]
+                , button [ class molecules.button.secondary, class "ml-2" ] [ text "Deny" ]
                 ]
 
         left =
             div [ class "flex items-center" ]
                 [ name
-                , amount
+                , span [ class "ml-6" ] [ amount ]
                 ]
     in
-    div [ class "mb-6 flex justify-between" ]
+    div [ class "border p-4 rounded shadow-md mb-6 flex justify-between" ]
         [ left, actions ]
 
 

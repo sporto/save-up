@@ -1,4 +1,4 @@
-module Shared.Routes exposing (Route(..), RouteInAdmin(..), RouteInAdminInAccount(..), RouteInInvestor(..), RouteInPublic(..), isInAnyAdminRoute, parseUrl, pathFor, routeForAdminAccountDeposit, routeForAdminAccountShow, routeForAdminAccountWithdraw, routeForAdminCreateInvestor, routeForAdminHome, routeForAdminInviteAdmin, routeForInvestorHome, routeForInvestorRequestWithdrawal, routeForRequestPasswordReset, routeForSignIn, routeForSignUp)
+module Shared.Routes exposing (Route(..), RouteInAdmin(..), RouteInAdminInAccount(..), RouteInInvestor(..), RouteInPublic(..), isInAnyAdminRoute, parseUrl, pathFor, routeForAdminAccountDeposit, routeForAdminAccountShow, routeForAdminAccountWithdraw, routeForAdminCreateInvestor, routeForAdminHome, routeForAdminInviteAdmin, routeForAdminRequests, routeForInvestorHome, routeForInvestorRequestWithdrawal, routeForRequestPasswordReset, routeForSignIn, routeForSignUp)
 
 import Url exposing (Url)
 import Url.Parser exposing (..)
@@ -24,6 +24,7 @@ type RouteInAdmin
     | RouteInAdmin_InviteAdmin
     | RouteInAdmin_CreateInvestor
     | RouteInAdmin_Account Int RouteInAdminInAccount
+    | RouteInAdmin_Requests
 
 
 type RouteInAdminInAccount
@@ -59,6 +60,7 @@ matchersForAdmin =
         , map RouteInAdmin_InviteAdmin (s segInvite)
         , map RouteInAdmin_CreateInvestor (s segInvestors </> s segNew)
         , map RouteInAdmin_Account (s segAccounts </> int </> matchersForAdminInAccount)
+        , map RouteInAdmin_Requests (s segRequests)
         ]
 
 
@@ -140,6 +142,9 @@ pathForAdminRoute route =
         RouteInAdmin_CreateInvestor ->
             segInvestors ++ "/" ++ segNew
 
+        RouteInAdmin_Requests ->
+            segRequests
+
         RouteInAdmin_Account id sub ->
             let
                 prefix =
@@ -214,6 +219,10 @@ segPasswordResets =
     "password-resets"
 
 
+segRequests =
+    "requests"
+
+
 segWithdraw =
     "withdraw"
 
@@ -282,6 +291,15 @@ routeForAdminAccountWithdraw : Int -> Route
 routeForAdminAccountWithdraw id =
     RouteInAdmin_Account id RouteInAdminInAccount_Withdraw
         |> Route_Admin
+
+
+routeForAdminRequests : Route
+routeForAdminRequests =
+    Route_Admin RouteInAdmin_Requests
+
+
+
+-- Investor
 
 
 routeForInvestorHome : Route
