@@ -1,15 +1,19 @@
 module Admin.Pages.Requests exposing (Model, Msg, init, subscriptions, update, view)
 
 import Api.Enum.TransactionKind exposing (TransactionKind)
-import Api.InputObject
+import Api.Enum.TransactionRequestState exposing (TransactionRequestState)
+import Api.InputObject exposing (ResolveTransactionRequestInput)
 import Api.Mutation
 import Api.Object
 import Api.Object.Account
 import Api.Object.Admin
+import Api.Object.ResolveTransactionRequestResponse
 import Api.Object.TransactionRequest
 import Api.Object.User
 import Api.Query
 import Browser.Navigation as Nav
+import Dataset
+import Dict exposing (Dict)
 import Graphql.Field as Field
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.OptionalArgument as OptionalArgument
@@ -43,11 +47,13 @@ type Msg
     | Reject_Click Int
     | Reject_Commit Int
     | AproveOrReject_Cancel
+    | OnResolveResponse Int (GraphResponse ResolveTransactionRequestResponse)
 
 
 type alias Model =
     { data : GraphData Data
     , confirmButton : Maybe RequestAction
+    , responses : Dict Int (GraphData ResolveTransactionRequestResponse)
     }
 
 
@@ -55,11 +61,23 @@ newModel : Model
 newModel =
     { data = RemoteData.NotAsked
     , confirmButton = Nothing
+    , responses = Dict.empty
     }
 
 
 type alias Data =
     { pendingRequests : List PendingRequest
+    }
+
+
+updateRequestInData : PendingRequest -> Data -> Data
+updateRequestInData request data =
+    { data
+        | pendingRequests =
+            Dataset.putOne
+                { getId = .id }
+                request
+                data.pendingRequests
     }
 
 
@@ -70,6 +88,7 @@ type RequestAction
 
 type alias PendingRequest =
     { id : Int
+    , state : TransactionRequestState
     , amountInCents : Int
     , kind : TransactionKind
     , user : String
@@ -115,8 +134,10 @@ update context msg model =
             )
 
         Approve_Commit id ->
-            ( model
-            , Cmd.none
+            ( { model
+                | responses = Dict.insert id RemoteData.Loading model.responses
+              }
+            , resoleMutationCmd context id Api.Enum.TransactionRequestState.Approved
             , Actions.none
             )
 
@@ -127,8 +148,10 @@ update context msg model =
             )
 
         Reject_Commit id ->
-            ( model
-            , Cmd.none
+            ( { model
+                | responses = Dict.insert id RemoteData.Loading model.responses
+              }
+            , resoleMutationCmd context id Api.Enum.TransactionRequestState.Rejected
             , Actions.none
             )
 
@@ -137,6 +160,50 @@ update context msg model =
             , Cmd.none
             , Actions.none
             )
+
+        OnResolveResponse id result ->
+            case result of
+                Err e ->
+                    ( { model
+                        | responses =
+                            Dict.insert
+                                id
+                                (RemoteData.Failure e)
+                                model.responses
+                      }
+                    , Cmd.none
+                    , Actions.addErrorNotification
+                        "Something went wrong"
+                    )
+
+                Ok response ->
+                    let
+                        ( newData, action ) =
+                            case response.transactionRequest of
+                                Just transactionRequest ->
+                                    ( RemoteData.map
+                                        (updateRequestInData
+                                            transactionRequest
+                                        )
+                                        model.data
+                                    , Actions.addSuccessNotification
+                                        "Saved"
+                                    )
+
+                                Nothing ->
+                                    ( model.data, Actions.none )
+                    in
+                    ( { model
+                        | data = newData
+                        , responses =
+                            Dict.insert
+                                id
+                                (RemoteData.Success response)
+                                model.responses
+                      }
+                    , Cmd.none
+                    , action
+                    )
 
 
 view : Context -> Model -> Html Msg
@@ -192,11 +259,25 @@ requestView model request =
             (request.amountInCents // 100)
                 |> String.fromInt
 
+        maybeActions =
+            case Dict.get id model.responses of
+                Just RemoteData.Loading ->
+                    div [] [ Icons.spinner ]
+
+                _ ->
+                    actions
+
         actions =
-            div []
-                [ btnApprove
-                , span [ class "ml-2" ] [ btnReject ]
-                ]
+            if request.state == Api.Enum.TransactionRequestState.Pending then
+                div [ class "flex items-center" ]
+                    [ btnApprove
+                    , span [ class "ml-4" ] [ btnReject ]
+                    ]
+
+            else
+                div []
+                    [ text (Api.Enum.TransactionRequestState.toString request.state)
+                    ]
 
         btnApprove =
             ConfirmButton.view
@@ -239,7 +320,7 @@ requestView model request =
                 ]
     in
     div [ class "border p-4 rounded shadow-md mb-6 flex justify-between" ]
-        [ left, actions ]
+        [ left, maybeActions ]
 
 
 btnStateFor : Model -> RequestAction -> ConfirmButton.State
@@ -285,6 +366,7 @@ requestSelection : SelectionSet PendingRequest Api.Object.TransactionRequest
 requestSelection =
     Api.Object.TransactionRequest.selection PendingRequest
         |> with Api.Object.TransactionRequest.id
+        |> with Api.Object.TransactionRequest.state
         |> with (Api.Object.TransactionRequest.amountInCents |> Field.map round)
         |> with Api.Object.TransactionRequest.kind
         |> with (Api.Object.TransactionRequest.account accountSelection)
@@ -300,3 +382,48 @@ userSelection : SelectionSet String Api.Object.User
 userSelection =
     Api.Object.User.selection identity
         |> with Api.Object.User.name
+
+
+
+-- ResolveTransactionRequestResponse Mutation
+
+
+type alias ResolveTransactionRequestResponse =
+    { success : Bool
+    , errors : List MutationError
+    , transactionRequest : Maybe PendingRequest
+    }
+
+
+resoleMutationCmd : Context -> Int -> TransactionRequestState -> Cmd Msg
+resoleMutationCmd context id outcome =
+    sendMutation
+        context
+        "resolve-request"
+        (resolveMutation id outcome)
+        (OnResolveResponse id)
+
+
+resolveMutation : Int -> TransactionRequestState -> SelectionSet ResolveTransactionRequestResponse RootMutation
+resolveMutation id outcome =
+    let
+        input : ResolveTransactionRequestInput
+        input =
+            { transactionRequestId = id
+            , outcome = outcome
+            }
+    in
+    Api.Mutation.selection identity
+        |> with
+            (Api.Mutation.resolveTransactionRequest
+                { input = input }
+                resolveResponseSelection
+            )
+
+
+resolveResponseSelection : SelectionSet ResolveTransactionRequestResponse Api.Object.ResolveTransactionRequestResponse
+resolveResponseSelection =
+    Api.Object.ResolveTransactionRequestResponse.selection ResolveTransactionRequestResponse
+        |> with Api.Object.ResolveTransactionRequestResponse.success
+        |> with (Api.Object.ResolveTransactionRequestResponse.errors mutationErrorSelection)
+        |> with (Api.Object.ResolveTransactionRequestResponse.transactionRequest requestSelection)
