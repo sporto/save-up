@@ -30,14 +30,7 @@ build-mail:
 	just build-directory mail
 	just copy-binary mail mail
 
-# Generate SAM template.yml, so we can test this locally
-# THIS DOESN'T VALIDATE
-generate-sam:
-	sls sam export --output ./sam.yml
-
-sam-validate:
-	sam validate -t template.yaml
-
+# Use this to have a dev server
 sam-local:
 	sam local start-api \
 		-t template.yaml \
@@ -51,30 +44,10 @@ try:
 		--data '{"query": "{__schema{types{name}}}", "variables": {}, "operationName": null}' \
 		http://127.0.0.1:4010/graphql
 
-# Didn't work yet
-sam-try-mail:
-	sam local invoke "Mail" --event mail/src/fixtures/sns-event-invite.json
-
-# Didn't work yet
-sls-try-mail:
-	sls invoke -f mail --path mail/src/fixtures/sns-event-invite.json
-
 invoke-migration:
 	curl \
 		--request POST \
 		http://127.0.0.1:4010/migrate
-
-# package:
-# 	sam package \
-# 		--template-file template.yaml \
-# 		--s3-bucket kic-api \
-# 		--output-template-file packaged.yaml
-
-# deploy:
-# 	sam deploy \
-# 		--template-file ./packaged.yaml \
-# 		--stack-name kic-api \
-# 		--capabilities CAPABILITY_IAM
 
 deploy:
 	sls deploy
