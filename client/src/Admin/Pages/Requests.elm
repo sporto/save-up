@@ -233,7 +233,7 @@ view context model =
 viewWithData : Context -> Model -> Data -> Html Msg
 viewWithData context model data =
     if List.isEmpty data.pendingRequests then
-        Empty.noData
+        Empty.noData "There are no pending requests"
 
     else
         div [] (List.map (requestView model) data.pendingRequests)
@@ -319,7 +319,7 @@ requestView model request =
                 , span [ class "ml-6" ] [ amount ]
                 ]
     in
-    div [ class "border p-4 rounded shadow-md mb-6 flex justify-between" ]
+    div [ class "border p-4 rounded shadow-md mb-6 flex justify-between items-center" ]
         [ left, maybeActions ]
 
 

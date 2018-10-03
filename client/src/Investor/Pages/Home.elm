@@ -107,7 +107,7 @@ view context model =
 viewWithData : Context -> Model -> Data -> Html Msg
 viewWithData context model data =
     if List.isEmpty data.accounts then
-        Empty.noData
+        Empty.noData "Couldn't find any accounts"
 
     else
         div [] (List.map accountView data.accounts)

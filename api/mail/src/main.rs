@@ -25,13 +25,13 @@ use std::time::Duration;
 #[template(path = "invite.html")]
 struct InviteTemplate<'a> {
 	inviter_name: &'a str,
-	invitation_token: &'a str,
+	invitation_url: &'a str,
 }
 
 #[derive(Template)]
 #[template(path = "confirm_email.html")]
 struct ConfirmEmailTemplate<'a> {
-	confirmation_token: &'a str,
+	confirmation_url: &'a str,
 }
 
 #[derive(Template)]
@@ -67,6 +67,12 @@ struct AcknowledgeWithdrawalTemplate<'a> {
 	balance: &'a i64,
 }
 
+#[derive(Template)]
+#[template(path = "reset_password.html")]
+struct ResetPasswordTemplate<'a> {
+	reset_url: &'a str,
+}
+
 // https://github.com/srijs/rust-aws-lambda/blob/88904328b9f6a6ad016645a73a7acb41c08000cd/aws_lambda_events/src/generated/fixtures/example-sns-event.json
 // https://github.com/srijs/rust-aws-lambda/blob/739e46049651576e366fadd9073c2e269d11baa2/aws_lambda_events/src/generated/sns.rs
 fn main() {
@@ -75,7 +81,7 @@ fn main() {
 	lambda::start(|event: SnsEvent| {
 		let email_kind = get_email_kind(&event)?;
 
-		generate_intermidiate(&email_kind)
+		generate_intermediate(&email_kind)
 			.and_then(|intermediate| generate_html(&intermediate))
 			.and_then(|html| send_email(&email_kind, &html))?;
 
@@ -100,44 +106,8 @@ fn get_email_kind(event: &SnsEvent) -> Result<EmailKind, Error> {
 	Ok(email_kind)
 }
 
-fn generate_intermidiate(email_kind: &EmailKind) -> Result<String, Error> {
+fn generate_intermediate(email_kind: &EmailKind) -> Result<String, Error> {
 	let result = match email_kind {
-		EmailKind::ConfirmEmail {
-			confirmation_token, ..
-		} => ConfirmEmailTemplate {
-			confirmation_token: confirmation_token,
-		}.render(),
-
-		EmailKind::Invite {
-			inviter_name,
-			invitation_token,
-			..
-		} => InviteTemplate {
-			inviter_name,
-			invitation_token,
-		}.render(),
-
-		EmailKind::RequestWithdrawal {
-			amount_in_cents,
-			name,
-			..
-		} => RequestWithdrawalTemplate {
-			amount: &(amount_in_cents / 100),
-			name,
-		}.render(),
-
-		EmailKind::ApproveTransactionRequest {
-			amount_in_cents, ..
-		} => ApproveTransactionRequestTemplate {
-			amount: &(amount_in_cents / 100),
-		}.render(),
-
-		EmailKind::RejectTransactionRequest {
-			amount_in_cents, ..
-		} => RejectTransactionRequestTemplate {
-			amount: &(amount_in_cents / 100),
-		}.render(),
-
 		EmailKind::AcknowledgeDeposit {
 			amount_in_cents,
 			balance_in_cents,
@@ -155,6 +125,42 @@ fn generate_intermidiate(email_kind: &EmailKind) -> Result<String, Error> {
 			amount: &(amount_in_cents / 100),
 			balance: &(balance_in_cents / 100),
 		}.render(),
+
+		EmailKind::ApproveTransactionRequest {
+			amount_in_cents, ..
+		} => ApproveTransactionRequestTemplate {
+			amount: &(amount_in_cents / 100),
+		}.render(),
+
+		EmailKind::ConfirmEmail {
+			confirmation_url, ..
+		} => ConfirmEmailTemplate { confirmation_url }.render(),
+
+		EmailKind::Invite {
+			inviter_name,
+			invitation_url,
+			..
+		} => InviteTemplate {
+			inviter_name,
+			invitation_url,
+		}.render(),
+
+		EmailKind::RequestWithdrawal {
+			amount_in_cents,
+			name,
+			..
+		} => RequestWithdrawalTemplate {
+			amount: &(amount_in_cents / 100),
+			name,
+		}.render(),
+
+		EmailKind::RejectTransactionRequest {
+			amount_in_cents, ..
+		} => RejectTransactionRequestTemplate {
+			amount: &(amount_in_cents / 100),
+		}.render(),
+
+		EmailKind::ResetPassword { reset_url, .. } => ResetPasswordTemplate { reset_url }.render(),
 	};
 
 	result.map_err(|e| format_err!("{}", e))
@@ -212,25 +218,27 @@ fn send_email(email_kind: &EmailKind, html: &str) -> Result<(), Error> {
 
 fn email_for_email_kind(email_kind: &EmailKind) -> String {
 	match email_kind {
+		EmailKind::AcknowledgeDeposit { email, .. } => email.to_owned(),
+		EmailKind::AcknowledgeWithdrawal { email, .. } => email.to_owned(),
+		EmailKind::ApproveTransactionRequest { email, .. } => email.to_owned(),
 		EmailKind::ConfirmEmail { email, .. } => email.to_owned(),
 		EmailKind::Invite { email, .. } => email.to_owned(),
 		EmailKind::RequestWithdrawal { email, .. } => email.to_owned(),
-		EmailKind::ApproveTransactionRequest { email, .. } => email.to_owned(),
 		EmailKind::RejectTransactionRequest { email, .. } => email.to_owned(),
-		EmailKind::AcknowledgeDeposit { email, .. } => email.to_owned(),
-		EmailKind::AcknowledgeWithdrawal { email, .. } => email.to_owned(),
+		EmailKind::ResetPassword { email, .. } => email.to_owned(),
 	}
 }
 
 fn subject_for_email_kind(email_kind: &EmailKind) -> String {
 	match email_kind {
+		EmailKind::AcknowledgeDeposit { .. } => "Successful deposit".to_owned(),
+		EmailKind::AcknowledgeWithdrawal { .. } => "Successful withdrawal".to_owned(),
 		EmailKind::ConfirmEmail { .. } => "Confirm your email".to_owned(),
 		EmailKind::Invite { .. } => "You have been invited to SaveUp".to_owned(),
 		EmailKind::RequestWithdrawal { .. } => "Withdrawal request".to_owned(),
 		EmailKind::ApproveTransactionRequest { .. } => "Your request has been approved".to_owned(),
 		EmailKind::RejectTransactionRequest { .. } => "Your request".to_owned(),
-		EmailKind::AcknowledgeDeposit { .. } => "Successful deposit".to_owned(),
-		EmailKind::AcknowledgeWithdrawal { .. } => "Successful withdrawal".to_owned(),
+		EmailKind::ResetPassword { .. } => "Reset your password".to_owned(),
 	}
 }
 
@@ -239,7 +247,8 @@ struct Config {
 }
 
 fn get_config() -> Result<Config, Error> {
-	let system_email = env::var("SYSTEM_EMAIL").map_err(|_| format_err!("SYSTEM_EMAIL not found"))?;
+	let system_email =
+		env::var("SYSTEM_EMAIL").map_err(|_| format_err!("SYSTEM_EMAIL not found"))?;
 
 	Ok(Config {
 		system_email: system_email,
@@ -307,7 +316,7 @@ mod tests {
 			invitation_token: "abc".to_owned(),
 		};
 
-		let _result = generate_intermidiate(&email_kind).unwrap();
+		let _result = generate_intermediate(&email_kind).unwrap();
 	}
 
 	#[test]

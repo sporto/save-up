@@ -23,6 +23,9 @@ build-graph:
 	just copy-binary graphql graphql_pub
 	just copy-binary graphql migrate
 
+check-mail:
+	cd mail && cargo check
+
 build-mail:
 	just build-directory mail
 	just copy-binary mail mail

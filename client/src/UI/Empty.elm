@@ -17,7 +17,7 @@ loading =
         ]
 
 
-noData =
+noData message =
     div [ class "my-4 flex justify-center" ]
-        [ text "Not data found"
+        [ text message
         ]
