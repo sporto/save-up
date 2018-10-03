@@ -45,7 +45,7 @@ matchers =
                 [ map Route_Public <| map RouteInPublic_SignIn top
                 , map Route_Public <| map RouteInPublic_SignIn <| s segSignIn
                 , map Route_Public <| map RouteInPublic_SignUp <| s segSignUp
-                , map Route_Public <| map RouteInPublic_Invitation <| s segInvitation </> string
+                , map Route_Public <| map RouteInPublic_Invitation <| s segInvitations </> string
                 , map Route_Public <| map RouteInPublic_RequestPasswordReset <| s segPasswordResets </> s segNew
                 , map Route_Public <| map RouteInPublic_ResetPassword <| s segPasswordResets </> string
                 , map Route_Admin (s segAdmin </> matchersForAdmin)
@@ -121,7 +121,7 @@ pathInPublic route =
             segSignUp
 
         RouteInPublic_Invitation token ->
-            segInvitation ++ "/" ++ token
+            segInvitations ++ "/" ++ token
 
         RouteInPublic_RequestPasswordReset ->
             segPasswordResets ++ "/" ++ segNew
@@ -187,10 +187,6 @@ segSignUp =
     "sign-up"
 
 
-segInvitation =
-    "invitation"
-
-
 segBasepath =
     "a"
 
@@ -205,6 +201,10 @@ segInvestors =
 
 segInvite =
     "invite"
+
+
+segInvitations =
+    "invitations"
 
 
 segDeposit =

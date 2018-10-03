@@ -9,8 +9,8 @@ pub enum AppEnv {
 }
 
 pub struct Config {
-	// pub client_host: String,
 	pub api_secret: String,
+	pub client_host: String,
 	pub database_url: String,
 	pub system_jwt: String,
 }
@@ -51,8 +51,9 @@ fn variable_names() -> VariableNames {
 pub fn get() -> Result<Config, Error> {
 	let names = variable_names();
 
-	// let client_host = env::var("CLIENT_HOST")?;
 	let api_secret = env::var("API_SECRET").map_err(|_| format_err!("API_SECRET not found"))?;
+
+	let client_host = env::var("CLIENT_HOST").map_err(|_| format_err!("CLIENT_HOST not found"))?;
 
 	let db_name =
 		env::var(names.database_name).map_err(|_| format_err!("database_name not found"))?;
@@ -85,8 +86,8 @@ pub fn get() -> Result<Config, Error> {
 	let system_jwt = env::var("SYSTEM_JWT").map_err(|_| format_err!("SYSTEM_JWT not found"))?;
 
 	let config = Config {
-		// client_host: client_host,
 		api_secret: api_secret,
+		client_host: client_host,
 		database_url: database_url,
 		system_jwt: system_jwt,
 	};
