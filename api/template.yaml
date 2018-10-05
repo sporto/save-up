@@ -68,6 +68,7 @@ Resources:
       Environment:
         Variables:
           API_SECRET:
+          CLIENT_HOST:
           DATABASE_HOST:
           DATABASE_NAME:
           DATABASE_USER:
@@ -91,6 +92,7 @@ Resources:
       Environment:
         Variables:
           API_SECRET:
+          CLIENT_HOST:
           DATABASE_HOST:
           DATABASE_NAME:
           DATABASE_USER:
@@ -115,6 +117,7 @@ Resources:
       Environment:
         Variables:
           API_SECRET:
+          CLIENT_HOST:
           DATABASE_HOST:
           DATABASE_NAME:
           DATABASE_USER:
