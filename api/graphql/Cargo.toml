@@ -15,6 +15,11 @@ path = "src/graphql_pub.rs"
 name = "migrate"
 path = "src/migrate.rs"
 
+
+[[bin]]
+name = "graph"
+path = "src/graph.rs"
+
 # [[bin]]
 # name = "authorise"
 # path = "src/authoriser.rs"
