@@ -6,3 +6,4 @@ netlify/
 packaged.yaml
 node_modules/
 netlifyctl-debug.log
+cargo-cache
