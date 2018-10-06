@@ -9,3 +9,6 @@ net-login:
 
 net-deploy:
 	netlifyctl deploy
+
+cypress:
+	npx cypress open
