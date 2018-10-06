@@ -1,9 +1,10 @@
-open Lwt
 module C = Cohttp_lwt_unix
 
 open Graphql_lwt
 
-type role = User | Admin
+type role 
+  = User 
+  | Admin
 
 type user = {
   id   : int;
@@ -12,13 +13,30 @@ type user = {
   friends : user list;
 }
 
-let rec alice = { id = 1; name = "Alice"; role = Admin; friends = [bob] }
-and bob = { id = 2; name = "Bob"; role = User; friends = [alice]}
+let rec 
+  alice = 
+    {
+      id = 1; 
+      name = "Alice"; 
+      role = Admin; 
+      friends = [bob];
+    }
+  and 
+  bob = 
+    { 
+      id = 2; 
+      name = "Bob"; 
+      role = User; 
+      friends = [alice];
+    }
 
-let users = [alice; bob]
+let users = [
+    alice;
+    bob;
+  ]
 
 let role = Schema.(enum "role"
-  ~values:[
+  ~values: [
     enum_value "USER" ~value:User ~doc:"A regular user";
     enum_value "ADMIN" ~value:Admin ~doc:"An admin user";
   ]
@@ -48,32 +66,6 @@ let user = Schema.(obj "user"
   ])
 )
 
-let rec consume_stream stream =
-  Lwt.catch (fun () ->
-    Lwt_stream.next stream >>= fun x ->
-      let Ok x | Error x = x in
-      Printf.eprintf "stream response: '%s'\n%!" (Yojson.Basic.to_string x);
-    if Lwt_stream.is_closed stream then
-      Lwt.return_unit
-    else
-      consume_stream stream)
-  (function
-    | Lwt_stream.Closed | Lwt_stream.Empty -> Lwt.return_unit
-   | _ -> Lwt.return_unit)
-
-let set_interval s f destroy =
-  let rec set_interval_loop s f n =
-    let timeout = Lwt_timeout.create s (fun () ->
-      if n > 0 then begin
-      f ();
-      set_interval_loop s f (n - 1)
-      end else
-        destroy ())
-    in
-    Lwt_timeout.start timeout
-  in
-  set_interval_loop s f 5
-
 let schema = Schema.(schema [
     io_field "users"
       ~args: Arg.[]
@@ -97,4 +89,4 @@ let schema = Schema.(schema [
 
 let () =
   Server.start ~ctx:(fun _req -> ()) schema
-  |> Lwt_main.run
+    |> Lwt_main.run
