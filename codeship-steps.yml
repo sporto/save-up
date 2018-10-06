@@ -1,5 +1,5 @@
 - type: parallel
-  name: kic
+  name: SaveUp
   steps:
     - name: Test mail
       service: mail
