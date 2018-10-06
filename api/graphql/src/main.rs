@@ -37,10 +37,10 @@ use juniper::RootNode;
 use lambda::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
 use std::collections::HashMap;
 
-mod graph_app;
-mod graph_common;
-mod graph_pub;
+mod actions;
+mod app;
 mod models;
+mod public;
 mod utils;
 
 const PUBLIC_PATH: &'static str = "/graphql-pub";
@@ -57,9 +57,9 @@ fn main() {
 		headers.insert("Access-Control-Allow-Origin".to_string(), "*".to_string());
 
 		let body = match request.resource.as_ref().map(|s| s.as_str()) {
-			Some(PRIVATE_PATH) => graph_app(&request),
+			Some(PRIVATE_PATH) => app(&request),
 
-			Some(PUBLIC_PATH) => graph_pub(&request),
+			Some(PUBLIC_PATH) => public(&request),
 
 			Some(MIGRATE_PATH) => migrations(),
 
@@ -87,18 +87,18 @@ fn migrations() -> Result<String, Error> {
 
 type PublicSchema = RootNode<
 	'static,
-	graph_pub::query_root::PublicQueryRoot,
-	graph_pub::mutation_root::PublicMutationRoot,
+	public::query_root::PublicQueryRoot,
+	public::mutation_root::PublicMutationRoot,
 >;
 
-fn graph_pub(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
+fn public(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
 	let conn = utils::db_conn::establish_connection()?;
 
-	let context = graph_pub::context::PublicContext { conn: conn };
+	let context = public::context::PublicContext { conn: conn };
 
-	let query_root = graph_pub::query_root::PublicQueryRoot {};
+	let query_root = public::query_root::PublicQueryRoot {};
 
-	let mutation_root = graph_pub::mutation_root::PublicMutationRoot {};
+	let mutation_root = public::mutation_root::PublicMutationRoot {};
 
 	let schema = PublicSchema::new(query_root, mutation_root);
 
@@ -111,13 +111,10 @@ fn graph_pub(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
 	serde_json::to_string(&juniper_result).map_err(|e| format_err!("{}", e.to_string()))
 }
 
-type AppSchema = RootNode<
-	'static,
-	graph_app::query_root::AppQueryRoot,
-	graph_app::mutation_root::AppMutationRoot,
->;
+type AppSchema =
+	RootNode<'static, app::query_root::AppQueryRoot, app::mutation_root::AppMutationRoot>;
 
-fn graph_app(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
+fn app(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
 	// We are supposed to use a lambda function as authoriser
 	// But SAM doesn't support this flow when working locally yet
 	// So I don't know how to wire this
@@ -151,14 +148,14 @@ fn graph_app(request: &ApiGatewayProxyRequest) -> Result<String, Error> {
 
 	let user = get_user(&conn, token)?;
 
-	let context = graph_app::context::AppContext {
+	let context = app::context::AppContext {
 		conn: conn,
 		user: user,
 	};
 
-	let query_root = graph_app::query_root::AppQueryRoot {};
+	let query_root = app::query_root::AppQueryRoot {};
 
-	let mutation_root = graph_app::mutation_root::AppMutationRoot {};
+	let mutation_root = app::mutation_root::AppMutationRoot {};
 
 	let schema = AppSchema::new(query_root, mutation_root);
 
@@ -178,7 +175,7 @@ fn get_user(conn: &PgConnection, token: &str) -> Result<models::user::User, Erro
 		return Ok(models::user::system_user());
 	}
 
-	let token_data = graph_app::actions::users::decode_token::call(token)?;
+	let token_data = actions::users::decode_token::call(token)?;
 
 	let user_id = token_data.user_id;
 
