@@ -81,33 +81,33 @@ functions:
           method: get
   migrate:
     runtime: go1.x
-    handler: bin/migrate/migrate
+    handler: bin/graphql/graphql
     timeout: 10
     package:
       include:
-        - ./bin/migrate/**
+        - ./bin/graphql/**
     events:
       - http:
           path: migrate
           method: post
   graphql_app:
     runtime: go1.x
-    handler: bin/graphql_app/graphql_app
+    handler: bin/graphql/graphql
     timeout: 10
     package:
       include:
-        - ./bin/graphql_app/**
+        - ./bin/graphql/**
     events:
       - http:
           path: graphql-app
           method: post
   graphql_pub:
     runtime: go1.x
-    handler: bin/graphql_pub/graphql_pub
+    handler: bin/graphql/graphql
     timeout: 10
     package:
       include:
-        - ./bin/graphql_pub/**
+        - ./bin/graphql/**
     events:
       - http:
           path: graphql-pub
