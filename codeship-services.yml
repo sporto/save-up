@@ -1,18 +1,27 @@
-# graphql:
-#   build: 
-#     context: api/graphql
-#     dockerfile: Dockerfile.ci
-#   cached: true
-#   environment:
-#     API_SECRET: abc
-#     CLIENT_HOST: client
-#     APP_ENV: test
-#     DATABASE_NAME_TEST:
-#     DATABASE_HOST_TEST:
-#     DATABASE_USER_TEST:
-#     DATABASE_PASS_TEST:
-#   volumes:
-#     - ./cargo-cache:/root/.cargo
+# volumes:
+#   cargo-cache:
+
+postgres:
+  image: healthcheck/postgres:alpine
+
+graphql:
+  build: 
+    context: api
+    dockerfile: Dockerfile.graphql.ci
+  depends_on:
+    - postgres
+  cached: true
+  environment:
+    API_SECRET: abc
+    CLIENT_HOST: client
+    APP_ENV: test
+    DATABASE_NAME_TEST: postgres
+    DATABASE_HOST_TEST: x
+    DATABASE_USER_TEST: postgres
+    DATABASE_PASS_TEST: x
+    SYSTEM_JWT: abc
+  volumes:
+    - cargo-cache:/root/.cargo
   
 mail:
   build:
@@ -22,4 +31,4 @@ mail:
   environment:
     SYSTEM_EMAIL: hello@sample.com
   volumes:
-    - ./cargo-cache:/root/.cargo
+    - cargo-cache:/root/.cargo

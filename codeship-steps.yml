@@ -1,6 +1,9 @@
 - type: parallel
   name: SaveUp
   steps:
-    - name: Test mail
+    - name: Test Mail
       service: mail
+      command: cargo test
+    - name: Test GraphQl
+      service: graphql
       command: cargo test
