@@ -1,9 +1,0 @@
-FROM clux/muslrust:stable
-
-WORKDIR /volume
-
-COPY Cargo.toml ./Cargo.toml
-COPY Cargo.lock ./Cargo.lock
-COPY src ./src
-COPY templates ./templates
-

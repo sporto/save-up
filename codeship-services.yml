@@ -1,7 +1,23 @@
+# graphql:
+#   build: 
+#     context: api/graphql
+#     dockerfile: Dockerfile.ci
+#   cached: true
+#   environment:
+#     API_SECRET: abc
+#     CLIENT_HOST: client
+#     APP_ENV: test
+#     DATABASE_NAME_TEST:
+#     DATABASE_HOST_TEST:
+#     DATABASE_USER_TEST:
+#     DATABASE_PASS_TEST:
+#   volumes:
+#     - ./cargo-cache:/root/.cargo
+  
 mail:
   build:
-    context: api/mail
-    dockerfile: Dockerfile.ci
+    context: api
+    dockerfile: Dockerfile.mail.ci
   cached: true
   environment:
     SYSTEM_EMAIL: hello@sample.com

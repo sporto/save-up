@@ -1,0 +1,9 @@
+FROM clux/muslrust:stable
+
+WORKDIR /volume
+
+COPY ./mail/Cargo.toml ./Cargo.toml
+COPY ./mail/Cargo.lock ./Cargo.lock
+COPY ./mail/src ./src
+COPY ./mail/templates ./templates
+
