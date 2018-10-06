@@ -3,4 +3,4 @@
   steps:
     - name: Test mail
       service: mail
-      command: cd mail && cargo test
+      command: cargo test
