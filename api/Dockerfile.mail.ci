@@ -2,8 +2,12 @@ FROM clux/muslrust:stable
 
 WORKDIR /volume
 
-COPY ./mail/Cargo.toml ./Cargo.toml
-COPY ./mail/Cargo.lock ./Cargo.lock
-COPY ./mail/src ./src
-COPY ./mail/templates ./templates
+COPY ./shared/Cargo.toml ./shared/Cargo.toml
+COPY ./shared/Cargo.lock ./shared/Cargo.lock
+COPY ./shared/src ./shared/src
+
+COPY ./mail/Cargo.toml ./mail/Cargo.toml
+COPY ./mail/Cargo.lock ./mail/Cargo.lock
+COPY ./mail/src ./mail/src
+COPY ./mail/templates ./mail/templates
 
