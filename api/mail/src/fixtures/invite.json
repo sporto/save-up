@@ -1,7 +1,7 @@
 {
 	"Invite": {
-		"inviter":"sam@sample.com",
-		"email":"sally@sample.com",
-		"invitation_token":"abc"
+		"inviter_name": "sam@sample.com",
+		"email": "sally@sample.com",
+		"invitation_url": "xyz"
 	}
 }

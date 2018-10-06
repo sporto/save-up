@@ -300,9 +300,9 @@ mod tests {
 		let email_kind = get_email_kind(&event).unwrap();
 
 		let expected = EmailKind::Invite {
-			inviter: "sam@sample.com".to_owned(),
+			inviter_name: "sam@sample.com".to_owned(),
 			email: "sally@sample.com".to_owned(),
-			invitation_token: "abc".to_owned(),
+			invitation_url: "xyz".to_owned(),
 		};
 
 		assert_eq!(email_kind, expected);
@@ -311,9 +311,9 @@ mod tests {
 	#[test]
 	fn it_builds_intermediate() {
 		let email_kind = EmailKind::Invite {
-			inviter: "sam@sample.com".to_owned(),
+			inviter_name: "sam@sample.com".to_owned(),
 			email: "sally@sample.com".to_owned(),
-			invitation_token: "abc".to_owned(),
+			invitation_url: "xyz".to_owned(),
 		};
 
 		let _result = generate_intermediate(&email_kind).unwrap();
