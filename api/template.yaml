@@ -60,8 +60,8 @@ Resources:
   GraphQlPubFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: bin/graphql_pub/
-      Handler: graphql_pub
+      CodeUri: bin/graphql/
+      Handler: graphql
       Runtime: go1.x
       FunctionName: KicPubGraphQlPub
       Description: "KIC GraphQl Public Server"
@@ -84,8 +84,8 @@ Resources:
   GraphQlAppFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: bin/graphql_app/
-      Handler: graphql_app
+      CodeUri: bin/graphql/
+      Handler: graphql
       Runtime: go1.x
       FunctionName: KicGraphQlApp
       Description: "KIC GraphQl App Server"
@@ -109,8 +109,8 @@ Resources:
   MigrateFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: bin/migrate/
-      Handler: migrate
+      CodeUri: bin/graphql/
+      Handler: graphql
       Runtime: go1.x
       FunctionName: Migrate
       Description: "KIC GraphQl DB migrate"

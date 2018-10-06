@@ -1,0 +1,10 @@
+opam-version: "2.0"
+name: "Graph"
+version: "1.0.0"
+maintainer: "Your Name <email@example.com>"
+
+depends: [
+  "dune" {build}
+  "lwt"
+  "lwt_ppx"
+]

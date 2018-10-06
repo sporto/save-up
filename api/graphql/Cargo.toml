@@ -3,27 +3,6 @@ name = "graphql"
 version = "0.1.0"
 authors = ["Sebastian Porto <s@porto5.com>"]
 
-[[bin]]
-name = "graphql_app"
-path = "src/graphql_app.rs"
-
-[[bin]]
-name = "graphql_pub"
-path = "src/graphql_pub.rs"
-
-[[bin]]
-name = "migrate"
-path = "src/migrate.rs"
-
-
-[[bin]]
-name = "graph"
-path = "src/graph.rs"
-
-# [[bin]]
-# name = "authorise"
-# path = "src/authoriser.rs"
-
 [dependencies]
 aws_lambda = { git = "https://github.com/srijs/rust-aws-lambda" }
 chrono = "0.4"

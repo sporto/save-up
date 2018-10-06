@@ -19,9 +19,7 @@ check-graph:
 
 build-graph:
 	just build-directory graphql
-	just copy-binary graphql graphql_app
-	just copy-binary graphql graphql_pub
-	just copy-binary graphql migrate
+	just copy-binary graphql graphql
 
 check-mail:
 	cd mail && cargo check
