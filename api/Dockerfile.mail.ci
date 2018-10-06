@@ -11,3 +11,4 @@ COPY ./mail/Cargo.lock ./mail/Cargo.lock
 COPY ./mail/src ./mail/src
 COPY ./mail/templates ./mail/templates
 
+WORKDIR /volume/mail
