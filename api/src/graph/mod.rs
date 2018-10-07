@@ -3,7 +3,6 @@ use actix_web::{
 	error, http, middleware, server, App, AsyncResponder, Error, FutureResponse, HttpRequest,
 	HttpResponse, Json, State,
 };
-use app;
 use diesel::prelude::*;
 use diesel::r2d2;
 use juniper::http::GraphQLRequest;
@@ -12,10 +11,12 @@ use juniper::FieldResult;
 use juniper::RootNode;
 use models;
 use models::user::User;
-use public;
 use serde_json;
 use std;
 use utils::db_conn::DBPool;
+
+pub mod app;
+pub mod public;
 
 pub struct AppContext {
 	pub conn: r2d2::PooledConnection<r2d2::ConnectionManager<PgConnection>>,

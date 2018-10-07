@@ -1,7 +1,7 @@
 use juniper::FieldResult;
 
 use graph::{PublicContext};
-use public::mutations;
+use graph::public::mutations;
 use models::sign_in::SignIn;
 use models::sign_up::SignUp;
 

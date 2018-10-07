@@ -1,16 +1,18 @@
-use app::mutations::archive_user::{self, ArchiveUserResponse};
-use app::mutations::change_interest::{
+use graph::app::mutations::archive_user::{self, ArchiveUserResponse};
+use graph::app::mutations::change_interest::{
 	self, ChangeAccountInterestInput, ChangeAccountInterestResponse,
 };
-use app::mutations::create_user::{self, CreateUserInput, CreateUserResponse};
-use app::mutations::deposit::{self, DepositInput, DepositResponse};
-use app::mutations::invite_admin::{self, InvitationInput, InvitationResponse};
-use app::mutations::request_withdrawal::{self, RequestWithdrawalInput, RequestWithdrawalResponse};
-use app::mutations::resolve_transaction_request::{
+use graph::app::mutations::create_user::{self, CreateUserInput, CreateUserResponse};
+use graph::app::mutations::deposit::{self, DepositInput, DepositResponse};
+use graph::app::mutations::invite_admin::{self, InvitationInput, InvitationResponse};
+use graph::app::mutations::request_withdrawal::{
+	self, RequestWithdrawalInput, RequestWithdrawalResponse,
+};
+use graph::app::mutations::resolve_transaction_request::{
 	self, ResolveTransactionRequestInput, ResolveTransactionRequestResponse,
 };
-use app::mutations::unarchive_user::{self, UnarchiveUserResponse};
-use app::mutations::withdraw::{self, WithdrawalInput, WithdrawalResponse};
+use graph::app::mutations::unarchive_user::{self, UnarchiveUserResponse};
+use graph::app::mutations::withdraw::{self, WithdrawalInput, WithdrawalResponse};
 use graph::AppContext;
 use juniper::FieldResult;
 

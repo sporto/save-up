@@ -48,10 +48,8 @@ use juniper::http::graphiql::graphiql_source;
 // use juniper::http::GraphQLRequest;
 
 mod actions;
-mod app;
 mod graph;
 mod models;
-mod public;
 mod utils;
 
 struct AppState {
