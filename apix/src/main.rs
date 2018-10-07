@@ -24,6 +24,8 @@ extern crate env_logger;
 extern crate futures;
 extern crate jsonwebtoken as jwt;
 extern crate libreauth;
+extern crate r2d2;
+extern crate r2d2_diesel;
 extern crate range_check;
 extern crate regex;
 extern crate rusoto_core;
@@ -116,6 +118,9 @@ fn main() {
 	::std::env::set_var("RUST_LOG", "actix_web=info");
 	env_logger::init();
 	let sys = actix::System::new("juniper-example");
+
+	// r2d2 db pool
+	let pool = utils::db_conn::init_pool();
 
 	let schema = std::sync::Arc::new(create_schema());
 	let addr = SyncArbiter::start(3, move || GraphQLExecutor::new(schema.clone()));

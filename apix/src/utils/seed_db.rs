@@ -1,10 +1,11 @@
 use utils::db_conn;
 // use models::client::{Client, ClientAttrs};
 // use models::user::{User, UserAttrs};
+use diesel::pg::PgConnection;
 use utils::config;
 
 #[allow(dead_code)]
-pub fn run(conn: db_conn::Conn) -> bool {
+pub fn run(conn: PgConnection) -> bool {
 	let app_env = config::app_env();
 
 	match app_env {
@@ -21,7 +22,7 @@ pub fn run(conn: db_conn::Conn) -> bool {
 }
 
 #[allow(dead_code)]
-fn seed(_conn: db_conn::Conn) -> Result<String, String> {
+fn seed(_conn: PgConnection) -> Result<String, String> {
 	// let _ = User::delete_all(&conn);
 	// let _ = Client::delete_all(&conn);
 
