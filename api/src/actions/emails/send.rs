@@ -1,8 +1,8 @@
 use askama::Template;
 use failure::Error;
-use failure::Error;
 use models::email_kinds::EmailKind;
-use shared::email_kinds::EmailKind;
+use rusoto_core::Region;
+use rusoto_ses::{Body, Content, Destination, Message, SendEmailRequest, Ses, SesClient};
 use std::default::Default;
 use std::env;
 use std::time::Duration;
@@ -68,22 +68,22 @@ pub fn call(email_kind: &EmailKind) -> Result<(), Error> {
 		.and_then(|html| send_email(&email_kind, &html))
 }
 
-fn get_email_kind(event: &SnsEvent) -> Result<EmailKind, Error> {
-	let record = event
-		.records
-		.first()
-		.ok_or(format_err!("Failed to get first record"))?;
+// fn get_email_kind(event: &SnsEvent) -> Result<EmailKind, Error> {
+// 	let record = event
+// 		.records
+// 		.first()
+// 		.ok_or(format_err!("Failed to get first record"))?;
 
-	let message = record
-		.clone()
-		.sns
-		.message
-		.ok_or(format_err!("No message found"))?;
+// 	let message = record
+// 		.clone()
+// 		.sns
+// 		.message
+// 		.ok_or(format_err!("No message found"))?;
 
-	let email_kind: EmailKind = serde_json::from_str(&message)?;
+// 	let email_kind: EmailKind = serde_json::from_str(&message)?;
 
-	Ok(email_kind)
-}
+// 	Ok(email_kind)
+// }
 
 fn generate_intermediate(email_kind: &EmailKind) -> Result<String, Error> {
 	let result = match email_kind {

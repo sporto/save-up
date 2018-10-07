@@ -30,7 +30,7 @@ extern crate r2d2;
 extern crate range_check;
 extern crate regex;
 extern crate rusoto_core;
-extern crate rusoto_sns;
+extern crate rusoto_ses;
 extern crate serde;
 extern crate url;
 extern crate uuid;
