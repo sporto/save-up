@@ -41,11 +41,9 @@ use actix_web::{
 	http, middleware, server, App, AsyncResponder, Error, FutureResponse, HttpRequest,
 	HttpResponse, Json, State,
 };
-
 use futures::future::Future;
 use graph::{GraphQLAppExecutor, GraphQLData, GraphQLPublicExecutor};
 use juniper::http::graphiql::graphiql_source;
-// use juniper::http::GraphQLRequest;
 
 mod actions;
 mod graph;

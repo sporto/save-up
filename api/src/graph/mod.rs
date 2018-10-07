@@ -1,13 +1,9 @@
 use actix::prelude::*;
-use actix_web::{
-	error, http, middleware, server, App, AsyncResponder, Error, FutureResponse, HttpRequest,
-	HttpResponse, Json, State,
-};
+use actix_web::{error, Error};
 use diesel::prelude::*;
 use diesel::r2d2;
 use juniper::http::GraphQLRequest;
 use juniper::Context as JuniperContext;
-use juniper::FieldResult;
 use juniper::RootNode;
 use models;
 use models::user::User;
