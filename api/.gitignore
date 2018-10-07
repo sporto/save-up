@@ -1,5 +1,1 @@
-target/
-bin/
-node_modules/
-.serverless
-sam.yml
+target

@@ -1,5 +1,29 @@
-# In order to have the shared folder during compilation
-# We need to compile from the parent directory
+start:
+	cargo run
+
+dp-setup:
+	DATABASE_URL=$DATABASE_URL_LOCAL diesel setup
+
+db-gen name:
+	diesel migration generate {{name}}
+
+db-up:
+	DATABASE_URL=$DATABASE_URL_LOCAL diesel migration run
+	DATABASE_URL=$DATABASE_URL_TEST diesel migration run
+
+db-down:
+	DATABASE_URL=$DATABASE_URL_LOCAL diesel migration revert
+	DATABASE_URL=$DATABASE_URL_TEST diesel migration revert
+
+dp-setup-test:
+	DATABASE_URL=$DATABASE_URL_TEST diesel setup
+
+schema:
+	DATABASE_URL=$DATABASE_URL_LOCAL diesel print-schema > src/models/schema.rs
+
+test:
+	APP_ENV=test cargo test
+
 build-directory directory:
 	docker run \
 		--rm \
@@ -14,38 +38,5 @@ copy-binary directory bin_name:
 	mkdir -p ./bin/{{bin_name}}/
 	cp {{directory}}/target/x86_64-unknown-linux-musl/release/{{bin_name}} ./bin/{{bin_name}}/
 
-check-graph:
-	cd graphql && cargo check
 
-build-graph:
-	just build-directory graphql
-	just copy-binary graphql graphql
-
-check-mail:
-	cd mail && cargo check
-
-build-mail:
-	just build-directory mail
-	just copy-binary mail mail
-
-# Use this to have a dev server
-sam-local:
-	sam local start-api \
-		-t template.yaml \
-		-p 4010 \
-		--skip-pull-image
-
-try:
-	curl \
-		--request POST \
-		--header "Content-Type: application/json" \
-		--data '{"query": "{__schema{types{name}}}", "variables": {}, "operationName": null}' \
-		http://127.0.0.1:4010/graphql
-
-invoke-migration:
-	curl \
-		--request POST \
-		http://127.0.0.1:4010/migrate
-
-deploy:
-	sls deploy
+	

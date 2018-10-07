@@ -1,1 +1,0 @@
-DROP INDEX index_transaction_requests_on_account_id;

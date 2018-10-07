@@ -1,2 +1,0 @@
-ALTER TABLE accounts
-ALTER COLUMN kind SET NOT NULL;

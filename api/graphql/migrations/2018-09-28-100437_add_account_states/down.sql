@@ -1,2 +1,0 @@
-ALTER TABLE accounts
-ADD COLUMN state VARCHAR;

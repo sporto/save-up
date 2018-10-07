@@ -1,2 +1,0 @@
-ALTER TABLE accounts
-DROP COLUMN kind;

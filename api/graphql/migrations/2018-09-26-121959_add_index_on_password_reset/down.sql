@@ -1,1 +1,0 @@
-DROP INDEX index_users_on_password_reset_token;
