@@ -11,7 +11,7 @@ use app::mutations::resolve_transaction_request::{
 };
 use app::mutations::unarchive_user::{self, UnarchiveUserResponse};
 use app::mutations::withdraw::{self, WithdrawalInput, WithdrawalResponse};
-use graphql::AppContext;
+use graph::AppContext;
 use juniper::FieldResult;
 
 pub struct AppMutationRoot;

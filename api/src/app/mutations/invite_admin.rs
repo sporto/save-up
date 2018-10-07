@@ -1,6 +1,6 @@
 use actions::invitations;
 use actions::invitations::authorise;
-use graphql::AppContext;
+use graph::AppContext;
 use juniper::{Executor, FieldError, FieldResult};
 use models::role::Role;
 use utils::mutations::failure_to_mutation_errors;

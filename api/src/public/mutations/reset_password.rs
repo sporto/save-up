@@ -1,7 +1,7 @@
 use actions::passwords;
 use actions::users::make_jwt;
 use failure::Error;
-use graphql::PublicContext;
+use graph::PublicContext;
 use juniper::{Executor, FieldResult};
 use utils::mutations::{failure_to_mutation_errors, MutationError};
 

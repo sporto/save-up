@@ -1,6 +1,6 @@
 use actions;
 use actions::passwords;
-use graphql::AppContext;
+use graph::AppContext;
 use juniper::{Executor, FieldError, FieldResult};
 use models::role::Role;
 use models::user::{User, UserAttrs};

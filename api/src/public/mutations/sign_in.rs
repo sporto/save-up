@@ -1,6 +1,6 @@
 use actions::sign_ins;
 use actions::users::make_jwt;
-use graphql::PublicContext;
+use graph::PublicContext;
 use juniper::{Executor, FieldResult};
 use models::sign_in::SignIn;
 use utils::mutations::failure_to_mutation_errors;

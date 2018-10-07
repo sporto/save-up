@@ -43,13 +43,13 @@ use actix_web::{
 };
 
 use futures::future::Future;
-use graphql::{GraphQLAppExecutor, GraphQLData, GraphQLPublicExecutor};
+use graph::{GraphQLAppExecutor, GraphQLData, GraphQLPublicExecutor};
 use juniper::http::graphiql::graphiql_source;
 // use juniper::http::GraphQLRequest;
 
 mod actions;
 mod app;
-mod graphql;
+mod graph;
 mod models;
 mod public;
 mod utils;
@@ -115,8 +115,8 @@ fn main() {
 		// r2d2 db pool
 		let pool = utils::db_conn::init_pool();
 
-		let executor_app_addr = graphql::create_app_executor(pool.clone());
-		let executor_public_addr = graphql::create_public_executor(pool.clone());
+		let executor_app_addr = graph::create_app_executor(pool.clone());
+		let executor_public_addr = graph::create_public_executor(pool.clone());
 		let db_addr = SyncArbiter::start(3, move || DbExecutor(pool.clone()));
 
 		let state = AppState {

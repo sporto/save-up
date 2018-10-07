@@ -1,7 +1,7 @@
 use actions::sign_ups;
 use actions::users::make_jwt;
 use failure::Error;
-use graphql::PublicContext;
+use graph::PublicContext;
 use juniper::{Executor, FieldResult};
 use models::sign_up::SignUp;
 use utils::mutations::{failure_to_mutation_errors, MutationError};

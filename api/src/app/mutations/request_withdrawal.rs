@@ -3,7 +3,7 @@ use juniper::{Executor, FieldError, FieldResult};
 use actions::accounts::authorise;
 use actions::transactions::request_withdrawal;
 pub use actions::transactions::request_withdrawal::RequestWithdrawalInput;
-use graphql::AppContext;
+use graph::AppContext;
 use models::transaction_request::TransactionRequest;
 use utils::mutations::failure_to_mutation_errors;
 use utils::mutations::MutationError;

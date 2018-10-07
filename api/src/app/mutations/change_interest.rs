@@ -1,7 +1,7 @@
 use actions;
 use bigdecimal::BigDecimal;
 use bigdecimal::FromPrimitive;
-use graphql::AppContext;
+use graph::AppContext;
 use juniper::{Executor, FieldError, FieldResult};
 use models::account::Account;
 use utils::mutations::failure_to_mutation_errors;

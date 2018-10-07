@@ -2,7 +2,7 @@ use juniper::{Executor, FieldError, FieldResult};
 
 use actions::accounts::authorise;
 pub use actions::transactions::deposit::{self, DepositInput};
-use graphql::AppContext;
+use graph::AppContext;
 use models::transaction::Transaction;
 use utils::mutations::failure_to_mutation_errors;
 use utils::mutations::MutationError;

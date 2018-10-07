@@ -2,7 +2,7 @@ use actions::invitations::redeem;
 pub use actions::invitations::redeem::RedeemInvitationInput;
 use actions::users::make_jwt;
 use failure::Error;
-use graphql::PublicContext;
+use graph::PublicContext;
 use juniper::{Executor, FieldResult};
 use models::user::User;
 use utils::mutations::{failure_to_mutation_errors, MutationError};

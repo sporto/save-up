@@ -1,6 +1,6 @@
 use actions::accounts::authorise;
 pub use actions::transactions::withdraw::{self, WithdrawalInput};
-use graphql::AppContext;
+use graph::AppContext;
 use juniper::{Executor, FieldError, FieldResult};
 use models::transaction::Transaction;
 use utils::mutations::failure_to_mutation_errors;

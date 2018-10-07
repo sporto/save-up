@@ -2,7 +2,7 @@ use actions;
 use bigdecimal::BigDecimal;
 use bigdecimal::ToPrimitive;
 use chrono::NaiveDateTime;
-use graphql::AppContext;
+use graph::AppContext;
 use juniper::{FieldError, FieldResult};
 use models::account::{Account, Kind, State};
 use models::transaction::Transaction;
