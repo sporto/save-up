@@ -38,14 +38,14 @@ use actix_web::{
 	http, middleware, server, App, AsyncResponder, Error, FutureResponse, HttpRequest,
 	HttpResponse, Json, State,
 };
-use diesel::pg::PgConnection;
+// use diesel::pg::PgConnection;
 // use failure::Error;
 use futures::future::Future;
 use juniper::http::graphiql::graphiql_source;
 use juniper::http::GraphQLRequest;
-use juniper::RootNode;
+// use juniper::RootNode;
 use schema::{create_schema, Schema};
-use std::collections::HashMap;
+// use std::collections::HashMap;
 
 mod actions;
 mod app;

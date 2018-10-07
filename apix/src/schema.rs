@@ -1,3 +1,4 @@
+use app;
 use juniper::FieldResult;
 use juniper::RootNode;
 use public;
@@ -68,4 +69,13 @@ pub fn create_public_schema() -> PublicSchema {
 	let query_root = public::query_root::PublicQueryRoot {};
 	let mutation_root = public::mutation_root::PublicMutationRoot {};
 	PublicSchema::new(query_root, mutation_root)
+}
+
+type AppSchema =
+	RootNode<'static, app::query_root::AppQueryRoot, app::mutation_root::AppMutationRoot>;
+
+pub fn create_app_schema() -> AppSchema {
+	let query_root = app::query_root::AppQueryRoot {};
+	let mutation_root = app::mutation_root::AppMutationRoot {};
+	AppSchema::new(query_root, mutation_root)
 }
