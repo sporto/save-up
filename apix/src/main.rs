@@ -107,6 +107,8 @@ fn graphiql(_req: &HttpRequest<AppState>) -> Result<HttpResponse, Error> {
 }
 
 fn graphql_app((st, data): (State<AppState>, Json<GraphQLData>)) -> FutureResponse<HttpResponse> {
+	// We could use only one executor
+	// If we can send here what context to use
 	st.executor_app
 		.send(data.0)
 		.from_err()
@@ -127,19 +129,12 @@ fn main() {
 	env_logger::init();
 	let sys = actix::System::new("juniper-example");
 
-	// r2d2 db pool
-	let pool = utils::db_conn::init_pool();
-
-	let pool_db = pool.clone();
-
 	// Start db executor actors
-	let db_addr = SyncArbiter::start(3, move || DbExecutor(pool_db));
 
 	// let schema = std::sync::Arc::new(graphql::create_schema());
 	// let gql_addr = SyncArbiter::start(3, move || GraphQLExecutor::new(schema.clone()));
 
 	// let app_schema = std::sync::Arc::new(graphql::create_app_schema());
-	let executor_app_addr = graphql::create_app_executor(pool.clone());
 
 	// let public_schema = std::sync::Arc::new(graphql::create_public_schema());
 	// let gql_public_addr =
@@ -147,10 +142,17 @@ fn main() {
 
 	// Start http server
 	server::new(move || {
+		// r2d2 db pool
+		let pool = utils::db_conn::init_pool();
+
+		let executor_app_addr = graphql::create_app_executor(pool.clone());
+		let db_addr = SyncArbiter::start(3, move || DbExecutor(pool.clone()));
+
 		let state = AppState {
 			db: db_addr.clone(),
 			executor_app: executor_app_addr.clone(),
 		};
+
 		App::with_state(state)
             // enable logger
             .middleware(middleware::Logger::default())
