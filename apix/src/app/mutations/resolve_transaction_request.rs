@@ -3,7 +3,7 @@ use juniper::{Executor, FieldError, FieldResult};
 use actions::accounts::authorise;
 use actions::transactions::resolve_transaction_request;
 pub use actions::transactions::resolve_transaction_request::ResolveTransactionRequestInput;
-use app::context::AppContext;
+use graphql::AppContext;
 use models::transaction_request::TransactionRequest;
 use utils::mutations::failure_to_mutation_errors;
 use utils::mutations::MutationError;

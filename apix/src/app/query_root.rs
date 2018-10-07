@@ -1,8 +1,8 @@
 use actions;
-use app::context::AppContext;
 use chrono_tz::America;
 use chrono_tz::Australia;
 use diesel::prelude::*;
+use graphql::AppContext;
 use juniper::{FieldError, FieldResult};
 use models::account::Account;
 use models::client::Client;

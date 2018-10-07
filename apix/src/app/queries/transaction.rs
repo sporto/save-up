@@ -1,5 +1,5 @@
-use app::context::AppContext;
 use chrono::NaiveDateTime;
+use graphql::AppContext;
 use models::cents::Cents;
 use models::transaction::{Transaction, TransactionKind};
 

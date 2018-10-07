@@ -1,4 +1,4 @@
-use app::context::AppContext;
+use graphql::AppContext;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use juniper::{FieldError, FieldResult};

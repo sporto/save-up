@@ -4,14 +4,25 @@ use actix_web::{
 	HttpResponse, Json, State,
 };
 use app;
+use diesel::prelude::*;
+use diesel::r2d2;
 use juniper::http::GraphQLRequest;
+use juniper::Context as JuniperContext;
 use juniper::FieldResult;
 use juniper::RootNode;
 use models;
+use models::user::User;
 use public;
 use serde_json;
 use std;
 use utils::db_conn::DBPool;
+
+pub struct AppContext {
+	pub conn: r2d2::PooledConnection<r2d2::ConnectionManager<PgConnection>>,
+	pub user: User,
+}
+
+impl JuniperContext for AppContext {}
 
 #[derive(Serialize, Deserialize)]
 pub struct GraphQLData(GraphQLRequest);
@@ -124,7 +135,7 @@ impl Handler<GraphQLData> for GraphQLAppExecutor {
 
 		let user = models::user::system_user(); // TODO Get real user
 
-		let context = app::context::AppContext {
+		let context = AppContext {
 			conn: conn,
 			user: user,
 		};

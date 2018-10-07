@@ -1,5 +1,5 @@
 use actions;
-use app::context::AppContext;
+use graphql::AppContext;
 use juniper::{Executor, FieldError, FieldResult};
 use utils::mutations::MutationError;
 

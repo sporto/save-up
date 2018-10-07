@@ -91,7 +91,7 @@ impl Actor for DbExecutor {
 // 	type Result = Result<String, Error>;
 
 // 	fn handle(&mut self, msg: GraphQLData, _: &mut Self::Context) -> Self::Result {
-// 		let context = app::context::PublicContext { conn: conn };
+// 		let context = graphql::PublicContext { conn: conn };
 
 // 		let res = msg.0.execute(&self.schema, &context);
 // 		let res_text = serde_json::to_string(&res)?;

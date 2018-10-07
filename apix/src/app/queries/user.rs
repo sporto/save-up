@@ -1,5 +1,5 @@
-use app::context::AppContext;
 use diesel::prelude::*;
+use graphql::AppContext;
 use juniper::{FieldError, FieldResult};
 use models::account::Account;
 use models::schema as db;
