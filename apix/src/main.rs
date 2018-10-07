@@ -41,7 +41,7 @@ use actix_web::{
 };
 
 use futures::future::Future;
-use graphql::{GraphQLAppExecutor, GraphQLData};
+use graphql::{GraphQLAppExecutor, GraphQLData, GraphQLPublicExecutor};
 use juniper::http::graphiql::graphiql_source;
 // use juniper::http::GraphQLRequest;
 
@@ -55,6 +55,7 @@ mod utils;
 struct AppState {
 	db: Addr<DbExecutor>,
 	executor_app: Addr<GraphQLAppExecutor>,
+	executor_public: Addr<GraphQLPublicExecutor>,
 }
 
 pub struct DbExecutor(pub utils::db_conn::DBPool);
@@ -63,42 +64,6 @@ impl Actor for DbExecutor {
 	type Context = SyncContext<Self>;
 }
 
-// pub struct GraphQLExecutor {
-// 	schema: std::sync::Arc<graphql::Schema>,
-// }
-
-// impl GraphQLExecutor {
-// 	fn new(schema: std::sync::Arc<graphql::Schema>) -> GraphQLExecutor {
-// 		GraphQLExecutor { schema: schema }
-// 	}
-// }
-
-// impl Actor for GraphQLExecutor {
-// 	type Context = SyncContext<Self>;
-// }
-
-// impl Handler<GraphQLData> for GraphQLExecutor {
-// 	type Result = Result<String, Error>;
-
-// 	fn handle(&mut self, msg: GraphQLData, _: &mut Self::Context) -> Self::Result {
-// 		let res = msg.0.execute(&self.schema, &());
-// 		let res_text = serde_json::to_string(&res)?;
-// 		Ok(res_text)
-// 	}
-// }
-
-// impl Handler<GraphQLData> for GraphQLPublicExecutor {
-// 	type Result = Result<String, Error>;
-
-// 	fn handle(&mut self, msg: GraphQLData, _: &mut Self::Context) -> Self::Result {
-// 		let context = graphql::PublicContext { conn: conn };
-
-// 		let res = msg.0.execute(&self.schema, &context);
-// 		let res_text = serde_json::to_string(&res)?;
-// 		Ok(res_text)
-// 	}
-// }
-
 fn graphiql(_req: &HttpRequest<AppState>) -> Result<HttpResponse, Error> {
 	let html = graphiql_source("http://127.0.0.1:8080/graphql");
 	Ok(HttpResponse::Ok()
@@ -106,16 +71,30 @@ fn graphiql(_req: &HttpRequest<AppState>) -> Result<HttpResponse, Error> {
 		.body(html))
 }
 
-fn graphql_app((st, data): (State<AppState>, Json<GraphQLData>)) -> FutureResponse<HttpResponse> {
+fn graphql_public(
+	(st, data): (State<AppState>, Json<GraphQLData>),
+) -> FutureResponse<HttpResponse> {
 	// We could use only one executor
 	// If we can send here what context to use
+	st.executor_public
+		.send(data.0)
+		.from_err()
+		.and_then(|res| match res {
+			Ok(response_data) => Ok(HttpResponse::Ok()
+				.content_type("application/json")
+				.body(response_data)),
+			Err(_) => Ok(HttpResponse::InternalServerError().into()),
+		}).responder()
+}
+
+fn graphql_app((st, data): (State<AppState>, Json<GraphQLData>)) -> FutureResponse<HttpResponse> {
 	st.executor_app
 		.send(data.0)
 		.from_err()
 		.and_then(|res| match res {
-			Ok(user) => Ok(HttpResponse::Ok()
+			Ok(response_data) => Ok(HttpResponse::Ok()
 				.content_type("application/json")
-				.body(user)),
+				.body(response_data)),
 			Err(_) => Ok(HttpResponse::InternalServerError().into()),
 		}).responder()
 }
@@ -129,33 +108,25 @@ fn main() {
 	env_logger::init();
 	let sys = actix::System::new("juniper-example");
 
-	// Start db executor actors
-
-	// let schema = std::sync::Arc::new(graphql::create_schema());
-	// let gql_addr = SyncArbiter::start(3, move || GraphQLExecutor::new(schema.clone()));
-
-	// let app_schema = std::sync::Arc::new(graphql::create_app_schema());
-
-	// let public_schema = std::sync::Arc::new(graphql::create_public_schema());
-	// let gql_public_addr =
-	// 	SyncArbiter::start(3, move || GraphQLPublicExecutor::new(public_schema.clone()));
-
 	// Start http server
 	server::new(move || {
 		// r2d2 db pool
 		let pool = utils::db_conn::init_pool();
 
 		let executor_app_addr = graphql::create_app_executor(pool.clone());
+		let executor_public_addr = graphql::create_public_executor(pool.clone());
 		let db_addr = SyncArbiter::start(3, move || DbExecutor(pool.clone()));
 
 		let state = AppState {
 			db: db_addr.clone(),
 			executor_app: executor_app_addr.clone(),
+			executor_public: executor_public_addr.clone(),
 		};
 
 		App::with_state(state)
             // enable logger
             .middleware(middleware::Logger::default())
+            .resource("/graphql-pub", |r| r.method(http::Method::POST).with(graphql_public))
             .resource("/graphql-app", |r| r.method(http::Method::POST).with(graphql_app))
             .resource("/graphiql", |r| r.method(http::Method::GET).h(graphiql))
 	}).bind("127.0.0.1:4010")
