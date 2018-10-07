@@ -1,5 +1,6 @@
 use juniper::FieldResult;
 use juniper::RootNode;
+use public;
 
 #[derive(GraphQLEnum)]
 enum Episode {
@@ -55,4 +56,16 @@ pub type Schema = RootNode<'static, QueryRoot, MutationRoot>;
 
 pub fn create_schema() -> Schema {
 	Schema::new(QueryRoot {}, MutationRoot {})
+}
+
+type PublicSchema = RootNode<
+	'static,
+	public::query_root::PublicQueryRoot,
+	public::mutation_root::PublicMutationRoot,
+>;
+
+pub fn create_public_schema() -> PublicSchema {
+	let query_root = public::query_root::PublicQueryRoot {};
+	let mutation_root = public::mutation_root::PublicMutationRoot {};
+	PublicSchema::new(query_root, mutation_root)
 }
