@@ -59,7 +59,7 @@ pub fn create_schema() -> Schema {
 	Schema::new(QueryRoot {}, MutationRoot {})
 }
 
-type PublicSchema = RootNode<
+pub type PublicSchema = RootNode<
 	'static,
 	public::query_root::PublicQueryRoot,
 	public::mutation_root::PublicMutationRoot,
@@ -71,7 +71,7 @@ pub fn create_public_schema() -> PublicSchema {
 	PublicSchema::new(query_root, mutation_root)
 }
 
-type AppSchema =
+pub type AppSchema =
 	RootNode<'static, app::query_root::AppQueryRoot, app::mutation_root::AppMutationRoot>;
 
 pub fn create_app_schema() -> AppSchema {

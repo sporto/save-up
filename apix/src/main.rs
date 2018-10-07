@@ -46,18 +46,24 @@ use futures::future::Future;
 use juniper::http::graphiql::graphiql_source;
 use juniper::http::GraphQLRequest;
 // use juniper::RootNode;
-use schema::{create_schema, Schema};
 // use std::collections::HashMap;
 
 mod actions;
 mod app;
+mod gql_schema;
 mod models;
 mod public;
-mod schema;
 mod utils;
 
 struct AppState {
+	db: Addr<DbExecutor>,
 	executor: Addr<GraphQLExecutor>,
+}
+
+pub struct DbExecutor(pub utils::db_conn::Pool);
+
+impl Actor for DbExecutor {
+	type Context = SyncContext<Self>;
 }
 
 #[derive(Serialize, Deserialize)]
@@ -68,16 +74,44 @@ impl Message for GraphQLData {
 }
 
 pub struct GraphQLExecutor {
-	schema: std::sync::Arc<Schema>,
+	schema: std::sync::Arc<gql_schema::Schema>,
+}
+
+pub struct GraphQLAppExecutor {
+	schema: std::sync::Arc<gql_schema::AppSchema>,
+}
+
+pub struct GraphQLPublicExecutor {
+	schema: std::sync::Arc<gql_schema::PublicSchema>,
 }
 
 impl GraphQLExecutor {
-	fn new(schema: std::sync::Arc<Schema>) -> GraphQLExecutor {
+	fn new(schema: std::sync::Arc<gql_schema::Schema>) -> GraphQLExecutor {
 		GraphQLExecutor { schema: schema }
 	}
 }
 
+impl GraphQLAppExecutor {
+	fn new(schema: std::sync::Arc<gql_schema::AppSchema>) -> GraphQLAppExecutor {
+		GraphQLAppExecutor { schema: schema }
+	}
+}
+
+impl GraphQLPublicExecutor {
+	fn new(schema: std::sync::Arc<gql_schema::PublicSchema>) -> GraphQLPublicExecutor {
+		GraphQLPublicExecutor { schema: schema }
+	}
+}
+
 impl Actor for GraphQLExecutor {
+	type Context = SyncContext<Self>;
+}
+
+impl Actor for GraphQLAppExecutor {
+	type Context = SyncContext<Self>;
+}
+
+impl Actor for GraphQLPublicExecutor {
 	type Context = SyncContext<Self>;
 }
 
@@ -90,6 +124,35 @@ impl Handler<GraphQLData> for GraphQLExecutor {
 		Ok(res_text)
 	}
 }
+
+impl Handler<GraphQLData> for GraphQLAppExecutor {
+	type Result = Result<String, Error>;
+
+	fn handle(&mut self, msg: GraphQLData, _: &mut Self::Context) -> Self::Result {
+		let user = models::user::system_user(); // Get real user
+
+		let context = app::context::AppContext {
+			conn: conn,
+			user: user,
+		};
+
+		let res = msg.0.execute(&self.schema, &context);
+		let res_text = serde_json::to_string(&res)?;
+		Ok(res_text)
+	}
+}
+
+// impl Handler<GraphQLData> for GraphQLPublicExecutor {
+// 	type Result = Result<String, Error>;
+
+// 	fn handle(&mut self, msg: GraphQLData, _: &mut Self::Context) -> Self::Result {
+// 		let context = app::context::PublicContext { conn: conn };
+
+// 		let res = msg.0.execute(&self.schema, &context);
+// 		let res_text = serde_json::to_string(&res)?;
+// 		Ok(res_text)
+// 	}
+// }
 
 fn graphiql(_req: &HttpRequest<AppState>) -> Result<HttpResponse, Error> {
 	let html = graphiql_source("http://127.0.0.1:8080/graphql");
@@ -122,12 +185,26 @@ fn main() {
 	// r2d2 db pool
 	let pool = utils::db_conn::init_pool();
 
-	let schema = std::sync::Arc::new(create_schema());
-	let addr = SyncArbiter::start(3, move || GraphQLExecutor::new(schema.clone()));
+	// Start db executor actors
+	let db_addr = SyncArbiter::start(3, move || DbExecutor(pool.clone()));
+
+	let schema = std::sync::Arc::new(gql_schema::create_schema());
+	let gql_addr = SyncArbiter::start(3, move || GraphQLExecutor::new(schema.clone()));
+
+	let app_schema = std::sync::Arc::new(gql_schema::create_app_schema());
+	let gql_app_addr = SyncArbiter::start(3, move || GraphQLAppExecutor::new(app_schema.clone()));
+
+	// let public_schema = std::sync::Arc::new(gql_schema::create_public_schema());
+	// let gql_public_addr =
+	// 	SyncArbiter::start(3, move || GraphQLPublicExecutor::new(public_schema.clone()));
 
 	// Start http server
 	server::new(move || {
-		App::with_state(AppState{executor: addr.clone()})
+		let state = AppState {
+			db: db_addr.clone(),
+			executor: gql_addr.clone(),
+		};
+		App::with_state(state)
             // enable logger
             .middleware(middleware::Logger::default())
             .resource("/graphql", |r| r.method(http::Method::POST).with(graphql))
