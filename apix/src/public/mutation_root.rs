@@ -1,6 +1,6 @@
 use juniper::FieldResult;
 
-use public::context::{PublicContext};
+use graphql::{PublicContext};
 use public::mutations;
 use models::sign_in::SignIn;
 use models::sign_up::SignUp;

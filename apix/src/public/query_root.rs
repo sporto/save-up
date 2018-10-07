@@ -3,7 +3,7 @@
 // use chrono_tz::America;
 // use chrono_tz::Australia;
 
-use public::context::PublicContext;
+use graphql::PublicContext;
 
 pub struct PublicQueryRoot;
 

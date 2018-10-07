@@ -2,9 +2,9 @@ use actions::invitations::redeem;
 pub use actions::invitations::redeem::RedeemInvitationInput;
 use actions::users::make_jwt;
 use failure::Error;
+use graphql::PublicContext;
 use juniper::{Executor, FieldResult};
 use models::user::User;
-use public::context::PublicContext;
 use utils::mutations::{failure_to_mutation_errors, MutationError};
 
 #[derive(GraphQLObject, Clone)]

@@ -1,8 +1,8 @@
 use actions::passwords;
 use actions::users::make_jwt;
 use failure::Error;
+use graphql::PublicContext;
 use juniper::{Executor, FieldResult};
-use public::context::PublicContext;
 use utils::mutations::{failure_to_mutation_errors, MutationError};
 
 #[derive(Deserialize, Clone, GraphQLInputObject)]
