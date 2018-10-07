@@ -26,6 +26,7 @@ extern crate env_logger;
 extern crate futures;
 extern crate jsonwebtoken as jwt;
 extern crate libreauth;
+extern crate num_cpus;
 extern crate r2d2;
 extern crate range_check;
 extern crate regex;
@@ -85,6 +86,22 @@ fn graphql_public(
 		}).responder()
 }
 
+// Find the authorisation header
+// let header = request
+// 	.headers
+// 	.get("Authorization")
+// 	.ok_or(format_err!("No Authorization header found"))?;
+
+// // Get the jwt from the header
+// // e.g. Bearer abc123...
+// // We don't need the Bearer part,
+// // So get whatever is after an index of 7
+// let token = &header[7..];
+
+// let conn = utils::db_conn::establish_connection()?;
+
+// let user = get_user(&conn, token)?;
+
 fn graphql_app((st, data): (State<AppState>, Json<GraphQLData>)) -> FutureResponse<HttpResponse> {
 	st.executor_app
 		.send(data.0)
@@ -104,16 +121,21 @@ fn index(_req: &HttpRequest) -> &'static str {
 fn main() {
 	::std::env::set_var("RUST_LOG", "actix_web=info");
 	env_logger::init();
+
 	let sys = actix::System::new("juniper-example");
+
+	let capacity = (num_cpus::get() / 2) as usize;
 
 	// Start http server
 	server::new(move || {
 		// r2d2 db pool
 		let pool = utils::db_conn::init_pool();
 
-		let executor_app_addr = graph::create_app_executor(pool.clone());
-		let executor_public_addr = graph::create_public_executor(pool.clone());
-		let db_addr = SyncArbiter::start(3, move || DbExecutor(pool.clone()));
+		let executor_app_addr = graph::create_app_executor(capacity, pool.clone());
+
+		let executor_public_addr = graph::create_public_executor(capacity, pool.clone());
+
+		let db_addr = SyncArbiter::start(capacity, move || DbExecutor(pool.clone()));
 
 		let state = AppState {
 			db: db_addr.clone(),

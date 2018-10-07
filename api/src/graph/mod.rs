@@ -109,15 +109,15 @@ pub fn create_public_schema() -> PublicSchema {
 	PublicSchema::new(query_root, mutation_root)
 }
 
-pub fn create_app_executor(pool: DBPool) -> Addr<GraphQLAppExecutor> {
-	SyncArbiter::start(3, move || GraphQLAppExecutor {
+pub fn create_app_executor(capacity: usize, pool: DBPool) -> Addr<GraphQLAppExecutor> {
+	SyncArbiter::start(capacity, move || GraphQLAppExecutor {
 		schema: std::sync::Arc::new(create_app_schema()),
 		db_pool: pool.clone(),
 	})
 }
 
-pub fn create_public_executor(pool: DBPool) -> Addr<GraphQLPublicExecutor> {
-	SyncArbiter::start(3, move || GraphQLPublicExecutor {
+pub fn create_public_executor(capacity: usize, pool: DBPool) -> Addr<GraphQLPublicExecutor> {
+	SyncArbiter::start(capacity, move || GraphQLPublicExecutor {
 		schema: std::sync::Arc::new(create_public_schema()),
 		db_pool: pool.clone(),
 	})
