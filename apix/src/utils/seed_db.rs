@@ -1,4 +1,4 @@
-use utils::db_conn;
+// use utils::db_conn;
 // use models::client::{Client, ClientAttrs};
 // use models::user::{User, UserAttrs};
 use diesel::pg::PgConnection;

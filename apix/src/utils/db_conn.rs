@@ -1,16 +1,14 @@
-use diesel::pg::PgConnection;
-use diesel::Connection;
+use diesel::prelude::*;
+use diesel::r2d2;
 use failure::Error;
-use r2d2;
-use r2d2_diesel::ConnectionManager;
 use utils::config;
 
-pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
+pub type DBPool = r2d2::Pool<r2d2::ConnectionManager<PgConnection>>;
 
-pub fn init_pool() -> Pool {
+pub fn init_pool() -> DBPool {
 	let config = config::get().unwrap();
 
-	let manager = ConnectionManager::<PgConnection>::new(config.database_url);
+	let manager = r2d2::ConnectionManager::<PgConnection>::new(config.database_url);
 
 	r2d2::Pool::builder()
 		.build(manager)
