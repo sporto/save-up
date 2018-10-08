@@ -42,9 +42,11 @@ use actix_web::{
 	http, middleware, server, App, AsyncResponder, Error, FutureResponse, HttpRequest,
 	HttpResponse, Json, State,
 };
-use futures::future::Future;
+use diesel::prelude::*;
+use futures::future::{result, Future};
 use graph::{GraphQLAppExecutor, GraphQLData, GraphQLPublicExecutor};
 use juniper::http::graphiql::graphiql_source;
+use models::user::User;
 
 mod actions;
 mod graph;
@@ -86,23 +88,43 @@ fn graphql_public(
 		}).responder()
 }
 
-// Find the authorisation header
-// let header = request
-// 	.headers
-// 	.get("Authorization")
-// 	.ok_or(format_err!("No Authorization header found"))?;
+fn get_user_from_request(
+	db_addr: &Addr<DbExecutor>,
+	request: &HttpRequest<AppState>,
+) -> Result<User, failure::Error> {
+	let header = request
+		.headers()
+		.get("Authorization")
+		.ok_or("No Authorization header found")
+		.map_err(|e| format_err!("{}", e))?;
 
-// // Get the jwt from the header
-// // e.g. Bearer abc123...
-// // We don't need the Bearer part,
-// // So get whatever is after an index of 7
-// let token = &header[7..];
+	let txt = header.to_str()?;
 
-// let conn = utils::db_conn::establish_connection()?;
+	// Get the JWT from the header
+	// e.g. Bearer abc123...
+	// We don't need the Bearer part,
+	// So get whatever is after an index of 7
+	let token = &txt[7..];
 
-// let user = get_user(&conn, token)?;
+	// let conn = utils::db_conn::establish_connection()?;
 
-fn graphql_app((st, data): (State<AppState>, Json<GraphQLData>)) -> FutureResponse<HttpResponse> {
+	// let user = get_user(&conn, token)?;
+
+	Err(format_err!("Foo"))
+}
+
+fn graphql_app(
+	(request, st, data): (HttpRequest<AppState>, State<AppState>, Json<GraphQLData>),
+) -> FutureResponse<HttpResponse> {
+	let unauthorised = HttpResponse::Unauthorized().finish();
+
+	let db_addr = &request.state().db;
+
+	let user = match get_user_from_request(db_addr, &request) {
+		Ok(user) => user,
+		Err(_) => return result(Ok(unauthorised)).responder(),
+	};
+
 	st.executor_app
 		.send(data.0)
 		.from_err()
@@ -155,4 +177,18 @@ fn main() {
 
 	println!("Started http server: 127.0.0.1:4010");
 	let _ = sys.run();
+}
+
+fn get_user(conn: &PgConnection, token: &str) -> Result<User, failure::Error> {
+	let config = utils::config::get()?;
+
+	if token == config.system_jwt {
+		return Ok(models::user::system_user());
+	}
+
+	let token_data = actions::users::decode_token::call(token)?;
+
+	let user_id = token_data.user_id;
+
+	models::user::User::find(&conn, user_id).map_err(|_| format_err!("User not found"))
 }
