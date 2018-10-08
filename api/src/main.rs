@@ -44,8 +44,12 @@ use actix_web::{
 };
 use diesel::prelude::*;
 use futures::future::{result, Future};
-use graph::{GraphQLAppExecutor, GraphQLData, GraphQLPublicExecutor};
+use graph::{
+	GraphQLAppExecutor, GraphQLPublicExecutor, ProcessAppGraphQlRequest,
+	ProcessPublicGraphQlRequest,
+};
 use juniper::http::graphiql::graphiql_source;
+use juniper::http::GraphQLRequest;
 use models::user::User;
 
 mod actions;
@@ -73,12 +77,14 @@ fn graphiql(_req: &HttpRequest<AppState>) -> Result<HttpResponse, Error> {
 }
 
 fn graphql_public(
-	(st, data): (State<AppState>, Json<GraphQLData>),
+	(st, data): (State<AppState>, Json<GraphQLRequest>),
 ) -> FutureResponse<HttpResponse> {
 	// We could use only one executor
 	// If we can send here what context to use
+	let msg = ProcessPublicGraphQlRequest { request: data.0 };
+
 	st.executor_public
-		.send(data.0)
+		.send(msg)
 		.from_err()
 		.and_then(|res| match res {
 			Ok(response_data) => Ok(HttpResponse::Ok()
@@ -107,7 +113,7 @@ fn get_token_from_request(request: &HttpRequest<AppState>) -> Result<String, fai
 }
 
 fn graphql_app(
-	(request, st, data): (HttpRequest<AppState>, State<AppState>, Json<GraphQLData>),
+	(request, st, data): (HttpRequest<AppState>, State<AppState>, Json<GraphQLRequest>),
 ) -> FutureResponse<HttpResponse> {
 	let unauthorised = HttpResponse::Unauthorized().finish();
 
@@ -118,22 +124,35 @@ fn graphql_app(
 		Err(_) => return result(Ok(unauthorised)).responder(),
 	};
 
-	let message = GetUserFromJWT { token };
+	let msg = ProcessAppGraphQlRequest {
+		token,
+		request: data.0,
+	};
 
-	db_addr
-		.send(message)
+	st.executor_app
+		.send(msg)
 		.from_err()
-		.and_then(move |user| {
-			st.executor_app
-				.send(data.0)
-				.from_err()
-				.and_then(|res| match res {
-					Ok(response_data) => Ok(HttpResponse::Ok()
-						.content_type("application/json")
-						.body(response_data)),
-					Err(_) => Ok(HttpResponse::InternalServerError().into()),
-				})
+		.and_then(|res| match res {
+			Ok(response_data) => Ok(HttpResponse::Ok()
+				.content_type("application/json")
+				.body(response_data)),
+			Err(_) => Ok(HttpResponse::InternalServerError().into()),
 		}).responder()
+
+	// db_addr
+	// 	.send(message)
+	// 	.from_err()
+	// 	.and_then(move |user| {
+	// 		st.executor_app
+	// 			.send(data.0)
+	// 			.from_err()
+	// 			.and_then(|res| match res {
+	// 				Ok(response_data) => Ok(HttpResponse::Ok()
+	// 					.content_type("application/json")
+	// 					.body(response_data)),
+	// 				Err(_) => Ok(HttpResponse::InternalServerError().into()),
+	// 			})
+	// 	}).responder()
 }
 
 fn index(_req: &HttpRequest) -> &'static str {
@@ -179,40 +198,40 @@ fn main() {
 	let _ = sys.run();
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-struct GetUserFromJWT {
-	token: String,
-}
+// #[derive(Debug, Serialize, Deserialize)]
+// struct GetUserFromJWT {
+// 	token: String,
+// }
 
-impl Message for GetUserFromJWT {
-	type Result = Result<User, Error>;
-}
+// impl Message for GetUserFromJWT {
+// 	type Result = Result<User, Error>;
+// }
 
-impl Handler<GetUserFromJWT> for DbExecutor {
-	type Result = Result<User, Error>;
+// impl Handler<GetUserFromJWT> for DbExecutor {
+// 	type Result = Result<User, Error>;
 
-	fn handle(&mut self, msg: GetUserFromJWT, _: &mut Self::Context) -> Self::Result {
-		let config = match utils::config::get() {
-			Ok(config) => config,
-			Err(e) => return Err(error::ErrorBadRequest(e)),
-		};
+// 	fn handle(&mut self, msg: GetUserFromJWT, _: &mut Self::Context) -> Self::Result {
+// 		let config = match utils::config::get() {
+// 			Ok(config) => config,
+// 			Err(e) => return Err(error::ErrorBadRequest(e)),
+// 		};
 
-		if msg.token == config.system_jwt {
-			let user = models::user::system_user();
-			return Ok(user);
-		};
+// 		if msg.token == config.system_jwt {
+// 			let user = models::user::system_user();
+// 			return Ok(user);
+// 		};
 
-		let token_data = match actions::users::decode_token::call(&msg.token) {
-			Ok(claims) => claims,
-			Err(e) => return Err(error::ErrorBadRequest(e)),
-		};
+// 		let token_data = match actions::users::decode_token::call(&msg.token) {
+// 			Ok(claims) => claims,
+// 			Err(e) => return Err(error::ErrorBadRequest(e)),
+// 		};
 
-		let conn = &self
-			.0
-			.get()
-			.map_err(|r2d2_error| error::ErrorBadRequest(r2d2_error.to_string()))?;
+// 		let conn = &self
+// 			.0
+// 			.get()
+// 			.map_err(|r2d2_error| error::ErrorBadRequest(r2d2_error.to_string()))?;
 
-		models::user::User::find(conn, token_data.user_id)
-			.map_err(|diesel_error| error::ErrorBadRequest(diesel_error.to_string()))
-	}
-}
+// 		models::user::User::find(conn, token_data.user_id)
+// 			.map_err(|diesel_error| error::ErrorBadRequest(diesel_error.to_string()))
+// 	}
+// }
