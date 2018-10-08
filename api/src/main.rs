@@ -42,7 +42,8 @@ use actix_web::{
 	error, http, middleware, server, App, AsyncResponder, Error, FutureResponse, HttpRequest,
 	HttpResponse, Json, State,
 };
-use diesel::prelude::*;
+use askama::Template;
+// use diesel::prelude::*;
 use futures::future::{result, Future};
 use graph::{
 	GraphQLAppExecutor, GraphQLPublicExecutor, ProcessAppGraphQlRequest,
@@ -57,6 +58,10 @@ mod graph;
 mod models;
 mod utils;
 
+#[derive(Template)]
+#[template(path = "graphiql.html")]
+struct GraphiqlTemplate;
+
 struct AppState {
 	db: Addr<DbExecutor>,
 	executor_app: Addr<GraphQLAppExecutor>,
@@ -70,10 +75,10 @@ impl Actor for DbExecutor {
 }
 
 fn graphiql(_req: &HttpRequest<AppState>) -> Result<HttpResponse, Error> {
-	let html = graphiql_source("/graphql-app");
-	Ok(HttpResponse::Ok()
-		.content_type("text/html; charset=utf-8")
-		.body(html))
+	GraphiqlTemplate
+		.render()
+		.map(|s| HttpResponse::Ok().content_type("text/html").body(s))
+		.map_err(|askama_error| error::ErrorBadRequest(askama_error.to_string()))
 }
 
 fn graphql_public(
@@ -160,6 +165,8 @@ fn index(_req: &HttpRequest) -> &'static str {
 }
 
 fn main() {
+	askama::rerun_if_templates_changed();
+
 	::std::env::set_var("RUST_LOG", "actix_web=info");
 	env_logger::init();
 

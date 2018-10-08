@@ -8,53 +8,53 @@ use std::env;
 use std::time::Duration;
 
 #[derive(Template)]
-#[template(path = "invite.html")]
+#[template(path = "emails/invite.html")]
 struct InviteTemplate<'a> {
 	inviter_name: &'a str,
 	invitation_url: &'a str,
 }
 
 #[derive(Template)]
-#[template(path = "confirm_email.html")]
+#[template(path = "emails/confirm_email.html")]
 struct ConfirmEmailTemplate<'a> {
 	confirmation_url: &'a str,
 }
 
 #[derive(Template)]
-#[template(path = "request_withdrawal.html")]
+#[template(path = "emails/request_withdrawal.html")]
 struct RequestWithdrawalTemplate<'a> {
 	amount: &'a i64,
 	name: &'a str,
 }
 
 #[derive(Template)]
-#[template(path = "approve_transaction.html")]
+#[template(path = "emails/approve_transaction.html")]
 struct ApproveTransactionRequestTemplate<'a> {
 	amount: &'a i64,
 }
 
 #[derive(Template)]
-#[template(path = "reject_transaction.html")]
+#[template(path = "emails/reject_transaction.html")]
 struct RejectTransactionRequestTemplate<'a> {
 	amount: &'a i64,
 }
 
 #[derive(Template)]
-#[template(path = "acknowledge_deposit.html")]
+#[template(path = "emails/acknowledge_deposit.html")]
 struct AcknowledgeDepositTemplate<'a> {
 	amount: &'a i64,
 	balance: &'a i64,
 }
 
 #[derive(Template)]
-#[template(path = "acknowledge_withdrawal.html")]
+#[template(path = "emails/acknowledge_withdrawal.html")]
 struct AcknowledgeWithdrawalTemplate<'a> {
 	amount: &'a i64,
 	balance: &'a i64,
 }
 
 #[derive(Template)]
-#[template(path = "reset_password.html")]
+#[template(path = "emails/reset_password.html")]
 struct ResetPasswordTemplate<'a> {
 	reset_url: &'a str,
 }

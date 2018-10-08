@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+
+<head>
+	<title>GraphiQL</title>
+	<link rel="stylesheet" href="//unpkg.com/graphiql@0.11.11/graphiql.css" />
+	<style>
+		.h-full {
+			height: 100%;
+		}
+
+		.m-0 {
+			margin: 0;
+		}
+	</style>
+</head>
+
+<body class="h-full m-0">
+	<div id="app" class="h-full"></div>
+	<script src="//unpkg.com/react@16.3.2/umd/react.production.min.js"></script>
+	<script src="//unpkg.com/react-dom@16.3.2/umd/react-dom.production.min.js"></script>
+	<script src="//unpkg.com/graphiql@0.11.11/graphiql.js"></script>
+	<script>
+		const TOKEN_KEY = "save-up-token"
+
+		let token = localStorage.getItem(TOKEN_KEY)
+
+		if (token == null) throw new Error("Couldn't find token")
+
+		function graphQLFetcher(graphQLParams) {
+			let config = getConfig()
+
+			return fetch("/graphql-app", {
+				method: "post",
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": "Bearer " + token,
+				},
+				body: JSON.stringify(graphQLParams),
+			}).then(response => response.json());
+
+		}
+
+		let node = document.getElementById("app")
+
+		ReactDOM.render(
+			React.createElement(GraphiQL, { fetcher: graphQLFetcher }),
+			node,
+		)
+	</script>
+</body>
+
+</html>
