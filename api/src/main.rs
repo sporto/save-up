@@ -39,7 +39,7 @@ extern crate validator;
 
 use actix::prelude::*;
 use actix_web::{
-	http, middleware, server, App, AsyncResponder, Error, FutureResponse, HttpRequest,
+	error, http, middleware, server, App, AsyncResponder, Error, FutureResponse, HttpRequest,
 	HttpResponse, Json, State,
 };
 use diesel::prelude::*;
@@ -88,10 +88,7 @@ fn graphql_public(
 		}).responder()
 }
 
-fn get_user_from_request(
-	db_addr: &Addr<DbExecutor>,
-	request: &HttpRequest<AppState>,
-) -> Result<User, failure::Error> {
+fn get_token_from_request(request: &HttpRequest<AppState>) -> Result<String, failure::Error> {
 	let header = request
 		.headers()
 		.get("Authorization")
@@ -106,11 +103,7 @@ fn get_user_from_request(
 	// So get whatever is after an index of 7
 	let token = &txt[7..];
 
-	// let conn = utils::db_conn::establish_connection()?;
-
-	// let user = get_user(&conn, token)?;
-
-	Err(format_err!("Foo"))
+	Ok(token.to_string())
 }
 
 fn graphql_app(
@@ -120,19 +113,26 @@ fn graphql_app(
 
 	let db_addr = &request.state().db;
 
-	let user = match get_user_from_request(db_addr, &request) {
-		Ok(user) => user,
+	let token = match get_token_from_request(&request) {
+		Ok(token) => token,
 		Err(_) => return result(Ok(unauthorised)).responder(),
 	};
 
-	st.executor_app
-		.send(data.0)
+	let message = GetUserFromJWT { token };
+
+	db_addr
+		.send(message)
 		.from_err()
-		.and_then(|res| match res {
-			Ok(response_data) => Ok(HttpResponse::Ok()
-				.content_type("application/json")
-				.body(response_data)),
-			Err(_) => Ok(HttpResponse::InternalServerError().into()),
+		.and_then(move |user| {
+			st.executor_app
+				.send(data.0)
+				.from_err()
+				.and_then(|res| match res {
+					Ok(response_data) => Ok(HttpResponse::Ok()
+						.content_type("application/json")
+						.body(response_data)),
+					Err(_) => Ok(HttpResponse::InternalServerError().into()),
+				})
 		}).responder()
 }
 
@@ -179,16 +179,40 @@ fn main() {
 	let _ = sys.run();
 }
 
-fn get_user(conn: &PgConnection, token: &str) -> Result<User, failure::Error> {
-	let config = utils::config::get()?;
+#[derive(Debug, Serialize, Deserialize)]
+struct GetUserFromJWT {
+	token: String,
+}
 
-	if token == config.system_jwt {
-		return Ok(models::user::system_user());
+impl Message for GetUserFromJWT {
+	type Result = Result<User, Error>;
+}
+
+impl Handler<GetUserFromJWT> for DbExecutor {
+	type Result = Result<User, Error>;
+
+	fn handle(&mut self, msg: GetUserFromJWT, _: &mut Self::Context) -> Self::Result {
+		let config = match utils::config::get() {
+			Ok(config) => config,
+			Err(e) => return Err(error::ErrorBadRequest(e)),
+		};
+
+		if msg.token == config.system_jwt {
+			let user = models::user::system_user();
+			return Ok(user);
+		};
+
+		let token_data = match actions::users::decode_token::call(&msg.token) {
+			Ok(claims) => claims,
+			Err(e) => return Err(error::ErrorBadRequest(e)),
+		};
+
+		let conn = &self
+			.0
+			.get()
+			.map_err(|r2d2_error| error::ErrorBadRequest(r2d2_error.to_string()))?;
+
+		models::user::User::find(conn, token_data.user_id)
+			.map_err(|diesel_error| error::ErrorBadRequest(diesel_error.to_string()))
 	}
-
-	let token_data = actions::users::decode_token::call(token)?;
-
-	let user_id = token_data.user_id;
-
-	models::user::User::find(&conn, user_id).map_err(|_| format_err!("User not found"))
 }
