@@ -14,6 +14,7 @@ RUN rm src/*.rs
 COPY ./src ./src
 COPY ./templates ./templates 
 RUN cargo build --release
+RUN ls target/x86_64-unknown-linux-musl/release/
 
 FROM scratch
 COPY --from=base /volume/target/x86_64-unknown-linux-musl/release/api /api

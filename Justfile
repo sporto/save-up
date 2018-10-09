@@ -4,6 +4,9 @@ start:
 graphiql:
 	hivemind Procfile.graphiql
 
+deploy:
+	just api/deploy
+
 net-login:
 	netlifyctl login
 

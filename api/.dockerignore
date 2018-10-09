@@ -1,5 +1,6 @@
-/.serverless
-/bin
-/node_modules
-/target
-**/target
+*
+!Cargo.toml
+!Cargo.lock
+!migrations
+!src
+!templates
