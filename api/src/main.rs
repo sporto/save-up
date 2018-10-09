@@ -2,7 +2,6 @@
 extern crate askama;
 #[macro_use]
 extern crate diesel;
-#[macro_use]
 extern crate diesel_migrations;
 #[macro_use]
 extern crate failure;
@@ -10,7 +9,6 @@ extern crate failure;
 extern crate juniper;
 #[macro_use]
 extern crate serde_derive;
-#[macro_use]
 extern crate serde_json;
 #[macro_use]
 extern crate validator_derive;
@@ -49,9 +47,7 @@ use graph::{
 	GraphQLAppExecutor, GraphQLPublicExecutor, ProcessAppGraphQlRequest,
 	ProcessPublicGraphQlRequest,
 };
-use juniper::http::graphiql::graphiql_source;
 use juniper::http::GraphQLRequest;
-use models::user::User;
 
 mod actions;
 mod graph;
@@ -122,8 +118,6 @@ fn graphql_app(
 ) -> FutureResponse<HttpResponse> {
 	let unauthorised = HttpResponse::Unauthorized().finish();
 
-	// let _db_addr = &request.state().db;
-
 	let token = match get_token_from_request(&request) {
 		Ok(token) => token,
 		Err(_) => return result(Ok(unauthorised)).responder(),
@@ -143,21 +137,6 @@ fn graphql_app(
 				.body(response_data)),
 			Err(_) => Ok(HttpResponse::InternalServerError().into()),
 		}).responder()
-
-	// db_addr
-	// 	.send(message)
-	// 	.from_err()
-	// 	.and_then(move |user| {
-	// 		st.executor_app
-	// 			.send(data.0)
-	// 			.from_err()
-	// 			.and_then(|res| match res {
-	// 				Ok(response_data) => Ok(HttpResponse::Ok()
-	// 					.content_type("application/json")
-	// 					.body(response_data)),
-	// 				Err(_) => Ok(HttpResponse::InternalServerError().into()),
-	// 			})
-	// 	}).responder()
 }
 
 fn index(_req: &HttpRequest) -> &'static str {
@@ -215,41 +194,3 @@ fn main() {
 	println!("Started http server: 127.0.0.1:4010");
 	let _ = sys.run();
 }
-
-// #[derive(Debug, Serialize, Deserialize)]
-// struct GetUserFromJWT {
-// 	token: String,
-// }
-
-// impl Message for GetUserFromJWT {
-// 	type Result = Result<User, Error>;
-// }
-
-// impl Handler<GetUserFromJWT> for DbExecutor {
-// 	type Result = Result<User, Error>;
-
-// 	fn handle(&mut self, msg: GetUserFromJWT, _: &mut Self::Context) -> Self::Result {
-// 		let config = match utils::config::get() {
-// 			Ok(config) => config,
-// 			Err(e) => return Err(error::ErrorBadRequest(e)),
-// 		};
-
-// 		if msg.token == config.system_jwt {
-// 			let user = models::user::system_user();
-// 			return Ok(user);
-// 		};
-
-// 		let token_data = match actions::users::decode_token::call(&msg.token) {
-// 			Ok(claims) => claims,
-// 			Err(e) => return Err(error::ErrorBadRequest(e)),
-// 		};
-
-// 		let conn = &self
-// 			.0
-// 			.get()
-// 			.map_err(|r2d2_error| error::ErrorBadRequest(r2d2_error.to_string()))?;
-
-// 		models::user::User::find(conn, token_data.user_id)
-// 			.map_err(|diesel_error| error::ErrorBadRequest(diesel_error.to_string()))
-// 	}
-// }
