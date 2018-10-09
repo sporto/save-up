@@ -1,5 +1,11 @@
 {
 	"features": {
 		"cloud": "v2"
+	},
+	"env": {
+		"CLIENT_HOST": "@saveup-client-host",
+		"DATABASE_URL": "@saveup-database-url",
+		"SYSTEM_EMAIL": "@saveup-system-email",
+		"SYSTEM_JWT": "@saveup-system-jwt"
 	}
 }
