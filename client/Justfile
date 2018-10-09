@@ -24,5 +24,7 @@ build:
 start:
 	npx parcel -p 8080 src/app.html
 
+# This has to be the same port as the FE
+# Otherwise it won't find the token in LS
 graphiql:
 	npx parcel -p 8080 src/graphiql.html

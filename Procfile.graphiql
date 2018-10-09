@@ -1,2 +1,2 @@
-api: just api/sam-local
+api: just api/start
 graphiql: just client/graphiql

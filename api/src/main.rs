@@ -39,8 +39,8 @@ extern crate validator;
 
 use actix::prelude::*;
 use actix_web::{
-	error, http, middleware, server, App, AsyncResponder, Error, FutureResponse, HttpRequest,
-	HttpResponse, Json, State,
+	error, http, middleware, middleware::cors::Cors, server, App, AsyncResponder, Error,
+	FutureResponse, HttpRequest, HttpResponse, Json, State,
 };
 use askama::Template;
 // use diesel::prelude::*;
@@ -122,7 +122,7 @@ fn graphql_app(
 ) -> FutureResponse<HttpResponse> {
 	let unauthorised = HttpResponse::Unauthorized().finish();
 
-	let db_addr = &request.state().db;
+	// let _db_addr = &request.state().db;
 
 	let token = match get_token_from_request(&request) {
 		Ok(token) => token,
@@ -170,6 +170,8 @@ fn main() {
 	::std::env::set_var("RUST_LOG", "actix_web=info");
 	env_logger::init();
 
+	let config = utils::config::get().expect("Failed to get config");
+
 	let sys = actix::System::new("juniper-example");
 
 	let capacity = (num_cpus::get() / 2) as usize;
@@ -194,9 +196,18 @@ fn main() {
 		App::with_state(state)
             // enable logger
             .middleware(middleware::Logger::default())
-            .resource("/graphql-pub", |r| r.method(http::Method::POST).with(graphql_public))
-            .resource("/graphql-app", |r| r.method(http::Method::POST).with(graphql_app))
-            .resource("/graphiql", |r| r.method(http::Method::GET).h(graphiql))
+			.configure(|app|
+				Cors::for_app(app)
+                    .allowed_origin(&config.client_host)
+                    .allowed_methods(vec!["GET", "POST"])
+                    .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+                    .allowed_header(http::header::CONTENT_TYPE)
+                    .max_age(3600)
+					.resource("/graphql-pub", |r| r.method(http::Method::POST).with(graphql_public))
+					.resource("/graphql-app", |r| r.method(http::Method::POST).with(graphql_app))
+					.resource("/graphiql", |r| r.method(http::Method::GET).h(graphiql))
+                    .register()
+			)
 	}).bind("127.0.0.1:4010")
 	.unwrap()
 	.start();
