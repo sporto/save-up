@@ -24,20 +24,22 @@ schema:
 test:
 	APP_ENV=test cargo test
 
+build:
+	just build-directory .
+	just copy-binary . api
+
 build-directory directory:
 	docker run \
 		--rm \
 		-it \
 		-v $PWD/{{directory}}:/volume/{{directory}} \
-		-v $PWD/shared:/volume/shared \
 		-v cargo-cache:/root/.cargo \
 		clux/muslrust:stable \
 		cargo build --release --manifest-path ./{{directory}}/Cargo.toml
 
 copy-binary directory bin_name:
-	mkdir -p ./bin/{{bin_name}}/
-	cp {{directory}}/target/x86_64-unknown-linux-musl/release/{{bin_name}} ./bin/{{bin_name}}/
+	mkdir -p ./bin/
+	cp {{directory}}/target/x86_64-unknown-linux-musl/release/{{bin_name}} ./bin/
 
 deploy:
 	now --public
-	
