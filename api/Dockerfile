@@ -1,4 +1,4 @@
-FROM clux/muslrust:stable as base
+FROM rust:1.29 as base
 
 WORKDIR /volume
 
@@ -12,10 +12,9 @@ RUN cargo build --release
 RUN rm src/*.rs
 
 COPY ./src ./src
-COPY ./templates ./templates 
+COPY ./templates ./templates
 RUN cargo build --release
-RUN ls target/x86_64-unknown-linux-musl/release/
 
 FROM scratch
-COPY --from=base /volume/target/x86_64-unknown-linux-musl/release/api /api
+COPY --from=base /volume/target/release/api /api
 CMD ["/api"]
