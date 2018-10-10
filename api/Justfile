@@ -38,8 +38,8 @@ build-directory directory:
 		cargo build --release --manifest-path ./{{directory}}/Cargo.toml
 
 copy-binary directory bin_name:
-	mkdir -p ./bin/
-	cp {{directory}}/target/x86_64-unknown-linux-musl/release/{{bin_name}} ./bin/
+	mkdir -p ./dist/bin/
+	cp {{directory}}/target/x86_64-unknown-linux-musl/release/{{bin_name}} ./dist/bin/
 
-deploy:
-	now --public
+deploy: build
+	cd bin && now --public
