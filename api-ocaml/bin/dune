@@ -1,0 +1,8 @@
+(executable
+ (name main)
+ (libraries lib)
+ (preprocess (pps lwt_ppx)))
+
+(alias
+ (name DEFAULT)
+ (deps main.exe))

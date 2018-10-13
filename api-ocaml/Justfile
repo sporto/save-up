@@ -1,0 +1,15 @@
+build:
+	dune build ./bin/main.exe
+
+# http://localhost:8080/graphql
+start:
+	dune exec ./bin/main.exe
+
+deploy:
+	now --public
+
+docker-build:
+	docker build . -t save-up
+
+docker-sh:
+	docker run -it save-up /bin/sh
