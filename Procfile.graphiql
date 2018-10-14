@@ -1,2 +1,2 @@
-api: just api/start
+api: just api-ocaml/start
 graphiql: just client/graphiql

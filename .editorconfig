@@ -39,6 +39,10 @@ indent_size = 4
 indent_style = tab
 indent_size = 4
 
+[*.ml]
+indent_style = tab
+indent_size = 4
+
 [*.json]
 indent_style = tab
 indent_size = 4
