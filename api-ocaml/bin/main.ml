@@ -1,7 +1,8 @@
-open Graphql_lwt
+open BatString
 open Cohttp
-open Lib
 open Core
+open Graphql_lwt
+open Lib
 
 let get_context (req: Cohttp.Request.t) =
 	let
@@ -12,7 +13,12 @@ let get_context (req: Cohttp.Request.t) =
 	in
 	match authHeader with
 	| None -> ()
-	| Some(_header) -> ()
+	| Some(header) ->
+		let
+			_token = 
+				lchop ~n:7 header
+		in
+		()
 
 let () =
   Server.start ~port:4010 ~ctx:get_context Graph.schema

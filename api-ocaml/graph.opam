@@ -5,6 +5,7 @@ maintainer: "Your Name <email@example.com>"
 
 depends: [
   "dune" {build}
+  "batteries"
   "core"
   "lwt"
   "lwt_ppx"
