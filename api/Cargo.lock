@@ -133,7 +133,7 @@ version = "0.1.0"
 dependencies = [
  "actix 0.7.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "actix-web 0.7.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "askama 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "askama 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "bigdecimal 0.0.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "chrono 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "chrono-tz 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -186,30 +186,31 @@ dependencies = [
 
 [[package]]
 name = "askama"
-version = "0.7.1"
+version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "askama_derive 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "askama_shared 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "askama_derive 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "askama_shared 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "askama_derive"
-version = "0.7.1"
+version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "askama_shared 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "askama_shared 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "nom 4.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "proc-macro2 0.4.20 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 0.6.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 0.14.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 0.15.8 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "askama_shared"
-version = "0.7.1"
+version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
+ "num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.79 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.79 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2421,9 +2422,9 @@ dependencies = [
 "checksum argon2rs 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)" = "3f67b0b6a86dae6e67ff4ca2b6201396074996379fba2b92ff649126f37cb392"
 "checksum arrayref 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)" = "0d382e583f07208808f6b1249e60848879ba3543f57c32277bf52d69c2f0f0ee"
 "checksum arrayvec 0.4.7 (registry+https://github.com/rust-lang/crates.io-index)" = "a1e964f9e24d588183fcb43503abda40d288c8657dfc27311516ce2f05675aef"
-"checksum askama 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)" = "c796fa924bb44233b38ae23020bfb229244e61910648d5f7bdc3659fcdf0572e"
-"checksum askama_derive 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)" = "57968dab3a9512b88af88012896e5e1d353e314afd5d190a98d0d4762c8f0a11"
-"checksum askama_shared 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)" = "a180253955cc7bc732fdd18fad8aa9f04a4891fc7aa9c6ce525c128a1de3a146"
+"checksum askama 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)" = "eed81479263c8753e06f4981f5a313b3fe6cbff30c3ff8d9ae15ef0c72d93fb5"
+"checksum askama_derive 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)" = "46580c08e5520afadc6e9064759e15fc743489a4db78f9c751113e3d32a1e083"
+"checksum askama_shared 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)" = "64509fd5c2fa767fa7ea973b732c61f0b8d30d1adf084e5164523e51a5e35d71"
 "checksum atty 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)" = "9a7d5b8723950951411ee34d271d99dddcc2035a16ab25310ea2c8cfd4369652"
 "checksum backtrace 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "346d7644f0b5f9bc73082d3b2236b69a05fd35cce0cfa3724e184e6a5c9e2a2f"
 "checksum backtrace 0.3.9 (registry+https://github.com/rust-lang/crates.io-index)" = "89a47830402e9981c5c41223151efcced65a0510c13097c769cede7efb34782a"

@@ -35,4 +35,4 @@ validator = "0.7"
 validator_derive = "0.7"
 
 [build-dependencies]
-askama = "0.7"
+askama = "0.7.2"
