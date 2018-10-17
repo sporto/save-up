@@ -173,21 +173,21 @@ fn main() {
 		};
 
 		App::with_state(state)
-            // enable logger
-            .middleware(middleware::Logger::default())
+			// enable logger
+			.middleware(middleware::Logger::default())
 			
 			.configure(|app|
 				Cors::for_app(app)
-                    .allowed_origin(&config.client_host)
-                    .allowed_methods(vec!["GET", "POST"])
-                    .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
-                    .allowed_header(http::header::CONTENT_TYPE)
-                    .max_age(3600)
+					.allowed_origin(&config.client_host)
+					.allowed_methods(vec!["GET", "POST"])
+					.allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+					.allowed_header(http::header::CONTENT_TYPE)
+					.max_age(3600)
 					.resource("/status", |r| r.f(status))
 					.resource("/graphql-pub", |r| r.method(http::Method::POST).with(graphql_public))
 					.resource("/graphql-app", |r| r.method(http::Method::POST).with(graphql_app))
 					.resource("/graphiql", |r| r.method(http::Method::GET).h(graphiql))
-                    .register()
+					.register()
 			)
 	}).bind("127.0.0.1:4010")
 	.unwrap()

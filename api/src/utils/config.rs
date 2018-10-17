@@ -7,6 +7,7 @@ pub enum AppEnv {
 	Dev,
 }
 
+#[derive(Clone)]
 pub struct Config {
 	pub api_secret: String,
 	pub client_host: String,
