@@ -1,6 +1,5 @@
 use failure::Error;
-// use juniper::FieldResult;
-use validator::{ValidationError, ValidationErrors};
+use validator::{ValidationErrors, ValidationErrorsKind};
 
 #[derive(GraphQLObject, Clone)]
 pub struct MutationError {
@@ -11,26 +10,16 @@ pub struct MutationError {
 #[allow(dead_code)]
 fn to_mutation_errors(errors: ValidationErrors) -> Vec<MutationError> {
 	errors
-		.inner()
+		.errors()
 		.iter()
-		.map(|(k, v)| MutationError {
+		.map(|(k, validationErrorKind)| MutationError {
 			key: k.to_string(),
-			messages: to_mutation_error_messages(v.to_vec()),
-		})
-		.collect()
+			messages: vec![kind_to_string(&validationErrorKind)],
+		}).collect()
 }
 
-#[allow(dead_code)]
-fn to_mutation_error_messages(errors: Vec<ValidationError>) -> Vec<String> {
-	errors
-		.iter()
-		.map(|e| {
-			e.clone()
-				.message
-				.unwrap_or(::std::borrow::Cow::Borrowed("Invalid"))
-				.to_string()
-		})
-		.collect()
+fn kind_to_string(kind: &ValidationErrorsKind) -> String {
+	format!("{:?}", kind)
 }
 
 #[allow(dead_code)]
