@@ -1,0 +1,25 @@
+version: 0.4
+
+networks:
+  production:
+    hosts:
+      - root@51.15.103.221
+
+commands:
+  prepare:
+    desc: Make dir
+    run: mkdir -p /app/
+  upload:
+    desc: Upload binary
+    upload:
+      - src: ./dist/bin
+        dst: /app/
+  restart:
+    desc: Restart app
+    run: /app/api
+
+targets:
+  deploy:
+    - prepare
+    - upload
+    - restart
