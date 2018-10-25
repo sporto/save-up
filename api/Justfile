@@ -44,9 +44,12 @@ strip:
 		strip ./dist/bin/api
 
 compress:
-	tar -zcvf ./dist/bin/api.tar.gz ./dist/bin/api
+	cd ./dist/bin/ && tar -zcvf api.tar.gz api
 
 prepare: build copy-bin strip compress
 
 deploy:
 	cap production deploy
+
+ssh:
+	ssh root@51.15.103.221
