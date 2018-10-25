@@ -1,0 +1,2 @@
+DeployTo
+CopyFile dist/bin/api /app
