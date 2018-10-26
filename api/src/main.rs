@@ -189,7 +189,7 @@ fn main() {
 					.resource("/graphiql", |r| r.method(http::Method::GET).h(graphiql))
 					.register()
 			)
-	}).bind("127.0.0.1:".to_owned() + &config.api_port)
+	}).bind("0.0.0.0:".to_owned() + &config.api_port)
 	.unwrap()
 	.start();
 
