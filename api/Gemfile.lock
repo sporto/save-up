@@ -8,6 +8,8 @@ GEM
       i18n
       rake (>= 10.0.0)
       sshkit (>= 1.9.0)
+    capistrano-env_config (0.0.5)
+      capistrano (~> 3.7)
     capistrano-scm-none (0.1.1)
     concurrent-ruby (1.0.5)
     i18n (1.1.1)
@@ -15,7 +17,7 @@ GEM
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (5.0.2)
-    rake (12.3.0)
+    rake (12.3.1)
     sshkit (1.18.0)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
@@ -25,6 +27,7 @@ PLATFORMS
 
 DEPENDENCIES
   capistrano (~> 3.11)
+  capistrano-env_config
   capistrano-scm-none (~> 0.1)
 
 BUNDLED WITH
