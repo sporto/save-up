@@ -17,17 +17,6 @@ resource "scaleway_server" "save-up-api" {
   type  = "START1-XS"
 }
 
-# resource "scaleway_volume" "save-up-api" {
-#   name       = "save-up-api"
-#   size_in_gb = 25
-#   type       = "l_ssd"
-# }
-
-# resource "scaleway_volume_attachment" "save-up-api" {
-#   server = "${scaleway_server.save-up-api.id}"
-#   volume = "${scaleway_volume.save-up-api.id}"
-# }
-
 resource "scaleway_security_group" "http" {
   name        = "http"
   description = "allow HTTP and HTTPS traffic"
