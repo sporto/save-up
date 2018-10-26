@@ -150,10 +150,12 @@ fn main() {
 	env_logger::init();
 
 	let config = utils::config::get().expect("Failed to get config");
+	let config_2 = config.clone();
 
 	let sys = actix::System::new("juniper-example");
 
 	let capacity = (num_cpus::get() / 2) as usize;
+	
 
 	// Start http server
 	server::new(move || {
@@ -178,7 +180,7 @@ fn main() {
 			
 			.configure(|app|
 				Cors::for_app(app)
-					.allowed_origin(&config.client_host)
+					.allowed_origin(&config_2.client_host)
 					.allowed_methods(vec!["GET", "POST"])
 					.allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
 					.allowed_header(http::header::CONTENT_TYPE)
@@ -189,10 +191,10 @@ fn main() {
 					.resource("/graphiql", |r| r.method(http::Method::GET).h(graphiql))
 					.register()
 			)
-	}).bind("127.0.0.1:4010")
+	}).bind("127.0.0.1:".to_owned() + &config.api_port)
 	.unwrap()
 	.start();
 
-	println!("Started http server: 127.0.0.1:4010");
+	println!("Started http server");
 	let _ = sys.run();
 }
