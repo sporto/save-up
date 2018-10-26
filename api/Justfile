@@ -46,7 +46,7 @@ strip:
 compress:
 	cd ./dist/bin/ && tar -zcvf api.tar.gz api
 
-prepare: build copy-bin strip compress
+prepare-release: build copy-bin compress
 
 deploy:
 	cap production deploy

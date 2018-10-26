@@ -2,6 +2,7 @@
 name = "api"
 version = "0.1.0"
 authors = ["Sebastian Porto <s@porto5.com>"]
+build = "build.rs"
 
 [dependencies]
 actix = "0.7.5"

@@ -144,8 +144,6 @@ fn status(_req: &HttpRequest<AppState>) -> String {
 }
 
 fn main() {
-	askama::rerun_if_templates_changed();
-
 	::std::env::set_var("RUST_LOG", "actix_web=info");
 	env_logger::init();
 
