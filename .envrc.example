@@ -1,9 +1,11 @@
 export API_HOST=http://localhost:4010
-export API_SECRET=abc
 export API_PORT=4010
+export API_SECRET=abc
 export CLIENT_HOST=http://localhost:8080
 export DATABASE_URL_TEST=xx
 export DATABASE_URL=postgres://postgres@localhost/db_name
+export RUSTFLAGS="-Aproc-macro-derive-resolution-fallback"
 export SYSTEM_EMAIL=foo@example.com
 export SYSTEM_JWT=abc
-export RUSTFLAGS="-Aproc-macro-derive-resolution-fallback"
+export SCALEWAY_ORGANIZATION=abc
+export SCALEWAY_TOKEN=123
