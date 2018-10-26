@@ -3,7 +3,7 @@ provider "scaleway" {
 }
 
 resource "scaleway_ip" "ip" {
-  server = "${scaleway_server.save_up_api.id}"
+  server = "${scaleway_server.save-up-api.id}"
 }
 
 data "scaleway_image" "ubuntu" {
@@ -11,21 +11,21 @@ data "scaleway_image" "ubuntu" {
   name         = "Ubuntu Xenial"
 }
 
-resource "scaleway_server" "save_up_api" {
+resource "scaleway_server" "save-up-api" {
   name  = "save-up-api"
   image = "${data.scaleway_image.ubuntu.id}"
   type  = "START1-XS"
 }
 
-resource "scaleway_volume" "save_up_api" {
+resource "scaleway_volume" "save-up-api" {
   name       = "test"
   size_in_gb = 25
   type       = "l_ssd"
 }
 
-resource "scaleway_volume_attachment" "save_up_api" {
-  server = "${scaleway_server.save_up_api.id}"
-  volume = "${scaleway_volume.save_up_api.id}"
+resource "scaleway_volume_attachment" "save-up-api" {
+  server = "${scaleway_server.save-up-api.id}"
+  volume = "${scaleway_volume.save-up-api.id}"
 }
 
 resource "scaleway_security_group" "http" {
