@@ -28,6 +28,7 @@ test:
 provision:
 	terraform apply
 
+# Build the Rust application binary
 build:
 	docker run \
 		--rm \
@@ -41,6 +42,8 @@ copy-bin:
 	mkdir -p ./dist/bin/
 	cp target/x86_64-unknown-linux-musl/release/api ./dist/bin
 
+# This makes the binary smaller
+# But it removes valuable stack tracing information
 strip:
 	docker run --rm -it \
 		-v $PWD:/volume/ \
