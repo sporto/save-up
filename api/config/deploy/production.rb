@@ -5,7 +5,8 @@
 
 # server "example.com", user: "deploy", roles: %w{app db web}, my_property: :my_value
 # server "example.com", user: "deploy", roles: %w{app web}, other_property: :other_value
-server "51.15.103.221", user: "root", roles: %w{db}
+ssh_ip = ENV['API_IP']
+server ssh_ip, user: "root", roles: %w{db}
 
 
 
