@@ -3,13 +3,16 @@ namespace :deploy do
   task :restart do
     on release_roles :all do
 
-      # pid = capture 'lsof', '-i:80', '-t'
-      # if pid # ensure it's valid here
-      #   run "kill -9 #{pid}"
+      execute :kill, "-9 $(lsof -i tcp:80 -t)"
+      # pid = capture 'lsof', '-i:80 -t', raise_on_non_zero_exit: false
+
+      # if pid.present?
+      #   execute "kill -9 #{pid}"
       # end
 
-      # run "./api"
-
+      within release_path do
+        execute "./api"
+      end
     end
   end
 end

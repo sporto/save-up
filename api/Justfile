@@ -59,4 +59,4 @@ deploy:
 	cap production deploy
 
 ssh:
-	ssh root@51.15.103.221
+	ssh root@$API_IP
