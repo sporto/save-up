@@ -11,7 +11,7 @@ namespace :deploy do
       # end
 
       within release_path do
-        execute "./api"
+        execute "./api &"
       end
     end
   end
