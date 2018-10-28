@@ -1,0 +1,34 @@
+{
+	"variables": {
+		"api_access_key": "{{env `SCALEWAY_ORGANIZATION`}}",
+		"api_token": "{{env `SCALEWAY_TOKEN`}}",
+		"home": "{{env `HOME`}}"
+	},
+	"sensitive-variables": [
+		"api_access_key",
+		"api_token"
+	],
+	"builders": [
+		{
+			"api_access_key": "{{ user `api_access_key` }}",
+			"api_token": "{{ user `api_token` }}",
+			"server_name": "save-up",
+			"image": "ubuntu-mini",
+			"type": "scaleway",
+			"region": "ams1",
+			"commercial_type": "START1-XS",
+			"ssh_private_key_file": "{{ user `home` }}/.ssh/id_rsa",
+			"ssh_username": "root"
+		}
+	],
+	"provisioners": [
+		{
+			"type": "shell",
+			"inline": [
+				"apt-get update",
+				"apt-get -y upgrade",
+				"apt-get install -y nginx"
+			]
+		}
+	]
+}

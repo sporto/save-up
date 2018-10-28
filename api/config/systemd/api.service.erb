@@ -1,0 +1,12 @@
+[Unit]
+Description = Save Up API
+
+[Service]
+WorkingDirectory = <%= current_path %>
+ExecStart = ./api
+User = root
+Group = root
+Restart = on-abort
+
+[Install]
+WantedBy = multi-user.target
