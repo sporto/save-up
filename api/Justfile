@@ -60,3 +60,6 @@ deploy:
 
 ssh:
 	ssh root@$API_IP
+
+ansible:
+	ansible-playbook playbook.yml
