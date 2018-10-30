@@ -12,6 +12,7 @@ RUN cargo build-deps --release
 
 COPY src ./src	
 COPY ./templates ./templates	
+COPY ./build.rs ./
 
 RUN cargo build  --release
 

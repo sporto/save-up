@@ -4,3 +4,4 @@
 !migrations
 !src
 !templates
+!build.rs
