@@ -29,38 +29,46 @@ build-image:
 	packer build packer.json
 
 # Build the server infrastructe in Scaleway
-provision:
-	terraform apply
+# provision:
+# 	terraform apply
 
 # Build the Rust application binary
-build:
-	docker run \
-		--rm \
-		-it \
-		-v $PWD:/volume/ \
-		-v cargo-cache:/root/.cargo \
-		clux/muslrust:stable \
-		cargo build --release
+# build:
+# 	docker run \
+# 		--rm \
+# 		-it \
+# 		-v $PWD:/volume/ \
+# 		-v cargo-cache:/root/.cargo \
+# 		clux/muslrust:stable \
+# 		cargo build --release
 
-copy-bin:
-	mkdir -p ./dist/bin/
-	cp target/x86_64-unknown-linux-musl/release/api ./dist/bin
+# copy-bin:
+# 	mkdir -p ./dist/bin/
+# 	cp target/x86_64-unknown-linux-musl/release/api ./dist/bin
 
 # This makes the binary smaller
 # But it removes valuable stack tracing information
-strip:
-	docker run --rm -it \
-		-v $PWD:/volume/ \
-		clux/muslrust:stable \
-		strip ./dist/bin/api
+# strip:
+# 	docker run --rm -it \
+# 		-v $PWD:/volume/ \
+# 		clux/muslrust:stable \
+# 		strip ./dist/bin/api
 
-compress:
-	cd ./dist/bin/ && tar -zcvf api.tar.gz api
+# compress:
+# 	cd ./dist/bin/ && tar -zcvf api.tar.gz api
 
-prepare-release: build copy-bin compress
+# prepare-release: build copy-bin compress
+
+# push:
+# 	hyper push 
+
+image = "sporto/save-up-api"
 
 build-docker:
-	docker build . -t save-up-api
+	docker build . -t {{image}}
+
+push-docker:
+	docker push {{image}}
 
 deploy:
 	cap production deploy
