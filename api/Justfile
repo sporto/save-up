@@ -59,6 +59,9 @@ compress:
 
 prepare-release: build copy-bin compress
 
+build-docker:
+	docker build . -t save-up-api
+
 deploy:
 	cap production deploy
 
