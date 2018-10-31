@@ -24,6 +24,11 @@
 	],
 	"provisioners": [
 		{
+			"type": "file",
+			"source": "packer/api.service",
+			"destination": "/lib/systemd/system//api.service"
+		},
+		{
 			"type": "shell",
 			"inline": [
 				"apt-get update",

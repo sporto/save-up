@@ -58,6 +58,9 @@ prepare-release: build copy-bin compress
 deploy:
 	cap production deploy
 
+build-image:
+	packer build packer.json
+
 ssh:
 	ssh root@$API_IP
 
