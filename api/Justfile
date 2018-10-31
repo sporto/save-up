@@ -24,6 +24,10 @@ schema:
 test:
 	APP_ENV=test cargo test
 
+# Build image to be used for provisioning the server
+build-image:
+	packer build packer.json
+
 # Build the server infrastructe in Scaleway
 provision:
 	terraform apply
@@ -57,9 +61,6 @@ prepare-release: build copy-bin compress
 
 deploy:
 	cap production deploy
-
-build-image:
-	packer build packer.json
 
 ssh:
 	ssh root@$API_IP
