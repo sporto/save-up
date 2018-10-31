@@ -12,8 +12,9 @@
 		{
 			"api_access_key": "{{ user `api_access_key` }}",
 			"api_token": "{{ user `api_token` }}",
-			"server_name": "save-up",
-			"image": "ubuntu-mini",
+			"server_name": "save-up-api",
+			"image": "90d69ee1-2049-49ef-819c-dce675037477",
+			"image_name": "save-up-api",
 			"type": "scaleway",
 			"region": "ams1",
 			"commercial_type": "START1-XS",
