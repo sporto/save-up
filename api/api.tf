@@ -6,15 +6,14 @@ resource "scaleway_ip" "ip" {
   server = "${scaleway_server.save-up-api.id}"
 }
 
-data "scaleway_image" "save-up-api" {
+data "scaleway_image" "ubuntu-mini" {
   architecture = "x86_64"
-  name         = "save-up-api"
-  most_recent  = true
+  name         = "Ubuntu Mini Xenial 25G"
 }
 
 resource "scaleway_server" "save-up-api" {
   name  = "save-up-api"
-  image = "${data.scaleway_image.save-up-api.id}"
+  image = "${data.scaleway_image.ubuntu-mini.id}"
   type  = "START1-XS"
 }
 
