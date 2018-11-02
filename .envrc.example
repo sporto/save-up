@@ -1,4 +1,5 @@
 export API_HOST=http://localhost:4010
+export API_IMAGE_TAG=aws_account_id.dkr.ecr.region.amazonaws.com/save-up-api
 export API_IP=1.2.3.4
 export API_PORT=4010
 export API_SECRET=abc

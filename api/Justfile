@@ -62,13 +62,11 @@ build-image:
 # push:
 # 	hyper push 
 
-image = "sporto/save-up-api"
-
-build-docker:
-	docker build . -t {{image}}
+build-image:
+	docker build . -t $API_IMAGE_TAG
 
 push-docker:
-	docker push {{image}}
+	docker push $API_IMAGE_TAG
 
 deploy:
 	cap production deploy
