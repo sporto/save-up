@@ -63,9 +63,11 @@ build-image:
 # 	hyper push 
 
 build-image:
-	docker build . -t $API_IMAGE_TAG
+	docker build -t save-up-api .
+	docker tag save-up-api:latest $API_IMAGE_TAG
 
-push-docker:
+# Push image to AWS ECR
+push-image:
 	docker push $API_IMAGE_TAG
 
 deploy:
