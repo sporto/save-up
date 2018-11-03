@@ -19,8 +19,9 @@ pub fn call(
 	input: ConfirmEmailInput,
 ) -> FieldResult<ConfirmEmailResponse> {
 	let context = executor.context();
+	let conn = context.pool.get().unwrap();
 
-	let result = confirm_email::call(&context.conn, &input.token);
+	let result = confirm_email::call(&conn, &input.token);
 
 	let response = match result {
 		Ok(_) => ConfirmEmailResponse {

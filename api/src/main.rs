@@ -1,5 +1,5 @@
-#![feature(proc_macro_hygiene, decl_macro)]
-#![feature(custom_derive)]
+#![feature(plugin)]
+#![plugin(rocket_codegen)]
 
 #[macro_use]
 extern crate askama;
@@ -26,6 +26,7 @@ extern crate chrono_tz;
 extern crate env_logger;
 extern crate futures;
 extern crate jsonwebtoken as jwt;
+extern crate juniper_rocket;
 extern crate libreauth;
 extern crate num_cpus;
 extern crate r2d2;
@@ -49,7 +50,6 @@ use rocket_cors::{AllowedHeaders, AllowedOrigins};
 
 mod actions;
 mod graph;
-mod juniper_rocket;
 mod models;
 mod utils;
 
@@ -59,7 +59,7 @@ mod utils;
 
 #[get("/")]
 fn index() -> &'static str {
-	"Hello, world!"
+	"Hello"
 }
 
 #[post("/graphql-pub", data = "<request>")]
@@ -72,11 +72,7 @@ fn graphql_pub_handler(
 }
 
 fn rocket() -> Rocket {
-	let config = utils::config::get();
-
-	let pool = utils::db_conn::init_pool();
-	// let query_root = graph::query_root::QueryRoot {};
-	// let mutation_root = graph::mutation_root::MutationRoot {};
+	let config = utils::config::get().expect("Failed to get config");
 
 	// CORS
 	let (allowed_origins, failed_origins) = AllowedOrigins::some(&[&config.client_host]);
@@ -111,7 +107,9 @@ fn rocket() -> Rocket {
 
 	let schema_pub = graph::create_public_schema;
 
-	let context_pub = graph::PublicContext { conn: pool };
+	let pool = utils::db_conn::init_pool();
+
+	let context_pub = graph::PublicContext { pool: pool.clone() };
 
 	rocket::ignite()
 		.manage(pool.clone())

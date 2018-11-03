@@ -23,8 +23,9 @@ pub fn call(executor: &Executor<PublicContext>, sign_up: SignUp) -> FieldResult<
 	}
 
 	let context = executor.context();
+	let conn = context.pool.get().unwrap();
 
-	let user_result = sign_ups::create::call(&context.conn, sign_up);
+	let user_result = sign_ups::create::call(&conn, sign_up);
 
 	let user = match user_result {
 		Ok(user) => user,

@@ -19,8 +19,9 @@ pub fn call(
 	input: RedeemInvitationInput,
 ) -> FieldResult<RedeemInvitationResponse> {
 	let context = executor.context();
+	let conn = context.pool.get().unwrap();
 
-	let result = redeem::call(&context.conn, &input);
+	let result = redeem::call(&conn, &input);
 
 	let response = match result {
 		Ok(user) => with_user(user),

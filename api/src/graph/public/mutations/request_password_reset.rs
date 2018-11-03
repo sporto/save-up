@@ -20,8 +20,9 @@ pub fn call(
 	input: RequestPasswordResetInput,
 ) -> FieldResult<RequestPasswordResetResponse> {
 	let context = executor.context();
+	let conn = context.pool.get().unwrap();
 
-	let result = passwords::request_reset::call(&context.conn, &input.username_or_email);
+	let result = passwords::request_reset::call(&conn, &input.username_or_email);
 
 	let response = match result {
 		Ok(_token) => RequestPasswordResetResponse {

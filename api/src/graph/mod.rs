@@ -10,7 +10,7 @@ use models::user::User;
 use serde_json;
 use std;
 use utils;
-use utils::db_conn::DBPool;
+use utils::db_conn::{DBPool, ManagedPgConn};
 
 pub mod app;
 pub mod public;
@@ -22,8 +22,12 @@ pub struct AppContext {
 
 impl JuniperContext for AppContext {}
 
+// pub struct PublicContext {
+// 	pub conn: r2d2::PooledConnection<r2d2::ConnectionManager<PgConnection>>,
+// }
+
 pub struct PublicContext {
-	pub conn: r2d2::PooledConnection<r2d2::ConnectionManager<PgConnection>>,
+	pub pool: r2d2::Pool<ManagedPgConn>,
 }
 
 impl JuniperContext for PublicContext {}

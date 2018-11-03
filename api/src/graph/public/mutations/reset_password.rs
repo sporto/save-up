@@ -23,8 +23,9 @@ pub fn call(
 	input: ResetPasswordInput,
 ) -> FieldResult<ResetPasswordResponse> {
 	let context = executor.context();
+	let conn = context.pool.get().unwrap();
 
-	let result = passwords::reset::call(&context.conn, &input.token, &input.password);
+	let result = passwords::reset::call(&conn, &input.token, &input.password);
 
 	let user = match result {
 		Ok(user) => user,
