@@ -77,6 +77,8 @@ hyper-run:
 	hyper run \
 		-d \
 		--name save-up-api \
+		--env RUST_BACKTRACE=1 \
 		--env-file ./env.prod \
+		--size=s2 \
 		$API_IMAGE_TAG
 
