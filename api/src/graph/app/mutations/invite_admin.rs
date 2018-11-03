@@ -21,9 +21,9 @@ pub fn call(
 	executor: &Executor<AppContext>,
 	input: InvitationInput,
 ) -> FieldResult<InvitationResponse> {
-	let context = executor.context();
-	let conn = &context.conn;
-	let current_user = &context.user;
+	let ctx = executor.context();
+	let conn = ctx.pool.get().unwrap();
+	let current_user = &ctx.user;
 
 	// Authorise
 	let can = authorise::call(&conn, &current_user)?;

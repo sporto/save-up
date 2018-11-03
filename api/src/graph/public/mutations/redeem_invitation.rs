@@ -18,8 +18,8 @@ pub fn call(
 	executor: &Executor<PublicContext>,
 	input: RedeemInvitationInput,
 ) -> FieldResult<RedeemInvitationResponse> {
-	let context = executor.context();
-	let conn = context.pool.get().unwrap();
+	let ctx = executor.context();
+	let conn = ctx.pool.get().unwrap();
 
 	let result = redeem::call(&conn, &input);
 

@@ -22,8 +22,8 @@ graphql_object!(AppQueryRoot: AppContext |&self| {
 
 	// Only an admin can request this
 	field admin(&executor) -> FieldResult<Admin> {
-		let context = &executor.context();
-		let current_user = &context.user;
+		let ctx = &executor.context();
+		let current_user = &ctx.user;
 
 		if current_user.role != Role::Admin {
 			return Err(FieldError::from("Unauthorized"))
@@ -36,8 +36,8 @@ graphql_object!(AppQueryRoot: AppContext |&self| {
 	}
 
 	field investor(&executor) -> FieldResult<Investor> {
-		let context = &executor.context();
-		let current_user = &context.user;
+		let ctx = &executor.context();
+		let current_user = &ctx.user;
 
 		if current_user.role != Role::Investor {
 			return Err(FieldError::from("Unauthorized"))
@@ -69,9 +69,9 @@ struct Admin {
 graphql_object!(Admin: AppContext |&self| {
 
 	field investors(&executor) -> FieldResult<Vec<User>> {
-		let context = &executor.context();
-		let client_id = context.user.client_id;
-		let conn = &context.conn;
+		let ctx = &executor.context();
+		let client_id = ctx.user.client_id;
+		let conn = ctx.pool.get().unwrap();
 
 		let is_investor = db::users::role.eq(Role::Investor);
 
@@ -81,42 +81,42 @@ graphql_object!(Admin: AppContext |&self| {
 
 		db::users::table
 			.filter(filter)
-			.load::<User>(conn)
+			.load::<User>(&conn)
 			.map_err(|e| FieldError::from(e))
 	}
 
 	field account(&executor, id: i32) -> FieldResult<Account> {
 		let ctx = &executor.context();
-		let conn = &ctx.conn;
+		let conn = ctx.pool.get().unwrap();
 		let current_user = &ctx.user;
 
 		// Authorise
-		let can = actions::accounts::authorise::can_access(conn, id, current_user)?;
+		let can = actions::accounts::authorise::can_access(&conn, id, current_user)?;
 
 		if can == false {
 			return Err(FieldError::from("Unauthorized"))
 		};
 
-		Account::find(conn, id)
+		Account::find(&conn, id)
 			.map_err(|e| FieldError::from(e))
 	}
 
 	field pending_requests(&executor) -> FieldResult<Vec<TransactionRequest>> {
 		let ctx = &executor.context();
-		let conn = &ctx.conn;
+		let conn = ctx.pool.get().unwrap();
 		let current_user = &ctx.user;
 
-		let client = db::clients::table.find(current_user.client_id).first::<Client>(conn)?;
+		let client = db::clients::table.find(current_user.client_id).first::<Client>(&conn)?;
 
-		let users = User::belonging_to(&client).load::<User>(conn)?;
+		let users = User::belonging_to(&client).load::<User>(&conn)?;
 
-		let accounts = Account::belonging_to(&users).load::<Account>(conn)?;
+		let accounts = Account::belonging_to(&users).load::<Account>(&conn)?;
 
 		let is_pending = db::transaction_requests::state.eq(TransactionRequestState::Pending);
 
 		TransactionRequest::belonging_to(&accounts)
 			.filter(is_pending)
-			.get_results(conn)
+			.get_results(&conn)
 			.map_err(|e| FieldError::from(e))
 	}
 
@@ -130,32 +130,34 @@ struct Investor {
 graphql_object!(Investor: AppContext |&self| {
 
 	field accounts(&executor) -> FieldResult<Vec<Account>> {
-		let context = &executor.context();
-		let user_id = context.user.id;
-		let conn = &context.conn;
+		let ctx = &executor.context();
+		let conn = ctx.pool.get().unwrap();
+
+		let user_id = ctx.user.id;
 
 		let filter = db::accounts
 			::user_id.eq(user_id);
 
 		db::accounts::table
 			.filter(filter)
-			.load::<Account>(conn)
+			.load::<Account>(&conn)
 			.map_err(|e| FieldError::from(e))
 	}
 
 	field account(&executor, id: i32) -> FieldResult<Account> {
 		let ctx = &executor.context();
-		let conn = &ctx.conn;
+		let conn = ctx.pool.get().unwrap();
+
 		let current_user = &ctx.user;
 
 		// Authorise
-		let can = actions::accounts::authorise::can_access(conn, id, current_user)?;
+		let can = actions::accounts::authorise::can_access(&conn, id, current_user)?;
 
 		if can == false {
 			return Err(FieldError::from("Unauthorized"))
 		};
 
-		Account::find(conn, id)
+		Account::find(&conn, id)
 			.map_err(|e| FieldError::from(e))
 	}
 

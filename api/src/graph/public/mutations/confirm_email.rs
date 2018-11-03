@@ -18,8 +18,8 @@ pub fn call(
 	executor: &Executor<PublicContext>,
 	input: ConfirmEmailInput,
 ) -> FieldResult<ConfirmEmailResponse> {
-	let context = executor.context();
-	let conn = context.pool.get().unwrap();
+	let ctx = executor.context();
+	let conn = ctx.pool.get().unwrap();
 
 	let result = confirm_email::call(&conn, &input.token);
 

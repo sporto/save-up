@@ -28,16 +28,16 @@ graphql_object!(User: AppContext |&self| {
 	}
 
 	field accounts(&executor) -> FieldResult<Vec<Account>> {
-		let context = &executor.context();
-		let client_id = context.user.client_id;
-		let conn = &context.conn;
+		let ctx = &executor.context();
+		let client_id = ctx.user.client_id;
+		let conn = ctx.pool.get().unwrap();
 
 		let filter = db::accounts
 			::user_id.eq(self.id);
 
 		db::accounts::table
 			.filter(filter)
-			.load(conn)
+			.load(&conn)
 			.map_err(|e| FieldError::from(e))
 	}
 });

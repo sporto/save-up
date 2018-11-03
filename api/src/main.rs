@@ -105,10 +105,12 @@ fn rocket() -> Rocket {
 		// post_graphql_handler,
 	];
 
-	let schema_pub = graph::create_public_schema;
-
 	let pool = utils::db_conn::init_pool();
 
+	let schema_app = graph::create_app_schema;
+	let schema_pub = graph::create_public_schema;
+
+	// let context_app = graph::AppContext { pool: pool.clone() };
 	let context_pub = graph::PublicContext { pool: pool.clone() };
 
 	rocket::ignite()

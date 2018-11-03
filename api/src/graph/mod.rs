@@ -16,15 +16,11 @@ pub mod app;
 pub mod public;
 
 pub struct AppContext {
-	pub conn: r2d2::PooledConnection<r2d2::ConnectionManager<PgConnection>>,
+	pub pool: r2d2::Pool<ManagedPgConn>,
 	pub user: User,
 }
 
 impl JuniperContext for AppContext {}
-
-// pub struct PublicContext {
-// 	pub conn: r2d2::PooledConnection<r2d2::ConnectionManager<PgConnection>>,
-// }
 
 pub struct PublicContext {
 	pub pool: r2d2::Pool<ManagedPgConn>,
@@ -78,7 +74,7 @@ impl JuniperContext for PublicContext {}
 
 // 		let user = get_user(&conn, &msg.token)?;
 
-// 		let context = AppContext {
+// 		let ctx = AppContext {
 // 			conn: conn,
 // 			user: user,
 // 		};
@@ -110,7 +106,7 @@ fn get_user(conn: &PgConnection, token: &str) -> Result<User, failure::Error> {
 // 	fn handle(&mut self, msg: ProcessPublicGraphQlRequest, _: &mut Self::Context) -> Self::Result {
 // 		let conn = self.db_pool.get().map_err(|e| error::ErrorBadRequest(e))?;
 
-// 		let context = PublicContext { conn: conn };
+// 		let ctx = PublicContext { conn: conn };
 
 // 		let res = msg.request.execute(&self.schema, &context);
 // 		let res_text = serde_json::to_string(&res)?;
