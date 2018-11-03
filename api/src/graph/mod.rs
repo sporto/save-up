@@ -29,11 +29,6 @@ pub struct PublicContext {
 impl JuniperContext for PublicContext {}
 
 // #[derive(Serialize, Deserialize)]
-// pub struct ProcessPublicGraphQlRequest {
-// 	pub request: GraphQLRequest,
-// }
-
-// #[derive(Serialize, Deserialize)]
 // pub struct ProcessAppGraphQlRequest {
 // 	pub request: GraphQLRequest,
 // 	pub token: String,
@@ -52,22 +47,6 @@ impl JuniperContext for PublicContext {}
 // 	pub schema: std::sync::Arc<AppSchema>,
 // 	pub db_pool: DBPool,
 // }
-
-// pub struct GraphQLPublicExecutor {
-// 	pub schema: std::sync::Arc<PublicSchema>,
-// 	pub db_pool: DBPool,
-// }
-
-// impl Actor for GraphQLAppExecutor {
-// 	type Context = SyncContext<Self>;
-// }
-
-// impl Actor for GraphQLPublicExecutor {
-// 	type Context = SyncContext<Self>;
-// }
-
-// impl Handler<ProcessAppGraphQlRequest> for GraphQLAppExecutor {
-// 	type Result = Result<String, Error>;
 
 // 	fn handle(&mut self, msg: ProcessAppGraphQlRequest, _: &mut Self::Context) -> Self::Result {
 // 		let conn = self.db_pool.get().map_err(|e| error::ErrorBadRequest(e))?;
@@ -99,21 +78,6 @@ fn get_user(conn: &PgConnection, token: &str) -> Result<User, failure::Error> {
 	models::user::User::find(conn, token_data.user_id)
 		.map_err(|diesel_error| format_err!("{}", diesel_error))
 }
-
-// impl Handler<ProcessPublicGraphQlRequest> for GraphQLPublicExecutor {
-// 	type Result = Result<String, Error>;
-
-// 	fn handle(&mut self, msg: ProcessPublicGraphQlRequest, _: &mut Self::Context) -> Self::Result {
-// 		let conn = self.db_pool.get().map_err(|e| error::ErrorBadRequest(e))?;
-
-// 		let ctx = PublicContext { conn: conn };
-
-// 		let res = msg.request.execute(&self.schema, &context);
-// 		let res_text = serde_json::to_string(&res)?;
-
-// 		Ok(res_text)
-// 	}
-// }
 
 pub type AppSchema =
 	RootNode<'static, app::query_root::AppQueryRoot, app::mutation_root::AppMutationRoot>;

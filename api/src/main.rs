@@ -62,6 +62,15 @@ fn index() -> &'static str {
 	"Hello"
 }
 
+#[post("/graphql-app", data = "<request>")]
+fn graphql_app_handler(
+	context: State<graph::AppContext>,
+	request: juniper_rocket::GraphQLRequest,
+	schema: State<graph::AppSchema>,
+) -> juniper_rocket::GraphQLResponse {
+	request.execute(&schema, &context)
+}
+
 #[post("/graphql-pub", data = "<request>")]
 fn graphql_pub_handler(
 	context: State<graph::PublicContext>,
@@ -94,34 +103,24 @@ fn rocket() -> Rocket {
 		..Default::default()
 	};
 
-	let routes = routes![
-		index,
-		// handlers::root,
-		// handlers::status,
-		// handlers::sign_up,
-		// handlers::sign_in,
-		// graphiql,
-		// graphql_pub_handler,
-		// post_graphql_handler,
-	];
+	let routes = routes![index, graphql_app_handler, graphql_pub_handler,];
 
 	let pool = utils::db_conn::init_pool();
 
-	let schema_app = graph::create_app_schema;
-	let schema_pub = graph::create_public_schema;
+	let schema_app = graph::create_app_schema();
+	let schema_pub = graph::create_public_schema();
 
-	// let context_app = graph::AppContext { pool: pool.clone() };
 	let context_pub = graph::PublicContext { pool: pool.clone() };
 
 	rocket::ignite()
 		.manage(pool.clone())
 		.manage(context_pub)
+		.manage(schema_app)
 		.manage(schema_pub)
 		.mount("/", routes)
 		.attach(options)
 }
 
 fn main() {
-	// rocket::ignite().mount("/", routes![index]).launch();
 	rocket().launch();
 }
