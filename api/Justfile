@@ -73,12 +73,18 @@ push-image:
 log-hyper:
 	eval $(aws ecr get-login | sed 's/docker/hyper/')
 
+# Pull latest image from AWS
+hyper-pull:
+	hyper pull $API_IMAGE_TAG
+
 hyper-run:
 	hyper run \
-		-d \
+		--rm \
 		--name save-up-api \
 		--env RUST_BACKTRACE=1 \
 		--env-file ./env.prod \
-		--size=s2 \
+		--expose=80 \
+		-P \
+		--size=s1 \
 		$API_IMAGE_TAG
 

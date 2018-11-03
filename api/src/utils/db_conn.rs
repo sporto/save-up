@@ -6,7 +6,7 @@ use utils::config;
 pub type DBPool = r2d2::Pool<r2d2::ConnectionManager<PgConnection>>;
 
 pub fn init_pool() -> DBPool {
-	let config = config::get().unwrap();
+	let config = config::get().expect("Failed to get config");
 
 	let manager = r2d2::ConnectionManager::<PgConnection>::new(config.database_url);
 
