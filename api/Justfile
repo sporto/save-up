@@ -73,7 +73,7 @@ push-image:
 log-hyper:
 	eval $(aws ecr get-login | sed 's/docker/hyper/')
 
-deploy:
+hyper-run:
 	hyper run \
 		-d \
 		--name save-up-api \
