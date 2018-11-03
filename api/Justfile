@@ -70,9 +70,13 @@ build-image:
 push-image:
 	docker push $API_IMAGE_TAG
 
-deploy:
-	cap production deploy
+log-hyper:
+	eval $(aws ecr get-login | sed 's/docker/hyper/')
 
-ssh:
-	ssh root@$API_IP
+deploy:
+	hyper run \
+		-d \
+		--name save-up-api \
+		--env-file ./env.prod \
+		$API_IMAGE_TAG
 
