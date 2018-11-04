@@ -69,29 +69,8 @@ impl<'a, 'r> FromRequest<'a, 'r> for JWT {
 			Ok(token) => outcome::Outcome::Success(JWT(token)),
 			Err(_e) => outcome::Outcome::Failure((Status::Unauthorized, ())),
 		}
-
-		// let keys: Vec<_> = request.headers().get("x-api-key").collect();
-		// if keys.len() != 1 {
-		// 	return Outcome::Failure((Status::BadRequest, ()));
-		// }
-
-		// let key = keys[0];
-		// if !is_valid(keys[0]) {
-		// 	return Outcome::Forward(());
-		// }
-
-		// return Outcome::Success(ApiKey(key.to_string()));
 	}
 }
-
-// impl<'a, 'r> FromRequest<'a, 'r> for User {
-// 	type Error = ();
-
-// 	fn from_request(request: &'a Request<'r>) -> request::Outcome<User, ()> {
-// 		let jwt = req.guard::<State<JWT>>()?;
-// 		let current_count = hit_count_state.count.load(Ordering::Relaxed);
-// 	}
-// }
 
 #[get("/")]
 fn index() -> &'static str {
