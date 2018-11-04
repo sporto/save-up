@@ -9,3 +9,5 @@ netlifyctl-debug.log
 cargo-cache
 .merlin
 env.prod
+.stack-work/
+api.cabal
