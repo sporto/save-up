@@ -67,7 +67,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for JWT {
 	fn from_request(request: &'a Request<'r>) -> request::Outcome<JWT, ()> {
 		match get_token_from_request(request) {
 			Ok(token) => outcome::Outcome::Success(JWT(token)),
-			Err(e) => outcome::Outcome::Failure((Status::Unauthorized, ())),
+			Err(_e) => outcome::Outcome::Failure((Status::Unauthorized, ())),
 		}
 
 		// let keys: Vec<_> = request.headers().get("x-api-key").collect();
@@ -83,6 +83,15 @@ impl<'a, 'r> FromRequest<'a, 'r> for JWT {
 		// return Outcome::Success(ApiKey(key.to_string()));
 	}
 }
+
+// impl<'a, 'r> FromRequest<'a, 'r> for User {
+// 	type Error = ();
+
+// 	fn from_request(request: &'a Request<'r>) -> request::Outcome<User, ()> {
+// 		let jwt = req.guard::<State<JWT>>()?;
+// 		let current_count = hit_count_state.count.load(Ordering::Relaxed);
+// 	}
+// }
 
 #[get("/")]
 fn index() -> &'static str {
