@@ -41,7 +41,9 @@ extern crate uuid;
 extern crate validator;
 
 // use askama::Template;
-use rocket::http::Method;
+use rocket::http::{Method, Status};
+use rocket::outcome;
+use rocket::request::{self, FromRequest, Request};
 use rocket::response::content;
 use rocket::response::NamedFile;
 use rocket::Rocket;
@@ -57,6 +59,31 @@ mod utils;
 // #[template(path = "graphiql.html")]
 // struct GraphiqlTemplate;
 
+struct JWT(String);
+
+impl<'a, 'r> FromRequest<'a, 'r> for JWT {
+	type Error = ();
+
+	fn from_request(request: &'a Request<'r>) -> request::Outcome<JWT, ()> {
+		match get_token_from_request(request) {
+			Ok(token) => outcome::Outcome::Success(JWT(token)),
+			Err(e) => outcome::Outcome::Failure((Status::Unauthorized, ())),
+		}
+
+		// let keys: Vec<_> = request.headers().get("x-api-key").collect();
+		// if keys.len() != 1 {
+		// 	return Outcome::Failure((Status::BadRequest, ()));
+		// }
+
+		// let key = keys[0];
+		// if !is_valid(keys[0]) {
+		// 	return Outcome::Forward(());
+		// }
+
+		// return Outcome::Success(ApiKey(key.to_string()));
+	}
+}
+
 #[get("/")]
 fn index() -> &'static str {
 	"Hello"
@@ -64,10 +91,26 @@ fn index() -> &'static str {
 
 #[post("/graphql-app", data = "<request>")]
 fn graphql_app_handler(
-	context: State<graph::AppContext>,
+	jwt: JWT,
 	request: juniper_rocket::GraphQLRequest,
 	schema: State<graph::AppSchema>,
+	pool: State<utils::db_conn::DBPool>,
 ) -> juniper_rocket::GraphQLResponse {
+	let conn = pool.get().unwrap();
+	let JWT(token) = jwt;
+
+	let user = match actions::users::get_user::call(&conn, &token) {
+		Ok(user) => user,
+		Err(_) => {
+			return juniper_rocket::GraphQLResponse(Status::Unauthorized, "Unauthorized".to_string())
+		}
+	};
+
+	let context = graph::AppContext {
+		pool: pool,
+		user: user,
+	};
+
 	request.execute(&schema, &context)
 }
 
@@ -78,6 +121,71 @@ fn graphql_pub_handler(
 	schema: State<graph::PublicSchema>,
 ) -> juniper_rocket::GraphQLResponse {
 	request.execute(&schema, &context)
+}
+
+// impl<'a, 'r> FromRequest<'a, 'r> for models::user::User {
+// 	type Error = ();
+
+// 	fn from_request(
+// 		request: &'a Request<'r>,
+// 		pool: utils::db_conn::DBConn,
+// 	) -> request::Outcome<graph::AppContext, ()> {
+// 		get_token_from_request(request)
+// 			.and_then(|token| {
+// 				let conn = pool.get().unwrap();
+// 				actions::users::get_user::call(&conn, &token)
+// 			}).into_outcome((Status::Unauthorized, ()))
+// 	}
+// }
+
+// impl<'a, 'r> FromRequest<'a, 'r> for graph::AppContext {
+// 	type Error = ();
+
+// 	fn from_request(
+// 		request: &'a Request<'r>,
+// 		user: models::user::User,
+// 		pool: utils::db_conn::DBConn,
+// 	) -> request::Outcome<graph::AppContext, ()> {
+// 		let context_app = graph::AppContext {
+// 			pool: pool,
+// 			user: user,
+// 		};
+
+// 		request::Outcome::Success(context_app)
+// 	}
+// }
+
+fn get_token_from_request(request: &Request) -> Result<String, failure::Error> {
+	let keys: Vec<_> = request.headers().get("Authorization").collect();
+
+	let txt = keys
+		.first()
+		.ok_or(format_err!("No Authorization header found"))?;
+
+	// if keys.len() != 1 {
+	// 	return Outcome::Failure((Status::BadRequest, ()));
+	// }
+
+	// let key = keys[0];
+	// if !is_valid(keys[0]) {
+	// 	return Outcome::Forward(());
+	// }
+
+	// let header = request
+	// 	.headers()
+	// 	.get("Authorization")
+	// 	.ok_or("No Authorization header found")
+	// 	.map_err(|e| format_err!("{}", e))?;
+
+	// let txt = header.to_str()?;
+
+	// Get the JWT from the header
+	// e.g. Bearer abc123...
+	// We don't need the Bearer part,
+	// So get whatever is after an index of 7
+	let token = &txt[7..];
+
+	Ok(token.to_string())
 }
 
 fn rocket() -> Rocket {
