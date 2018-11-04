@@ -34,7 +34,7 @@ pub fn call(
 	input: ResolveTransactionRequestInput,
 ) -> FieldResult<ResolveTransactionRequestResponse> {
 	let ctx = executor.context();
-	let conn = ctx.pool.get().unwrap();
+	let conn = &ctx.conn;
 
 	let current_user = &ctx.user;
 

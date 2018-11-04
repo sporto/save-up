@@ -23,7 +23,7 @@ pub fn call(
 	input: ResetPasswordInput,
 ) -> FieldResult<ResetPasswordResponse> {
 	let ctx = executor.context();
-	let conn = ctx.pool.get().unwrap();
+	let conn = &ctx.conn;
 
 	let result = passwords::reset::call(&conn, &input.token, &input.password);
 

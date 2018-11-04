@@ -20,7 +20,7 @@ pub fn call(
 	input: RequestPasswordResetInput,
 ) -> FieldResult<RequestPasswordResetResponse> {
 	let ctx = executor.context();
-	let conn = ctx.pool.get().unwrap();
+	let conn = &ctx.conn;
 
 	let result = passwords::request_reset::call(&conn, &input.username_or_email);
 

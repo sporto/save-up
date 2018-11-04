@@ -32,7 +32,7 @@ pub fn call(
 	input: WithdrawalInput,
 ) -> FieldResult<WithdrawalResponse> {
 	let ctx = executor.context();
-	let conn = ctx.pool.get().unwrap();
+	let conn = &ctx.conn;
 	let current_user = &ctx.user;
 
 	// Authorise this transaction

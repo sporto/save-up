@@ -9,6 +9,7 @@ use utils::config;
 
 pub type ManagedPgConn = r2d2::ConnectionManager<PgConnection>;
 pub type DBPool = r2d2::Pool<ManagedPgConn>;
+pub type PooledConnection = r2d2::PooledConnection<ManagedPgConn>;
 
 pub fn init_pool() -> DBPool {
 	let config = config::get().expect("Failed to get config");
@@ -23,7 +24,7 @@ pub fn init_pool() -> DBPool {
 }
 
 /// Db Connection request guard type: wrapper around r2d2 pooled connection
-pub struct DBConn(pub r2d2::PooledConnection<ManagedPgConn>);
+pub struct DBConn(pub PooledConnection);
 
 impl Deref for DBConn {
 	type Target = PgConnection;

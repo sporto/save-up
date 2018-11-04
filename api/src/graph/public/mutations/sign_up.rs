@@ -23,7 +23,7 @@ pub fn call(executor: &Executor<PublicContext>, sign_up: SignUp) -> FieldResult<
 	}
 
 	let ctx = executor.context();
-	let conn = ctx.pool.get().unwrap();
+	let conn = &ctx.conn;
 
 	let user_result = sign_ups::create::call(&conn, sign_up);
 

@@ -15,7 +15,7 @@ pub struct SignInResponse {
 
 pub fn call(executor: &Executor<PublicContext>, sign_in: SignIn) -> FieldResult<SignInResponse> {
 	let ctx = executor.context();
-	let conn = ctx.pool.get().unwrap();
+	let conn = &ctx.conn;
 
 	let user_result = sign_ins::create::call(&conn, sign_in);
 

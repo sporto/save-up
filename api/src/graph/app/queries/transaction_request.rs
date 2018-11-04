@@ -24,10 +24,10 @@ graphql_object!(TransactionRequest: AppContext |&self| {
 
 	field account(&executor) -> FieldResult<Account> {
 		let ctx = &executor.context();
-		let conn = ctx.pool.get().unwrap();
+		let conn = &ctx.conn;
 
 		db::accounts::table.find(self.account_id)
-			.first::<Account>(&conn)
+			.first::<Account>(&*conn)
 			.map_err(|e| FieldError::from(e))
 	}
 

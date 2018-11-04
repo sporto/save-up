@@ -16,14 +16,14 @@ pub mod app;
 pub mod public;
 
 pub struct AppContext {
-	pub pool: r2d2::Pool<ManagedPgConn>,
+	pub conn: r2d2::PooledConnection<ManagedPgConn>,
 	pub user: User,
 }
 
 impl JuniperContext for AppContext {}
 
 pub struct PublicContext {
-	pub pool: r2d2::Pool<ManagedPgConn>,
+	pub conn: r2d2::PooledConnection<ManagedPgConn>,
 }
 
 impl JuniperContext for PublicContext {}

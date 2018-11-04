@@ -19,7 +19,7 @@ pub fn call(
 	input: RedeemInvitationInput,
 ) -> FieldResult<RedeemInvitationResponse> {
 	let ctx = executor.context();
-	let conn = ctx.pool.get().unwrap();
+	let conn = &ctx.conn;
 
 	let result = redeem::call(&conn, &input);
 

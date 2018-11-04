@@ -103,9 +103,9 @@ fn graphql_app_handler(
 	jwt: JWT,
 	request: juniper_rocket::GraphQLRequest,
 	schema: State<graph::AppSchema>,
-	pool: State<utils::db_conn::DBPool>,
+	conn: utils::db_conn::DBConn,
 ) -> juniper_rocket::GraphQLResponse {
-	let conn = pool.get().unwrap();
+	// let conn = pool.get().unwrap();
 	let JWT(token) = jwt;
 
 	let user = match actions::users::get_user::call(&conn, &token) {
@@ -116,7 +116,7 @@ fn graphql_app_handler(
 	};
 
 	let context = graph::AppContext {
-		pool: pool,
+		conn: conn.0,
 		user: user,
 	};
 
@@ -125,10 +125,12 @@ fn graphql_app_handler(
 
 #[post("/graphql-pub", data = "<request>")]
 fn graphql_pub_handler(
-	context: State<graph::PublicContext>,
 	request: juniper_rocket::GraphQLRequest,
 	schema: State<graph::PublicSchema>,
+	conn: utils::db_conn::DBConn,
 ) -> juniper_rocket::GraphQLResponse {
+	let context = graph::PublicContext { conn: conn.0 };
+
 	request.execute(&schema, &context)
 }
 
@@ -227,11 +229,8 @@ fn rocket() -> Rocket {
 	let schema_app = graph::create_app_schema();
 	let schema_pub = graph::create_public_schema();
 
-	let context_pub = graph::PublicContext { pool: pool.clone() };
-
 	rocket::ignite()
 		.manage(pool.clone())
-		.manage(context_pub)
 		.manage(schema_app)
 		.manage(schema_pub)
 		.mount("/", routes)

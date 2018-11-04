@@ -22,7 +22,7 @@ pub fn call(
 	input: InvitationInput,
 ) -> FieldResult<InvitationResponse> {
 	let ctx = executor.context();
-	let conn = ctx.pool.get().unwrap();
+	let conn = &ctx.conn;
 	let current_user = &ctx.user;
 
 	// Authorise

@@ -71,7 +71,7 @@ graphql_object!(Admin: AppContext |&self| {
 	field investors(&executor) -> FieldResult<Vec<User>> {
 		let ctx = &executor.context();
 		let client_id = ctx.user.client_id;
-		let conn = ctx.pool.get().unwrap();
+		let conn = &ctx.conn;
 
 		let is_investor = db::users::role.eq(Role::Investor);
 
@@ -81,13 +81,13 @@ graphql_object!(Admin: AppContext |&self| {
 
 		db::users::table
 			.filter(filter)
-			.load::<User>(&conn)
+			.load::<User>(&*conn)
 			.map_err(|e| FieldError::from(e))
 	}
 
 	field account(&executor, id: i32) -> FieldResult<Account> {
 		let ctx = &executor.context();
-		let conn = ctx.pool.get().unwrap();
+		let conn = &ctx.conn;
 		let current_user = &ctx.user;
 
 		// Authorise
@@ -103,20 +103,20 @@ graphql_object!(Admin: AppContext |&self| {
 
 	field pending_requests(&executor) -> FieldResult<Vec<TransactionRequest>> {
 		let ctx = &executor.context();
-		let conn = ctx.pool.get().unwrap();
+		let conn = &ctx.conn;
 		let current_user = &ctx.user;
 
-		let client = db::clients::table.find(current_user.client_id).first::<Client>(&conn)?;
+		let client = db::clients::table.find(current_user.client_id).first::<Client>(&*conn)?;
 
-		let users = User::belonging_to(&client).load::<User>(&conn)?;
+		let users = User::belonging_to(&client).load::<User>(&*conn)?;
 
-		let accounts = Account::belonging_to(&users).load::<Account>(&conn)?;
+		let accounts = Account::belonging_to(&users).load::<Account>(&*conn)?;
 
 		let is_pending = db::transaction_requests::state.eq(TransactionRequestState::Pending);
 
 		TransactionRequest::belonging_to(&accounts)
 			.filter(is_pending)
-			.get_results(&conn)
+			.get_results(&*conn)
 			.map_err(|e| FieldError::from(e))
 	}
 
@@ -131,7 +131,7 @@ graphql_object!(Investor: AppContext |&self| {
 
 	field accounts(&executor) -> FieldResult<Vec<Account>> {
 		let ctx = &executor.context();
-		let conn = ctx.pool.get().unwrap();
+		let conn = &ctx.conn;
 
 		let user_id = ctx.user.id;
 
@@ -140,13 +140,13 @@ graphql_object!(Investor: AppContext |&self| {
 
 		db::accounts::table
 			.filter(filter)
-			.load::<Account>(&conn)
+			.load::<Account>(&*conn)
 			.map_err(|e| FieldError::from(e))
 	}
 
 	field account(&executor, id: i32) -> FieldResult<Account> {
 		let ctx = &executor.context();
-		let conn = ctx.pool.get().unwrap();
+		let conn = &ctx.conn;
 
 		let current_user = &ctx.user;
 

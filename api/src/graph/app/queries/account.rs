@@ -19,7 +19,7 @@ graphql_object!(Account: AppContext |&self| {
 
 	field user(&executor) -> FieldResult<User> {
 		let ctx = &executor.context();
-		let conn = ctx.pool.get().unwrap();
+		let conn = &ctx.conn;
 
 		User::find(&conn, self.user_id)
 			.map_err(|e| FieldError::from(e))
@@ -39,7 +39,7 @@ graphql_object!(Account: AppContext |&self| {
 
 	field balance_in_cents(&executor) -> f64 {
 		let ctx = &executor.context();
-		let conn = ctx.pool.get().unwrap();
+		let conn = &ctx.conn;
 
 		actions::accounts::get_balance::call(&conn, self.id)
 			.unwrap_or(0) as f64
@@ -53,7 +53,7 @@ graphql_object!(Account: AppContext |&self| {
 	// posix time should be kept in floats, because i32 will reset in the year 2038
 	field transactions(&executor, since: f64) -> Vec<Transaction> {
 		let ctx = &executor.context();
-		let conn = ctx.pool.get().unwrap();
+		let conn = &ctx.conn;
 
 		// let since_in_secs = since / 1000.0;
 		let since_dt = NaiveDateTime::from_timestamp(since as i64, 0);
