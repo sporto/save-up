@@ -65,9 +65,17 @@ impl<'a, 'r> FromRequest<'a, 'r> for JWT {
 	type Error = ();
 
 	fn from_request(request: &'a Request<'r>) -> request::Outcome<JWT, ()> {
+		// println!("Get JWT");
+
 		match get_token_from_request(request) {
-			Ok(token) => outcome::Outcome::Success(JWT(token)),
-			Err(_e) => outcome::Outcome::Failure((Status::Unauthorized, ())),
+			Ok(token) => {
+				// println!("Ok token {}", token);
+				outcome::Outcome::Success(JWT(token))
+			}
+			Err(e) => {
+				println!("{}", e.to_string());
+				outcome::Outcome::Failure((Status::Unauthorized, ()))
+			}
 		}
 	}
 }
@@ -89,9 +97,7 @@ fn graphql_app_handler(
 
 	let user = match actions::users::get_user::call(&conn, &token) {
 		Ok(user) => user,
-		Err(_) => {
-			return juniper_rocket::GraphQLResponse(Status::Unauthorized, "Unauthorized".to_string())
-		}
+		Err(e) => return juniper_rocket::GraphQLResponse(Status::Unauthorized, e.to_string()),
 	};
 
 	let context = graph::AppContext {
@@ -158,6 +164,8 @@ fn rocket() -> Rocket {
 
 	let schema_app = graph::create_app_schema();
 	let schema_pub = graph::create_public_schema();
+
+	// log::info!("Starting");
 
 	rocket::ignite()
 		.manage(pool.clone())
