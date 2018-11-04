@@ -134,61 +134,12 @@ fn graphql_pub_handler(
 	request.execute(&schema, &context)
 }
 
-// impl<'a, 'r> FromRequest<'a, 'r> for models::user::User {
-// 	type Error = ();
-
-// 	fn from_request(
-// 		request: &'a Request<'r>,
-// 		pool: utils::db_conn::DBConn,
-// 	) -> request::Outcome<graph::AppContext, ()> {
-// 		get_token_from_request(request)
-// 			.and_then(|token| {
-// 				let conn = pool.get().unwrap();
-// 				actions::users::get_user::call(&conn, &token)
-// 			}).into_outcome((Status::Unauthorized, ()))
-// 	}
-// }
-
-// impl<'a, 'r> FromRequest<'a, 'r> for graph::AppContext {
-// 	type Error = ();
-
-// 	fn from_request(
-// 		request: &'a Request<'r>,
-// 		user: models::user::User,
-// 		pool: utils::db_conn::DBConn,
-// 	) -> request::Outcome<graph::AppContext, ()> {
-// 		let context_app = graph::AppContext {
-// 			pool: pool,
-// 			user: user,
-// 		};
-
-// 		request::Outcome::Success(context_app)
-// 	}
-// }
-
 fn get_token_from_request(request: &Request) -> Result<String, failure::Error> {
 	let keys: Vec<_> = request.headers().get("Authorization").collect();
 
 	let txt = keys
 		.first()
 		.ok_or(format_err!("No Authorization header found"))?;
-
-	// if keys.len() != 1 {
-	// 	return Outcome::Failure((Status::BadRequest, ()));
-	// }
-
-	// let key = keys[0];
-	// if !is_valid(keys[0]) {
-	// 	return Outcome::Forward(());
-	// }
-
-	// let header = request
-	// 	.headers()
-	// 	.get("Authorization")
-	// 	.ok_or("No Authorization header found")
-	// 	.map_err(|e| format_err!("{}", e))?;
-
-	// let txt = header.to_str()?;
 
 	// Get the JWT from the header
 	// e.g. Bearer abc123...
