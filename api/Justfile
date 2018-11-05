@@ -66,6 +66,17 @@ build-image:
 push-image:
 	docker push $API_IMAGE_TAG
 
+docker-run-local:
+	docker run \
+		--rm \
+		--name save-up-api \
+		--env RUST_BACKTRACE=1 \
+		--env-file ./env.prod \
+		--expose=4010 \
+		-p 4020:4010 \
+		$API_IMAGE_TAG
+
+# Do this before hyper-pull
 log-hyper:
 	eval $(aws ecr get-login | sed 's/docker/hyper/')
 
@@ -79,8 +90,8 @@ hyper-run:
 		--name save-up-api \
 		--env RUST_BACKTRACE=1 \
 		--env-file ./env.prod \
-		--expose=80 \
-		-P \
+		--expose=4010 \
+		-p 80:4010 \
 		--size=s1 \
 		$API_IMAGE_TAG
 
