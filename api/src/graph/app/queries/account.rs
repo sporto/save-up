@@ -21,7 +21,7 @@ graphql_object!(Account: AppContext |&self| {
 		let ctx = &executor.context();
 		let conn = &ctx.conn;
 
-		User::find(conn, self.user_id)
+		User::find(&conn, self.user_id)
 			.map_err(|e| FieldError::from(e))
 	}
 
@@ -41,7 +41,7 @@ graphql_object!(Account: AppContext |&self| {
 		let ctx = &executor.context();
 		let conn = &ctx.conn;
 
-		actions::accounts::get_balance::call(conn, self.id)
+		actions::accounts::get_balance::call(&conn, self.id)
 			.unwrap_or(0) as f64
 	}
 
@@ -60,7 +60,7 @@ graphql_object!(Account: AppContext |&self| {
 
 		// We can access via account or accounts queries
 		// We assume that authorisation already happened in either of those
-		Transaction::find_by_account_id(conn, self.id, since_dt)
+		Transaction::find_by_account_id(&conn, self.id, since_dt)
 			.unwrap_or(vec![])
 	}
 });

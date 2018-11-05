@@ -22,9 +22,10 @@ pub fn call(
 	executor: &Executor<PublicContext>,
 	input: ResetPasswordInput,
 ) -> FieldResult<ResetPasswordResponse> {
-	let context = executor.context();
+	let ctx = executor.context();
+	let conn = &ctx.conn;
 
-	let result = passwords::reset::call(&context.conn, &input.token, &input.password);
+	let result = passwords::reset::call(&conn, &input.token, &input.password);
 
 	let user = match result {
 		Ok(user) => user,

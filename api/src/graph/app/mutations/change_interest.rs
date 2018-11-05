@@ -38,9 +38,9 @@ pub fn call(
 	executor: &Executor<AppContext>,
 	input: ChangeAccountInterestInput,
 ) -> FieldResult<ChangeAccountInterestResponse> {
-	let context = executor.context();
-	let conn = &context.conn;
-	let current_user = &context.user;
+	let ctx = executor.context();
+	let conn = &ctx.conn;
+	let current_user = &ctx.user;
 
 	// Authorise
 	let can =

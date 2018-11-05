@@ -19,9 +19,10 @@ pub fn call(
 	executor: &Executor<PublicContext>,
 	input: RequestPasswordResetInput,
 ) -> FieldResult<RequestPasswordResetResponse> {
-	let context = executor.context();
+	let ctx = executor.context();
+	let conn = &ctx.conn;
 
-	let result = passwords::request_reset::call(&context.conn, &input.username_or_email);
+	let result = passwords::request_reset::call(&conn, &input.username_or_email);
 
 	let response = match result {
 		Ok(_token) => RequestPasswordResetResponse {

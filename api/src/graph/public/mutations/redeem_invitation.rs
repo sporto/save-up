@@ -18,9 +18,10 @@ pub fn call(
 	executor: &Executor<PublicContext>,
 	input: RedeemInvitationInput,
 ) -> FieldResult<RedeemInvitationResponse> {
-	let context = executor.context();
+	let ctx = executor.context();
+	let conn = &ctx.conn;
 
-	let result = redeem::call(&context.conn, &input);
+	let result = redeem::call(&conn, &input);
 
 	let response = match result {
 		Ok(user) => with_user(user),

@@ -25,9 +25,9 @@ graphql_object!(ArchiveUserResponse: AppContext |&self| {
 });
 
 pub fn call(executor: &Executor<AppContext>, user_id: i32) -> FieldResult<ArchiveUserResponse> {
-	let context = executor.context();
-	let conn = &context.conn;
-	let current_user = &context.user;
+	let ctx = executor.context();
+	let conn = &ctx.conn;
+	let current_user = &ctx.user;
 
 	// Authorise
 	let can = actions::users::authorise::can_archive(&conn, &current_user, user_id)?;

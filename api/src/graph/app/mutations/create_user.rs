@@ -40,9 +40,9 @@ pub fn call(
 	executor: &Executor<AppContext>,
 	input: CreateUserInput,
 ) -> FieldResult<CreateUserResponse> {
-	let context = executor.context();
-	let conn = &context.conn;
-	let current_user = &context.user;
+	let ctx = executor.context();
+	let conn = &ctx.conn;
+	let current_user = &ctx.user;
 
 	// Authorise
 	let can = actions::users::authorise::can_create(&conn, &current_user)?;

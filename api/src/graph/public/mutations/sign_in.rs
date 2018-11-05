@@ -14,9 +14,10 @@ pub struct SignInResponse {
 }
 
 pub fn call(executor: &Executor<PublicContext>, sign_in: SignIn) -> FieldResult<SignInResponse> {
-	let context = executor.context();
+	let ctx = executor.context();
+	let conn = &ctx.conn;
 
-	let user_result = sign_ins::create::call(&context.conn, sign_in);
+	let user_result = sign_ins::create::call(&conn, sign_in);
 
 	let user = match user_result {
 		Ok(user) => user,

@@ -1,3 +1,6 @@
+#![feature(plugin)]
+#![plugin(rocket_codegen)]
+
 #[macro_use]
 extern crate askama;
 #[macro_use]
@@ -14,20 +17,22 @@ extern crate serde_json;
 extern crate validator_derive;
 #[macro_use]
 extern crate lazy_static;
+#[macro_use]
+extern crate rocket;
 
-extern crate actix;
-extern crate actix_web;
 extern crate bigdecimal;
 extern crate chrono;
 extern crate chrono_tz;
 extern crate env_logger;
 extern crate futures;
 extern crate jsonwebtoken as jwt;
+extern crate juniper_rocket;
 extern crate libreauth;
 extern crate num_cpus;
 extern crate r2d2;
 extern crate range_check;
 extern crate regex;
+extern crate rocket_cors;
 extern crate rusoto_core;
 extern crate rusoto_ses;
 extern crate serde;
@@ -35,74 +40,91 @@ extern crate url;
 extern crate uuid;
 extern crate validator;
 
-use actix::prelude::*;
-use actix_web::{
-	error, http, middleware, middleware::cors::Cors, server, App, AsyncResponder, Error,
-	FutureResponse, HttpRequest, HttpResponse, Json, State,
-};
-use askama::Template;
-// use diesel::prelude::*;
-use futures::future::{result, Future};
-use graph::{
-	GraphQLAppExecutor, GraphQLPublicExecutor, ProcessAppGraphQlRequest,
-	ProcessPublicGraphQlRequest,
-};
-use juniper::http::GraphQLRequest;
+// use askama::Template;
+use rocket::http::{Method, Status};
+use rocket::outcome;
+use rocket::request::{self, FromRequest, Request};
+use rocket::response::content;
+use rocket::response::NamedFile;
+use rocket::Rocket;
+use rocket::State;
+use rocket_cors::{AllowedHeaders, AllowedOrigins};
 
 mod actions;
 mod graph;
 mod models;
 mod utils;
 
-#[derive(Template)]
-#[template(path = "graphiql.html")]
-struct GraphiqlTemplate;
+// #[derive(Template)]
+// #[template(path = "graphiql.html")]
+// struct GraphiqlTemplate;
 
-struct AppState {
-	db: Addr<DbExecutor>,
-	executor_app: Addr<GraphQLAppExecutor>,
-	executor_public: Addr<GraphQLPublicExecutor>,
+struct JWT(String);
+
+impl<'a, 'r> FromRequest<'a, 'r> for JWT {
+	type Error = ();
+
+	fn from_request(request: &'a Request<'r>) -> request::Outcome<JWT, ()> {
+		// println!("Get JWT");
+
+		match get_token_from_request(request) {
+			Ok(token) => {
+				// println!("Ok token {}", token);
+				outcome::Outcome::Success(JWT(token))
+			}
+			Err(e) => {
+				println!("{}", e.to_string());
+				outcome::Outcome::Failure((Status::Unauthorized, ()))
+			}
+		}
+	}
 }
 
-pub struct DbExecutor(pub utils::db_conn::DBPool);
-
-impl Actor for DbExecutor {
-	type Context = SyncContext<Self>;
+#[get("/")]
+fn index() -> &'static str {
+	"Hello"
 }
 
-fn graphiql(_req: &HttpRequest<AppState>) -> Result<HttpResponse, Error> {
-	GraphiqlTemplate
-		.render()
-		.map(|s| HttpResponse::Ok().content_type("text/html").body(s))
-		.map_err(|askama_error| error::ErrorBadRequest(askama_error.to_string()))
+#[post("/graphql-app", data = "<request>")]
+fn graphql_app_handler(
+	jwt: JWT,
+	request: juniper_rocket::GraphQLRequest,
+	schema: State<graph::AppSchema>,
+	conn: utils::db_conn::DBConn,
+) -> juniper_rocket::GraphQLResponse {
+	// let conn = pool.get().unwrap();
+	let JWT(token) = jwt;
+
+	let user = match actions::users::get_user::call(&conn, &token) {
+		Ok(user) => user,
+		Err(e) => return juniper_rocket::GraphQLResponse(Status::Unauthorized, e.to_string()),
+	};
+
+	let context = graph::AppContext {
+		conn: conn.0,
+		user: user,
+	};
+
+	request.execute(&schema, &context)
 }
 
-fn graphql_public(
-	(st, data): (State<AppState>, Json<GraphQLRequest>),
-) -> FutureResponse<HttpResponse> {
-	// We could use only one executor
-	// If we can send here what context to use
-	let msg = ProcessPublicGraphQlRequest { request: data.0 };
+#[post("/graphql-pub", data = "<request>")]
+fn graphql_pub_handler(
+	request: juniper_rocket::GraphQLRequest,
+	schema: State<graph::PublicSchema>,
+	conn: utils::db_conn::DBConn,
+) -> juniper_rocket::GraphQLResponse {
+	let context = graph::PublicContext { conn: conn.0 };
 
-	st.executor_public
-		.send(msg)
-		.from_err()
-		.and_then(|res| match res {
-			Ok(response_data) => Ok(HttpResponse::Ok()
-				.content_type("application/json")
-				.body(response_data)),
-			Err(_) => Ok(HttpResponse::InternalServerError().into()),
-		}).responder()
+	request.execute(&schema, &context)
 }
 
-fn get_token_from_request(request: &HttpRequest<AppState>) -> Result<String, failure::Error> {
-	let header = request
-		.headers()
-		.get("Authorization")
-		.ok_or("No Authorization header found")
-		.map_err(|e| format_err!("{}", e))?;
+fn get_token_from_request(request: &Request) -> Result<String, failure::Error> {
+	let keys: Vec<_> = request.headers().get("Authorization").collect();
 
-	let txt = header.to_str()?;
+	let txt = keys
+		.first()
+		.ok_or(format_err!("No Authorization header found"))?;
 
 	// Get the JWT from the header
 	// e.g. Bearer abc123...
@@ -113,86 +135,46 @@ fn get_token_from_request(request: &HttpRequest<AppState>) -> Result<String, fai
 	Ok(token.to_string())
 }
 
-fn graphql_app(
-	(request, st, data): (HttpRequest<AppState>, State<AppState>, Json<GraphQLRequest>),
-) -> FutureResponse<HttpResponse> {
-	let unauthorised = HttpResponse::Unauthorized().finish();
+fn rocket() -> Rocket {
+	let config = utils::config::get().expect("Failed to get config");
 
-	let token = match get_token_from_request(&request) {
-		Ok(token) => token,
-		Err(_) => return result(Ok(unauthorised)).responder(),
+	// CORS
+	let (allowed_origins, failed_origins) = AllowedOrigins::some(&[&config.client_host]);
+
+	assert!(failed_origins.is_empty());
+
+	let allowed_methods = vec![Method::Get, Method::Post]
+		.into_iter()
+		.map(From::from)
+		.collect();
+
+	let allowed_headers = AllowedHeaders::some(&["Authorization", "Accept", "content-type"]);
+
+	let options = rocket_cors::Cors {
+		allowed_origins: allowed_origins,
+		allowed_methods: allowed_methods,
+		allowed_headers: allowed_headers,
+		allow_credentials: true,
+		..Default::default()
 	};
 
-	let msg = ProcessAppGraphQlRequest {
-		token,
-		request: data.0,
-	};
+	let routes = routes![index, graphql_app_handler, graphql_pub_handler,];
 
-	st.executor_app
-		.send(msg)
-		.from_err()
-		.and_then(|res| match res {
-			Ok(response_data) => Ok(HttpResponse::Ok()
-				.content_type("application/json")
-				.body(response_data)),
-			Err(_) => Ok(HttpResponse::InternalServerError().into()),
-		}).responder()
-}
+	let pool = utils::db_conn::init_pool();
 
-fn status(_req: &HttpRequest<AppState>) -> String {
-	"Hello!".to_owned()
+	let schema_app = graph::create_app_schema();
+	let schema_pub = graph::create_public_schema();
+
+	// log::info!("Starting");
+
+	rocket::ignite()
+		.manage(pool.clone())
+		.manage(schema_app)
+		.manage(schema_pub)
+		.mount("/", routes)
+		.attach(options)
 }
 
 fn main() {
-	::std::env::set_var("RUST_LOG", "actix_web=info");
-	env_logger::init();
-
-	let config = utils::config::get().expect("Failed to get config");
-	let config_2 = config.clone();
-
-	let sys = actix::System::new("juniper-example");
-
-	let capacity = (num_cpus::get() / 2) as usize;
-	
-
-	// Start http server
-	server::new(move || {
-		// r2d2 db pool
-		let pool = utils::db_conn::init_pool();
-
-		let executor_app_addr = graph::create_app_executor(capacity, pool.clone());
-
-		let executor_public_addr = graph::create_public_executor(capacity, pool.clone());
-
-		let db_addr = SyncArbiter::start(capacity, move || DbExecutor(pool.clone()));
-
-		let state = AppState {
-			db: db_addr.clone(),
-			executor_app: executor_app_addr.clone(),
-			executor_public: executor_public_addr.clone(),
-		};
-
-		App::with_state(state)
-			// enable logger
-			.middleware(middleware::Logger::default())
-			
-			.configure(|app|
-				Cors::for_app(app)
-					.allowed_origin(&config_2.client_host)
-					.allowed_methods(vec!["GET", "POST"])
-					.allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
-					.allowed_header(http::header::CONTENT_TYPE)
-					.max_age(3600)
-					.resource("/status", |r| r.f(status))
-					.resource("/graphql-pub", |r| r.method(http::Method::POST).with(graphql_public))
-					.resource("/graphql-app", |r| r.method(http::Method::POST).with(graphql_app))
-					.resource("/graphiql", |r| r.method(http::Method::GET).h(graphiql))
-					.register()
-			)
-	}).bind("0.0.0.0:".to_owned() + &config.api_port)
-	.unwrap()
-	.start();
-
-	println!("Started http server");
-	let _ = sys.run();
+	rocket().launch();
 }

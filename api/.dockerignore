@@ -4,3 +4,5 @@
 !migrations
 !src
 !templates
+!build.rs
+!Rocket.toml

@@ -33,9 +33,9 @@ pub fn call(
 	executor: &Executor<AppContext>,
 	input: RequestWithdrawalInput,
 ) -> FieldResult<RequestWithdrawalResponse> {
-	let context = executor.context();
-	let conn = &context.conn;
-	let current_user = &context.user;
+	let ctx = executor.context();
+	let conn = &ctx.conn;
+	let current_user = &ctx.user;
 
 	// Authorise
 	let can_access = authorise::can_access(&conn, input.account_id, &current_user)?;
@@ -44,7 +44,7 @@ pub fn call(
 		return Err(FieldError::from("Unauthorised"));
 	}
 
-	let result = request_withdrawal::call(&context.conn, input);
+	let result = request_withdrawal::call(&conn, input);
 
 	let response = match result {
 		Ok(transaction_request) => RequestWithdrawalResponse {

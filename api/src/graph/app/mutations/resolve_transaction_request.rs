@@ -33,9 +33,10 @@ pub fn call(
 	executor: &Executor<AppContext>,
 	input: ResolveTransactionRequestInput,
 ) -> FieldResult<ResolveTransactionRequestResponse> {
-	let context = executor.context();
-	let conn = &context.conn;
-	let current_user = &context.user;
+	let ctx = executor.context();
+	let conn = &ctx.conn;
+
+	let current_user = &ctx.user;
 
 	// Authorise
 	let transaction_request = TransactionRequest::find(&conn, input.transaction_request_id)?;
@@ -46,7 +47,7 @@ pub fn call(
 		return Err(FieldError::from("Unauthorised"));
 	}
 
-	let result = resolve_transaction_request::call(&context.conn, input);
+	let result = resolve_transaction_request::call(&conn, input);
 
 	let response = match result {
 		Ok(transaction_request) => ResolveTransactionRequestResponse {

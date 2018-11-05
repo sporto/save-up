@@ -9,6 +9,7 @@ import Json.Decode as Decode exposing (Decoder)
 
 type State
     = Active
+    | Archived
 
 
 decoder : Decoder State
@@ -19,6 +20,9 @@ decoder =
                 case string of
                     "ACTIVE" ->
                         Decode.succeed Active
+
+                    "ARCHIVED" ->
+                        Decode.succeed Archived
 
                     _ ->
                         Decode.fail ("Invalid State type, " ++ string ++ " try re-running the @dillonkearns/elm-graphql CLI ")
@@ -32,3 +36,6 @@ toString enum =
     case enum of
         Active ->
             "ACTIVE"
+
+        Archived ->
+            "ARCHIVED"

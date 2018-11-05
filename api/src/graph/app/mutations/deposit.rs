@@ -29,9 +29,9 @@ graphql_object!(DepositResponse: AppContext |&self| {
 });
 
 pub fn call(executor: &Executor<AppContext>, input: DepositInput) -> FieldResult<DepositResponse> {
-	let context = executor.context();
-	let conn = &context.conn;
-	let current_user = &context.user;
+	let ctx = executor.context();
+	let conn = &ctx.conn;
+	let current_user = &ctx.user;
 
 	// Authorise this transaction
 	let can_access = authorise::can_access(&conn, input.account_id, &current_user)?;
