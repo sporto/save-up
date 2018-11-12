@@ -1,12 +1,18 @@
 module UI.Chart exposing (view)
 
 import Color
+import DateFormat as DT
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import LineChart as LineChart
 import LineChart.Area as Area
 import LineChart.Axis as Axis
 import LineChart.Axis.Intersection as Intersection
+import LineChart.Axis.Line as AxisLine
+import LineChart.Axis.Range as Range
+import LineChart.Axis.Tick as Tick
+import LineChart.Axis.Ticks as Ticks
+import LineChart.Axis.Title as Title
 import LineChart.Container as Container
 import LineChart.Dots as Dots
 import LineChart.Events as Events
@@ -15,6 +21,7 @@ import LineChart.Interpolation as Interpolation
 import LineChart.Junk as Junk exposing (..)
 import LineChart.Legends as Legends
 import LineChart.Line as Line
+import Svg
 import Time exposing (Posix)
 
 
@@ -26,31 +33,65 @@ type alias Transaction =
 
 view : List Transaction -> Html msg
 view transactions =
-    chart transactions
+    div [ class "flex justify-center" ]
+        [ chart transactions
+        ]
 
 
 chart : List Transaction -> Html msg
 chart transactions =
     LineChart.viewCustom
-        config
+        chartConfig
         [ LineChart.line Color.blue Dots.diamond "Transactions" transactions ]
 
 
-config : LineChart.Config Transaction msg
-config =
-    { y = Axis.default 450 "Balance" getY
-    , x = Axis.default 700 "Date" getX
-    , container = Container.styled "line-chart-1" [ ( "font-family", "monospace" ) ]
+chartConfig : LineChart.Config Transaction msg
+chartConfig =
+    { y = Axis.default 480 "Balance" getY
+    , x = xAxisConfig
+    , container = Container.default "transactions-chart"
     , interpolation = Interpolation.default
     , intersection = Intersection.default
-    , legends = Legends.default
+    , legends = Legends.none
     , events = Events.default
     , junk = Junk.default
     , grid = Grid.default
-    , area = Area.default
-    , line = Line.wider 2
+    , area = Area.normal 0.2
+    , line = Line.wider 3
     , dots = Dots.default
     }
+
+
+xAxisConfig : Axis.Config Transaction msg
+xAxisConfig =
+    Axis.custom
+        { title = Title.default "Date"
+        , variable = getX >> Just
+        , pixels = 960
+        , range = Range.padded 20 0
+        , axisLine = AxisLine.none
+        , ticks = Ticks.timeCustom Time.utc 6 tickTime
+        }
+
+
+tickTime : Tick.Time -> Tick.Config msg
+tickTime time =
+    let
+        label =
+            Junk.label Color.black (formatXTick time.timestamp)
+
+        config : Tick.Properties msg
+        config =
+            { position = time.timestamp |> Time.posixToMillis |> toFloat
+            , color = Color.black
+            , width = 1
+            , length = 4
+            , grid = False
+            , direction = Tick.negative
+            , label = Just label
+            }
+    in
+    Tick.custom config
 
 
 getX : Transaction -> Float
@@ -64,3 +105,29 @@ getY : Transaction -> Float
 getY transaction =
     transaction.balanceInCents
         |> toFloat
+
+
+formatY : Transaction -> String
+formatY transaction =
+    transaction.balanceInCents
+        // 100
+        |> String.fromInt
+
+
+formatXTick : Posix -> String
+formatXTick posix =
+    DT.format
+        [ DT.dayOfMonthNumber
+        , DT.text " "
+        , DT.monthNameAbbreviated
+        , DT.text " "
+        , DT.yearNumberLastTwo
+        ]
+        Time.utc
+        posix
+
+
+formatX : Transaction -> String
+formatX transaction =
+    formatXTick
+        transaction.createdAt

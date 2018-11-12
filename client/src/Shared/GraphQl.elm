@@ -94,4 +94,5 @@ unwrapNaiveDateTime (Api.Scalar.NaiveDateTime time) =
     time
         |> String.toInt
         |> Result.fromMaybe "Not an integer"
+        |> Result.map ((*) 1000)
         |> Result.map Time.millisToPosix
