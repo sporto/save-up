@@ -15,6 +15,9 @@ elm-analyse:
 elm-ts:
 	npx elm-typescript-interop
 
+elm-outdated:
+	npx elm-outdated
+
 test:
 	npx elm-test
 
