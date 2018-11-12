@@ -1,24 +1,22 @@
 module UI.Chart exposing (view)
 
+import Color
 import Html exposing (..)
-import Time exposing (Posix)
-import LineChart
 import Html.Attributes exposing (class)
-import LineChart.Dots as Dots
 import LineChart as LineChart
-import LineChart.Junk as Junk exposing (..)
-import LineChart.Dots as Dots
-import LineChart.Container as Container
-import LineChart.Interpolation as Interpolation
-import LineChart.Axis.Intersection as Intersection
+import LineChart.Area as Area
 import LineChart.Axis as Axis
-import LineChart.Legends as Legends
-import LineChart.Line as Line
+import LineChart.Axis.Intersection as Intersection
+import LineChart.Container as Container
+import LineChart.Dots as Dots
 import LineChart.Events as Events
 import LineChart.Grid as Grid
+import LineChart.Interpolation as Interpolation
+import LineChart.Junk as Junk exposing (..)
 import LineChart.Legends as Legends
-import LineChart.Area as Area
-import Color
+import LineChart.Line as Line
+import Time exposing (Posix)
+
 
 type alias Transaction =
     { createdAt : Posix
@@ -31,11 +29,17 @@ view transactions =
     chart transactions
 
 
-chart :List Transaction -> Html msg
+chart : List Transaction -> Html msg
 chart transactions =
-  LineChart.viewCustom
-    { y = Axis.default 450 "Height" .height
-    , x = Axis.default 700 "Age" .age
+    LineChart.viewCustom
+        config
+        [ LineChart.line Color.blue Dots.diamond "Transactions" transactions ]
+
+
+config : LineChart.Config Transaction msg
+config =
+    { y = Axis.default 450 "Balance" getY
+    , x = Axis.default 700 "Date" getX
     , container = Container.styled "line-chart-1" [ ( "font-family", "monospace" ) ]
     , interpolation = Interpolation.default
     , intersection = Intersection.default
@@ -44,69 +48,19 @@ chart transactions =
     , junk = Junk.default
     , grid = Grid.default
     , area = Area.default
-    , line =
-        -- Try out these different configs!
-        -- Line.default
-        Line.wider 2
-        -- For making the line change based on whether it's hovered, see Events.elm!
+    , line = Line.wider 2
     , dots = Dots.default
     }
-    [ LineChart.line Color.red Dots.diamond "Alice" alice
-    , LineChart.line Color.blue Dots.circle "Bobby" bobby
-    , LineChart.line Color.green Dots.triangle "Chuck" chuck
-    ]
 
 
--- chart transactions =
---     Sparkline.sparkline { width = 600, height = 300, marginLR = 0, marginTB = 0 }
---         [ Sparkline.Line (dataFor transactions)
---         ]
+getX : Transaction -> Float
+getX transaction =
+    transaction.createdAt
+        |> Time.posixToMillis
+        |> toFloat
 
 
--- dataFor : List Transaction -> Sparkline.DataSet
--- dataFor transactions =
---     transactions
---         |> List.map transactionToPoint
-
-
--- transactionToPoint : Transaction -> Sparkline.Point
--- transactionToPoint transaction =
---     ( Time.posixToMillis transaction.createdAt |> toFloat
---     , transaction.balanceInCents |> toFloat
---     )
-
-
-
-type alias Info =
-  { age : Float
-  , weight : Float
-  , height : Float
-  , income : Float
-  }
-
-
-alice : List Info
-alice =
-  [ Info 10 34 1.34 0
-  , Info 16 42 1.62 3000
-  , Info 25 75 1.73 25000
-  , Info 43 83 1.75 40000
-  ]
-
-
-bobby : List Info
-bobby =
-  [ Info 10 38 1.32 0
-  , Info 17 69 1.75 2000
-  , Info 25 75 1.87 32000
-  , Info 43 77 1.87 52000
-  ]
-
-
-chuck : List Info
-chuck =
-  [ Info 10 42 1.35 0
-  , Info 15 72 1.72 1800
-  , Info 25 89 1.83 85000
-  , Info 43 95 1.84 120000
-  ]
+getY : Transaction -> Float
+getY transaction =
+    transaction.balanceInCents
+        |> toFloat
