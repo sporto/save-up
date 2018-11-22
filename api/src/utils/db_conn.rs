@@ -1,9 +1,9 @@
-use diesel::prelude::*;
-use diesel::r2d2;
-use failure::Error;
-use rocket::http::Status;
-use rocket::request::{self, FromRequest};
-use rocket::{Outcome, Request, State};
+use diesel::{prelude::*, r2d2};
+use rocket::{
+	http::Status,
+	request::{self, FromRequest},
+	Outcome, Request, State,
+};
 use std::ops::Deref;
 use utils::config;
 

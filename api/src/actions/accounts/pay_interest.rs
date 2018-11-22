@@ -1,12 +1,12 @@
 use super::calculate_interest;
-use chrono::prelude::*;
-use chrono::Duration;
-use diesel::pg::PgConnection;
-use diesel::result::Error as DieselError;
+use chrono::{prelude::*, Duration};
+use diesel::{pg::PgConnection, result::Error as DieselError};
 use failure::Error;
-use models::account::Account;
-use models::cents::Cents;
-use models::transaction::{Transaction, TransactionAttrs, TransactionKind};
+use models::{
+	account::Account,
+	cents::Cents,
+	transaction::{Transaction, TransactionAttrs, TransactionKind},
+};
 
 #[derive(Debug, PartialEq)]
 pub enum PayInterestResponse {
@@ -22,9 +22,11 @@ pub fn call(conn: &PgConnection, account_id: i32) -> Result<PayInterestResponse,
 	// If there is no previous transaction, then there is no interest to pay
 	let previous_transaction = match previous_transaction_result {
 		Ok(t) => t,
-		Err(e) => match e {
-			DieselError::NotFound => return Ok(PayInterestResponse::NotNeeded),
-			_ => return Err(format_err!("{}", e)),
+		Err(e) => {
+			match e {
+				DieselError::NotFound => return Ok(PayInterestResponse::NotNeeded),
+				_ => return Err(format_err!("{}", e)),
+			}
 		},
 	};
 
@@ -54,9 +56,9 @@ pub fn call(conn: &PgConnection, account_id: i32) -> Result<PayInterestResponse,
 	// Pay interest
 	let attrs = TransactionAttrs {
 		account_id: account_id,
-		kind: TransactionKind::Interest,
-		amount: Cents(interest),
-		balance: new_balance,
+		kind:       TransactionKind::Interest,
+		amount:     Cents(interest),
+		balance:    new_balance,
 	};
 
 	Transaction::create(conn, attrs)
@@ -67,10 +69,8 @@ pub fn call(conn: &PgConnection, account_id: i32) -> Result<PayInterestResponse,
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use diesel;
-	use diesel::prelude::*;
-	use models;
-	use models::schema::transactions;
+	use diesel::{self, prelude::*};
+	use models::{self, schema::transactions};
 	use utils::tests;
 
 	#[test]
@@ -126,7 +126,7 @@ mod tests {
 				PayInterestResponse::NotNeeded => panic!("Should not be NotNeeded"),
 				PayInterestResponse::Paid(returned_transaction) => {
 					assert_eq!(returned_transaction.kind, TransactionKind::Interest);
-				}
+				},
 			}
 		})
 	}

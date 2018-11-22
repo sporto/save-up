@@ -1,16 +1,7 @@
-use actions;
-use diesel::prelude::*;
 use diesel::r2d2;
-use failure;
-use juniper::http::GraphQLRequest;
-use juniper::Context as JuniperContext;
-use juniper::RootNode;
-use models;
+use juniper::{Context as JuniperContext, RootNode};
 use models::user::User;
-use serde_json;
-use std;
-use utils;
-use utils::db_conn::{DBPool, ManagedPgConn};
+use utils::db_conn::ManagedPgConn;
 
 pub mod app;
 pub mod public;

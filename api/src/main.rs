@@ -41,13 +41,13 @@ extern crate uuid;
 extern crate validator;
 
 // use askama::Template;
-use rocket::http::{Method, Status};
-use rocket::outcome;
-use rocket::request::{self, FromRequest, Request};
-use rocket::response::content;
-use rocket::response::NamedFile;
-use rocket::Rocket;
-use rocket::State;
+use rocket::{
+	http::{Method, Status},
+	outcome,
+	request::{self, FromRequest, Request},
+};
+
+use rocket::{Rocket, State};
 use rocket_cors::{AllowedHeaders, AllowedOrigins};
 
 mod actions;
@@ -71,11 +71,11 @@ impl<'a, 'r> FromRequest<'a, 'r> for JWT {
 			Ok(token) => {
 				// println!("Ok token {}", token);
 				outcome::Outcome::Success(JWT(token))
-			}
+			},
 			Err(e) => {
 				println!("{}", e.to_string());
 				outcome::Outcome::Failure((Status::Unauthorized, ()))
-			}
+			},
 		}
 	}
 }

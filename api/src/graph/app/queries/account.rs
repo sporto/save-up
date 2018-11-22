@@ -1,12 +1,13 @@
 use actions;
-use bigdecimal::BigDecimal;
-use bigdecimal::ToPrimitive;
-use chrono::NaiveDateTime;
+use bigdecimal::{BigDecimal, ToPrimitive};
+use chrono::{prelude::*, NaiveDateTime};
 use graph::AppContext;
 use juniper::{FieldError, FieldResult};
-use models::account::{Account, Kind, State};
-use models::transaction::Transaction;
-use models::user::User;
+use models::{
+	account::{Account, Kind, State},
+	transaction::{Transaction, TransactionKind},
+	user::User,
+};
 
 graphql_object!(Account: AppContext |&self| {
 	field id() -> i32 {
@@ -49,7 +50,7 @@ graphql_object!(Account: AppContext |&self| {
 		BigDecimal::to_f64(&self.yearly_interest).unwrap()
 	}
 
-	// since POSIX in milliseconds
+	// since POSIX is in milliseconds
 	// posix time should be kept in floats, because i32 will reset in the year 2038
 	field transactions(&executor, since: f64) -> Vec<Transaction> {
 		let ctx = &executor.context();
@@ -60,7 +61,44 @@ graphql_object!(Account: AppContext |&self| {
 
 		// We can access via account or accounts queries
 		// We assume that authorisation already happened in either of those
-		Transaction::find_by_account_id(&conn, self.id, since_dt)
-			.unwrap_or(vec![])
+		let transactions = Transaction::find_by_account_id(&conn, self.id, since_dt)
+			.unwrap_or(vec![]);
+
+		// Add a dummy transaction to reflect the latest interest
+		let maybeFirst = transactions.first();
+
+		match maybeFirst {
+			None => transactions,
+			Some(first) => {
+				let current_balance = first.balance;
+
+				let now = Utc::now().naive_utc();
+
+				let interest_result = actions::accounts::calculate_interest::call(
+					current_balance,
+					&self.yearly_interest,
+					first.created_at,
+					now,
+				);
+
+				match interest_result {
+					Ok(interest) => {
+						let interest_transaction = Transaction {
+							id: 0,
+							created_at: now,
+							account_id: self.id,
+							kind: TransactionKind::Interest,
+							amount: interest,
+							balance: current_balance + interest,
+						};
+
+						transactions.push(interest_transaction);
+					},
+					Err(_) => ()
+				};
+
+				transactions
+			}
+		}
 	}
 });
