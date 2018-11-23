@@ -47,7 +47,7 @@ chart transactions =
 
 chartConfig : LineChart.Config Transaction msg
 chartConfig =
-    { y = Axis.default 480 "Balance" getY
+    { y = yAxisConfig
     , x = xAxisConfig
     , container = Container.default "transactions-chart"
     , interpolation = Interpolation.default
@@ -62,6 +62,18 @@ chartConfig =
     }
 
 
+yAxisConfig : Axis.Config Transaction msg
+yAxisConfig =
+    Axis.custom
+        { title = Title.default "Balance"
+        , variable = getY >> Just
+        , pixels = 480
+        , range = Range.padded 20 0
+        , axisLine = AxisLine.none
+        , ticks = Ticks.intCustom 2 tickBalance
+        }
+
+
 xAxisConfig : Axis.Config Transaction msg
 xAxisConfig =
     Axis.custom
@@ -70,8 +82,28 @@ xAxisConfig =
         , pixels = 960
         , range = Range.padded 20 0
         , axisLine = AxisLine.none
-        , ticks = Ticks.timeCustom Time.utc 6 tickTime
+        , ticks = Ticks.timeCustom Time.utc 4 tickTime
         }
+
+
+tickBalance : Int -> Tick.Config msg
+tickBalance cents =
+    let
+        label =
+            Junk.label Color.black (formatYTick cents)
+
+        config : Tick.Properties msg
+        config =
+            { position = cents |> toFloat
+            , color = Color.black
+            , width = 1
+            , length = 4
+            , grid = False
+            , direction = Tick.negative
+            , label = Just label
+            }
+    in
+    Tick.custom config
 
 
 tickTime : Tick.Time -> Tick.Config msg
@@ -131,3 +163,9 @@ formatX : Transaction -> String
 formatX transaction =
     formatXTick
         transaction.createdAt
+
+
+formatYTick : Int -> String
+formatYTick cents =
+    (cents // 100)
+        |> String.fromInt
