@@ -61,23 +61,23 @@ graphql_object!(Account: AppContext |&self| {
 
 		// We can access via account or accounts queries
 		// We assume that authorisation already happened in either of those
-		let transactions = Transaction::find_by_account_id(&conn, self.id, since_dt)
+		let mut transactions = Transaction::find_by_account_id(&conn, self.id, since_dt)
 			.unwrap_or(vec![]);
 
 		// Add a dummy transaction to reflect the latest interest
-		let maybeFirst = transactions.first();
+		let maybe_last = transactions.last().cloned();
 
-		match maybeFirst {
-			None => transactions,
-			Some(first) => {
-				let current_balance = first.balance;
+		match maybe_last {
+			None => (),
+			Some(last) => {
+				let current_balance = last.balance;
 
 				let now = Utc::now().naive_utc();
 
 				let interest_result = actions::accounts::calculate_interest::call(
 					current_balance,
 					&self.yearly_interest,
-					first.created_at,
+					last.created_at,
 					now,
 				);
 
@@ -96,9 +96,9 @@ graphql_object!(Account: AppContext |&self| {
 					},
 					Err(_) => ()
 				};
-
-				transactions
 			}
-		}
+		};
+
+		transactions
 	}
 });

@@ -3,7 +3,7 @@ use validator::{ValidationErrors, ValidationErrorsKind};
 
 #[derive(GraphQLObject, Clone)]
 pub struct MutationError {
-	pub key: String,
+	pub key:      String,
 	pub messages: Vec<String>,
 }
 
@@ -12,10 +12,13 @@ fn to_mutation_errors(errors: ValidationErrors) -> Vec<MutationError> {
 	errors
 		.errors()
 		.iter()
-		.map(|(k, validationErrorKind)| MutationError {
-			key: k.to_string(),
-			messages: vec![kind_to_string(&validationErrorKind)],
-		}).collect()
+		.map(|(k, validation_error_kind)| {
+			MutationError {
+				key:      k.to_string(),
+				messages: vec![kind_to_string(&validation_error_kind)],
+			}
+		})
+		.collect()
 }
 
 fn kind_to_string(kind: &ValidationErrorsKind) -> String {
@@ -25,7 +28,7 @@ fn kind_to_string(kind: &ValidationErrorsKind) -> String {
 #[allow(dead_code)]
 pub fn failure_to_mutation_errors(error: Error) -> Vec<MutationError> {
 	let mutation_error = MutationError {
-		key: "other".to_owned(),
+		key:      "other".to_owned(),
 		messages: vec![error.to_string()],
 	};
 
