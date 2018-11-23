@@ -29,18 +29,20 @@ test:
 # 	terraform apply
 
 # Build the Rust application binary
-# build:
-# 	docker run \
-# 		--rm \
-# 		-it \
-# 		-v $PWD:/volume/ \
-# 		-v cargo-cache:/root/.cargo \
-# 		clux/muslrust:stable \
-# 		cargo build --release
+build:
+	docker run \
+		--rm \
+		-it \
+		-v $PWD:/volume/ \
+		-v cargo-cache:/root/.cargo \
+		clux/muslrust:nightly \
+		cargo build --release
 
-# copy-bin:
-# 	mkdir -p ./dist/bin/
-# 	cp target/x86_64-unknown-linux-musl/release/api ./dist/bin
+copy-bin:
+	mkdir -p ./dist/bin/
+	rm -rf ./dist/bin/*
+	cp target/x86_64-unknown-linux-musl/release/api ./dist/bin
+	mv ./dist/bin/api ./dist/bin/api.exe
 
 # This makes the binary smaller
 # But it removes valuable stack tracing information
@@ -53,18 +55,18 @@ test:
 # compress:
 # 	cd ./dist/bin/ && tar -zcvf api.tar.gz api
 
-# prepare-release: build copy-bin compress
+prepare-release: build copy-bin
 
 # push:
 # 	hyper push 
 
-build-image:
-	docker build -t save-up-api .
-	docker tag save-up-api:latest $API_IMAGE_TAG
+# build-image:
+#	docker build -t save-up-api .
+#	docker tag save-up-api:latest $API_IMAGE_TAG
 
 # Push image to AWS ECR
-push-image:
-	docker push $API_IMAGE_TAG
+# push-image:
+#	docker push $API_IMAGE_TAG
 
 docker-run-local:
 	docker run \
@@ -77,21 +79,21 @@ docker-run-local:
 		$API_IMAGE_TAG
 
 # Do this before hyper-pull
-log-hyper:
-	eval $(aws ecr get-login | sed 's/docker/hyper/')
+# log-hyper:
+#	eval $(aws ecr get-login | sed 's/docker/hyper/')
 
 # Pull latest image from AWS
-hyper-pull:
-	hyper pull $API_IMAGE_TAG
+# hyper-pull:
+#	hyper pull $API_IMAGE_TAG
 
-hyper-run:
-	hyper run \
-		--rm \
-		--name save-up-api \
-		--env RUST_BACKTRACE=1 \
-		--env-file ./env.prod \
-		--expose=4010 \
-		-p 80:4010 \
-		--size=s1 \
-		$API_IMAGE_TAG
+# hyper-run:
+# 	hyper run \
+# 		--rm \
+# 		--name save-up-api \
+# 		--env RUST_BACKTRACE=1 \
+# 		--env-file ./env.prod \
+# 		--expose=4010 \
+# 		-p 80:4010 \
+# 		--size=s1 \
+# 		$API_IMAGE_TAG
 

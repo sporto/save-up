@@ -1,0 +1,12 @@
+{
+	"version": 2,
+	"builds": [
+		{
+			"src": "*.exe",
+			"use": "now-static-bin",
+			"config": {
+				"port": 4010,
+			}
+		}
+	]
+}
