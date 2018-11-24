@@ -9,11 +9,10 @@ pub enum AppEnv {
 
 #[derive(Clone)]
 pub struct Config {
-	pub api_port: String,
-	pub api_secret: String,
-	pub client_host: String,
+	pub api_secret:   String,
+	pub client_host:  String,
 	pub database_url: String,
-	pub system_jwt: String,
+	pub system_jwt:   String,
 }
 
 struct VariableNames {
@@ -31,19 +30,21 @@ pub fn app_env() -> AppEnv {
 
 fn variable_names() -> VariableNames {
 	match app_env() {
-		AppEnv::Dev => VariableNames {
-			database_url: "DATABASE_URL".into(),
+		AppEnv::Dev => {
+			VariableNames {
+				database_url: "DATABASE_URL".into(),
+			}
 		},
-		AppEnv::Test => VariableNames {
-			database_url: "DATABASE_URL_TEST".into(),
+		AppEnv::Test => {
+			VariableNames {
+				database_url: "DATABASE_URL_TEST".into(),
+			}
 		},
 	}
 }
 
 pub fn get() -> Result<Config, Error> {
 	let names = variable_names();
-
-	let api_port = env::var("API_PORT").map_err(|_| format_err!("API_PORT not found"))?;
 
 	let api_secret = env::var("API_SECRET").map_err(|_| format_err!("API_SECRET not found"))?;
 
@@ -55,7 +56,6 @@ pub fn get() -> Result<Config, Error> {
 	let system_jwt = env::var("SYSTEM_JWT").map_err(|_| format_err!("SYSTEM_JWT not found"))?;
 
 	let config = Config {
-		api_port,
 		api_secret,
 		client_host,
 		database_url,
