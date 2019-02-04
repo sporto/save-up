@@ -6,6 +6,8 @@ use std::io;
 use diesel::sql_types::{BigInt,Money};
 use std::ops::Sub;
 use std::ops::Add;
+use juniper::{ParseScalarResult};
+use juniper::parser::{ParseError,ScalarToken,Token};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, FromSqlRow, AsExpression)]
 #[sql_type = "Money"]
@@ -49,16 +51,24 @@ impl Add for Cents {
 }
 
 
-graphql_scalar!(Cents {
+graphql_scalar!(Cents as "Cents" where Scalar = <S> {
 	description: "Cents"
  
 	resolve(&self) -> Value {
-		Value::string(self.to_string())
+		Value::string(&self.to_string())
 	}
 
-	 from_input_value(v: &InputValue) -> Option<Cents> {
+	from_input_value(v: &InputValue) -> Option<Cents> {
 		v.as_string_value()
 			.and_then(|s| s.parse::<i64>().ok() )
 			.map(|n| Cents(n))
+	}
+
+	from_str<'a>(value: ScalarToken<'a>) -> ParseScalarResult<'a, S> {
+		if let ScalarToken::String(value) = value {
+			Ok(S::from(value.to_owned()))
+		} else {
+			Err(ParseError::UnexpectedToken(Token::Scalar(value)))
+		}
 	}
 });
