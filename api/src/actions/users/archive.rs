@@ -1,9 +1,7 @@
+use crate::models::schema as db;
 use chrono::prelude::*;
-use diesel;
-use diesel::pg::PgConnection;
-use diesel::prelude::*;
+use diesel::{self, pg::PgConnection, prelude::*};
 use failure::Error;
-use models::schema as db;
 
 pub fn call(conn: &PgConnection, user_id: i32) -> Result<usize, Error> {
 	let now = Utc::now().naive_utc();

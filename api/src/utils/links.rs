@@ -1,5 +1,5 @@
+use crate::utils::config;
 use failure::Error;
-use utils::config;
 
 pub fn reset_url(token: &str) -> Result<String, Error> {
 	let config = config::get()?;

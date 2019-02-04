@@ -1,15 +1,18 @@
 use diesel::pg::PgConnection;
 use failure::Error;
 // use models::account::Account;
-use actions::accounts;
-use actions::emails::acknowledge_withdrawal;
-use models::cents::Cents;
-use models::transaction::{Transaction, TransactionAttrs, TransactionKind};
+use crate::{
+	actions::{accounts, emails::acknowledge_withdrawal},
+	models::{
+		cents::Cents,
+		transaction::{Transaction, TransactionAttrs, TransactionKind},
+	},
+};
 
 #[derive(GraphQLInputObject, Clone)]
 pub struct WithdrawalInput {
 	pub account_id: i32,
-	pub cents: i32,
+	pub cents:      i32,
 }
 
 pub fn call(conn: &PgConnection, input: WithdrawalInput) -> Result<Transaction, Error> {
@@ -35,9 +38,9 @@ pub fn call(conn: &PgConnection, input: WithdrawalInput) -> Result<Transaction, 
 
 	let attrs = TransactionAttrs {
 		account_id: input.account_id,
-		kind: TransactionKind::Withdrawal,
-		amount: Cents(amount),
-		balance: Cents(new_balance),
+		kind:       TransactionKind::Withdrawal,
+		amount:     Cents(amount),
+		balance:    Cents(new_balance),
 	};
 
 	let transaction = Transaction::create(conn, attrs).map_err(|e| format_err!("{}", e))?;
@@ -68,7 +71,7 @@ mod test {
 
 			let input = WithdrawalInput {
 				account_id: account.id,
-				cents: 200,
+				cents:      200,
 			};
 
 			let transaction = call(conn, input).unwrap();
@@ -90,7 +93,7 @@ mod test {
 
 			let input = WithdrawalInput {
 				account_id: account.id,
-				cents: -200,
+				cents:      -200,
 			};
 
 			let result = call(conn, input);
@@ -110,7 +113,7 @@ mod test {
 
 			let input = WithdrawalInput {
 				account_id: account.id,
-				cents: 200,
+				cents:      200,
 			};
 
 			let result = call(conn, input);
@@ -134,7 +137,7 @@ mod test {
 
 			let input = WithdrawalInput {
 				account_id: account.id,
-				cents: 200,
+				cents:      200,
 			};
 
 			let transaction = call(conn, input).unwrap();

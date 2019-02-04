@@ -1,15 +1,18 @@
 use diesel::pg::PgConnection;
 use failure::Error;
 // use models::account::Account;
-use actions::accounts;
-use actions::emails::acknowledge_deposit;
-use models::cents::Cents;
-use models::transaction::{Transaction, TransactionAttrs, TransactionKind};
+use crate::{
+	actions::{accounts, emails::acknowledge_deposit},
+	models::{
+		cents::Cents,
+		transaction::{Transaction, TransactionAttrs, TransactionKind},
+	},
+};
 
 #[derive(GraphQLInputObject, Clone)]
 pub struct DepositInput {
 	pub account_id: i32,
-	pub cents: i32,
+	pub cents:      i32,
 }
 
 pub fn call(conn: &PgConnection, input: DepositInput) -> Result<Transaction, Error> {
@@ -30,9 +33,9 @@ pub fn call(conn: &PgConnection, input: DepositInput) -> Result<Transaction, Err
 
 	let attrs = TransactionAttrs {
 		account_id: input.account_id,
-		kind: TransactionKind::Deposit,
-		amount: Cents(cents),
-		balance: new_balance,
+		kind:       TransactionKind::Deposit,
+		amount:     Cents(cents),
+		balance:    new_balance,
 	};
 
 	let transaction = Transaction::create(conn, attrs).map_err(|e| format_err!("{}", e))?;
@@ -60,7 +63,7 @@ mod test {
 
 			let input = DepositInput {
 				account_id: account.id,
-				cents: 200,
+				cents:      200,
 			};
 
 			let transaction = call(conn, input).unwrap();
@@ -82,7 +85,7 @@ mod test {
 
 			let input = DepositInput {
 				account_id: account.id,
-				cents: -200,
+				cents:      -200,
 			};
 
 			let result = call(conn, input);
@@ -110,7 +113,7 @@ mod test {
 
 			let input = DepositInput {
 				account_id: account.id,
-				cents: 4,
+				cents:      4,
 			};
 
 			let transaction = call(conn, input).unwrap();

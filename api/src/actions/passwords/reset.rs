@@ -1,10 +1,9 @@
-use actions::passwords;
-use diesel;
-use diesel::pg::PgConnection;
-use diesel::prelude::*;
+use crate::{
+	actions::passwords,
+	models::{schema as db, user::User},
+};
+use diesel::{self, pg::PgConnection, prelude::*};
 use failure::Error;
-use models::schema as db;
-use models::user::User;
 
 pub fn call(conn: &PgConnection, token: &str, password: &str) -> Result<User, Error> {
 	let user = User::find_by_password_reset_token(conn, token)?;

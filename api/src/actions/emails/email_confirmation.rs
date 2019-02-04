@@ -1,8 +1,9 @@
-use actions::emails::send;
+use crate::{
+	actions::emails::send,
+	models::{email_kinds::EmailKind, user::User},
+	utils::links,
+};
 use failure::Error;
-use models::email_kinds::EmailKind;
-use models::user::User;
-use utils::links;
 
 pub fn call(user: &User) -> Result<(), Error> {
 	let confirmation_token = user
@@ -18,7 +19,7 @@ pub fn call(user: &User) -> Result<(), Error> {
 	};
 
 	let email_kind = EmailKind::ConfirmEmail {
-		email: email.to_string(),
+		email:            email.to_string(),
 		confirmation_url: url.to_string(),
 	};
 

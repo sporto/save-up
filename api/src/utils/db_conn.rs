@@ -1,3 +1,4 @@
+use crate::utils::config;
 use diesel::{prelude::*, r2d2};
 use rocket::{
 	http::Status,
@@ -5,7 +6,6 @@ use rocket::{
 	Outcome, Request, State,
 };
 use std::ops::Deref;
-use utils::config;
 
 pub type ManagedPgConn = r2d2::ConnectionManager<PgConnection>;
 pub type DBPool = r2d2::Pool<ManagedPgConn>;

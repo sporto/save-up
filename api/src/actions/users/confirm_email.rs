@@ -1,10 +1,8 @@
 use chrono::prelude::*;
-use diesel;
-use diesel::prelude::*;
+use diesel::{self, prelude::*};
 use failure::Error;
 
-use models::schema::users;
-use models::user;
+use crate::models::{schema::users, user};
 
 pub fn call(conn: &PgConnection, token: &str) -> Result<user::User, Error> {
 	// Find a user with this token

@@ -22,25 +22,25 @@ extern crate lazy_static;
 #[macro_use]
 extern crate rocket;
 
-extern crate bigdecimal;
-extern crate chrono;
-extern crate chrono_tz;
-extern crate env_logger;
-extern crate futures;
-extern crate jsonwebtoken as jwt;
-extern crate juniper_rocket;
-extern crate libreauth;
-extern crate num_cpus;
-extern crate r2d2;
-extern crate range_check;
-extern crate regex;
-extern crate rocket_cors;
-extern crate rusoto_core;
-extern crate rusoto_ses;
-extern crate serde;
-extern crate url;
-extern crate uuid;
-extern crate validator;
+// extern crate bigdecimal;
+// extern crate chrono;
+// extern crate chrono_tz;
+// extern crate env_logger;
+// extern crate futures;
+// extern crate jsonwebtoken as jwt;
+// extern crate juniper_rocket;
+// extern crate libreauth;
+// extern crate num_cpus;
+// extern crate r2d2;
+// extern crate range_check;
+// extern crate regex;
+// extern crate rocket_cors;
+// extern crate rusoto_core;
+// extern crate rusoto_ses;
+// extern crate serde;
+// extern crate url;
+// extern crate uuid;
+// extern crate validator;
 
 // use askama::Template;
 use rocket::{

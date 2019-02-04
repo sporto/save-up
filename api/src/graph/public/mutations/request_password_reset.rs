@@ -1,8 +1,10 @@
-use actions::passwords;
+use crate::{
+	actions::passwords,
+	graph::PublicContext,
+	utils::mutations::{failure_to_mutation_errors, MutationError},
+};
 use failure::Error;
-use graph::PublicContext;
 use juniper::{Executor, FieldResult};
-use utils::mutations::{failure_to_mutation_errors, MutationError};
 
 #[derive(Deserialize, Clone, GraphQLInputObject)]
 pub struct RequestPasswordResetInput {
@@ -12,7 +14,7 @@ pub struct RequestPasswordResetInput {
 #[derive(GraphQLObject, Clone)]
 pub struct RequestPasswordResetResponse {
 	success: bool,
-	errors: Vec<MutationError>,
+	errors:  Vec<MutationError>,
 }
 
 pub fn call(
@@ -25,9 +27,11 @@ pub fn call(
 	let result = passwords::request_reset::call(&conn, &input.username_or_email);
 
 	let response = match result {
-		Ok(_token) => RequestPasswordResetResponse {
-			success: true,
-			errors: vec![],
+		Ok(_token) => {
+			RequestPasswordResetResponse {
+				success: true,
+				errors:  vec![],
+			}
 		},
 		Err(e) => other_error(e),
 	};
@@ -38,6 +42,6 @@ pub fn call(
 fn other_error(error: Error) -> RequestPasswordResetResponse {
 	RequestPasswordResetResponse {
 		success: false,
-		errors: failure_to_mutation_errors(error),
+		errors:  failure_to_mutation_errors(error),
 	}
 }

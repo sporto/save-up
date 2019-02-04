@@ -1,8 +1,10 @@
 use super::super::emails::send_invitation;
+use crate::models::{
+	invitation::{Invitation, InvitationAttrs},
+	user::{Role, User},
+};
 use diesel::pg::PgConnection;
 use failure::Error;
-use models::invitation::{Invitation, InvitationAttrs};
-use models::user::{Role, User};
 use uuid::Uuid;
 use validator::Validate;
 
@@ -16,9 +18,9 @@ pub fn call(
 
 	let invitation_attrs = InvitationAttrs {
 		user_id: user.id,
-		email: email.to_string(),
-		role: role,
-		token: token.to_string(),
+		email:   email.to_string(),
+		role:    role,
+		token:   token.to_string(),
 		used_at: None,
 	};
 
@@ -37,8 +39,7 @@ pub fn call(
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use models;
-	use models::role::Role;
+	use models::{self, role::Role};
 	use utils::tests;
 
 	#[test]

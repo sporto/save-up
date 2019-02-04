@@ -1,8 +1,7 @@
-use bigdecimal::BigDecimal;
-use bigdecimal::ToPrimitive;
+use crate::models::cents::Cents;
+use bigdecimal::{BigDecimal, ToPrimitive};
 use chrono::prelude::*;
 use failure::Error;
-use models::cents::Cents;
 
 pub fn call(
 	balance: Cents,
@@ -42,8 +41,8 @@ pub fn call(
 #[cfg(test)]
 mod test {
 	use super::*;
-	use range_check::Contains;
 	use bigdecimal::FromPrimitive;
+	use range_check::Contains;
 
 	#[test]
 	fn it_calculates_the_interest_at_30() {

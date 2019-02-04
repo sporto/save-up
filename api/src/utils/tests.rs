@@ -1,11 +1,13 @@
-use diesel::pg::PgConnection;
-use diesel::result::Error;
-use diesel::Connection;
-use models;
-use models::account::Account;
-use models::client::Client;
-use models::user::{User,Role};
-use utils::db_conn;
+use crate::{
+	models::{
+		self,
+		account::Account,
+		client::Client,
+		user::{Role, User},
+	},
+	utils::db_conn,
+};
+use diesel::{pg::PgConnection, result::Error, Connection};
 
 #[allow(dead_code)]
 pub fn with_db<F>(f: F) -> ()

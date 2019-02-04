@@ -1,9 +1,6 @@
-use diesel;
-use diesel::pg::PgConnection;
-use diesel::prelude::*;
+use crate::models::{schema as db, user::UserChangeset};
+use diesel::{self, pg::PgConnection, prelude::*};
 use failure::Error;
-use models::schema as db;
-use models::user::UserChangeset;
 
 pub fn call(conn: &PgConnection, user_id: i32) -> Result<usize, Error> {
 	let changes = UserChangeset {

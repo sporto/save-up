@@ -1,11 +1,8 @@
 pub use super::role::Role;
 use super::schema::users;
+use crate::models::client::Client;
 use chrono::NaiveDateTime;
-use diesel;
-use diesel::pg::PgConnection;
-use diesel::prelude::*;
-use diesel::result::Error;
-use models::client::Client;
+use diesel::{self, pg::PgConnection, prelude::*, result::Error};
 use regex::Regex;
 use validator::Validate;
 
@@ -143,31 +140,31 @@ pub mod factories {
 	#[allow(dead_code)]
 	pub fn user_attrs(client: &Client) -> UserAttrs {
 		UserAttrs {
-			client_id: client.id,
-			email: None,
-			password_hash: "abc".to_owned(),
-			name: "Sam".to_owned(),
-			role: Role::Admin,
+			client_id:                client.id,
+			email:                    None,
+			password_hash:            "abc".to_owned(),
+			name:                     "Sam".to_owned(),
+			role:                     Role::Admin,
 			email_confirmation_token: None,
-			email_confirmed_at: None,
-			username: "sam".to_owned(),
-			archived_at: None,
-			password_reset_token: None,
+			email_confirmed_at:       None,
+			username:                 "sam".to_owned(),
+			archived_at:              None,
+			password_reset_token:     None,
 		}
 	}
 
 	pub fn user_attrs_alone() -> UserAttrs {
 		UserAttrs {
-			client_id: 1,
-			email: None,
-			password_hash: "abc".to_owned(),
-			name: "Sam".to_owned(),
-			role: Role::Admin,
+			client_id:                1,
+			email:                    None,
+			password_hash:            "abc".to_owned(),
+			name:                     "Sam".to_owned(),
+			role:                     Role::Admin,
 			email_confirmation_token: None,
-			email_confirmed_at: None,
-			username: "sam".to_owned(),
-			archived_at: None,
-			password_reset_token: None,
+			email_confirmed_at:       None,
+			username:                 "sam".to_owned(),
+			archived_at:              None,
+			password_reset_token:     None,
 		}
 	}
 

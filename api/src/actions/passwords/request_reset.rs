@@ -1,12 +1,10 @@
-use actions::emails::send;
-use diesel;
-use diesel::pg::PgConnection;
-use diesel::prelude::*;
+use crate::{
+	actions::emails::send,
+	models::{email_kinds::EmailKind, schema as db, user::User},
+	utils::links,
+};
+use diesel::{self, pg::PgConnection, prelude::*};
 use failure::Error;
-use models::email_kinds::EmailKind;
-use models::schema as db;
-use models::user::User;
-use utils::links;
 use uuid::Uuid;
 
 pub fn call(conn: &PgConnection, username_or_email: &str) -> Result<String, Error> {
@@ -27,7 +25,7 @@ pub fn call(conn: &PgConnection, username_or_email: &str) -> Result<String, Erro
 		.map_err(|e| format_err!("{}", e))?;
 
 	let email_kind = EmailKind::ResetPassword {
-		email: email.to_string(),
+		email:     email.to_string(),
 		reset_url: reset_url.to_string(),
 	};
 

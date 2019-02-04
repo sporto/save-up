@@ -1,10 +1,10 @@
-use actions::invitations;
-use actions::invitations::authorise;
-use graph::AppContext;
+use crate::{
+	actions::invitations::{self, authorise},
+	graph::AppContext,
+	models::role::Role,
+	utils::mutations::{failure_to_mutation_errors, MutationError},
+};
 use juniper::{Executor, FieldError, FieldResult};
-use models::role::Role;
-use utils::mutations::failure_to_mutation_errors;
-use utils::mutations::MutationError;
 
 #[derive(Deserialize, Clone, GraphQLInputObject)]
 pub struct InvitationInput {
@@ -14,7 +14,7 @@ pub struct InvitationInput {
 #[derive(GraphQLObject, Clone)]
 pub struct InvitationResponse {
 	success: bool,
-	errors: Vec<MutationError>,
+	errors:  Vec<MutationError>,
 }
 
 pub fn call(
@@ -40,13 +40,13 @@ pub fn call(
 		Err(e) => {
 			return Ok(InvitationResponse {
 				success: false,
-				errors: failure_to_mutation_errors(e),
+				errors:  failure_to_mutation_errors(e),
 			});
-		}
+		},
 	};
 
 	Ok(InvitationResponse {
 		success: true,
-		errors: vec![],
+		errors:  vec![],
 	})
 }

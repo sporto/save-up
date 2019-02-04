@@ -1,24 +1,25 @@
-use actions::sign_ups;
-use actions::users::make_jwt;
+use crate::{
+	actions::{sign_ups, users::make_jwt},
+	graph::PublicContext,
+	models::sign_up::SignUp,
+	utils::mutations::{failure_to_mutation_errors, MutationError},
+};
 use failure::Error;
-use graph::PublicContext;
 use juniper::{Executor, FieldResult};
-use models::sign_up::SignUp;
-use utils::mutations::{failure_to_mutation_errors, MutationError};
 
 #[derive(GraphQLObject, Clone)]
 pub struct SignUpResponse {
 	success: bool,
-	errors: Vec<MutationError>,
-	jwt: Option<String>,
+	errors:  Vec<MutationError>,
+	jwt:     Option<String>,
 }
 
 pub fn call(executor: &Executor<PublicContext>, sign_up: SignUp) -> FieldResult<SignUpResponse> {
 	fn other_error(error: Error) -> SignUpResponse {
 		SignUpResponse {
 			success: false,
-			errors: failure_to_mutation_errors(error),
-			jwt: None,
+			errors:  failure_to_mutation_errors(error),
+			jwt:     None,
 		}
 	}
 
@@ -41,8 +42,8 @@ pub fn call(executor: &Executor<PublicContext>, sign_up: SignUp) -> FieldResult<
 
 	let response = SignUpResponse {
 		success: true,
-		errors: vec![],
-		jwt: Some(jwt),
+		errors:  vec![],
+		jwt:     Some(jwt),
 	};
 
 	Ok(response)

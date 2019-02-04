@@ -1,8 +1,12 @@
-use actions;
+use crate::{
+	actions,
+	models::{
+		role::Role,
+		user::{User, UserAttrs},
+	},
+};
 use diesel::pg::PgConnection;
 use failure::Error;
-use models::role::Role;
-use models::user::{User, UserAttrs};
 use validator::Validate;
 
 pub fn call(conn: &PgConnection, user_attrs: UserAttrs) -> Result<User, Error> {

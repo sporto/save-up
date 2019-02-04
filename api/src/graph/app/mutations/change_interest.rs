@@ -1,22 +1,22 @@
-use actions;
-use bigdecimal::BigDecimal;
-use bigdecimal::FromPrimitive;
-use graph::AppContext;
+use crate::{
+	actions,
+	graph::AppContext,
+	models::account::Account,
+	utils::mutations::{failure_to_mutation_errors, MutationError},
+};
+use bigdecimal::{BigDecimal, FromPrimitive};
 use juniper::{Executor, FieldError, FieldResult};
-use models::account::Account;
-use utils::mutations::failure_to_mutation_errors;
-use utils::mutations::MutationError;
 
 #[derive(Deserialize, Clone, GraphQLInputObject)]
 pub struct ChangeAccountInterestInput {
-	pub account_id: i32,
+	pub account_id:      i32,
 	pub yearly_interest: f64,
 }
 
 #[derive(Clone)]
 pub struct ChangeAccountInterestResponse {
 	success: bool,
-	errors: Vec<MutationError>,
+	errors:  Vec<MutationError>,
 	account: Option<Account>,
 }
 
@@ -56,15 +56,19 @@ pub fn call(
 	let result = actions::accounts::change_interest::call(&conn, input.account_id, yearly_interest);
 
 	let response = match result {
-		Ok(account) => ChangeAccountInterestResponse {
-			success: true,
-			errors: vec![],
-			account: Some(account),
+		Ok(account) => {
+			ChangeAccountInterestResponse {
+				success: true,
+				errors:  vec![],
+				account: Some(account),
+			}
 		},
-		Err(e) => ChangeAccountInterestResponse {
-			success: false,
-			errors: failure_to_mutation_errors(e),
-			account: None,
+		Err(e) => {
+			ChangeAccountInterestResponse {
+				success: false,
+				errors:  failure_to_mutation_errors(e),
+				account: None,
+			}
 		},
 	};
 

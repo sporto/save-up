@@ -1,21 +1,18 @@
 use super::schema::invitations;
+use crate::models::role::Role;
 use chrono::NaiveDateTime;
-use diesel;
-use diesel::pg::PgConnection;
-use diesel::prelude::*;
-use diesel::result::Error;
-use models::role::Role;
+use diesel::{self, pg::PgConnection, prelude::*, result::Error};
 use validator::Validate;
 
 #[derive(Queryable, GraphQLObject, Debug)]
 pub struct Invitation {
-	pub id: i32,
+	pub id:         i32,
 	pub created_at: NaiveDateTime,
-	pub user_id: i32,
-	pub email: String,
-	pub role: Role,
-	pub token: String,
-	pub used_at: Option<NaiveDateTime>,
+	pub user_id:    i32,
+	pub email:      String,
+	pub role:       Role,
+	pub token:      String,
+	pub used_at:    Option<NaiveDateTime>,
 }
 
 #[derive(Insertable, Validate)]
@@ -55,9 +52,9 @@ pub mod factories {
 	pub fn invitation_attrs(inviter: &User) -> InvitationAttrs {
 		InvitationAttrs {
 			user_id: inviter.id,
-			email: "sam@sample.com".into(),
-			role: Role::Investor,
-			token: "abc".into(),
+			email:   "sam@sample.com".into(),
+			role:    Role::Investor,
+			token:   "abc".into(),
 			used_at: None,
 		}
 	}

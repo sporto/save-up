@@ -1,14 +1,14 @@
-use actions::emails;
-use actions::passwords;
-use diesel::dsl::exists;
-use diesel::pg::PgConnection;
-use diesel::prelude::*;
-use diesel::select;
+use crate::{
+	actions::{emails, passwords},
+	models::{
+		client::{Client, ClientAttrs},
+		schema::users,
+		sign_up::SignUp,
+		user::{Role, User, UserAttrs},
+	},
+};
+use diesel::{dsl::exists, pg::PgConnection, prelude::*, select};
 use failure::Error;
-use models::client::{Client, ClientAttrs};
-use models::schema::users;
-use models::sign_up::SignUp;
-use models::user::{Role, User, UserAttrs};
 use uuid::Uuid;
 use validator::Validate;
 
@@ -18,16 +18,16 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 
 	// Validate the user attrs
 	let temp_user_attrs = UserAttrs {
-		client_id: 1, // Just to validate
-		role: Role::Admin,
-		username: sign_up.username.clone(),
-		name: sign_up.name.clone(),
-		email: Some(sign_up.email.clone()),
-		password_hash: password_hash.clone(),
+		client_id:                1, // Just to validate
+		role:                     Role::Admin,
+		username:                 sign_up.username.clone(),
+		name:                     sign_up.name.clone(),
+		email:                    Some(sign_up.email.clone()),
+		password_hash:            password_hash.clone(),
 		email_confirmation_token: None,
-		email_confirmed_at: None,
-		archived_at: None,
-		password_reset_token: None,
+		email_confirmed_at:       None,
+		archived_at:              None,
+		password_reset_token:     None,
 	};
 
 	temp_user_attrs
@@ -53,20 +53,21 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 			let confirmation_token = Uuid::new_v4().to_string();
 
 			let user_attrs = UserAttrs {
-				client_id: client.id,
-				role: Role::Admin,
-				username: sign_up.username,
-				name: sign_up.name,
-				email: Some(sign_up.email),
-				password_hash: password_hash,
+				client_id:                client.id,
+				role:                     Role::Admin,
+				username:                 sign_up.username,
+				name:                     sign_up.name,
+				email:                    Some(sign_up.email),
+				password_hash:            password_hash,
 				email_confirmation_token: Some(confirmation_token),
-				email_confirmed_at: None,
-				archived_at: None,
-				password_reset_token: None,
+				email_confirmed_at:       None,
+				archived_at:              None,
+				password_reset_token:     None,
 			};
 
 			User::create(conn, user_attrs)
-		}).map_err(|e| format_err!("{}", e))?;
+		})
+		.map_err(|e| format_err!("{}", e))?;
 
 	emails::email_confirmation::call(&user)?;
 
@@ -82,9 +83,9 @@ mod tests {
 	fn it_creates_a_client_and_user() {
 		tests::with_db(|conn| {
 			let attrs = SignUp {
-				name: "Sam".to_string(),
+				name:     "Sam".to_string(),
 				username: "username".to_string(),
-				email: "sam@sample.com".to_string(),
+				email:    "sam@sample.com".to_string(),
 				password: "password".to_string(),
 			};
 
@@ -105,8 +106,8 @@ mod tests {
 	fn it_fails_with_invalid_username() {
 		tests::with_db(|conn| {
 			let attrs = SignUp {
-				name: "Sam".to_string(),
-				email: "sam@sample.com".to_string(),
+				name:     "Sam".to_string(),
+				email:    "sam@sample.com".to_string(),
 				username: "Hello world".to_string(),
 				password: "password".to_string(),
 			};
@@ -121,8 +122,8 @@ mod tests {
 	fn it_fails_with_invalid_email() {
 		tests::with_db(|conn| {
 			let attrs = SignUp {
-				name: "Sam".to_string(),
-				email: "flamingo".to_string(),
+				name:     "Sam".to_string(),
+				email:    "flamingo".to_string(),
 				username: "username".to_string(),
 				password: "password".to_string(),
 			};

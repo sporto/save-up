@@ -1,10 +1,8 @@
 use super::calculate_interest;
+use crate::models::{account::Account, cents::Cents, transaction::Transaction};
 use chrono::prelude::*;
 use diesel::pg::PgConnection;
 use failure::Error;
-use models::account::Account;
-use models::cents::Cents;
-use models::transaction::Transaction;
 
 pub fn call(conn: &PgConnection, account_id: i32) -> Result<i64, Error> {
 	let account = Account::find(&conn, account_id)?;
@@ -26,7 +24,7 @@ pub fn call(conn: &PgConnection, account_id: i32) -> Result<i64, Error> {
 			let Cents(cents) = previous_transaction.balance;
 
 			Ok(cents + interest)
-		}
+		},
 		Err(_) => Ok(0),
 	}
 }

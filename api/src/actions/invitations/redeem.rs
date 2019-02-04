@@ -1,30 +1,31 @@
 use chrono::prelude::*;
-use diesel;
-use diesel::pg::PgConnection;
-use diesel::prelude::*;
-use diesel::result::Error as DieselError;
+use diesel::{self, pg::PgConnection, prelude::*, result::Error as DieselError};
 use failure::Error;
 
-use actions::accounts;
-use actions::passwords;
-use models::invitation;
-use models::schema::invitations;
-use models::user::{self, Role, User, UserAttrs};
+use crate::{
+	actions::{accounts, passwords},
+	models::{
+		invitation,
+		schema::invitations,
+		user::{self, Role, User, UserAttrs},
+	},
+};
 
 #[derive(Deserialize, Clone, GraphQLInputObject)]
 pub struct RedeemInvitationInput {
 	pub username: String,
-	pub name: String,
+	pub name:     String,
 	pub password: String,
-	pub token: String,
+	pub token:    String,
 }
 
 pub fn call(conn: &PgConnection, input: &RedeemInvitationInput) -> Result<User, Error> {
-	let invitation =
-		invitation::Invitation::find_by_token(&conn, &input.token).map_err(|e| match e {
+	let invitation = invitation::Invitation::find_by_token(&conn, &input.token).map_err(|e| {
+		match e {
 			DieselError::NotFound => format_err!("Invalid invitation token"),
 			_ => format_err!("{}", e),
-		})?;
+		}
+	})?;
 
 	// Find the client id
 	let inviter = user::User::find(&conn, invitation.user_id)?;
@@ -36,16 +37,16 @@ pub fn call(conn: &PgConnection, input: &RedeemInvitationInput) -> Result<User, 
 	let email_confirmed_at = Some(Utc::now().naive_utc());
 
 	let user_attrs = UserAttrs {
-		client_id: inviter.client_id,
-		role: Role::Investor,
-		username: input.clone().username,
-		name: input.clone().name,
-		email: Some(invitation.email),
-		password_hash: password_hash,
-		email_confirmed_at: email_confirmed_at,
+		client_id:                inviter.client_id,
+		role:                     Role::Investor,
+		username:                 input.clone().username,
+		name:                     input.clone().name,
+		email:                    Some(invitation.email),
+		password_hash:            password_hash,
+		email_confirmed_at:       email_confirmed_at,
 		email_confirmation_token: None,
-		archived_at: None,
-		password_reset_token: None,
+		archived_at:              None,
+		password_reset_token:     None,
 	};
 
 	// Transaction should be here
@@ -67,8 +68,7 @@ pub fn call(conn: &PgConnection, input: &RedeemInvitationInput) -> Result<User, 
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use models::account::Account;
-	use models::client;
+	use models::{account::Account, client};
 	use utils::tests;
 
 	#[test]
@@ -84,10 +84,10 @@ mod tests {
 				.save(conn);
 
 			let input = RedeemInvitationInput {
-				name: "Julia".into(),
+				name:     "Julia".into(),
 				username: "username".to_string(),
 				password: "password".into(),
-				token: invitation_token.into(),
+				token:    invitation_token.into(),
 			};
 
 			// creates the user

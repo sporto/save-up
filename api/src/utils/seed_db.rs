@@ -1,8 +1,8 @@
 // use utils::db_conn;
 // use models::client::{Client, ClientAttrs};
 // use models::user::{User, UserAttrs};
+use crate::utils::config;
 use diesel::pg::PgConnection;
-use utils::config;
 
 #[allow(dead_code)]
 pub fn run(conn: PgConnection) -> bool {
@@ -13,11 +13,11 @@ pub fn run(conn: PgConnection) -> bool {
 			println!("Seeding");
 			let _ = seed(conn);
 			true
-		}
+		},
 		_ => {
 			println!("Cannot seed in {:?}", app_env);
 			false
-		}
+		},
 	}
 }
 

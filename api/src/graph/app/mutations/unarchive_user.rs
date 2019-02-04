@@ -1,12 +1,10 @@
-use actions;
-use graph::AppContext;
+use crate::{actions, graph::AppContext, utils::mutations::MutationError};
 use juniper::{Executor, FieldError, FieldResult};
-use utils::mutations::MutationError;
 
 #[derive(Clone)]
 pub struct UnarchiveUserResponse {
 	success: bool,
-	errors: Vec<MutationError>,
+	errors:  Vec<MutationError>,
 }
 
 graphql_object!(UnarchiveUserResponse: AppContext |&self| {
@@ -35,7 +33,7 @@ pub fn call(executor: &Executor<AppContext>, user_id: i32) -> FieldResult<Unarch
 
 	let response = UnarchiveUserResponse {
 		success: true,
-		errors: vec![],
+		errors:  vec![],
 	};
 
 	Ok(response)

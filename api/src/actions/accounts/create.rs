@@ -1,10 +1,11 @@
-use bigdecimal::BigDecimal;
-use bigdecimal::FromPrimitive;
+use bigdecimal::{BigDecimal, FromPrimitive};
 use diesel::pg::PgConnection;
 use failure::Error;
 
-use models::account::{Account, AccountAttrs, Kind, State, DEFAULT_YEARLY_INTEREST};
-use models::user::User;
+use crate::models::{
+	account::{Account, AccountAttrs, Kind, State, DEFAULT_YEARLY_INTEREST},
+	user::User,
+};
 
 pub fn call(conn: &PgConnection, user: &User) -> Result<Account, Error> {
 	let yearly_interest = BigDecimal::from_u8(DEFAULT_YEARLY_INTEREST).unwrap();

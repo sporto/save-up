@@ -1,17 +1,18 @@
-use actions::invitations::redeem;
-pub use actions::invitations::redeem::RedeemInvitationInput;
-use actions::users::make_jwt;
+pub use crate::actions::invitations::redeem::RedeemInvitationInput;
+use crate::{
+	actions::{invitations::redeem, users::make_jwt},
+	graph::PublicContext,
+	models::user::User,
+	utils::mutations::{failure_to_mutation_errors, MutationError},
+};
 use failure::Error;
-use graph::PublicContext;
 use juniper::{Executor, FieldResult};
-use models::user::User;
-use utils::mutations::{failure_to_mutation_errors, MutationError};
 
 #[derive(GraphQLObject, Clone)]
 pub struct RedeemInvitationResponse {
 	success: bool,
-	errors: Vec<MutationError>,
-	jwt: Option<String>,
+	errors:  Vec<MutationError>,
+	jwt:     Option<String>,
 }
 
 pub fn call(
@@ -34,8 +35,8 @@ pub fn call(
 fn other_error(error: Error) -> RedeemInvitationResponse {
 	RedeemInvitationResponse {
 		success: false,
-		errors: failure_to_mutation_errors(error),
-		jwt: None,
+		errors:  failure_to_mutation_errors(error),
+		jwt:     None,
 	}
 }
 
@@ -49,7 +50,7 @@ fn with_user(user: User) -> RedeemInvitationResponse {
 
 	RedeemInvitationResponse {
 		success: true,
-		errors: vec![],
-		jwt: Some(jwt),
+		errors:  vec![],
+		jwt:     Some(jwt),
 	}
 }

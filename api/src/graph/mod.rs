@@ -1,7 +1,6 @@
+use crate::{models::user::User, utils::db_conn::ManagedPgConn};
 use diesel::r2d2;
 use juniper::{Context as JuniperContext, RootNode};
-use models::user::User;
-use utils::db_conn::ManagedPgConn;
 
 pub mod app;
 pub mod public;

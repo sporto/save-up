@@ -1,15 +1,15 @@
+use crate::models::{schema::accounts, user::User};
 use bigdecimal::BigDecimal;
 use chrono::NaiveDateTime;
-use diesel;
-use diesel::deserialize::{self, FromSql};
-use diesel::pg::Pg;
-use diesel::pg::PgConnection;
-use diesel::prelude::*;
-use diesel::result::Error;
-use diesel::serialize::{self, IsNull, Output, ToSql};
-use diesel::sql_types::*;
-use models::schema::accounts;
-use models::user::User;
+use diesel::{
+	self,
+	deserialize::{self, FromSql},
+	pg::{Pg, PgConnection},
+	prelude::*,
+	result::Error,
+	serialize::{self, IsNull, Output, ToSql},
+	sql_types::*,
+};
 use std::io;
 use validator::Validate;
 
@@ -22,23 +22,23 @@ pub const SAVINGS: &[u8] = b"SAVINGS";
 #[belongs_to(User)]
 #[table_name = "accounts"]
 pub struct Account {
-	pub id: i32,
-	pub created_at: NaiveDateTime,
-	pub user_id: i32,
-	pub name: String,
+	pub id:              i32,
+	pub created_at:      NaiveDateTime,
+	pub user_id:         i32,
+	pub name:            String,
 	pub yearly_interest: BigDecimal,
-	pub kind: Kind,
-	pub state: State,
+	pub kind:            Kind,
+	pub state:           State,
 }
 
 #[derive(Insertable, Validate)]
 #[table_name = "accounts"]
 pub struct AccountAttrs {
-	pub user_id: i32,
-	pub name: String,
+	pub user_id:         i32,
+	pub name:            String,
 	pub yearly_interest: BigDecimal,
-	pub kind: Kind,
-	pub state: State,
+	pub kind:            Kind,
+	pub state:           State,
 }
 
 #[derive(
@@ -130,11 +130,11 @@ pub mod factories {
 		let yearly_interest = BigDecimal::from_f32(10.5).unwrap();
 
 		AccountAttrs {
-			user_id: user.id,
-			name: user.clone().name,
+			user_id:         user.id,
+			name:            user.clone().name,
 			yearly_interest: yearly_interest,
-			kind: Kind::Savings,
-			state: State::Active,
+			kind:            Kind::Savings,
+			state:           State::Active,
 		}
 	}
 

@@ -1,16 +1,14 @@
+use crate::models::email_kinds::EmailKind;
 use askama::Template;
 use failure::Error;
-use models::email_kinds::EmailKind;
 use rusoto_core::Region;
 use rusoto_ses::{Body, Content, Destination, Message, SendEmailRequest, Ses, SesClient};
-use std::default::Default;
-use std::env;
-use std::time::Duration;
+use std::{default::Default, env, time::Duration};
 
 #[derive(Template)]
 #[template(path = "emails/invite.html")]
 struct InviteTemplate<'a> {
-	inviter_name: &'a str,
+	inviter_name:   &'a str,
 	invitation_url: &'a str,
 }
 
@@ -24,7 +22,7 @@ struct ConfirmEmailTemplate<'a> {
 #[template(path = "emails/request_withdrawal.html")]
 struct RequestWithdrawalTemplate<'a> {
 	amount: &'a i64,
-	name: &'a str,
+	name:   &'a str,
 }
 
 #[derive(Template)]
@@ -42,14 +40,14 @@ struct RejectTransactionRequestTemplate<'a> {
 #[derive(Template)]
 #[template(path = "emails/acknowledge_deposit.html")]
 struct AcknowledgeDepositTemplate<'a> {
-	amount: &'a i64,
+	amount:  &'a i64,
 	balance: &'a i64,
 }
 
 #[derive(Template)]
 #[template(path = "emails/acknowledge_withdrawal.html")]
 struct AcknowledgeWithdrawalTemplate<'a> {
-	amount: &'a i64,
+	amount:  &'a i64,
 	balance: &'a i64,
 }
 
@@ -74,25 +72,34 @@ fn generate_intermediate(email_kind: &EmailKind) -> Result<String, Error> {
 			amount_in_cents,
 			balance_in_cents,
 			..
-		} => AcknowledgeDepositTemplate {
-			amount: &(amount_in_cents / 100),
-			balance: &(balance_in_cents / 100),
-		}.render(),
+		} => {
+			AcknowledgeDepositTemplate {
+				amount:  &(amount_in_cents / 100),
+				balance: &(balance_in_cents / 100),
+			}
+			.render()
+		},
 
 		EmailKind::AcknowledgeWithdrawal {
 			amount_in_cents,
 			balance_in_cents,
 			..
-		} => AcknowledgeWithdrawalTemplate {
-			amount: &(amount_in_cents / 100),
-			balance: &(balance_in_cents / 100),
-		}.render(),
+		} => {
+			AcknowledgeWithdrawalTemplate {
+				amount:  &(amount_in_cents / 100),
+				balance: &(balance_in_cents / 100),
+			}
+			.render()
+		},
 
 		EmailKind::ApproveTransactionRequest {
 			amount_in_cents, ..
-		} => ApproveTransactionRequestTemplate {
-			amount: &(amount_in_cents / 100),
-		}.render(),
+		} => {
+			ApproveTransactionRequestTemplate {
+				amount: &(amount_in_cents / 100),
+			}
+			.render()
+		},
 
 		EmailKind::ConfirmEmail {
 			confirmation_url, ..
@@ -102,25 +109,34 @@ fn generate_intermediate(email_kind: &EmailKind) -> Result<String, Error> {
 			inviter_name,
 			invitation_url,
 			..
-		} => InviteTemplate {
-			inviter_name,
-			invitation_url,
-		}.render(),
+		} => {
+			InviteTemplate {
+				inviter_name,
+				invitation_url,
+			}
+			.render()
+		},
 
 		EmailKind::RequestWithdrawal {
 			amount_in_cents,
 			name,
 			..
-		} => RequestWithdrawalTemplate {
-			amount: &(amount_in_cents / 100),
-			name,
-		}.render(),
+		} => {
+			RequestWithdrawalTemplate {
+				amount: &(amount_in_cents / 100),
+				name,
+			}
+			.render()
+		},
 
 		EmailKind::RejectTransactionRequest {
 			amount_in_cents, ..
-		} => RejectTransactionRequestTemplate {
-			amount: &(amount_in_cents / 100),
-		}.render(),
+		} => {
+			RejectTransactionRequestTemplate {
+				amount: &(amount_in_cents / 100),
+			}
+			.render()
+		},
 
 		EmailKind::ResetPassword { reset_url, .. } => ResetPasswordTemplate { reset_url }.render(),
 	};
@@ -145,16 +161,16 @@ fn send_email(email_kind: &EmailKind, html: &str) -> Result<(), Error> {
 	let body = Body {
 		html: Some(Content {
 			charset: Some(String::from("UTF-8")),
-			data: html.to_owned(),
+			data:    html.to_owned(),
 		}),
 		text: None,
 	};
 
 	let message = Message {
-		body: body,
+		body:    body,
 		subject: Content {
 			charset: Some(String::from("UTF-8")),
-			data: subject,
+			data:    subject,
 		},
 	};
 
@@ -163,9 +179,9 @@ fn send_email(email_kind: &EmailKind, html: &str) -> Result<(), Error> {
 	email.source = from;
 
 	email.destination = Destination {
-		to_addresses: Some(to),
+		to_addresses:  Some(to),
 		bcc_addresses: None,
-		cc_addresses: None,
+		cc_addresses:  None,
 	};
 
 	email.message = message;
@@ -229,21 +245,21 @@ mod tests {
 		let timestamp = Utc::now();
 
 		let record = SnsEventRecord {
-			event_source: None,
+			event_source:           None,
 			event_subscription_arn: None,
-			event_version: None,
-			sns: SnsEntity {
-				signature: None,
-				message_id: None,
-				message: Some(message.to_owned()),
+			event_version:          None,
+			sns:                    SnsEntity {
+				signature:          None,
+				message_id:         None,
+				message:            Some(message.to_owned()),
 				message_attributes: message_attributes,
-				signature_version: None,
-				signing_cert_url: None,
-				subject: None,
-				timestamp: timestamp,
-				topic_arn: None,
-				type_: None,
-				unsubscribe_url: None,
+				signature_version:  None,
+				signing_cert_url:   None,
+				subject:            None,
+				timestamp:          timestamp,
+				topic_arn:          None,
+				type_:              None,
+				unsubscribe_url:    None,
 			},
 		};
 
@@ -262,8 +278,8 @@ mod tests {
 		let email_kind = get_email_kind(&event).unwrap();
 
 		let expected = EmailKind::Invite {
-			inviter_name: "sam@sample.com".to_owned(),
-			email: "sally@sample.com".to_owned(),
+			inviter_name:   "sam@sample.com".to_owned(),
+			email:          "sally@sample.com".to_owned(),
 			invitation_url: "xyz".to_owned(),
 		};
 
@@ -273,8 +289,8 @@ mod tests {
 	#[test]
 	fn it_builds_intermediate() {
 		let email_kind = EmailKind::Invite {
-			inviter_name: "sam@sample.com".to_owned(),
-			email: "sally@sample.com".to_owned(),
+			inviter_name:   "sam@sample.com".to_owned(),
+			email:          "sally@sample.com".to_owned(),
 			invitation_url: "xyz".to_owned(),
 		};
 

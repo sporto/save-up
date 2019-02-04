@@ -1,15 +1,16 @@
-use actions::accounts::authorise;
-pub use actions::transactions::withdraw::{self, WithdrawalInput};
-use graph::AppContext;
+pub use crate::actions::transactions::withdraw::{self, WithdrawalInput};
+use crate::{
+	actions::accounts::authorise,
+	graph::AppContext,
+	models::transaction::Transaction,
+	utils::mutations::{failure_to_mutation_errors, MutationError},
+};
 use juniper::{Executor, FieldError, FieldResult};
-use models::transaction::Transaction;
-use utils::mutations::failure_to_mutation_errors;
-use utils::mutations::MutationError;
 
 #[derive(Clone)]
 pub struct WithdrawalResponse {
-	success: bool,
-	errors: Vec<MutationError>,
+	success:     bool,
+	errors:      Vec<MutationError>,
 	transaction: Option<Transaction>,
 }
 
@@ -45,15 +46,19 @@ pub fn call(
 	let result = withdraw::call(&conn, input);
 
 	let response = match result {
-		Ok(transaction) => WithdrawalResponse {
-			success: true,
-			errors: vec![],
-			transaction: Some(transaction),
+		Ok(transaction) => {
+			WithdrawalResponse {
+				success:     true,
+				errors:      vec![],
+				transaction: Some(transaction),
+			}
 		},
-		Err(e) => WithdrawalResponse {
-			success: false,
-			errors: failure_to_mutation_errors(e),
-			transaction: None,
+		Err(e) => {
+			WithdrawalResponse {
+				success:     false,
+				errors:      failure_to_mutation_errors(e),
+				transaction: None,
+			}
 		},
 	};
 

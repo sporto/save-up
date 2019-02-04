@@ -1,16 +1,17 @@
 use juniper::{Executor, FieldError, FieldResult};
 
-use actions::accounts::authorise;
-pub use actions::transactions::deposit::{self, DepositInput};
-use graph::AppContext;
-use models::transaction::Transaction;
-use utils::mutations::failure_to_mutation_errors;
-use utils::mutations::MutationError;
+pub use crate::actions::transactions::deposit::{self, DepositInput};
+use crate::{
+	actions::accounts::authorise,
+	graph::AppContext,
+	models::transaction::Transaction,
+	utils::mutations::{failure_to_mutation_errors, MutationError},
+};
 
 #[derive(Clone)]
 pub struct DepositResponse {
-	success: bool,
-	errors: Vec<MutationError>,
+	success:     bool,
+	errors:      Vec<MutationError>,
 	transaction: Option<Transaction>,
 }
 
@@ -43,15 +44,19 @@ pub fn call(executor: &Executor<AppContext>, input: DepositInput) -> FieldResult
 	let result = deposit::call(&conn, input);
 
 	let response = match result {
-		Ok(transaction) => DepositResponse {
-			success: true,
-			errors: vec![],
-			transaction: Some(transaction),
+		Ok(transaction) => {
+			DepositResponse {
+				success:     true,
+				errors:      vec![],
+				transaction: Some(transaction),
+			}
 		},
-		Err(e) => DepositResponse {
-			success: false,
-			errors: failure_to_mutation_errors(e),
-			transaction: None,
+		Err(e) => {
+			DepositResponse {
+				success:     false,
+				errors:      failure_to_mutation_errors(e),
+				transaction: None,
+			}
 		},
 	};
 

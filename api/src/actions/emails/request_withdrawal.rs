@@ -1,12 +1,13 @@
 use diesel::pg::PgConnection;
 use failure::Error;
 
-use actions::emails::send;
-use models::account::Account;
-use models::cents::Cents;
-use models::email_kinds::EmailKind;
-use models::transaction_request::TransactionRequest;
-use models::user::User;
+use crate::{
+	actions::emails::send,
+	models::{
+		account::Account, cents::Cents, email_kinds::EmailKind,
+		transaction_request::TransactionRequest, user::User,
+	},
+};
 
 pub fn call(conn: &PgConnection, transaction_request: &TransactionRequest) -> Result<(), Error> {
 	let account = Account::find(&conn, transaction_request.account_id)?;
@@ -20,8 +21,8 @@ pub fn call(conn: &PgConnection, transaction_request: &TransactionRequest) -> Re
 	let Cents(cents) = transaction_request.amount;
 
 	let email_kind = EmailKind::RequestWithdrawal {
-		email: email,
-		name: user.name,
+		email:           email,
+		name:            user.name,
 		amount_in_cents: cents,
 	};
 

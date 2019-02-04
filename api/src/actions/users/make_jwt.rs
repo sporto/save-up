@@ -1,11 +1,12 @@
-use jwt::{encode, Header};
+use jsonwebtoken::{encode, Header};
 use serde_json;
 
-use chrono::prelude::*;
-use chrono::Duration;
+use crate::{
+	models::user::{TokenClaims, User},
+	utils::config,
+};
+use chrono::{prelude::*, Duration};
 use failure::Error;
-use models::user::{TokenClaims, User};
-use utils::config;
 
 pub fn call(user: User) -> Result<String, Error> {
 	let config = config::get()?;
@@ -16,12 +17,12 @@ pub fn call(user: User) -> Result<String, Error> {
 	let exp = Utc::now() + Duration::weeks(52);
 
 	let data = TokenClaims {
-		user_id: user.id,
-		email: user.email,
+		user_id:  user.id,
+		email:    user.email,
 		username: user.username,
-		name: user.name,
-		role: user.role,
-		exp: exp.timestamp(),
+		name:     user.name,
+		role:     user.role,
+		exp:      exp.timestamp(),
 	};
 
 	let json = serde_json::to_value(&data)?;

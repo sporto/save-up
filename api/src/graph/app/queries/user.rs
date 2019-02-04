@@ -1,9 +1,9 @@
+use crate::{
+	graph::AppContext,
+	models::{account::Account, schema as db, user::User},
+};
 use diesel::prelude::*;
-use graph::AppContext;
 use juniper::{FieldError, FieldResult};
-use models::account::Account;
-use models::schema as db;
-use models::user::User;
 
 // Move to model file
 graphql_object!(User: AppContext |&self| {

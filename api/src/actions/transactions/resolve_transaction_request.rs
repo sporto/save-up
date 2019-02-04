@@ -1,16 +1,17 @@
-use actions::emails::resolve_transaction_request;
-use diesel;
-use diesel::pg::PgConnection;
-use diesel::prelude::*;
+use crate::{
+	actions::emails::resolve_transaction_request,
+	models::{
+		schema as db, transaction_request::TransactionRequest,
+		transaction_request_state::TransactionRequestState,
+	},
+};
+use diesel::{self, pg::PgConnection, prelude::*};
 use failure::Error;
-use models::schema as db;
-use models::transaction_request::TransactionRequest;
-use models::transaction_request_state::TransactionRequestState;
 
 #[derive(GraphQLInputObject, Clone)]
 pub struct ResolveTransactionRequestInput {
 	pub transaction_request_id: i32,
-	pub outcome: TransactionRequestState,
+	pub outcome:                TransactionRequestState,
 }
 
 pub fn call(

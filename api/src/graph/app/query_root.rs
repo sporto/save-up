@@ -1,16 +1,15 @@
-use actions;
-use chrono_tz::America;
-use chrono_tz::Australia;
+use crate::{
+	actions,
+	graph::AppContext,
+	models::{
+		account::Account, client::Client, role::Role, schema as db,
+		transaction_request::TransactionRequest,
+		transaction_request_state::TransactionRequestState, user::User,
+	},
+};
+use chrono_tz::{America, Australia};
 use diesel::prelude::*;
-use graph::AppContext;
 use juniper::{FieldError, FieldResult};
-use models::account::Account;
-use models::client::Client;
-use models::role::Role;
-use models::schema as db;
-use models::transaction_request::TransactionRequest;
-use models::transaction_request_state::TransactionRequestState;
-use models::user::User;
 
 pub struct AppQueryRoot;
 
@@ -63,7 +62,7 @@ graphql_object!(AppQueryRoot: AppContext |&self| {
 
 struct Admin {
 	investors: Vec<User>,
-	account: Option<Account>,
+	account:   Option<Account>,
 }
 
 graphql_object!(Admin: AppContext |&self| {
@@ -124,7 +123,7 @@ graphql_object!(Admin: AppContext |&self| {
 
 struct Investor {
 	accounts: Vec<Account>,
-	account: Option<Account>,
+	account:  Option<Account>,
 }
 
 graphql_object!(Investor: AppContext |&self| {

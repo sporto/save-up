@@ -1,10 +1,7 @@
+use crate::models::{account::Account, schema as db};
 use bigdecimal::BigDecimal;
-use diesel;
-use diesel::pg::PgConnection;
-use diesel::prelude::*;
+use diesel::{self, pg::PgConnection, prelude::*};
 use failure::Error;
-use models::account::Account;
-use models::schema as db;
 
 pub fn call(conn: &PgConnection, account_id: i32, interest: BigDecimal) -> Result<Account, Error> {
 	diesel::update(db::accounts::table.filter(db::accounts::id.eq(account_id)))

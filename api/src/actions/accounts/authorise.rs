@@ -1,12 +1,13 @@
 // use diesel;
-use diesel::prelude::*;
-use diesel::PgConnection;
+use diesel::{prelude::*, PgConnection};
 use failure::Error;
 
-use models;
-use models::account::Account;
-use models::schema as db;
-use models::user::{Role, User};
+use crate::models::{
+	self,
+	account::Account,
+	schema as db,
+	user::{Role, User},
+};
 
 pub fn can_access(
 	conn: &PgConnection,

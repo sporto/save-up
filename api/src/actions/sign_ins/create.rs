@@ -1,8 +1,9 @@
-use actions::passwords;
+use crate::{
+	actions::passwords,
+	models::{sign_in::SignIn, user::User},
+};
 use diesel::pg::PgConnection;
 use failure::Error;
-use models::sign_in::SignIn;
-use models::user::User;
 
 pub fn call(conn: &PgConnection, sign_in: SignIn) -> Result<User, Error> {
 	let invalid = "Invalid username, email or password";
@@ -46,7 +47,7 @@ mod tests {
 
 			let sign_in = SignIn {
 				username_or_email: email,
-				password: password,
+				password:          password,
 			};
 
 			let result = call(&conn, sign_in);
@@ -77,7 +78,7 @@ mod tests {
 
 			let sign_in = SignIn {
 				username_or_email: username,
-				password: password,
+				password:          password,
 			};
 
 			let result = call(&conn, sign_in);
@@ -113,7 +114,7 @@ mod tests {
 
 			let sign_in = SignIn {
 				username_or_email: email,
-				password: "other".to_owned(),
+				password:          "other".to_owned(),
 			};
 
 			let result = call(&conn, sign_in);

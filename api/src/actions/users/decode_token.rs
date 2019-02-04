@@ -1,7 +1,6 @@
-use jwt::{decode, Validation};
+use jsonwebtoken::{decode, Validation};
 
-use models::user::{TokenClaims};
-use utils::config;
+use crate::{models::user::TokenClaims, utils::config};
 use failure::Error;
 
 pub fn call(token: &str) -> Result<TokenClaims, Error> {
@@ -11,5 +10,5 @@ pub fn call(token: &str) -> Result<TokenClaims, Error> {
 
 	decode::<TokenClaims>(&token, secret.as_ref(), &validation)
 		.map_err(|e| format_err!("{}", e))
-		.map(|t| t.claims )
+		.map(|t| t.claims)
 }

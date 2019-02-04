@@ -1,34 +1,30 @@
+use crate::models::{account::Account, cents::Cents, schema::transaction_requests};
+pub use crate::models::{
+	transaction_kind::TransactionKind, transaction_request_state::TransactionRequestState,
+};
 use chrono::NaiveDateTime;
-use diesel;
-use diesel::pg::PgConnection;
-use diesel::prelude::*;
-use diesel::result::Error;
-use models::account::Account;
-use models::cents::Cents;
-use models::schema::transaction_requests;
-pub use models::transaction_kind::TransactionKind;
-pub use models::transaction_request_state::TransactionRequestState;
+use diesel::{self, pg::PgConnection, prelude::*, result::Error};
 use validator::Validate;
 
 #[derive(Identifiable, Debug, Queryable, Associations, Clone, PartialEq)]
 #[belongs_to(Account)]
 #[table_name = "transaction_requests"]
 pub struct TransactionRequest {
-	pub id: i32,
+	pub id:         i32,
 	pub created_at: NaiveDateTime,
 	pub account_id: i32,
-	pub kind: TransactionKind,
-	pub amount: Cents,
-	pub state: TransactionRequestState,
+	pub kind:       TransactionKind,
+	pub amount:     Cents,
+	pub state:      TransactionRequestState,
 }
 
 #[derive(Insertable, Validate, AsExpression)]
 #[table_name = "transaction_requests"]
 pub struct TransactionRequestAttrs {
 	pub account_id: i32,
-	pub kind: TransactionKind,
-	pub amount: Cents,
-	pub state: TransactionRequestState,
+	pub kind:       TransactionKind,
+	pub amount:     Cents,
+	pub state:      TransactionRequestState,
 }
 
 impl TransactionRequest {

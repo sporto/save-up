@@ -1,17 +1,17 @@
 use juniper::{Executor, FieldError, FieldResult};
 
-use actions::accounts::authorise;
-use actions::transactions::resolve_transaction_request;
-pub use actions::transactions::resolve_transaction_request::ResolveTransactionRequestInput;
-use graph::AppContext;
-use models::transaction_request::TransactionRequest;
-use utils::mutations::failure_to_mutation_errors;
-use utils::mutations::MutationError;
+pub use crate::actions::transactions::resolve_transaction_request::ResolveTransactionRequestInput;
+use crate::{
+	actions::{accounts::authorise, transactions::resolve_transaction_request},
+	graph::AppContext,
+	models::transaction_request::TransactionRequest,
+	utils::mutations::{failure_to_mutation_errors, MutationError},
+};
 
 #[derive(Clone)]
 pub struct ResolveTransactionRequestResponse {
-	success: bool,
-	errors: Vec<MutationError>,
+	success:             bool,
+	errors:              Vec<MutationError>,
 	transaction_request: Option<TransactionRequest>,
 }
 
@@ -50,15 +50,19 @@ pub fn call(
 	let result = resolve_transaction_request::call(&conn, input);
 
 	let response = match result {
-		Ok(transaction_request) => ResolveTransactionRequestResponse {
-			success: true,
-			errors: vec![],
-			transaction_request: Some(transaction_request),
+		Ok(transaction_request) => {
+			ResolveTransactionRequestResponse {
+				success:             true,
+				errors:              vec![],
+				transaction_request: Some(transaction_request),
+			}
 		},
-		Err(e) => ResolveTransactionRequestResponse {
-			success: false,
-			errors: failure_to_mutation_errors(e),
-			transaction_request: None,
+		Err(e) => {
+			ResolveTransactionRequestResponse {
+				success:             false,
+				errors:              failure_to_mutation_errors(e),
+				transaction_request: None,
+			}
 		},
 	};
 

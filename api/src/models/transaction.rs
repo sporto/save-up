@@ -1,30 +1,26 @@
+pub use crate::models::transaction_kind::TransactionKind;
+use crate::models::{cents::Cents, schema::transactions};
 use chrono::NaiveDateTime;
-use diesel;
-use diesel::pg::PgConnection;
-use diesel::prelude::*;
-use diesel::result::Error;
-use models::cents::Cents;
-use models::schema::transactions;
-pub use models::transaction_kind::TransactionKind;
+use diesel::{self, pg::PgConnection, prelude::*, result::Error};
 use validator::Validate;
 
 #[derive(Debug, Queryable, Clone, PartialEq)]
 pub struct Transaction {
-	pub id: i32,
+	pub id:         i32,
 	pub created_at: NaiveDateTime,
 	pub account_id: i32,
-	pub kind: TransactionKind,
-	pub amount: Cents,
-	pub balance: Cents,
+	pub kind:       TransactionKind,
+	pub amount:     Cents,
+	pub balance:    Cents,
 }
 
 #[derive(Insertable, Validate, AsExpression)]
 #[table_name = "transactions"]
 pub struct TransactionAttrs {
 	pub account_id: i32,
-	pub kind: TransactionKind,
-	pub amount: Cents,
-	pub balance: Cents,
+	pub kind:       TransactionKind,
+	pub amount:     Cents,
+	pub balance:    Cents,
 }
 
 impl Transaction {
@@ -77,9 +73,9 @@ pub mod factories {
 
 		TransactionAttrs {
 			account_id: account.id,
-			kind: TransactionKind::Deposit,
-			amount: Cents(0),
-			balance: balance,
+			kind:       TransactionKind::Deposit,
+			amount:     Cents(0),
+			balance:    balance,
 		}
 	}
 

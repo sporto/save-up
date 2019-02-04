@@ -1,8 +1,10 @@
-use actions;
+use crate::{
+	actions,
+	models::user::{self, User},
+	utils,
+};
 use diesel::prelude::*;
 use failure;
-use models::user::{self, User};
-use utils;
 
 pub fn call(conn: &PgConnection, token: &str) -> Result<User, failure::Error> {
 	let config = utils::config::get()?;

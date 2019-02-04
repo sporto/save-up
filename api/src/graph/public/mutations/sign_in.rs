@@ -1,16 +1,16 @@
-use actions::sign_ins;
-use actions::users::make_jwt;
-use graph::PublicContext;
+use crate::{
+	actions::{sign_ins, users::make_jwt},
+	graph::PublicContext,
+	models::sign_in::SignIn,
+	utils::mutations::{failure_to_mutation_errors, MutationError},
+};
 use juniper::{Executor, FieldResult};
-use models::sign_in::SignIn;
-use utils::mutations::failure_to_mutation_errors;
-use utils::mutations::MutationError;
 
 #[derive(GraphQLObject, Clone)]
 pub struct SignInResponse {
 	success: bool,
-	errors: Vec<MutationError>,
-	jwt: Option<String>,
+	errors:  Vec<MutationError>,
+	jwt:     Option<String>,
 }
 
 pub fn call(executor: &Executor<PublicContext>, sign_in: SignIn) -> FieldResult<SignInResponse> {
@@ -24,10 +24,10 @@ pub fn call(executor: &Executor<PublicContext>, sign_in: SignIn) -> FieldResult<
 		Err(e) => {
 			return Ok(SignInResponse {
 				success: false,
-				errors: failure_to_mutation_errors(e),
-				jwt: None,
-			})
-		}
+				errors:  failure_to_mutation_errors(e),
+				jwt:     None,
+			});
+		},
 	};
 
 	let jwt_result = make_jwt::call(user);
@@ -37,16 +37,16 @@ pub fn call(executor: &Executor<PublicContext>, sign_in: SignIn) -> FieldResult<
 		Err(e) => {
 			return Ok(SignInResponse {
 				success: false,
-				errors: failure_to_mutation_errors(e),
-				jwt: None,
-			})
-		}
+				errors:  failure_to_mutation_errors(e),
+				jwt:     None,
+			});
+		},
 	};
 
 	let response = SignInResponse {
 		success: true,
-		errors: vec![],
-		jwt: Some(jwt),
+		errors:  vec![],
+		jwt:     Some(jwt),
 	};
 
 	Ok(response)

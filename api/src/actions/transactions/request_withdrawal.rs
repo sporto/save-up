@@ -1,15 +1,19 @@
-use actions::emails::request_withdrawal;
+use crate::{
+	actions::emails::request_withdrawal,
+	models::{
+		cents::Cents,
+		transaction_kind::TransactionKind,
+		transaction_request::{TransactionRequest, TransactionRequestAttrs},
+		transaction_request_state::TransactionRequestState,
+	},
+};
 use diesel::pg::PgConnection;
 use failure::Error;
-use models::cents::Cents;
-use models::transaction_kind::TransactionKind;
-use models::transaction_request::{TransactionRequest, TransactionRequestAttrs};
-use models::transaction_request_state::TransactionRequestState;
 
 #[derive(GraphQLInputObject, Clone)]
 pub struct RequestWithdrawalInput {
 	pub account_id: i32,
-	pub cents: i32,
+	pub cents:      i32,
 }
 
 pub fn call(
@@ -25,9 +29,9 @@ pub fn call(
 
 	let attrs = TransactionRequestAttrs {
 		account_id: input.account_id,
-		kind: TransactionKind::Withdrawal,
-		amount: Cents(amount),
-		state: TransactionRequestState::Pending,
+		kind:       TransactionKind::Withdrawal,
+		amount:     Cents(amount),
+		state:      TransactionRequestState::Pending,
 	};
 
 	let transaction_request =

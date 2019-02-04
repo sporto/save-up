@@ -1,7 +1,5 @@
-use actions;
-use graph::AppContext;
+use crate::{actions, graph::AppContext, utils::mutations::MutationError};
 use juniper::{Executor, FieldError, FieldResult};
-use utils::mutations::MutationError;
 
 // #[derive(Deserialize, Clone, GraphQLInputObject)]
 // pub struct ArchiveUserInput {
@@ -11,7 +9,7 @@ use utils::mutations::MutationError;
 #[derive(Clone)]
 pub struct ArchiveUserResponse {
 	success: bool,
-	errors: Vec<MutationError>,
+	errors:  Vec<MutationError>,
 }
 
 graphql_object!(ArchiveUserResponse: AppContext |&self| {
@@ -40,7 +38,7 @@ pub fn call(executor: &Executor<AppContext>, user_id: i32) -> FieldResult<Archiv
 
 	let response = ArchiveUserResponse {
 		success: true,
-		errors: vec![],
+		errors:  vec![],
 	};
 
 	Ok(response)
