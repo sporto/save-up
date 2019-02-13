@@ -71,7 +71,7 @@ fn graphql_app_handler(
 	jwt: JWT,
 	request: juniper_rocket::GraphQLRequest,
 	schema: State<graph::AppSchema>,
-	conn: utils::db_conn::DBConn,
+	conn: DbConn,
 ) -> juniper_rocket::GraphQLResponse {
 	// let conn = pool.get().unwrap();
 	let JWT(token) = jwt;
@@ -93,7 +93,7 @@ fn graphql_app_handler(
 fn graphql_pub_handler(
 	request: juniper_rocket::GraphQLRequest,
 	schema: State<graph::PublicSchema>,
-	conn: utils::db_conn::DBConn,
+	conn: DbConn,
 ) -> juniper_rocket::GraphQLResponse {
 	let context = graph::PublicContext { conn: conn.0 };
 
