@@ -18,14 +18,18 @@ extern crate validator_derive;
 extern crate lazy_static;
 #[macro_use]
 extern crate rocket;
+#[macro_use]
+extern crate rocket_contrib;
 
 use rocket::{
+	config::{Config, Environment, Value},
 	http::{Method, Status},
 	outcome,
 	request::{self, FromRequest, Request},
+	Rocket, State,
 };
+use std::collections::HashMap;
 
-use rocket::{Rocket, State};
 use rocket_cors::{AllowedHeaders, AllowedOrigins};
 
 mod actions;
@@ -53,6 +57,9 @@ impl<'a, 'r> FromRequest<'a, 'r> for JWT {
 		}
 	}
 }
+
+#[database("postgres")]
+struct DbConn(diesel::PgConnection);
 
 #[get("/")]
 fn index() -> &'static str {
@@ -112,6 +119,20 @@ fn get_token_from_request(request: &Request) -> Result<String, failure::Error> {
 fn rocket() -> Rocket {
 	let config = utils::config::get().expect("Failed to get config");
 
+	let mut database_config = HashMap::new();
+	let mut databases = HashMap::new();
+
+	database_config.insert("url", Value::from(config.database_url));
+	databases.insert("postgres", Value::from(database_config));
+
+	let rocket_config = Config::build(Environment::Staging)
+		.address("0.0.0.0")
+		.port(4010)
+		.extra("template_dir", "templates/")
+		.extra("databases", databases)
+		.finalize()
+		.expect("Failed to create rocket config");
+
 	// CORS
 	let (allowed_origins, failed_origins) = AllowedOrigins::some(&[&config.client_host]);
 
@@ -134,19 +155,15 @@ fn rocket() -> Rocket {
 
 	let routes = routes![index, graphql_app_handler, graphql_pub_handler,];
 
-	let pool = utils::db_conn::init_pool();
-
 	let schema_app = graph::create_app_schema();
 	let schema_pub = graph::create_public_schema();
 
-	// log::info!("Starting");
-
-	rocket::ignite()
-		.manage(pool.clone())
+	rocket::custom(rocket_config)
 		.manage(schema_app)
 		.manage(schema_pub)
 		.mount("/", routes)
 		.attach(options)
+		.attach(DbConn::fairing())
 }
 
 fn main() {
