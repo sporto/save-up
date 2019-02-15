@@ -55,11 +55,11 @@ graphql_scalar!(Cents as "Cents" where Scalar = <S> {
 	description: "Cents"
  
 	resolve(&self) -> Value {
-		Value::string(&self.to_string())
+		Value::scalar(self.to_string())
 	}
 
 	from_input_value(v: &InputValue) -> Option<Cents> {
-		v.as_string_value()
+		v.as_scalar_value::<String>()
 			.and_then(|s| s.parse::<i64>().ok() )
 			.map(|n| Cents(n))
 	}
