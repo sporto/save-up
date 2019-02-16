@@ -1,0 +1,15 @@
+DeployTo root@51.15.58.154
+
+# The path where we deploy applications.
+Set BIN "/app"
+
+# Ensure we have a destination directory
+Run "mkdir -p /app >/dev/null"
+
+CopyFile ./dist/bin/api.exe /app/api.exe
+
+#
+# Stop + Start the services
+#
+# Run "systemctl stop  overseer-worker.service"
+# Run "systemctl start overseer-worker.service"

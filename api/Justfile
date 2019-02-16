@@ -38,6 +38,7 @@ build:
 		clux/muslrust:nightly \
 		cargo build --release
 
+# Copy the binary into /dist/bin
 copy-bin:
 	mkdir -p ./dist/bin/
 	rm -rf ./dist/bin/*
@@ -57,16 +58,9 @@ copy-bin:
 
 prepare-release: build copy-bin
 
-# push:
-# 	hyper push 
-
-# build-image:
-#	docker build -t save-up-api .
-#	docker tag save-up-api:latest $API_IMAGE_TAG
-
-# Push image to AWS ECR
-# push-image:
-#	docker push $API_IMAGE_TAG
+# run ssh-add first
+deploy:
+	deployr run -verbose ./deployr.recipe
 
 docker-run-local:
 	docker run \
@@ -77,23 +71,3 @@ docker-run-local:
 		--expose=4010 \
 		-p 4020:4010 \
 		$API_IMAGE_TAG
-
-# Do this before hyper-pull
-# log-hyper:
-#	eval $(aws ecr get-login | sed 's/docker/hyper/')
-
-# Pull latest image from AWS
-# hyper-pull:
-#	hyper pull $API_IMAGE_TAG
-
-# hyper-run:
-# 	hyper run \
-# 		--rm \
-# 		--name save-up-api \
-# 		--env RUST_BACKTRACE=1 \
-# 		--env-file ./env.prod \
-# 		--expose=4010 \
-# 		-p 80:4010 \
-# 		--size=s1 \
-# 		$API_IMAGE_TAG
-
