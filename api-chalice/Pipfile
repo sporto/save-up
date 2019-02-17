@@ -8,6 +8,8 @@ verify_ssl = true
 [packages]
 graphene = ">=2.0"
 chalice = "*"
+graphene-sqlalchemy = "*"
+psycopg2 = "*"
 
 [requires]
 python_version = "3.7"
