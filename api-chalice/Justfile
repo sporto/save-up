@@ -1,0 +1,5 @@
+deploy:
+	chalice deploy
+
+start:
+	chalice local

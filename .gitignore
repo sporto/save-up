@@ -11,3 +11,4 @@ cargo-cache
 env.prod
 .stack-work/
 api.cabal
+apie
