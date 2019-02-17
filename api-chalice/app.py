@@ -29,7 +29,7 @@ def index():
     if ('variables' in request_body):
         variables = request_body['variables']
 
-    result = schema.execute('{ hello (argument: "graph") }')
+    result = schema.execute(query, variables=variables)
     # return result
     # responseBody = {
     #     "data": result
