@@ -4,7 +4,26 @@ import graphene
 app = Chalice(app_name='api')
 
 
-class Query(graphene.ObjectType):
+class User(graphene.ObjectType):
+    name = graphene.String()
+
+    def resolve_name(self, info):
+        return "Sam Sample"
+
+
+class Admin(graphene.ObjectType):
+    investors = graphene.List(graphene.NonNull(User))
+
+    def resolve_investors(self, info):
+        return []
+
+
+class AppQuery(graphene.ObjectType):
+    admin = graphene.NonNull(Admin)
+
+    def resolve_admin(self, into):
+        return Admin()
+
     hello = graphene.String(
         argument=graphene.String(default_value="stranger")
     )
@@ -13,7 +32,7 @@ class Query(graphene.ObjectType):
         return 'Hello ' + argument
 
 
-schema = graphene.Schema(query=Query)
+app_schema = graphene.Schema(query=AppQuery)
 
 
 @app.route('/graphql-app', methods=['POST'])
@@ -29,31 +48,6 @@ def index():
     if ('variables' in request_body):
         variables = request_body['variables']
 
-    result = schema.execute(query, variables=variables)
-    # return result
-    # responseBody = {
-    #     "data": result
-    # }
-    # print(result.data)
-    # return {'hello': 'world'}
-    return {'data': result.data}
+    result = app_schema.execute(query, variables=variables)
 
-    # The view function above will return {"hello": "world"}
-    # whenever you make an HTTP GET request to '/'.
-    #
-    # Here are a few more examples:
-    #
-    # @app.route('/hello/{name}')
-    # def hello_name(name):
-    #    # '/hello/james' -> {"hello": "james"}
-    #    return {'hello': name}
-    #
-    # @app.route('/users', methods=['POST'])
-    # def create_user():
-    #     # This is the JSON body the user sent in their POST request.
-    #     user_as_json = app.current_request.json_body
-    #     # We'll echo the json body back to the user in a 'user' key.
-    #     return {'user': user_as_json}
-    #
-    # See the README documentation for more examples.
-    #
+    return {'data': result.data}

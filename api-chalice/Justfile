@@ -6,6 +6,6 @@ start:
 
 try:
 	curl -X POST \
-		--data '{ "query": "{ hello (argument: \"graph\") }" }' \
+		--data '{ "query": "{ hello (argument: \"graph\") admin { investors { name } } }" }' \
 		--header "Content-Type: application/json" \
 		http://127.0.0.1:8000/graphql-app
