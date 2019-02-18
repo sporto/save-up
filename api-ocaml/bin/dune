@@ -1,6 +1,6 @@
 (executable
  (name main)
- (libraries batteries jwt lib)
+ (libraries batteries jwto lib)
  (preprocess (pps lwt_ppx)))
 
 (alias

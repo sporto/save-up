@@ -7,7 +7,7 @@ depends: [
   "dune" {build}
   "batteries"
   "core"
-  "jwt"
+  "jwto"
   "lwt"
   "lwt_ppx"
   "caqti"

@@ -3,7 +3,7 @@ open Cohttp
 open Core
 open Graphql_lwt
 open Lib
-open Jwt
+open Jwto
 
 let decode_token token =
 	try

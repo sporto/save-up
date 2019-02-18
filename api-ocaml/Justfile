@@ -1,5 +1,5 @@
 build:
-	dune build ./bin/main.exe
+	esy build
 
 # http://localhost:8080/graphql
 start:
