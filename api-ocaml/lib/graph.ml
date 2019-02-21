@@ -1,5 +1,4 @@
-module C = Cohttp_lwt_unix
-
+open Lwt.Infix
 open Graphql_lwt
 
 type role 
@@ -15,16 +14,16 @@ type role
 ) *)
 
 let user = Schema.(obj "user"
-	~fields: (fun _user -> [
+	~fields: (fun _ -> [
 		field "id"
 			~args: Arg.[]
 			~typ: (non_null int)
-			~resolve: (fun () (p: User.t) -> p.id)
+			~resolve: (fun (info: unit) (p: User.t) -> p.id)
 		;
 		field "name"
 			~args: Arg.[]
 			~typ: (non_null string)
-			~resolve: (fun () (p: User.t) -> p.name)
+			~resolve: (fun (info: unit) (p: User.t) -> p.name)
 		;
 	])
 )
@@ -34,12 +33,12 @@ let account = Schema.(obj "account"
 		field "id"
 			~args: Arg.[]
 			~typ: (non_null int)
-			~resolve: (fun () (acc: Account.t) -> acc.id)
+			~resolve: (fun info (acc: Account.t) -> acc.id)
 		;
 		field "name"
 			~args: Arg.[]
 			~typ: (non_null string)
-			~resolve: (fun () (p: Account.t) -> p.name)
+			~resolve: (fun info (p: Account.t) -> p.name)
 		;
 	])
 )
@@ -49,14 +48,14 @@ let admin = Schema.(obj "admin"
 		io_field "investors"
 			~args: Arg.[]
 			~typ: (non_null (list (non_null user)))
-			~resolve: (fun () () -> User.get_all () )
+			~resolve: (fun info () -> User.get_all () )
 		;
 		io_field "account"
 			~args: Arg.[
 				arg "id" ~typ: (non_null int)
 			]
 			~typ: account
-			~resolve: (fun () () id -> Account.find_account id)
+			~resolve: (fun info () id -> Account.find_account id)
 	])
 )
 
@@ -68,13 +67,13 @@ let schema = Schema.(schema [
 	io_field "users"
 		~args: Arg.[]
 		~typ: (non_null (list (non_null user)))
-		~resolve: (fun () () -> User.get_all ())
+		~resolve: (fun info () -> User.get_all ())
 	;
 
 	field "admin"
 		~typ: admin
 		~args: Arg.[]
-		~resolve: (fun () () ->
+		~resolve: (fun info () ->
 			Some ()
 		)
 	;
@@ -87,7 +86,7 @@ let schema = Schema.(schema [
 				arg "name" ~typ:(non_null string)
 			]))
 		]
-		~resolve: (fun () () (greeting, name) ->
+		~resolve: (fun info () (greeting, name) ->
 			Some (Format.sprintf "%s, %s" greeting name)
 		)
 		;
@@ -111,7 +110,7 @@ let schema = Schema.(schema [
 				)
 			]
 			~typ: string
-			~resolve: (fun () () _ -> Some(""))
+			~resolve: (fun info () _ -> Some(""))
 		;
 	]
 )

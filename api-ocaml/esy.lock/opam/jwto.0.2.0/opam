@@ -8,6 +8,7 @@ bug-reports: "https://github.com/sporto/jwto"
 dev-repo: "git://github.com/sporto/jwto"
 
 build: [
+  ["dune" "subst"] {pinned}
   ["dune" "build" "-p" name "-j" jobs]
   ["dune" "runtest" "-p" name "-j" jobs] {with-test}
 ]
@@ -16,16 +17,17 @@ depends: [
   "ocaml" {>= "4.05"}
   "dune" {build}
   "alcotest" {with-test}
-  "cryptokit"
-  "yojson"
-  "base64" {< "3.0.0"}
-  "re"
-  "ppx_deriving"
+  "cryptokit" {>= "1.10"}
+  "fmt" {>= "0.8"}
+  "yojson" {>= "1.6"}
+  "base64" {>= "3.1"}
+  "re" {>= "1.8"}
+  "ppx_deriving" {>= "4.2"}
 ]
 url {
-  src: "https://github.com/sporto/jwto/archive/0.1.5.tar.gz"
+  src: "https://github.com/sporto/jwto/archive/0.2.0.tar.gz"
   checksum: [
-    "md5=9e3dacf9428266df7c37376ae4ebf4dd"
-    "sha512=82da5a4a06c9716396cfad274f708d1f6b4639a9789dae9c95a16a66aed9c095bca6497c659abb2e95a8761251932855e6688f696793e8843c7b7c559d2beda1"
+    "md5=0d79373ce2262958c83eeae5e142150e"
+    "sha512=06b0cb3badadcc3e5650ae3279ec07fb6f110eacf5b82b6420e6d8f434dc00bf5cf2ae1f0baee2d924811062d4218e9b23a0f9af72ab2ac3a6357d886bcf4620"
   ]
 }

@@ -1,5 +1,5 @@
 (library
  (name lib)
  (public_name save-up-api)
- (libraries core cohttp.lwt graphql-lwt jwto yojson caqti caqti-lwt caqti-driver-postgresql)
+ (libraries core cohttp-lwt graphql-lwt graphql-cohttp jwto yojson caqti caqti-lwt caqti-driver-postgresql)
  (preprocess (pps lwt_ppx)))

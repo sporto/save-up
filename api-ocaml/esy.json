@@ -13,8 +13,9 @@
     "@opam/core": "v0.11.3",
     "@opam/dune": "1.7.1",
     "@opam/graphql": "0.9.0",
+    "@opam/graphql-cohttp": "0.10.0",
     "@opam/graphql-lwt": "0.9.0",
-    "@opam/jwto": "0.1.4",
+    "@opam/jwto": "0.2.0",
     "@opam/lwt": "4.1.0",
     "@opam/lwt_ppx": "1.2.1"
   }
