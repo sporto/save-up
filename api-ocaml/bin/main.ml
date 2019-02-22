@@ -5,12 +5,6 @@ open Graphql_lwt
 open Lib
 open Jwto
 
-let decode_token token =
-	try
-		Ok (Jwt.t_of_token token)
-	with
-		Bad_token -> Error "Bad token"
-
 let get_context (req: Cohttp.Request.t) =
 	let
 		authHeader = 
@@ -26,7 +20,7 @@ let get_context (req: Cohttp.Request.t) =
 				(* e.g. Bearer abc123... *)
 				lchop ~n:7 header
 		in
-		match decode_token token with
+		match Jwto.decode token with
 			| Ok(_data) -> ()
 			| Error(_) -> ()
 
@@ -44,7 +38,7 @@ let () =
 			Logs.err (fun m -> m "Unhandled exception: %a" Fmt.exn exn)
 	in
 	let callback =
-  		Graphql_cohttp_lwt.make_callback (fun _req -> ()) schema 
+  		Graphql_cohttp_lwt.make_callback (fun _req -> ()) Graph.schema 
 	in
 	let server =
 		Cohttp_lwt_unix.Server.make_response_action ~callback ()

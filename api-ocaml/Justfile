@@ -3,7 +3,7 @@ build:
 
 # http://localhost:8080/graphql
 start:
-	dune exec ./bin/main.exe
+	esy x SaveUpApi.exe
 
 deploy:
 	now --public

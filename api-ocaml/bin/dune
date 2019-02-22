@@ -1,8 +1,5 @@
 (executable
  (name main)
- (libraries batteries jwto lib)
+ (public_name SaveUpApi.exe)
+ (libraries batteries cohttp-lwt-unix jwto lib)
  (preprocess (pps lwt_ppx)))
-
-(alias
- (name DEFAULT)
- (deps main.exe))

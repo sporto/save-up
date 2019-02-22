@@ -10,6 +10,7 @@
     "@opam/caqti-driver-postgresql": "1.1.0",
     "@opam/caqti-lwt": "1.0.0",
     "@opam/cohttp-lwt": "2.0.0",
+    "@opam/cohttp-lwt-unix": "2.0.0",
     "@opam/core": "v0.11.3",
     "@opam/dune": "1.7.1",
     "@opam/graphql": "0.9.0",
