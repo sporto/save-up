@@ -18,12 +18,12 @@ let user = Schema.(obj "user"
 		field "id"
 			~args: Arg.[]
 			~typ: (non_null int)
-			~resolve: (fun (info: unit) (p: User.t) -> p.id)
+			~resolve: (fun (info) (p: User.t) -> p.id)
 		;
 		field "name"
 			~args: Arg.[]
 			~typ: (non_null string)
-			~resolve: (fun (info: unit) (p: User.t) -> p.name)
+			~resolve: (fun (info: unit Graphql_lwt.Schema.resolve_info) (p: User.t) -> p.name)
 		;
 	])
 )
