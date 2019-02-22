@@ -2,8 +2,14 @@ build:
 	esy build
 
 # http://localhost:8080/graphql
-start:
+start: build
 	esy x SaveUpApi.exe
+
+try:
+	curl -X POST \
+		--data '{ "query": "{ admin { investors { name } } }" }' \
+		--header "Content-Type: application/json" \
+		http://127.0.0.1:8080/graphql
 
 deploy:
 	now --public
