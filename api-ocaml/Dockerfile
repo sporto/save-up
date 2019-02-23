@@ -1,7 +1,5 @@
 FROM ocaml/opam2:alpine as base
 
-# RUN sudo apt-get update
-
 RUN sudo apk add \
   m4 \
   postgresql-dev
@@ -31,7 +29,7 @@ RUN opam install --deps-only .
 
 # Build the binary
 RUN eval `opam config env` && \
-  dune build ./bin/main.exe
+  dune build ./bin/main.exe 
 
 
 FROM alpine
@@ -42,4 +40,3 @@ RUN apk add \
 WORKDIR /root/
 COPY --from=base /home/opam/opam-repository/_build/default/bin/main.exe ./main.exe
 RUN ldd main.exe
-CMD ./main.exe

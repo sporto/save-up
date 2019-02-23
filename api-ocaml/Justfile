@@ -20,7 +20,7 @@ deploy:
 	now --public
 
 docker-build:
-	docker build . -t save-up
+	docker build . -t save-up-ocaml
 
 docker-sh:
-	docker run -it save-up /bin/sh
+	docker run -it save-up-ocaml /bin/sh
