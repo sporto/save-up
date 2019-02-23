@@ -1,6 +1,11 @@
 build:
 	esy build
 
+# Build a bin for Deployment
+# In _release/bin
+release:
+	esy release
+
 # http://localhost:8080/graphql
 start: build
 	esy x SaveUpApi.exe

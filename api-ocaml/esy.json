@@ -1,23 +1,27 @@
 {
-  "name": "save-up-api",
-  "esy": {
-    "build": "dune build -p #{self.name}",
-    "release": { "bin": [ "Api.exe" ] }
-  },
-  "dependencies": {
-    "@opam/batteries": "2.9.0",
-    "@opam/caqti": "1.1.0",
-    "@opam/caqti-driver-postgresql": "1.1.0",
-    "@opam/caqti-lwt": "1.0.0",
-    "@opam/cohttp-lwt": "2.0.0",
-    "@opam/cohttp-lwt-unix": "2.0.0",
-    "@opam/core": "v0.11.3",
-    "@opam/dune": "1.7.1",
-    "@opam/graphql": "0.9.0",
-    "@opam/graphql-cohttp": "0.10.0",
-    "@opam/graphql-lwt": "0.9.0",
-    "@opam/jwto": "0.2.0",
-    "@opam/lwt": "4.1.0",
-    "@opam/lwt_ppx": "1.2.1"
-  }
+	"name": "save-up-api",
+	"esy": {
+		"build": "dune build -p #{self.name}",
+		"release": {
+			"bin": [
+				"SaveUpApi.exe"
+			]
+		}
+	},
+	"dependencies": {
+		"@opam/batteries": "2.9.0",
+		"@opam/caqti": "1.1.0",
+		"@opam/caqti-driver-postgresql": "1.1.0",
+		"@opam/caqti-lwt": "1.0.0",
+		"@opam/cohttp-lwt": "2.0.0",
+		"@opam/cohttp-lwt-unix": "2.0.0",
+		"@opam/core": "v0.11.3",
+		"@opam/dune": "1.7.1",
+		"@opam/graphql": "0.9.0",
+		"@opam/graphql-cohttp": "0.10.0",
+		"@opam/graphql-lwt": "0.9.0",
+		"@opam/jwto": "0.2.0",
+		"@opam/lwt": "4.1.0",
+		"@opam/lwt_ppx": "1.2.1"
+	}
 }
