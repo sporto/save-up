@@ -1,0 +1,6 @@
+_build
+_esy
+_release/_export
+./lib
+esy.lock
+node_modules

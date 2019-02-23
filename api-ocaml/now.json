@@ -1,7 +1,14 @@
 {
-	"features": {
-		"cloud": "v2"
-	},
+	"version": 2,
+	"builds": [
+		{
+			"src": "_release/bin/SaveUpApi.exe",
+			"use": "now-static-bin",
+			"config": {
+				"port": 8080
+			}
+		}
+	],
 	"env": {
 		"CLIENT_HOST": "@saveup-client-host",
 		"DATABASE_URL": "@saveup-database-url",
