@@ -1,0 +1,12 @@
+[Unit]
+Description=Save Up
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5s
+WorkingDirectory=/app
+ExecStart=/app/api.exe
+
+[Install]
+WantedBy=multi-user.target

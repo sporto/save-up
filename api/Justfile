@@ -47,11 +47,11 @@ copy-bin:
 
 # This makes the binary smaller
 # But it removes valuable stack tracing information
-# strip:
-# 	docker run --rm -it \
-# 		-v $PWD:/volume/ \
-# 		clux/muslrust:stable \
-# 		strip ./dist/bin/api
+strip:
+	docker run --rm -it \
+		-v $PWD:/volume/ \
+		clux/muslrust:nightly \
+		strip ./dist/bin/api.exe
 
 # compress:
 # 	cd ./dist/bin/ && tar -zcvf api.tar.gz api

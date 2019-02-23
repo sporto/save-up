@@ -1,15 +1,27 @@
-DeployTo root@51.15.58.154
+DeployTo root@51.15.65.131
 
 # The path where we deploy applications.
+#
 Set BIN "/app"
 
 # Ensure we have a destination directory
+#
 Run "mkdir -p /app >/dev/null"
 
 CopyFile ./dist/bin/api.exe /app/api.exe
 
+# Ensure the downloaded files are executable.
 #
+Run "chmod 755 ${BIN}/*"
+
+# Finally we need to make sure there are systemd unit-files in-place,
+# for handling the parsing/polling.
+#
+CopyFile ./support/server/lib/systemd/system/save-up-api.service /lib/systemd/system/save-up-api.service
+IfChanged "systemctl daemon-reload"
+IfChanged "systemctl enable save-up-api.service"
+
 # Stop + Start the services
 #
-# Run "systemctl stop  overseer-worker.service"
-# Run "systemctl start overseer-worker.service"
+Run "systemctl stop  save-up-api.service"
+Run "systemctl start save-up-api.service"
