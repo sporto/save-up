@@ -14,7 +14,7 @@ try:
 	curl -X POST \
 		--data '{ "query": "{ admin { investors { name } } }" }' \
 		--header "Content-Type: application/json" \
-		http://127.0.0.1:8080/graphql
+		http://127.0.0.1:8080/app/graphql?id=data
 
 deploy:
 	now --public
