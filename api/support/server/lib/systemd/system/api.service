@@ -8,6 +8,7 @@ RestartSec=5s
 WorkingDirectory=/app
 ExecStart=/app/api.exe
 Environment=RUST_BACKTRACE=1
+Environment=API_PORT=80
 Environment=API_SECRET={{get "API_SECRET"}}
 Environment=CLIENT_HOST={{get "CLIENT_HOST"}}
 Environment=DATABASE_URL={{get "DATABASE_URL"}}

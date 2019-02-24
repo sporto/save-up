@@ -9,6 +9,7 @@ pub enum AppEnv {
 
 #[derive(Clone)]
 pub struct Config {
+	pub api_port:     u16,
 	pub api_secret:   String,
 	pub client_host:  String,
 	pub database_url: String,
@@ -46,7 +47,14 @@ fn variable_names() -> VariableNames {
 pub fn get() -> Result<Config, Error> {
 	let names = variable_names();
 
-	let api_secret = env::var("API_SECRET").map_err(|_| format_err!("API_SECRET not found"))?;
+	let api_port = env::var("API_PORT")
+		.map_err(|_| format_err!("API_PORT not found"))
+		.and_then(|p| 
+			p.parse().map_err(|e| format_err!("{}", e))
+		)?;
+
+	let api_secret = env::var("API_SECRET")
+		.map_err(|_| format_err!("API_SECRET not found"))?;
 
 	let client_host = env::var("CLIENT_HOST").map_err(|_| format_err!("CLIENT_HOST not found"))?;
 
@@ -56,6 +64,7 @@ pub fn get() -> Result<Config, Error> {
 	let system_jwt = env::var("SYSTEM_JWT").map_err(|_| format_err!("SYSTEM_JWT not found"))?;
 
 	let config = Config {
+		api_port,
 		api_secret,
 		client_host,
 		database_url,

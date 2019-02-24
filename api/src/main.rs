@@ -126,7 +126,7 @@ fn rocket() -> Rocket {
 
 	let rocket_config = Config::build(Environment::Staging)
 		.address("0.0.0.0")
-		.port(4010)
+		.port(config.api_port)
 		.extra("template_dir", "templates/")
 		.extra("databases", databases)
 		.finalize()
