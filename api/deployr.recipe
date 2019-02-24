@@ -25,3 +25,4 @@ IfChanged "systemctl enable api.service"
 #
 Run "systemctl stop  api.service"
 Run "systemctl start api.service"
+Run "systemctl status api.service"
