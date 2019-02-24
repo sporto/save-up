@@ -9,6 +9,12 @@
 			}
 		}
 	],
+	"routes": [
+		{
+			"src": "^/.*",
+			"dest": "/SaveUpApi.exe"
+		}
+	],
 	"env": {
 		"CLIENT_HOST": "@saveup-client-host",
 		"DATABASE_URL": "@saveup-database-url",
