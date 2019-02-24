@@ -17,11 +17,11 @@ Run "chmod 755 ${BIN}/*"
 # Finally we need to make sure there are systemd unit-files in-place,
 # for handling the parsing/polling.
 #
-CopyFile ./support/server/lib/systemd/system/save-up-api.service /lib/systemd/system/save-up-api.service
+CopyTemplate ./support/server/lib/systemd/system/api.service /lib/systemd/system/api.service
 IfChanged "systemctl daemon-reload"
-IfChanged "systemctl enable save-up-api.service"
+IfChanged "systemctl enable api.service"
 
 # Stop + Start the services
 #
-Run "systemctl stop  save-up-api.service"
-Run "systemctl start save-up-api.service"
+Run "systemctl stop  api.service"
+Run "systemctl start api.service"

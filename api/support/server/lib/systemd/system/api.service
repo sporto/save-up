@@ -1,0 +1,16 @@
+[Unit]
+Description=Save Up
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5s
+WorkingDirectory=/app
+ExecStart=/app/api.exe
+Environment=API_SECRET={{get "API_SECRET"}}
+Environment=CLIENT_HOST={{get "CLIENT_HOST"}}
+Environment=DATABASE_URL={{get "DATABASE_URL"}}
+Environment=SYSTEM_JWT={{get "SYSTEM_JWT"}}
+
+[Install]
+WantedBy=multi-user.target

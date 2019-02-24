@@ -60,7 +60,12 @@ prepare-release: build copy-bin
 
 # run ssh-add first
 deploy:
-	deployr run -verbose ./deployr.recipe
+	deployr run -verbose \
+		--set "API_SECRET=$API_SECRET" \
+		--set "CLIENT_HOST=$CLIENT_HOST" \
+		--set "DATABASE_URL=$DATABASE_URL_PROD" \
+		--set "DATABASE_URL=$SYSTEM_JWT_PROD" \
+		./deployr.recipe
 
 docker-run-local:
 	docker run \
