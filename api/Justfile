@@ -56,10 +56,12 @@ strip:
 compress:
 	cd ./dist/bin/ && tar -zcvf api.tar.gz api.exe
 
-prepare-release: build copy-bin
+# Run before deploy when binary has changed
+prepare-release: copy-bin compress
 
 # run ssh-add first
-deploy: copy-bin compress
+# deploy: prepare-release
+deploy:
 	deployr run -verbose \
 		--set "API_SECRET=$API_SECRET_PROD" \
 		--set "CLIENT_HOST=$CLIENT_HOST_PROD" \
