@@ -9,7 +9,7 @@ Set BIN "/app"
 Run "mkdir -p /app >/dev/null"
 
 CopyFile ./dist/bin/api.tar.gz /app/api.tar.gz
-Run "tar -xvf /app/api.tar.gz"
+Run "cd /app && tar -xvf ./api.tar.gz"
 
 # Ensure the downloaded files are executable.
 #
