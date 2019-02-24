@@ -53,13 +53,13 @@ strip:
 		clux/muslrust:nightly \
 		strip ./dist/bin/api.exe
 
-# compress:
-# 	cd ./dist/bin/ && tar -zcvf api.tar.gz api
+compress:
+	cd ./dist/bin/ && tar -zcvf api.tar.gz api.exe
 
 prepare-release: build copy-bin
 
 # run ssh-add first
-deploy:
+deploy: copy-bin compress
 	deployr run -verbose \
 		--set "API_SECRET=$API_SECRET_PROD" \
 		--set "CLIENT_HOST=$CLIENT_HOST_PROD" \
