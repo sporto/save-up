@@ -3,6 +3,7 @@
 extern crate askama;
 #[macro_use]
 extern crate diesel;
+#[macro_use]
 extern crate diesel_migrations;
 #[macro_use]
 extern crate failure;
@@ -19,6 +20,9 @@ extern crate lazy_static;
 extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
+#[macro_use]
+extern crate log;
+extern crate env_logger;
 
 use rocket::{
 	config::{Config, Environment, Value},
@@ -27,6 +31,7 @@ use rocket::{
 	request::{self, FromRequest, Request},
 	Rocket, State,
 };
+use rocket::fairing::AdHoc;
 use std::collections::HashMap;
 
 use rocket_cors::{AllowedHeaders, AllowedOrigins};
@@ -35,6 +40,8 @@ mod actions;
 mod graph;
 mod models;
 mod utils;
+
+embed_migrations!();	
 
 struct JWT(String);
 
@@ -115,6 +122,17 @@ fn get_token_from_request(request: &Request) -> Result<String, failure::Error> {
 	Ok(token.to_string())
 }
 
+fn run_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {
+	let conn = DbConn::get_one(&rocket).expect("database connection");
+	match embedded_migrations::run_with_output(&conn, &mut std::io::stdout()) {
+		Ok(()) => Ok(rocket),
+		Err(e) => {
+			error!("Failed to run database migrations: {:?}", e);
+			Err(rocket)
+		}
+	}
+}
+
 fn rocket() -> Rocket {
 	let config = utils::config::get().expect("Failed to get config");
 
@@ -158,13 +176,15 @@ fn rocket() -> Rocket {
 	let schema_pub = graph::create_public_schema();
 
 	rocket::custom(rocket_config)
+		.attach(DbConn::fairing())
+		.attach(AdHoc::on_attach("Database Migrations", run_migrations))
 		.manage(schema_app)
 		.manage(schema_pub)
 		.mount("/", routes)
 		.attach(options)
-		.attach(DbConn::fairing())
 }
 
 fn main() {
+	env_logger::init();
 	rocket().launch();
 }
