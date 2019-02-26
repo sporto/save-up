@@ -124,7 +124,7 @@ fn get_token_from_request(request: &Request) -> Result<String, failure::Error> {
 
 fn run_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {
 	let conn = DbConn::get_one(&rocket).expect("database connection");
-	match embedded_migrations::run_with_output(&conn, &mut std::io::stdout()) {
+	match embedded_migrations::run_with_output(&conn.0, &mut std::io::stdout()) {
 		Ok(()) => Ok(rocket),
 		Err(e) => {
 			error!("Failed to run database migrations: {:?}", e);
