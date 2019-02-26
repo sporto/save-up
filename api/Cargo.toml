@@ -3,10 +3,9 @@ name = "api"
 version = "0.1.0"
 edition = "2018"
 authors = ["Sebastian Porto <s@porto5.com>"]
-build = "build.rs"
 
 [dependencies]
-askama = "0.7"
+askama = "0.8.0"
 bigdecimal = "0.0.14"
 chrono = "0.4"
 chrono-tz = "0.5"
@@ -42,5 +41,3 @@ version = "0.4.0"
 default-features = false
 features = ["diesel_postgres_pool"]
 
-[build-dependencies]
-askama = "0.7.2"
