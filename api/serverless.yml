@@ -1,0 +1,29 @@
+app: save-up
+
+tenant: sporto
+
+service:
+  name: api
+
+provider:
+  name: aws
+  apiName: save-up-api
+  stackName: save-up-api
+  region: ap-southeast-2
+  runtime: rust
+
+plugins:
+  # this adds informs servleress to use
+  # the serverless-rust plugin
+  - serverless-rust
+# creates one artifact for each function
+
+package:
+  individually: true
+
+functions:
+  hello:
+    # handler value syntax is `{cargo-package-name}.{bin-name}`
+    # or `{cargo-package-name}` for short when you are building a
+    # default bin for a given package.
+    handler: hello
