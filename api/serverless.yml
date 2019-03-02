@@ -3,7 +3,7 @@ app: save-up
 tenant: sporto
 
 service:
-  name: api
+  name: save-up
 
 provider:
   name: aws
@@ -26,3 +26,5 @@ functions:
     handler: hello
   mail:
     handler: mail
+    events:
+      - sns: emails

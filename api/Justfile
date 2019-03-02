@@ -5,4 +5,4 @@ try-hello:
 	npx sls invoke -f hello -d '{"foo":"bar"}'
 
 try-mail:
-	npx sls invoke -f mail --event mail/src/fixtures/sns-event-invite
+	npx sls invoke -f mail -p mail/src/fixtures/sns-event-invite.json
