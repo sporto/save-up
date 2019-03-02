@@ -4,3 +4,4 @@ target
 .terraform
 *.tfstate*
 playbook.retry
+.serverless

@@ -77,20 +77,6 @@ fn handler(event: SnsEvent, _: Context) -> Result<String, HandlerError> {
 	Ok("Success".to_string())
 }
 
-// fn main() {
-	// openssl_probe::init_ssl_cert_env_vars();
-
-	// lambda::start(|event: SnsEvent| {
-	// 	let email_kind = get_email_kind(&event)?;
-
-	// 	generate_intermediate(&email_kind)
-	// 		.and_then(|intermediate| generate_html(&intermediate))
-	// 		.and_then(|html| send_email(&email_kind, &html))?;
-
-	// 	Ok("Success")
-	// })
-// }
-
 fn get_email_kind(event: &SnsEvent) -> Result<EmailKind, Error> {
 	let record = event
 		.records
