@@ -11,6 +11,8 @@ provider:
   stackName: save-up-api
   region: ap-southeast-2
   runtime: rust
+  environment:
+    SYSTEM_EMAIL: ${env:SYSTEM_EMAIL}
 
 plugins:
   # this adds informs servleress to use

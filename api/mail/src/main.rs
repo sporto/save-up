@@ -9,7 +9,6 @@ use std::{default::Default, env, time::Duration};
 use shared::email_kinds::EmailKind;
 use lambda_runtime::{error::HandlerError, lambda, Context};
 use aws_lambda_events::event::sns::SnsEvent;
-use serde_json::Value;
 
 #[derive(Template)]
 #[template(path = "invite.html")]
@@ -224,7 +223,7 @@ fn send_email(email_kind: &EmailKind, html: &str) -> Result<(), Error> {
 		.send_email(email)
 		.with_timeout(Duration::from_secs(20))
 		.sync()
-		.map_err(|e| format_err!("{}", e))
+		.map_err(|e| format_err!("While sending {}", e))
 		.map(|_response| ())
 }
 
