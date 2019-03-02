@@ -1,8 +1,10 @@
 use crate::{
 	actions::emails::send,
-	models::{email_kinds::EmailKind, user::User},
+	models::{user::User},
 	utils::links,
 };
+use shared::email_kinds::EmailKind;
+
 use failure::Error;
 
 pub fn call(user: &User) -> Result<(), Error> {

@@ -1,8 +1,9 @@
 use crate::{
 	actions::emails::send,
-	models::{email_kinds::EmailKind, schema as db, user::User},
+	models::{ schema as db, user::User},
 	utils::links,
 };
+use shared::email_kinds::EmailKind;
 use diesel::{self, pg::PgConnection, prelude::*};
 use failure::Error;
 use uuid::Uuid;

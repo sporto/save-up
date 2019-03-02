@@ -1,10 +1,12 @@
 use crate::{
 	actions::emails::send,
 	models::{
-		account::Account, cents::Cents, email_kinds::EmailKind, transaction::Transaction,
+		account::Account, cents::Cents,
+		transaction::Transaction,
 		user::User,
 	},
 };
+use shared::email_kinds::EmailKind;
 use diesel::pg::PgConnection;
 use failure::Error;
 

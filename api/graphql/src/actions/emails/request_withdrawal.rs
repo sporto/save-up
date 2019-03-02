@@ -4,10 +4,11 @@ use failure::Error;
 use crate::{
 	actions::emails::send,
 	models::{
-		account::Account, cents::Cents, email_kinds::EmailKind,
+		account::Account, cents::Cents, 
 		transaction_request::TransactionRequest, user::User,
 	},
 };
+use shared::email_kinds::EmailKind;
 
 pub fn call(conn: &PgConnection, transaction_request: &TransactionRequest) -> Result<(), Error> {
 	let account = Account::find(&conn, transaction_request.account_id)?;

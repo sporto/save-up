@@ -1,2 +1,2 @@
 [workspace]
-members = ["hello", "graphql"]
+members = ["hello", "graphql", "mail"]

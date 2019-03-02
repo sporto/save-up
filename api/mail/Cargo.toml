@@ -1,0 +1,23 @@
+[package]
+name = "mail"
+version = "0.1.0"
+edition = "2018"
+authors = ["Sebastian Porto <s@porto5.com>"]
+
+[dependencies]
+askama = "0.8.0"
+aws_lambda_events = "0.2"
+lambda_runtime = "0.2"
+chrono = "0.4"
+chrono-tz = "0.5"
+log = "0.4"
+failure = "0.1.5"
+futures = "0.1"
+regex = "1.1"
+rusoto_core = "0.36"
+rusoto_ses = "0.36"
+serde = "1.0"
+serde_derive = "1.0"
+serde_json = "1.0"
+shared = { path = "../shared" }
+

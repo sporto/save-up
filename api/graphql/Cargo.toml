@@ -27,7 +27,7 @@ rocket = "0.4"
 rocket_cors = "0.4"
 rocket_codegen = "0.4"
 rusoto_core = "0.36"
-rusoto_ses = "0.36"
+rusoto_sns = "0.36"
 serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
@@ -35,6 +35,7 @@ url = "1.7"
 uuid = { version = "0.7.2", features = ["v4"] }
 validator = "0.8"
 validator_derive = "0.8"
+shared = { path = "../shared" }
 
 [dependencies.rocket_contrib]
 version = "0.4.0"

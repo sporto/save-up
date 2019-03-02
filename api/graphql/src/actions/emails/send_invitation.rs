@@ -2,9 +2,11 @@ use failure::Error;
 
 use crate::{
 	actions::emails::send,
-	models::{email_kinds::EmailKind, invitation::Invitation, user::User},
+	models::{ invitation::Invitation, user::User},
 	utils::links,
 };
+use shared::email_kinds::EmailKind;
+
 
 pub fn call(current_user: &User, invitation: &Invitation) -> Result<(), Error> {
 	let invitee_email = &invitation.email.clone();

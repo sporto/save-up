@@ -1,7 +1,6 @@
 pub mod account;
 pub mod cents;
 pub mod client;
-pub mod email_kinds;
 pub mod error;
 pub mod invitation;
 pub mod role;
