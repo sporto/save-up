@@ -12,7 +12,7 @@ if (token == null) throw new Error("Couldn't find token")
 function graphQLFetcher(graphQLParams: any) {
 	let config = getConfig()
 
-	return fetch(config.apiHost + "/graphql-app", {
+	return fetch(config.apiHost + "/app/graphql", {
 		method: "post",
 		headers: {
 			"Content-Type": "application/json",

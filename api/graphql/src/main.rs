@@ -73,7 +73,7 @@ fn index() -> &'static str {
 	"Hello"
 }
 
-#[post("/graphql-app", data = "<request>")]
+#[post("/app/graphql", data = "<request>")]
 fn graphql_app_handler(
 	jwt: JWT,
 	request: juniper_rocket::GraphQLRequest,
@@ -96,7 +96,7 @@ fn graphql_app_handler(
 	request.execute(&schema, &context)
 }
 
-#[post("/graphql-pub", data = "<request>")]
+#[post("/pub/graphql", data = "<request>")]
 fn graphql_pub_handler(
 	request: juniper_rocket::GraphQLRequest,
 	schema: State<graph::PublicSchema>,

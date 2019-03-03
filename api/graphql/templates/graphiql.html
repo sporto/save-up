@@ -30,7 +30,7 @@
 		function graphQLFetcher(graphQLParams) {
 			let config = getConfig()
 
-			return fetch("/graphql-app", {
+			return fetch("/app/graphql", {
 				method: "post",
 				headers: {
 					"Content-Type": "application/json",

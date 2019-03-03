@@ -4,11 +4,11 @@ graph:
 	just graph-pub
 
 graph-app:
-	npx elm-graphql $API_HOST/graphql-app --base Api \
+	npx elm-graphql $API_HOST/app/graphql --base Api \
 		--header "Authorization: Bearer $SYSTEM_JWT"
 
 graph-pub:
-	npx elm-graphql $API_HOST/graphql-pub --base ApiPub
+	npx elm-graphql $API_HOST/pub/graphql --base ApiPub
 
 elm-analyse:
 	npx elm-analyse

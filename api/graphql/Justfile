@@ -6,14 +6,14 @@ try:
 		--data '{ "query": "{ admin { investors { name } } }" }' \
 		--header "Content-Type: application/json" \
 		--header "Authorization: Bearer $SYSTEM_JWT" \
-		http://127.0.0.1:4010/graphql-app?id=data
+		http://127.0.0.1:4010/app/graphql?id=data
 
 try-prod:
 	curl -X POST \
 		--data '{ "query": "{ admin { investors { name } } }" }' \
 		--header "Content-Type: application/json" \
 		--header "Authorization: Bearer $SYSTEM_JWT_PROD" \
-		http://51.15.65.131/graphql-app?id=data
+		http://51.15.65.131/app/graphql?id=data
 
 dp-setup:
 	DATABASE_URL=$DATABASE_URL_LOCAL diesel setup

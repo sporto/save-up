@@ -43,12 +43,12 @@ mutationErrorSelection =
 
 apiEndPointPublic : PublicContext -> String -> String
 apiEndPointPublic context id =
-    context.flags.apiHost ++ "/graphql-pub?id=" ++ id
+    context.flags.apiHost ++ "/pub/graphql?id=" ++ id
 
 
 apiEndPoint : Context -> String -> String
 apiEndPoint context id =
-    context.flags.apiHost ++ "/graphql-app?id=" ++ id
+    context.flags.apiHost ++ "/app/graphql?id=" ++ id
 
 
 sendPublicMutation :
