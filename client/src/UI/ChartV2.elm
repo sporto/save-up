@@ -35,7 +35,27 @@ h =
 
 padding : Float
 padding =
-    30
+    48
+
+
+second =
+    1000
+
+
+minute =
+    60 * second
+
+
+hour =
+    60 * minute
+
+
+day =
+    24 * hour
+
+
+week =
+    7 * day
 
 
 xScale : List Point -> ContinuousScale Time.Posix
@@ -45,7 +65,7 @@ xScale points =
             points
                 |> List.head
                 |> Maybe.map Tuple.first
-                |> Maybe.map (movePosix -1000000)
+                |> Maybe.map (movePosix -week)
                 |> Maybe.withDefault (Time.millisToPosix 1448928000000)
 
         last =
@@ -53,7 +73,7 @@ xScale points =
                 |> List.reverse
                 |> List.head
                 |> Maybe.map Tuple.first
-                |> Maybe.map (movePosix 1000000)
+                |> Maybe.map (movePosix week)
                 |> Maybe.withDefault (Time.millisToPosix 1456790400000)
     in
     Scale.time
