@@ -23,7 +23,7 @@ import Shared.GraphQl as GraphQl exposing (GraphData, GraphResponse, MutationErr
 import Shared.Routes as Routes
 import String.Verify
 import Time exposing (Posix)
-import UI.Chart as Chart
+import UI.ChartV2 as Chart
 import UI.Empty as Empty
 import UI.Flash as Flash
 import UI.Forms as Forms
