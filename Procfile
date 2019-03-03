@@ -1,2 +1,2 @@
-api: just api/start
+api: just api/graphql/start
 client: just client/start

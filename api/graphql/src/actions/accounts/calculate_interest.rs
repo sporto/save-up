@@ -17,21 +17,21 @@ pub fn call(
 	let day_diff_duration = to.signed_duration_since(from);
 	let day_diff = day_diff_duration.num_days() as i32;
 
-	println!("day_diff = {:?}", day_diff);
+	// println!("day_diff = {:?}", day_diff);
 
 	let daily_rate = ((1.0 + rate_perc).powf(1.0 / 365.0)) - 1.0;
 
-	println!("daily_rate = {:?}", daily_rate);
+	// println!("daily_rate = {:?}", daily_rate);
 
 	let principal: f64 = match balance {
 		Cents(p) => p as f64,
 	};
 
-	println!("principal = {:?}", principal);
+	// println!("principal = {:?}", principal);
 
 	let new_principal = principal * (1.0 + daily_rate).powi(day_diff);
 
-	println!("new_principal = {:?}", new_principal);
+	// println!("new_principal = {:?}", new_principal);
 
 	let interest = new_principal - principal;
 

@@ -1,3 +1,4 @@
+# Generate GraphQL code from graphql server schema
 graph:
 	just graph-app
 	just graph-pub

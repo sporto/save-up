@@ -27,6 +27,7 @@ import Shared.Routes as Routes
 import Time exposing (Posix)
 import UI.AccountInfo as AccountInfo
 import UI.Chart as Chart
+import UI.ChartV2 as ChartV2
 import UI.Empty as Empty
 import UI.Flash as Flash
 import UI.Forms as Forms
@@ -675,6 +676,7 @@ accountWithData context model account =
         { canAdmin = True, onEdit = EditInterestRate }
         account
         maybeInputField
+    , ChartV2.view account.transactions
     , Chart.view account.transactions
     ]
 
