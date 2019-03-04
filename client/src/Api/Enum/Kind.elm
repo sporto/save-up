@@ -2,13 +2,18 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Enum.Kind exposing (Kind(..), decoder, toString)
+module Api.Enum.Kind exposing (Kind(..), decoder, list, toString)
 
 import Json.Decode as Decode exposing (Decoder)
 
 
 type Kind
     = Savings
+
+
+list : List Kind
+list =
+    [ Savings ]
 
 
 decoder : Decoder Kind

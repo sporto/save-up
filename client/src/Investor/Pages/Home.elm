@@ -5,9 +5,8 @@ import Api.Object.Account
 import Api.Object.Investor
 import Api.Object.Transaction
 import Api.Query
-import Graphql.Field as Field
 import Graphql.Operation exposing (RootQuery)
-import Graphql.SelectionSet exposing (SelectionSet, with)
+import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, name, src, type_)
 import Html.Events exposing (onClick, onInput, onSubmit)
@@ -171,21 +170,21 @@ getData context =
 
 dataQuery : SelectionSet Data RootQuery
 dataQuery =
-    Api.Query.selection identity
+    SelectionSet.succeed identity
         |> with (Api.Query.investor investorSelection)
 
 
 investorSelection : SelectionSet Data Api.Object.Investor
 investorSelection =
-    Api.Object.Investor.selection Data
+    SelectionSet.succeed Data
         |> with (Api.Object.Investor.accounts accountSelection)
 
 
 accountSelection : SelectionSet Account Api.Object.Account
 accountSelection =
-    Api.Object.Account.selection Account
+    SelectionSet.succeed Account
         |> with Api.Object.Account.id
-        |> with (Api.Object.Account.balanceInCents |> Field.map round)
+        |> with (Api.Object.Account.balanceInCents |> SelectionSet.map round)
         |> with Api.Object.Account.name
         |> with Api.Object.Account.yearlyInterest
         |> with (Api.Object.Account.transactions { since = 0 } transactionSelection)
@@ -193,6 +192,6 @@ accountSelection =
 
 transactionSelection : SelectionSet Transaction Api.Object.Transaction
 transactionSelection =
-    Api.Object.Transaction.selection Transaction
-        |> with (Api.Object.Transaction.createdAt |> Field.mapOrFail GraphQl.unwrapNaiveDateTime)
-        |> with (Api.Object.Transaction.balanceInCents |> Field.map round)
+    SelectionSet.succeed Transaction
+        |> with (Api.Object.Transaction.createdAt |> SelectionSet.mapOrFail GraphQl.unwrapNaiveDateTime)
+        |> with (Api.Object.Transaction.balanceInCents |> SelectionSet.map round)

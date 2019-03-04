@@ -2,39 +2,33 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.CreateUserResponse exposing (errors, selection, success, user)
+module Api.Object.CreateUserResponse exposing (errors, success, user)
 
 import Api.InputObject
 import Api.Interface
 import Api.Object
 import Api.Scalar
+import Api.ScalarCodecs
 import Api.Union
-import Graphql.Field as Field exposing (Field)
 import Graphql.Internal.Builder.Argument as Argument exposing (Argument)
 import Graphql.Internal.Builder.Object as Object
 import Graphql.Internal.Encode as Encode exposing (Value)
+import Graphql.Operation exposing (RootMutation, RootQuery, RootSubscription)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
 
 
-{-| Select fields to build up a SelectionSet for this object.
--}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.CreateUserResponse
-selection constructor =
-    Object.selection constructor
-
-
-success : Field Bool Api.Object.CreateUserResponse
+success : SelectionSet Bool Api.Object.CreateUserResponse
 success =
-    Object.fieldDecoder "success" [] Decode.bool
+    Object.selectionForField "Bool" "success" [] Decode.bool
 
 
-errors : SelectionSet decodesTo Api.Object.MutationError -> Field (List decodesTo) Api.Object.CreateUserResponse
+errors : SelectionSet decodesTo Api.Object.MutationError -> SelectionSet (List decodesTo) Api.Object.CreateUserResponse
 errors object_ =
-    Object.selectionField "errors" [] object_ (identity >> Decode.list)
+    Object.selectionForCompositeField "errors" [] object_ (identity >> Decode.list)
 
 
-user : SelectionSet decodesTo Api.Object.User -> Field (Maybe decodesTo) Api.Object.CreateUserResponse
+user : SelectionSet decodesTo Api.Object.User -> SelectionSet (Maybe decodesTo) Api.Object.CreateUserResponse
 user object_ =
-    Object.selectionField "user" [] object_ (identity >> Decode.nullable)
+    Object.selectionForCompositeField "user" [] object_ (identity >> Decode.nullable)

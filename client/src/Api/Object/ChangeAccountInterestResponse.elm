@@ -2,39 +2,33 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.ChangeAccountInterestResponse exposing (account, errors, selection, success)
+module Api.Object.ChangeAccountInterestResponse exposing (account, errors, success)
 
 import Api.InputObject
 import Api.Interface
 import Api.Object
 import Api.Scalar
+import Api.ScalarCodecs
 import Api.Union
-import Graphql.Field as Field exposing (Field)
 import Graphql.Internal.Builder.Argument as Argument exposing (Argument)
 import Graphql.Internal.Builder.Object as Object
 import Graphql.Internal.Encode as Encode exposing (Value)
+import Graphql.Operation exposing (RootMutation, RootQuery, RootSubscription)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
 
 
-{-| Select fields to build up a SelectionSet for this object.
--}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.ChangeAccountInterestResponse
-selection constructor =
-    Object.selection constructor
-
-
-success : Field Bool Api.Object.ChangeAccountInterestResponse
+success : SelectionSet Bool Api.Object.ChangeAccountInterestResponse
 success =
-    Object.fieldDecoder "success" [] Decode.bool
+    Object.selectionForField "Bool" "success" [] Decode.bool
 
 
-errors : SelectionSet decodesTo Api.Object.MutationError -> Field (List decodesTo) Api.Object.ChangeAccountInterestResponse
+errors : SelectionSet decodesTo Api.Object.MutationError -> SelectionSet (List decodesTo) Api.Object.ChangeAccountInterestResponse
 errors object_ =
-    Object.selectionField "errors" [] object_ (identity >> Decode.list)
+    Object.selectionForCompositeField "errors" [] object_ (identity >> Decode.list)
 
 
-account : SelectionSet decodesTo Api.Object.Account -> Field (Maybe decodesTo) Api.Object.ChangeAccountInterestResponse
+account : SelectionSet decodesTo Api.Object.Account -> SelectionSet (Maybe decodesTo) Api.Object.ChangeAccountInterestResponse
 account object_ =
-    Object.selectionField "account" [] object_ (identity >> Decode.nullable)
+    Object.selectionForCompositeField "account" [] object_ (identity >> Decode.nullable)

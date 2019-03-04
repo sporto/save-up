@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.Account exposing (TransactionsRequiredArguments, balanceInCents, id, kind, name, selection, state, transactions, user, userId, yearlyInterest)
+module Api.Object.Account exposing (TransactionsRequiredArguments, balanceInCents, id, kind, name, state, transactions, user, userId, yearlyInterest)
 
 import Api.Enum.Kind
 import Api.Enum.State
@@ -10,67 +10,61 @@ import Api.InputObject
 import Api.Interface
 import Api.Object
 import Api.Scalar
+import Api.ScalarCodecs
 import Api.Union
-import Graphql.Field as Field exposing (Field)
 import Graphql.Internal.Builder.Argument as Argument exposing (Argument)
 import Graphql.Internal.Builder.Object as Object
 import Graphql.Internal.Encode as Encode exposing (Value)
+import Graphql.Operation exposing (RootMutation, RootQuery, RootSubscription)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
 
 
-{-| Select fields to build up a SelectionSet for this object.
--}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.Account
-selection constructor =
-    Object.selection constructor
-
-
-id : Field Int Api.Object.Account
+id : SelectionSet Int Api.Object.Account
 id =
-    Object.fieldDecoder "id" [] Decode.int
+    Object.selectionForField "Int" "id" [] Decode.int
 
 
-userId : Field Int Api.Object.Account
+userId : SelectionSet Int Api.Object.Account
 userId =
-    Object.fieldDecoder "userId" [] Decode.int
+    Object.selectionForField "Int" "userId" [] Decode.int
 
 
-user : SelectionSet decodesTo Api.Object.User -> Field decodesTo Api.Object.Account
+user : SelectionSet decodesTo Api.Object.User -> SelectionSet decodesTo Api.Object.Account
 user object_ =
-    Object.selectionField "user" [] object_ identity
+    Object.selectionForCompositeField "user" [] object_ identity
 
 
-name : Field String Api.Object.Account
+name : SelectionSet String Api.Object.Account
 name =
-    Object.fieldDecoder "name" [] Decode.string
+    Object.selectionForField "String" "name" [] Decode.string
 
 
-kind : Field Api.Enum.Kind.Kind Api.Object.Account
+kind : SelectionSet Api.Enum.Kind.Kind Api.Object.Account
 kind =
-    Object.fieldDecoder "kind" [] Api.Enum.Kind.decoder
+    Object.selectionForField "Enum.Kind.Kind" "kind" [] Api.Enum.Kind.decoder
 
 
-state : Field Api.Enum.State.State Api.Object.Account
+state : SelectionSet Api.Enum.State.State Api.Object.Account
 state =
-    Object.fieldDecoder "state" [] Api.Enum.State.decoder
+    Object.selectionForField "Enum.State.State" "state" [] Api.Enum.State.decoder
 
 
-balanceInCents : Field Float Api.Object.Account
+balanceInCents : SelectionSet Float Api.Object.Account
 balanceInCents =
-    Object.fieldDecoder "balanceInCents" [] Decode.float
+    Object.selectionForField "Float" "balanceInCents" [] Decode.float
 
 
-yearlyInterest : Field Float Api.Object.Account
+yearlyInterest : SelectionSet Float Api.Object.Account
 yearlyInterest =
-    Object.fieldDecoder "yearlyInterest" [] Decode.float
+    Object.selectionForField "Float" "yearlyInterest" [] Decode.float
 
 
 type alias TransactionsRequiredArguments =
     { since : Float }
 
 
-transactions : TransactionsRequiredArguments -> SelectionSet decodesTo Api.Object.Transaction -> Field (List decodesTo) Api.Object.Account
+transactions : TransactionsRequiredArguments -> SelectionSet decodesTo Api.Object.Transaction -> SelectionSet (List decodesTo) Api.Object.Account
 transactions requiredArgs object_ =
-    Object.selectionField "transactions" [ Argument.required "since" requiredArgs.since Encode.float ] object_ (identity >> Decode.list)
+    Object.selectionForCompositeField "transactions" [ Argument.required "since" requiredArgs.since Encode.float ] object_ (identity >> Decode.list)

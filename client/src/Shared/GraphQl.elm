@@ -7,7 +7,7 @@ import ApiPub.Object
 import ApiPub.Object.MutationError
 import Graphql.Http
 import Graphql.Operation exposing (RootMutation, RootQuery)
-import Graphql.SelectionSet exposing (SelectionSet, with)
+import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import RemoteData
 import Shared.Globals exposing (..)
 import Time exposing (Posix)
@@ -29,14 +29,14 @@ type alias MutationError =
 
 mutationErrorPublicSelection : SelectionSet MutationError ApiPub.Object.MutationError
 mutationErrorPublicSelection =
-    ApiPub.Object.MutationError.selection MutationError
+    SelectionSet.succeed MutationError
         |> with ApiPub.Object.MutationError.key
         |> with ApiPub.Object.MutationError.messages
 
 
 mutationErrorSelection : SelectionSet MutationError Api.Object.MutationError
 mutationErrorSelection =
-    Api.Object.MutationError.selection MutationError
+    SelectionSet.succeed MutationError
         |> with Api.Object.MutationError.key
         |> with Api.Object.MutationError.messages
 

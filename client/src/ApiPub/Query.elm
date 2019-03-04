@@ -2,14 +2,14 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module ApiPub.Query exposing (apiVersion, selection)
+module ApiPub.Query exposing (apiVersion)
 
 import ApiPub.InputObject
 import ApiPub.Interface
 import ApiPub.Object
 import ApiPub.Scalar
+import ApiPub.ScalarCodecs
 import ApiPub.Union
-import Graphql.Field as Field exposing (Field)
 import Graphql.Internal.Builder.Argument as Argument exposing (Argument)
 import Graphql.Internal.Builder.Object as Object
 import Graphql.Internal.Encode as Encode exposing (Value)
@@ -19,14 +19,6 @@ import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode exposing (Decoder)
 
 
-{-| Select fields to build up a top-level query. The request can be sent with
-functions from `Graphql.Http`.
--}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) RootQuery
-selection constructor =
-    Object.selection constructor
-
-
-apiVersion : Field String RootQuery
+apiVersion : SelectionSet String RootQuery
 apiVersion =
-    Object.fieldDecoder "apiVersion" [] Decode.string
+    Object.selectionForField "String" "apiVersion" [] Decode.string

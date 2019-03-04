@@ -2,34 +2,28 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module ApiPub.Object.MutationError exposing (key, messages, selection)
+module ApiPub.Object.MutationError exposing (key, messages)
 
 import ApiPub.InputObject
 import ApiPub.Interface
 import ApiPub.Object
 import ApiPub.Scalar
+import ApiPub.ScalarCodecs
 import ApiPub.Union
-import Graphql.Field as Field exposing (Field)
 import Graphql.Internal.Builder.Argument as Argument exposing (Argument)
 import Graphql.Internal.Builder.Object as Object
 import Graphql.Internal.Encode as Encode exposing (Value)
+import Graphql.Operation exposing (RootMutation, RootQuery, RootSubscription)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
 
 
-{-| Select fields to build up a SelectionSet for this object.
--}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) ApiPub.Object.MutationError
-selection constructor =
-    Object.selection constructor
-
-
-key : Field String ApiPub.Object.MutationError
+key : SelectionSet String ApiPub.Object.MutationError
 key =
-    Object.fieldDecoder "key" [] Decode.string
+    Object.selectionForField "String" "key" [] Decode.string
 
 
-messages : Field (List String) ApiPub.Object.MutationError
+messages : SelectionSet (List String) ApiPub.Object.MutationError
 messages =
-    Object.fieldDecoder "messages" [] (Decode.string |> Decode.list)
+    Object.selectionForField "(List String)" "messages" [] (Decode.string |> Decode.list)

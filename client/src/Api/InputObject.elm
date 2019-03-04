@@ -8,8 +8,8 @@ import Api.Enum.TransactionRequestState
 import Api.Interface
 import Api.Object
 import Api.Scalar
+import Api.ScalarCodecs
 import Api.Union
-import Graphql.Field as Field exposing (Field)
 import Graphql.Internal.Builder.Argument as Argument exposing (Argument)
 import Graphql.Internal.Builder.Object as Object
 import Graphql.Internal.Encode as Encode exposing (Value)
@@ -24,13 +24,17 @@ buildChangeAccountInterestInput required =
 
 
 type alias ChangeAccountInterestInputRequiredFields =
-    { accountId : Int, yearlyInterest : Float }
+    { accountId : Int
+    , yearlyInterest : Float
+    }
 
 
 {-| Type for the ChangeAccountInterestInput input object.
 -}
 type alias ChangeAccountInterestInput =
-    { accountId : Int, yearlyInterest : Float }
+    { accountId : Int
+    , yearlyInterest : Float
+    }
 
 
 {-| Encode a ChangeAccountInterestInput into a value that can be used as an argument.
@@ -52,7 +56,10 @@ buildCreateUserInput required fillOptionals =
 
 
 type alias CreateUserInputRequiredFields =
-    { username : String, name : String, password : String }
+    { username : String
+    , name : String
+    , password : String
+    }
 
 
 type alias CreateUserInputOptionalFields =
@@ -62,7 +69,11 @@ type alias CreateUserInputOptionalFields =
 {-| Type for the CreateUserInput input object.
 -}
 type alias CreateUserInput =
-    { email : OptionalArgument String, username : String, name : String, password : String }
+    { email : OptionalArgument String
+    , username : String
+    , name : String
+    , password : String
+    }
 
 
 {-| Encode a CreateUserInput into a value that can be used as an argument.
@@ -79,13 +90,17 @@ buildDepositInput required =
 
 
 type alias DepositInputRequiredFields =
-    { accountId : Int, cents : Int }
+    { accountId : Int
+    , cents : Int
+    }
 
 
 {-| Type for the DepositInput input object.
 -}
 type alias DepositInput =
-    { accountId : Int, cents : Int }
+    { accountId : Int
+    , cents : Int
+    }
 
 
 {-| Encode a DepositInput into a value that can be used as an argument.
@@ -125,13 +140,17 @@ buildRequestWithdrawalInput required =
 
 
 type alias RequestWithdrawalInputRequiredFields =
-    { accountId : Int, cents : Int }
+    { accountId : Int
+    , cents : Int
+    }
 
 
 {-| Type for the RequestWithdrawalInput input object.
 -}
 type alias RequestWithdrawalInput =
-    { accountId : Int, cents : Int }
+    { accountId : Int
+    , cents : Int
+    }
 
 
 {-| Encode a RequestWithdrawalInput into a value that can be used as an argument.
@@ -148,13 +167,17 @@ buildResolveTransactionRequestInput required =
 
 
 type alias ResolveTransactionRequestInputRequiredFields =
-    { transactionRequestId : Int, outcome : Api.Enum.TransactionRequestState.TransactionRequestState }
+    { transactionRequestId : Int
+    , outcome : Api.Enum.TransactionRequestState.TransactionRequestState
+    }
 
 
 {-| Type for the ResolveTransactionRequestInput input object.
 -}
 type alias ResolveTransactionRequestInput =
-    { transactionRequestId : Int, outcome : Api.Enum.TransactionRequestState.TransactionRequestState }
+    { transactionRequestId : Int
+    , outcome : Api.Enum.TransactionRequestState.TransactionRequestState
+    }
 
 
 {-| Encode a ResolveTransactionRequestInput into a value that can be used as an argument.
@@ -171,13 +194,17 @@ buildWithdrawalInput required =
 
 
 type alias WithdrawalInputRequiredFields =
-    { accountId : Int, cents : Int }
+    { accountId : Int
+    , cents : Int
+    }
 
 
 {-| Type for the WithdrawalInput input object.
 -}
 type alias WithdrawalInput =
-    { accountId : Int, cents : Int }
+    { accountId : Int
+    , cents : Int
+    }
 
 
 {-| Encode a WithdrawalInput into a value that can be used as an argument.

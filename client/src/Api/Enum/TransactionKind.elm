@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Enum.TransactionKind exposing (TransactionKind(..), decoder, toString)
+module Api.Enum.TransactionKind exposing (TransactionKind(..), decoder, list, toString)
 
 import Json.Decode as Decode exposing (Decoder)
 
@@ -11,6 +11,11 @@ type TransactionKind
     = Deposit
     | Withdrawal
     | Interest
+
+
+list : List TransactionKind
+list =
+    [ Deposit, Withdrawal, Interest ]
 
 
 decoder : Decoder TransactionKind

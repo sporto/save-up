@@ -2,34 +2,28 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.ArchiveUserResponse exposing (errors, selection, success)
+module Api.Object.ArchiveUserResponse exposing (errors, success)
 
 import Api.InputObject
 import Api.Interface
 import Api.Object
 import Api.Scalar
+import Api.ScalarCodecs
 import Api.Union
-import Graphql.Field as Field exposing (Field)
 import Graphql.Internal.Builder.Argument as Argument exposing (Argument)
 import Graphql.Internal.Builder.Object as Object
 import Graphql.Internal.Encode as Encode exposing (Value)
+import Graphql.Operation exposing (RootMutation, RootQuery, RootSubscription)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
 
 
-{-| Select fields to build up a SelectionSet for this object.
--}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.ArchiveUserResponse
-selection constructor =
-    Object.selection constructor
-
-
-success : Field Bool Api.Object.ArchiveUserResponse
+success : SelectionSet Bool Api.Object.ArchiveUserResponse
 success =
-    Object.fieldDecoder "success" [] Decode.bool
+    Object.selectionForField "Bool" "success" [] Decode.bool
 
 
-errors : SelectionSet decodesTo Api.Object.MutationError -> Field (List decodesTo) Api.Object.ArchiveUserResponse
+errors : SelectionSet decodesTo Api.Object.MutationError -> SelectionSet (List decodesTo) Api.Object.ArchiveUserResponse
 errors object_ =
-    Object.selectionField "errors" [] object_ (identity >> Decode.list)
+    Object.selectionForCompositeField "errors" [] object_ (identity >> Decode.list)

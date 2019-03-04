@@ -2,39 +2,33 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.ResolveTransactionRequestResponse exposing (errors, selection, success, transactionRequest)
+module Api.Object.ResolveTransactionRequestResponse exposing (errors, success, transactionRequest)
 
 import Api.InputObject
 import Api.Interface
 import Api.Object
 import Api.Scalar
+import Api.ScalarCodecs
 import Api.Union
-import Graphql.Field as Field exposing (Field)
 import Graphql.Internal.Builder.Argument as Argument exposing (Argument)
 import Graphql.Internal.Builder.Object as Object
 import Graphql.Internal.Encode as Encode exposing (Value)
+import Graphql.Operation exposing (RootMutation, RootQuery, RootSubscription)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
 
 
-{-| Select fields to build up a SelectionSet for this object.
--}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.ResolveTransactionRequestResponse
-selection constructor =
-    Object.selection constructor
-
-
-success : Field Bool Api.Object.ResolveTransactionRequestResponse
+success : SelectionSet Bool Api.Object.ResolveTransactionRequestResponse
 success =
-    Object.fieldDecoder "success" [] Decode.bool
+    Object.selectionForField "Bool" "success" [] Decode.bool
 
 
-errors : SelectionSet decodesTo Api.Object.MutationError -> Field (List decodesTo) Api.Object.ResolveTransactionRequestResponse
+errors : SelectionSet decodesTo Api.Object.MutationError -> SelectionSet (List decodesTo) Api.Object.ResolveTransactionRequestResponse
 errors object_ =
-    Object.selectionField "errors" [] object_ (identity >> Decode.list)
+    Object.selectionForCompositeField "errors" [] object_ (identity >> Decode.list)
 
 
-transactionRequest : SelectionSet decodesTo Api.Object.TransactionRequest -> Field (Maybe decodesTo) Api.Object.ResolveTransactionRequestResponse
+transactionRequest : SelectionSet decodesTo Api.Object.TransactionRequest -> SelectionSet (Maybe decodesTo) Api.Object.ResolveTransactionRequestResponse
 transactionRequest object_ =
-    Object.selectionField "transactionRequest" [] object_ (identity >> Decode.nullable)
+    Object.selectionForCompositeField "transactionRequest" [] object_ (identity >> Decode.nullable)

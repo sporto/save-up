@@ -4,7 +4,7 @@
 	"main": "index.js",
 	"license": "MIT",
 	"devDependencies": {
-		"@dillonkearns/elm-graphql": "^1.0.7",
+		"@dillonkearns/elm-graphql": "^3.2.0",
 		"@fortawesome/fontawesome-free": "^5.5.0",
 		"@types/invariant": "^2.2.29",
 		"@types/node": "^10.12.5",

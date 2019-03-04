@@ -6,7 +6,7 @@ import Api.Object
 import Api.Object.RequestWithdrawalResponse
 import Browser.Navigation as Nav
 import Graphql.Operation exposing (RootMutation, RootQuery)
-import Graphql.SelectionSet exposing (SelectionSet, with)
+import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, name, style, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
@@ -231,7 +231,7 @@ requestWithdrawMutation accountID cents =
         input =
             { accountId = accountID, cents = cents }
     in
-    Api.Mutation.selection identity
+    SelectionSet.succeed identity
         |> with
             (Api.Mutation.requestWithdraw
                 { input = input }
@@ -241,6 +241,6 @@ requestWithdrawMutation accountID cents =
 
 withdrawResponseSelection : SelectionSet Response Api.Object.RequestWithdrawalResponse
 withdrawResponseSelection =
-    Api.Object.RequestWithdrawalResponse.selection Response
+    SelectionSet.succeed Response
         |> with Api.Object.RequestWithdrawalResponse.success
         |> with (Api.Object.RequestWithdrawalResponse.errors GraphQl.mutationErrorSelection)

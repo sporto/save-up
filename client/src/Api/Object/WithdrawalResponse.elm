@@ -2,39 +2,33 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.WithdrawalResponse exposing (errors, selection, success, transaction)
+module Api.Object.WithdrawalResponse exposing (errors, success, transaction)
 
 import Api.InputObject
 import Api.Interface
 import Api.Object
 import Api.Scalar
+import Api.ScalarCodecs
 import Api.Union
-import Graphql.Field as Field exposing (Field)
 import Graphql.Internal.Builder.Argument as Argument exposing (Argument)
 import Graphql.Internal.Builder.Object as Object
 import Graphql.Internal.Encode as Encode exposing (Value)
+import Graphql.Operation exposing (RootMutation, RootQuery, RootSubscription)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
 
 
-{-| Select fields to build up a SelectionSet for this object.
--}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.WithdrawalResponse
-selection constructor =
-    Object.selection constructor
-
-
-success : Field Bool Api.Object.WithdrawalResponse
+success : SelectionSet Bool Api.Object.WithdrawalResponse
 success =
-    Object.fieldDecoder "success" [] Decode.bool
+    Object.selectionForField "Bool" "success" [] Decode.bool
 
 
-errors : SelectionSet decodesTo Api.Object.MutationError -> Field (List decodesTo) Api.Object.WithdrawalResponse
+errors : SelectionSet decodesTo Api.Object.MutationError -> SelectionSet (List decodesTo) Api.Object.WithdrawalResponse
 errors object_ =
-    Object.selectionField "errors" [] object_ (identity >> Decode.list)
+    Object.selectionForCompositeField "errors" [] object_ (identity >> Decode.list)
 
 
-transaction : SelectionSet decodesTo Api.Object.Transaction -> Field (Maybe decodesTo) Api.Object.WithdrawalResponse
+transaction : SelectionSet decodesTo Api.Object.Transaction -> SelectionSet (Maybe decodesTo) Api.Object.WithdrawalResponse
 transaction object_ =
-    Object.selectionField "transaction" [] object_ (identity >> Decode.nullable)
+    Object.selectionForCompositeField "transaction" [] object_ (identity >> Decode.nullable)

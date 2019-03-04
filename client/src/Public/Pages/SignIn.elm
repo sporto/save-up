@@ -6,7 +6,7 @@ import ApiPub.Object.SignInResponse
 import Browser
 import Debug
 import Graphql.Operation exposing (RootMutation, RootQuery)
-import Graphql.SelectionSet exposing (SelectionSet, with)
+import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, name, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
@@ -273,7 +273,7 @@ sendCreateSignInMutation context signUp =
 
 createSignInMutation : Form -> SelectionSet SignInResponse RootMutation
 createSignInMutation signIn =
-    ApiPub.Mutation.selection identity
+    SelectionSet.succeed identity
         |> with
             (ApiPub.Mutation.signIn
                 { signIn = signIn }
@@ -283,7 +283,7 @@ createSignInMutation signIn =
 
 signInResponseSelection : SelectionSet SignInResponse ApiPub.Object.SignInResponse
 signInResponseSelection =
-    ApiPub.Object.SignInResponse.selection SignInResponse
+    SelectionSet.succeed SignInResponse
         |> with ApiPub.Object.SignInResponse.success
         |> with (ApiPub.Object.SignInResponse.errors mutationErrorPublicSelection)
         |> with ApiPub.Object.SignInResponse.jwt

@@ -7,8 +7,8 @@ module ApiPub.InputObject exposing (ConfirmEmailInput, ConfirmEmailInputRequired
 import ApiPub.Interface
 import ApiPub.Object
 import ApiPub.Scalar
+import ApiPub.ScalarCodecs
 import ApiPub.Union
-import Graphql.Field as Field exposing (Field)
 import Graphql.Internal.Builder.Argument as Argument exposing (Argument)
 import Graphql.Internal.Builder.Object as Object
 import Graphql.Internal.Encode as Encode exposing (Value)
@@ -46,13 +46,21 @@ buildRedeemInvitationInput required =
 
 
 type alias RedeemInvitationInputRequiredFields =
-    { username : String, name : String, password : String, token : String }
+    { username : String
+    , name : String
+    , password : String
+    , token : String
+    }
 
 
 {-| Type for the RedeemInvitationInput input object.
 -}
 type alias RedeemInvitationInput =
-    { username : String, name : String, password : String, token : String }
+    { username : String
+    , name : String
+    , password : String
+    , token : String
+    }
 
 
 {-| Encode a RedeemInvitationInput into a value that can be used as an argument.
@@ -92,13 +100,17 @@ buildResetPasswordInput required =
 
 
 type alias ResetPasswordInputRequiredFields =
-    { token : String, password : String }
+    { token : String
+    , password : String
+    }
 
 
 {-| Type for the ResetPasswordInput input object.
 -}
 type alias ResetPasswordInput =
-    { token : String, password : String }
+    { token : String
+    , password : String
+    }
 
 
 {-| Encode a ResetPasswordInput into a value that can be used as an argument.
@@ -115,13 +127,17 @@ buildSignIn required =
 
 
 type alias SignInRequiredFields =
-    { usernameOrEmail : String, password : String }
+    { usernameOrEmail : String
+    , password : String
+    }
 
 
 {-| Type for the SignIn input object.
 -}
 type alias SignIn =
-    { usernameOrEmail : String, password : String }
+    { usernameOrEmail : String
+    , password : String
+    }
 
 
 {-| Encode a SignIn into a value that can be used as an argument.
@@ -138,13 +154,21 @@ buildSignUp required =
 
 
 type alias SignUpRequiredFields =
-    { name : String, username : String, email : String, password : String }
+    { name : String
+    , username : String
+    , email : String
+    , password : String
+    }
 
 
 {-| Type for the SignUp input object.
 -}
 type alias SignUp =
-    { name : String, username : String, email : String, password : String }
+    { name : String
+    , username : String
+    , email : String
+    , password : String
+    }
 
 
 {-| Encode a SignUp into a value that can be used as an argument.

@@ -8,9 +8,8 @@ import Api.Object.ArchiveUserResponse
 import Api.Object.UnarchiveUserResponse
 import Api.Object.User
 import Api.Query
-import Graphql.Field as Field
 import Graphql.Operation exposing (RootMutation, RootQuery)
-import Graphql.SelectionSet exposing (SelectionSet, hardcoded, with)
+import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, hardcoded, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
@@ -378,19 +377,19 @@ getData context =
 
 dataQuery : SelectionSet Data RootQuery
 dataQuery =
-    Api.Query.selection identity
+    SelectionSet.succeed identity
         |> with (Api.Query.admin adminNode)
 
 
 adminNode : SelectionSet Data Api.Object.Admin
 adminNode =
-    Api.Object.Admin.selection Data
+    SelectionSet.succeed Data
         |> with (Api.Object.Admin.investors investorNode)
 
 
 investorNode : SelectionSet Investor Api.Object.User
 investorNode =
-    Api.Object.User.selection Investor
+    SelectionSet.succeed Investor
         |> with Api.Object.User.id
         |> with (Api.Object.User.accounts accountNode)
         |> with Api.Object.User.name
@@ -400,9 +399,9 @@ investorNode =
 
 accountNode : SelectionSet Account Api.Object.Account
 accountNode =
-    Api.Object.Account.selection Account
+    SelectionSet.succeed Account
         |> with Api.Object.Account.id
-        |> with (Api.Object.Account.balanceInCents |> Field.map round)
+        |> with (Api.Object.Account.balanceInCents |> SelectionSet.map round)
         |> with Api.Object.Account.name
 
 
@@ -427,7 +426,7 @@ archiveMutationCmd context userID =
 
 archiveMutation : ID -> SelectionSet ArchiveUserResponse RootMutation
 archiveMutation userID =
-    Api.Mutation.selection identity
+    SelectionSet.succeed identity
         |> with
             (Api.Mutation.archiveUser
                 { userId = userID }
@@ -437,7 +436,7 @@ archiveMutation userID =
 
 archiveResponseSelection : SelectionSet ArchiveUserResponse Api.Object.ArchiveUserResponse
 archiveResponseSelection =
-    Api.Object.ArchiveUserResponse.selection ArchiveUserResponse
+    SelectionSet.succeed ArchiveUserResponse
         |> with Api.Object.ArchiveUserResponse.success
         |> with (Api.Object.ArchiveUserResponse.errors GraphQl.mutationErrorSelection)
 
@@ -463,7 +462,7 @@ unarchiveMutationCmd context userID =
 
 unarchiveMutation : ID -> SelectionSet UnarchiveUserResponse RootMutation
 unarchiveMutation userID =
-    Api.Mutation.selection identity
+    SelectionSet.succeed identity
         |> with
             (Api.Mutation.unarchiveUser
                 { userId = userID }
@@ -473,6 +472,6 @@ unarchiveMutation userID =
 
 unarchiveResponseSelection : SelectionSet UnarchiveUserResponse Api.Object.UnarchiveUserResponse
 unarchiveResponseSelection =
-    Api.Object.UnarchiveUserResponse.selection UnarchiveUserResponse
+    SelectionSet.succeed UnarchiveUserResponse
         |> with Api.Object.UnarchiveUserResponse.success
         |> with (Api.Object.UnarchiveUserResponse.errors GraphQl.mutationErrorSelection)

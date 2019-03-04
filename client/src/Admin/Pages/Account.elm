@@ -11,9 +11,8 @@ import Api.Object.Transaction
 import Api.Object.WithdrawalResponse
 import Api.Query
 import Browser.Navigation as Nav
-import Graphql.Field as Field
 import Graphql.Operation exposing (RootMutation, RootQuery)
-import Graphql.SelectionSet exposing (SelectionSet, with)
+import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, name, src, style, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
@@ -804,29 +803,29 @@ accountQueryCmd context accountID =
 
 accountQuery : ID -> SelectionSet Account RootQuery
 accountQuery accountID =
-    Api.Query.selection identity
+    SelectionSet.succeed identity
         |> with (Api.Query.admin <| adminNode accountID)
 
 
 adminNode : ID -> SelectionSet Account Api.Object.Admin
 adminNode accountID =
-    Api.Object.Admin.selection identity
+    SelectionSet.succeed identity
         |> with (Api.Object.Admin.account { id = accountID } accountSelection)
 
 
 accountSelection : SelectionSet Account Api.Object.Account
 accountSelection =
-    Api.Object.Account.selection Account
-        |> with (Api.Object.Account.balanceInCents |> Field.map round)
+    SelectionSet.succeed Account
+        |> with (Api.Object.Account.balanceInCents |> SelectionSet.map round)
         |> with (Api.Object.Account.transactions { since = 0 } transactionSelection)
         |> with Api.Object.Account.yearlyInterest
 
 
 transactionSelection : SelectionSet Transaction Api.Object.Transaction
 transactionSelection =
-    Api.Object.Transaction.selection Transaction
-        |> with (Api.Object.Transaction.createdAt |> Field.mapOrFail GraphQl.unwrapNaiveDateTime)
-        |> with (Api.Object.Transaction.balanceInCents |> Field.map round)
+    SelectionSet.succeed Transaction
+        |> with (Api.Object.Transaction.createdAt |> SelectionSet.mapOrFail GraphQl.unwrapNaiveDateTime)
+        |> with (Api.Object.Transaction.balanceInCents |> SelectionSet.map round)
 
 
 
@@ -850,7 +849,7 @@ depositMutationCmd context accountID cents =
 
 depositMutation : ID -> Int -> SelectionSet DepositResponse RootMutation
 depositMutation accountID cents =
-    Api.Mutation.selection identity
+    SelectionSet.succeed identity
         |> with
             (Api.Mutation.deposit
                 { input = { accountId = accountID, cents = cents } }
@@ -860,7 +859,7 @@ depositMutation accountID cents =
 
 depositResponseSelection : SelectionSet DepositResponse Api.Object.DepositResponse
 depositResponseSelection =
-    Api.Object.DepositResponse.selection DepositResponse
+    SelectionSet.succeed DepositResponse
         |> with Api.Object.DepositResponse.success
         |> with (Api.Object.DepositResponse.errors GraphQl.mutationErrorSelection)
 
@@ -886,7 +885,7 @@ withdrawMutationCmd context accountID cents =
 
 withdrawMutation : ID -> Int -> SelectionSet WithdrawalResponse RootMutation
 withdrawMutation accountID cents =
-    Api.Mutation.selection identity
+    SelectionSet.succeed identity
         |> with
             (Api.Mutation.withdraw
                 { input = { accountId = accountID, cents = cents } }
@@ -896,7 +895,7 @@ withdrawMutation accountID cents =
 
 withdrawResponseSelection : SelectionSet WithdrawalResponse Api.Object.WithdrawalResponse
 withdrawResponseSelection =
-    Api.Object.WithdrawalResponse.selection WithdrawalResponse
+    SelectionSet.succeed WithdrawalResponse
         |> with Api.Object.WithdrawalResponse.success
         |> with (Api.Object.WithdrawalResponse.errors GraphQl.mutationErrorSelection)
 
@@ -921,7 +920,7 @@ changeInterestMutation accountID rate =
         input =
             { accountId = accountID, yearlyInterest = rate }
     in
-    Api.Mutation.selection identity
+    SelectionSet.succeed identity
         |> with
             (Api.Mutation.changeAccountInterest
                 { input = input }
@@ -931,7 +930,7 @@ changeInterestMutation accountID rate =
 
 interestResponseSelection : SelectionSet ChangeAccountInterestResponse Api.Object.ChangeAccountInterestResponse
 interestResponseSelection =
-    Api.Object.ChangeAccountInterestResponse.selection ChangeAccountInterestResponse
+    SelectionSet.succeed ChangeAccountInterestResponse
         |> with Api.Object.ChangeAccountInterestResponse.success
         |> with (Api.Object.ChangeAccountInterestResponse.errors GraphQl.mutationErrorSelection)
         |> with (Api.Object.ChangeAccountInterestResponse.account accountSelection)

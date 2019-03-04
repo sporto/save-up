@@ -4,7 +4,7 @@ import Api.Mutation
 import Api.Object
 import Api.Object.InvitationResponse
 import Graphql.Operation exposing (RootMutation, RootQuery)
-import Graphql.SelectionSet exposing (SelectionSet, with)
+import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, name, style, type_, value)
 import Html.Events exposing (onInput, onSubmit)
@@ -212,7 +212,7 @@ createMutationCmd context email =
 
 createMutation : String -> SelectionSet InvitationResponse RootMutation
 createMutation email =
-    Api.Mutation.selection identity
+    SelectionSet.succeed identity
         |> with
             (Api.Mutation.inviteAdmin
                 { input = { email = email } }
@@ -222,6 +222,6 @@ createMutation email =
 
 invitationResponseSelection : SelectionSet InvitationResponse Api.Object.InvitationResponse
 invitationResponseSelection =
-    Api.Object.InvitationResponse.selection InvitationResponse
+    SelectionSet.succeed InvitationResponse
         |> with Api.Object.InvitationResponse.success
         |> with (Api.Object.InvitationResponse.errors mutationErrorSelection)

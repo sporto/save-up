@@ -2,55 +2,49 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.Transaction exposing (accountId, amountInCents, balanceInCents, createdAt, id, kind, selection)
+module Api.Object.Transaction exposing (accountId, amountInCents, balanceInCents, createdAt, id, kind)
 
 import Api.Enum.TransactionKind
 import Api.InputObject
 import Api.Interface
 import Api.Object
 import Api.Scalar
+import Api.ScalarCodecs
 import Api.Union
-import Graphql.Field as Field exposing (Field)
 import Graphql.Internal.Builder.Argument as Argument exposing (Argument)
 import Graphql.Internal.Builder.Object as Object
 import Graphql.Internal.Encode as Encode exposing (Value)
+import Graphql.Operation exposing (RootMutation, RootQuery, RootSubscription)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
 
 
-{-| Select fields to build up a SelectionSet for this object.
--}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.Transaction
-selection constructor =
-    Object.selection constructor
-
-
-id : Field Int Api.Object.Transaction
+id : SelectionSet Int Api.Object.Transaction
 id =
-    Object.fieldDecoder "id" [] Decode.int
+    Object.selectionForField "Int" "id" [] Decode.int
 
 
-createdAt : Field Api.Scalar.NaiveDateTime Api.Object.Transaction
+createdAt : SelectionSet Api.ScalarCodecs.NaiveDateTime Api.Object.Transaction
 createdAt =
-    Object.fieldDecoder "createdAt" [] (Object.scalarDecoder |> Decode.map Api.Scalar.NaiveDateTime)
+    Object.selectionForField "ScalarCodecs.NaiveDateTime" "createdAt" [] (Api.ScalarCodecs.codecs |> Api.Scalar.unwrapCodecs |> .codecNaiveDateTime |> .decoder)
 
 
-accountId : Field Int Api.Object.Transaction
+accountId : SelectionSet Int Api.Object.Transaction
 accountId =
-    Object.fieldDecoder "accountId" [] Decode.int
+    Object.selectionForField "Int" "accountId" [] Decode.int
 
 
-kind : Field Api.Enum.TransactionKind.TransactionKind Api.Object.Transaction
+kind : SelectionSet Api.Enum.TransactionKind.TransactionKind Api.Object.Transaction
 kind =
-    Object.fieldDecoder "kind" [] Api.Enum.TransactionKind.decoder
+    Object.selectionForField "Enum.TransactionKind.TransactionKind" "kind" [] Api.Enum.TransactionKind.decoder
 
 
-amountInCents : Field Float Api.Object.Transaction
+amountInCents : SelectionSet Float Api.Object.Transaction
 amountInCents =
-    Object.fieldDecoder "amountInCents" [] Decode.float
+    Object.selectionForField "Float" "amountInCents" [] Decode.float
 
 
-balanceInCents : Field Float Api.Object.Transaction
+balanceInCents : SelectionSet Float Api.Object.Transaction
 balanceInCents =
-    Object.fieldDecoder "balanceInCents" [] Decode.float
+    Object.selectionForField "Float" "balanceInCents" [] Decode.float

@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Enum.State exposing (State(..), decoder, toString)
+module Api.Enum.State exposing (State(..), decoder, list, toString)
 
 import Json.Decode as Decode exposing (Decoder)
 
@@ -10,6 +10,11 @@ import Json.Decode as Decode exposing (Decoder)
 type State
     = Active
     | Archived
+
+
+list : List State
+list =
+    [ Active, Archived ]
 
 
 decoder : Decoder State

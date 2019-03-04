@@ -2,38 +2,32 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Object.Investor exposing (AccountRequiredArguments, account, accounts, selection)
+module Api.Object.Investor exposing (AccountRequiredArguments, account, accounts)
 
 import Api.InputObject
 import Api.Interface
 import Api.Object
 import Api.Scalar
+import Api.ScalarCodecs
 import Api.Union
-import Graphql.Field as Field exposing (Field)
 import Graphql.Internal.Builder.Argument as Argument exposing (Argument)
 import Graphql.Internal.Builder.Object as Object
 import Graphql.Internal.Encode as Encode exposing (Value)
+import Graphql.Operation exposing (RootMutation, RootQuery, RootSubscription)
 import Graphql.OptionalArgument exposing (OptionalArgument(..))
 import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode
 
 
-{-| Select fields to build up a SelectionSet for this object.
--}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) Api.Object.Investor
-selection constructor =
-    Object.selection constructor
-
-
-accounts : SelectionSet decodesTo Api.Object.Account -> Field (List decodesTo) Api.Object.Investor
+accounts : SelectionSet decodesTo Api.Object.Account -> SelectionSet (List decodesTo) Api.Object.Investor
 accounts object_ =
-    Object.selectionField "accounts" [] object_ (identity >> Decode.list)
+    Object.selectionForCompositeField "accounts" [] object_ (identity >> Decode.list)
 
 
 type alias AccountRequiredArguments =
     { id : Int }
 
 
-account : AccountRequiredArguments -> SelectionSet decodesTo Api.Object.Account -> Field decodesTo Api.Object.Investor
+account : AccountRequiredArguments -> SelectionSet decodesTo Api.Object.Account -> SelectionSet decodesTo Api.Object.Investor
 account requiredArgs object_ =
-    Object.selectionField "account" [ Argument.required "id" requiredArgs.id Encode.int ] object_ identity
+    Object.selectionForCompositeField "account" [ Argument.required "id" requiredArgs.id Encode.int ] object_ identity

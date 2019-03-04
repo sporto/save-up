@@ -5,7 +5,7 @@ import ApiPub.Mutation
 import ApiPub.Object
 import ApiPub.Object.RequestPasswordResetResponse
 import Graphql.Operation exposing (RootMutation, RootQuery)
-import Graphql.SelectionSet exposing (SelectionSet, with)
+import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, name, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
@@ -200,7 +200,7 @@ sendMutation context input =
 
 mutation : RequestPasswordResetInput -> SelectionSet RequestPasswordResetResponse RootMutation
 mutation input =
-    ApiPub.Mutation.selection identity
+    SelectionSet.succeed identity
         |> with
             (ApiPub.Mutation.requestPasswordReset
                 { input = input }
@@ -210,7 +210,7 @@ mutation input =
 
 responseSelection : SelectionSet RequestPasswordResetResponse ApiPub.Object.RequestPasswordResetResponse
 responseSelection =
-    ApiPub.Object.RequestPasswordResetResponse.selection
+    SelectionSet.succeed
         RequestPasswordResetResponse
         |> with ApiPub.Object.RequestPasswordResetResponse.success
         |> with (ApiPub.Object.RequestPasswordResetResponse.errors mutationErrorPublicSelection)

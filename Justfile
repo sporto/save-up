@@ -8,6 +8,7 @@ net-login:
 	netlifyctl login
 
 net-deploy:
+	just client/build
 	netlifyctl deploy
 
 cypress:

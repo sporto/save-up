@@ -14,10 +14,9 @@ import Api.Query
 import Browser.Navigation as Nav
 import Dataset
 import Dict exposing (Dict)
-import Graphql.Field as Field
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.OptionalArgument as OptionalArgument
-import Graphql.SelectionSet exposing (SelectionSet, with)
+import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, name, src, style, type_, value)
 import Html.Events exposing (onInput, onSubmit)
@@ -352,35 +351,35 @@ dataCmd context =
 
 dataQuery : SelectionSet Data RootQuery
 dataQuery =
-    Api.Query.selection identity
+    SelectionSet.succeed identity
         |> with (Api.Query.admin adminNode)
 
 
 adminNode : SelectionSet Data Api.Object.Admin
 adminNode =
-    Api.Object.Admin.selection Data
+    SelectionSet.succeed Data
         |> with (Api.Object.Admin.pendingRequests requestSelection)
 
 
 requestSelection : SelectionSet PendingRequest Api.Object.TransactionRequest
 requestSelection =
-    Api.Object.TransactionRequest.selection PendingRequest
+    SelectionSet.succeed PendingRequest
         |> with Api.Object.TransactionRequest.id
         |> with Api.Object.TransactionRequest.state
-        |> with (Api.Object.TransactionRequest.amountInCents |> Field.map round)
+        |> with (Api.Object.TransactionRequest.amountInCents |> SelectionSet.map round)
         |> with Api.Object.TransactionRequest.kind
         |> with (Api.Object.TransactionRequest.account accountSelection)
 
 
 accountSelection : SelectionSet String Api.Object.Account
 accountSelection =
-    Api.Object.Account.selection identity
+    SelectionSet.succeed identity
         |> with (Api.Object.Account.user userSelection)
 
 
 userSelection : SelectionSet String Api.Object.User
 userSelection =
-    Api.Object.User.selection identity
+    SelectionSet.succeed identity
         |> with Api.Object.User.name
 
 
@@ -413,7 +412,7 @@ resolveMutation id outcome =
             , outcome = outcome
             }
     in
-    Api.Mutation.selection identity
+    SelectionSet.succeed identity
         |> with
             (Api.Mutation.resolveTransactionRequest
                 { input = input }
@@ -423,7 +422,7 @@ resolveMutation id outcome =
 
 resolveResponseSelection : SelectionSet ResolveTransactionRequestResponse Api.Object.ResolveTransactionRequestResponse
 resolveResponseSelection =
-    Api.Object.ResolveTransactionRequestResponse.selection ResolveTransactionRequestResponse
+    SelectionSet.succeed ResolveTransactionRequestResponse
         |> with Api.Object.ResolveTransactionRequestResponse.success
         |> with (Api.Object.ResolveTransactionRequestResponse.errors mutationErrorSelection)
         |> with (Api.Object.ResolveTransactionRequestResponse.transactionRequest requestSelection)

@@ -6,7 +6,7 @@ import ApiPub.Object
 import ApiPub.Object.RedeemInvitationResponse
 import Browser
 import Graphql.Operation exposing (RootMutation, RootQuery)
-import Graphql.SelectionSet exposing (SelectionSet, with)
+import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, name, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
@@ -235,7 +235,7 @@ createRedeemMutation signUp invitationToken =
             , token = invitationToken
             }
     in
-    ApiPub.Mutation.selection identity
+    SelectionSet.succeed identity
         |> with
             (ApiPub.Mutation.redeemInvitation
                 { input = input }
@@ -245,7 +245,7 @@ createRedeemMutation signUp invitationToken =
 
 redeemResponseSelection : SelectionSet RedeemInvitationResponse ApiPub.Object.RedeemInvitationResponse
 redeemResponseSelection =
-    ApiPub.Object.RedeemInvitationResponse.selection RedeemInvitationResponse
+    SelectionSet.succeed RedeemInvitationResponse
         |> with ApiPub.Object.RedeemInvitationResponse.success
         |> with (ApiPub.Object.RedeemInvitationResponse.errors mutationErrorPublicSelection)
         |> with ApiPub.Object.RedeemInvitationResponse.jwt

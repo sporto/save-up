@@ -2,7 +2,7 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Enum.TransactionRequestState exposing (TransactionRequestState(..), decoder, toString)
+module Api.Enum.TransactionRequestState exposing (TransactionRequestState(..), decoder, list, toString)
 
 import Json.Decode as Decode exposing (Decoder)
 
@@ -11,6 +11,11 @@ type TransactionRequestState
     = Pending
     | Approved
     | Rejected
+
+
+list : List TransactionRequestState
+list =
+    [ Pending, Approved, Rejected ]
 
 
 decoder : Decoder TransactionRequestState

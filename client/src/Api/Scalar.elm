@@ -2,8 +2,49 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Scalar exposing (NaiveDateTime(..))
+module Api.Scalar exposing (Codecs, NaiveDateTime(..), defaultCodecs, defineCodecs, unwrapCodecs, unwrapEncoder)
+
+import Graphql.Codec exposing (Codec)
+import Graphql.Internal.Builder.Object as Object
+import Graphql.Internal.Encode
+import Json.Decode as Decode exposing (Decoder)
+import Json.Encode as Encode
 
 
 type NaiveDateTime
     = NaiveDateTime String
+
+
+defineCodecs :
+    { codecNaiveDateTime : Codec valueNaiveDateTime }
+    -> Codecs valueNaiveDateTime
+defineCodecs definitions =
+    Codecs definitions
+
+
+unwrapCodecs :
+    Codecs valueNaiveDateTime
+    -> { codecNaiveDateTime : Codec valueNaiveDateTime }
+unwrapCodecs (Codecs unwrappedCodecs) =
+    unwrappedCodecs
+
+
+unwrapEncoder getter (Codecs unwrappedCodecs) =
+    (unwrappedCodecs |> getter |> .encoder) >> Graphql.Internal.Encode.fromJson
+
+
+type Codecs valueNaiveDateTime
+    = Codecs (RawCodecs valueNaiveDateTime)
+
+
+type alias RawCodecs valueNaiveDateTime =
+    { codecNaiveDateTime : Codec valueNaiveDateTime }
+
+
+defaultCodecs : RawCodecs NaiveDateTime
+defaultCodecs =
+    { codecNaiveDateTime =
+        { encoder = \(NaiveDateTime raw) -> Encode.string raw
+        , decoder = Object.scalarDecoder |> Decode.map NaiveDateTime
+        }
+    }

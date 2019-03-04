@@ -6,7 +6,7 @@ import ApiPub.Object
 import ApiPub.Object.SignUpResponse
 import Browser
 import Graphql.Operation exposing (RootMutation, RootQuery)
-import Graphql.SelectionSet exposing (SelectionSet, with)
+import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, name, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
@@ -295,7 +295,7 @@ sendCreateSignUpMutation context form =
 
 createSignUpMutation : SignUp -> SelectionSet SignUpResponse RootMutation
 createSignUpMutation form =
-    ApiPub.Mutation.selection identity
+    SelectionSet.succeed identity
         |> with
             (ApiPub.Mutation.signUp
                 { signUp = form }
@@ -305,7 +305,7 @@ createSignUpMutation form =
 
 formResponseSelection : SelectionSet SignUpResponse ApiPub.Object.SignUpResponse
 formResponseSelection =
-    ApiPub.Object.SignUpResponse.selection SignUpResponse
+    SelectionSet.succeed SignUpResponse
         |> with ApiPub.Object.SignUpResponse.success
         |> with (ApiPub.Object.SignUpResponse.errors mutationErrorPublicSelection)
         |> with ApiPub.Object.SignUpResponse.jwt

@@ -6,10 +6,9 @@ import Api.Object
 import Api.Object.CreateUserResponse
 import Api.Object.User
 import Browser.Navigation as Nav
-import Graphql.Field as Field
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.OptionalArgument as OptionalArgument
-import Graphql.SelectionSet exposing (SelectionSet, with)
+import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, name, src, style, type_, value)
 import Html.Events exposing (onInput, onSubmit)
@@ -314,7 +313,7 @@ createMutationCmd context input =
 
 createMutation : CreateUserInput -> SelectionSet CreateUserResponse RootMutation
 createMutation input =
-    Api.Mutation.selection identity
+    SelectionSet.succeed identity
         |> with
             (Api.Mutation.createUser
                 { input = input }
@@ -324,7 +323,7 @@ createMutation input =
 
 createUserResponseSelection : SelectionSet CreateUserResponse Api.Object.CreateUserResponse
 createUserResponseSelection =
-    Api.Object.CreateUserResponse.selection CreateUserResponse
+    SelectionSet.succeed CreateUserResponse
         |> with Api.Object.CreateUserResponse.success
         |> with (Api.Object.CreateUserResponse.errors mutationErrorSelection)
         |> with (Api.Object.CreateUserResponse.user userSelection)
@@ -332,5 +331,5 @@ createUserResponseSelection =
 
 userSelection : SelectionSet User Api.Object.User
 userSelection =
-    Api.Object.User.selection User
+    SelectionSet.succeed User
         |> with Api.Object.User.name

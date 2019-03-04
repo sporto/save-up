@@ -2,14 +2,14 @@
 -- https://github.com/dillonkearns/elm-graphql
 
 
-module Api.Query exposing (admin, apiVersion, investor, selection, timezones)
+module Api.Query exposing (admin, apiVersion, investor, timezones)
 
 import Api.InputObject
 import Api.Interface
 import Api.Object
 import Api.Scalar
+import Api.ScalarCodecs
 import Api.Union
-import Graphql.Field as Field exposing (Field)
 import Graphql.Internal.Builder.Argument as Argument exposing (Argument)
 import Graphql.Internal.Builder.Object as Object
 import Graphql.Internal.Encode as Encode exposing (Value)
@@ -19,29 +19,21 @@ import Graphql.SelectionSet exposing (SelectionSet)
 import Json.Decode as Decode exposing (Decoder)
 
 
-{-| Select fields to build up a top-level query. The request can be sent with
-functions from `Graphql.Http`.
--}
-selection : (a -> constructor) -> SelectionSet (a -> constructor) RootQuery
-selection constructor =
-    Object.selection constructor
-
-
-apiVersion : Field String RootQuery
+apiVersion : SelectionSet String RootQuery
 apiVersion =
-    Object.fieldDecoder "apiVersion" [] Decode.string
+    Object.selectionForField "String" "apiVersion" [] Decode.string
 
 
-admin : SelectionSet decodesTo Api.Object.Admin -> Field decodesTo RootQuery
+admin : SelectionSet decodesTo Api.Object.Admin -> SelectionSet decodesTo RootQuery
 admin object_ =
-    Object.selectionField "admin" [] object_ identity
+    Object.selectionForCompositeField "admin" [] object_ identity
 
 
-investor : SelectionSet decodesTo Api.Object.Investor -> Field decodesTo RootQuery
+investor : SelectionSet decodesTo Api.Object.Investor -> SelectionSet decodesTo RootQuery
 investor object_ =
-    Object.selectionField "investor" [] object_ identity
+    Object.selectionForCompositeField "investor" [] object_ identity
 
 
-timezones : Field (List String) RootQuery
+timezones : SelectionSet (List String) RootQuery
 timezones =
-    Object.fieldDecoder "timezones" [] (Decode.string |> Decode.list)
+    Object.selectionForField "(List String)" "timezones" [] (Decode.string |> Decode.list)
