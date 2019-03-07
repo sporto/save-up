@@ -1017,6 +1017,7 @@ dependencies = [
  "aws_lambda_events 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "chrono 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "chrono-tz 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "env_logger 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "futures 0.1.25 (registry+https://github.com/rust-lang/crates.io-index)",
  "lambda_runtime 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
