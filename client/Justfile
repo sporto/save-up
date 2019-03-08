@@ -22,8 +22,9 @@ elm-outdated:
 test:
 	npx elm-test
 
+# This builds the bundle for production in `./dist`
 build:
-	npx parcel build src/app.html
+	env NODE_ENV=production API_HOST=http://51.15.65.131 npx parcel build src/app.html
 
 start:
 	npx parcel -p 8080 src/app.html
