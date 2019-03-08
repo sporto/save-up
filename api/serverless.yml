@@ -9,10 +9,16 @@ provider:
   name: aws
   apiName: save-up-api
   stackName: save-up-api
-  region: ap-southeast-2
+  region: us-east-1
   runtime: rust
   environment:
     SYSTEM_EMAIL: ${env:SYSTEM_EMAIL}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - ses:SendEmail
+        - ses:SendRawEmail
+      Resource: "arn:aws:ses:us-east-1:*:*"
 
 plugins:
   # this adds informs servleress to use
