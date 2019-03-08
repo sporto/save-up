@@ -270,7 +270,7 @@ fn get_config() -> Result<Config, Error> {
 mod tests {
 	use super::*;
 	use chrono::prelude::*;
-	use lambda::event::sns::{SnsEntity, SnsEvent, SnsEventRecord};
+	use aws_lambda_events::event::sns::{SnsEntity, SnsEvent, SnsEventRecord};
 	use std::collections::HashMap;
 
 	fn build_event(message: &str) -> SnsEvent {
@@ -337,4 +337,17 @@ mod tests {
 
 		assert_eq!(result, intermediate)
 	}
+
+	// #[test]
+	// fn it_can_send() {
+	// 	let email_kind = EmailKind::Invite {
+	// 		inviter_name:   "sam@sample.com".to_owned(),
+	// 		email:          "sebasporto@gmail.com".to_owned(),
+	// 		invitation_url: "xyz".to_owned(),
+	// 	};
+
+	// 	let html = "Hello";
+
+	// 	send_email(&email_kind, &html).expect("Send")
+	// }
 }
