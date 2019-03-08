@@ -1,4 +1,11 @@
-module UI.Boilerplate exposing (Model, Msg, init, subscriptions, update, view)
+module UI.Boilerplate exposing
+    ( Model
+    , Msg
+    , init
+    , subscriptions
+    , update
+    , view
+    )
 
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet, with)

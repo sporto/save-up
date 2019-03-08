@@ -1,4 +1,15 @@
-module Shared.Actions exposing (Action(..), Actions, addErrorNotification, addNotification, addSuccessNotification, batch, endSession, map, none, startSession)
+module Shared.Actions exposing
+    ( Action(..)
+    , Actions
+    , addErrorNotification
+    , addNotification
+    , addSuccessNotification
+    , batch
+    , endSession
+    , map
+    , none
+    , startSession
+    )
 
 import Notifications
 import Shared.Css as Css

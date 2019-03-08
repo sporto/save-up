@@ -1,4 +1,11 @@
-module Admin.Pages.Home exposing (Model, Msg, init, subscriptions, update, view)
+module Admin.Pages.Home exposing
+    ( Model
+    , Msg
+    , init
+    , subscriptions
+    , update
+    , view
+    )
 
 import Api.Mutation
 import Api.Object

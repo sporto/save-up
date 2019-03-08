@@ -1,4 +1,8 @@
-module UI.Empty exposing (graphError, loading, noData)
+module UI.Empty exposing
+    ( graphError
+    , loading
+    , noData
+    )
 
 import Html exposing (..)
 import Html.Attributes exposing (class)

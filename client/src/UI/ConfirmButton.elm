@@ -1,4 +1,8 @@
-module UI.ConfirmButton exposing (Args, State(..), view)
+module UI.ConfirmButton exposing
+    ( Args
+    , State(..)
+    , view
+    )
 
 import Html exposing (..)
 import Html.Attributes exposing (class)

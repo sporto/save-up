@@ -1,4 +1,16 @@
-module UI.Forms exposing (Args, form_, isValidEmail, mustBeEmail, mutationError, set, validateAmount, verifyEmail, verifyName, verifyPassword, verifyUsername)
+module UI.Forms exposing
+    ( Args
+    , form_
+    , isValidEmail
+    , mustBeEmail
+    , mutationError
+    , set
+    , validateAmount
+    , verifyEmail
+    , verifyName
+    , verifyPassword
+    , verifyUsername
+    )
 
 import Html exposing (..)
 import Html.Attributes exposing (class)

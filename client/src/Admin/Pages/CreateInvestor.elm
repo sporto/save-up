@@ -1,4 +1,11 @@
-module Admin.Pages.CreateInvestor exposing (Model, Msg, init, subscriptions, update, view)
+module Admin.Pages.CreateInvestor exposing
+    ( Model
+    , Msg
+    , init
+    , subscriptions
+    , update
+    , view
+    )
 
 import Api.InputObject exposing (CreateUserInput)
 import Api.Mutation

@@ -1,4 +1,11 @@
-module Admin exposing (Msg, Page, initCurrentPage, subscriptions, update, view)
+module Admin exposing
+    ( Msg
+    , Page
+    , initCurrentPage
+    , subscriptions
+    , update
+    , view
+    )
 
 import Admin.Pages.Account as Account
 import Admin.Pages.CreateInvestor as CreateInvestor

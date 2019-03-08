@@ -1,4 +1,7 @@
-module UI.Navigation exposing (logo, signOut)
+module UI.Navigation exposing
+    ( logo
+    , signOut
+    )
 
 import Html exposing (..)
 import Html.Attributes exposing (class, href)

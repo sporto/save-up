@@ -1,4 +1,7 @@
-module UI.Flash exposing (error, success)
+module UI.Flash exposing
+    ( error
+    , success
+    )
 
 import Html exposing (..)
 import Html.Attributes exposing (class)

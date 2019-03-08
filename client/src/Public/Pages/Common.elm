@@ -1,4 +1,7 @@
-module Public.Pages.Common exposing (LayoutArgs, layout)
+module Public.Pages.Common exposing
+    ( LayoutArgs
+    , layout
+    )
 
 import Html exposing (..)
 import Html.Attributes exposing (class)

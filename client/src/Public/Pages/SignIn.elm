@@ -1,4 +1,11 @@
-module Public.Pages.SignIn exposing (Model, Msg, init, subscriptions, update, view)
+module Public.Pages.SignIn exposing
+    ( Model
+    , Msg
+    , init
+    , subscriptions
+    , update
+    , view
+    )
 
 import ApiPub.Mutation
 import ApiPub.Object

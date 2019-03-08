@@ -1,4 +1,10 @@
-module Shared.Return3 exposing (andThen, mapAll, mapModel, mapMsg, noOp)
+module Shared.Return3 exposing
+    ( andThen
+    , mapAll
+    , mapModel
+    , mapMsg
+    , noOp
+    )
 
 import Shared.Actions as Actions
 

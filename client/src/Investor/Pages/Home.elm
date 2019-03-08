@@ -1,4 +1,11 @@
-module Investor.Pages.Home exposing (Model, Msg, init, subscriptions, update, view)
+module Investor.Pages.Home exposing
+    ( Model
+    , Msg
+    , init
+    , subscriptions
+    , update
+    , view
+    )
 
 import Api.Object
 import Api.Object.Account

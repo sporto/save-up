@@ -1,4 +1,11 @@
-module Investor.Pages.RequestWithdrawal exposing (Model, Msg, init, subscriptions, update, view)
+module Investor.Pages.RequestWithdrawal exposing
+    ( Model
+    , Msg
+    , init
+    , subscriptions
+    , update
+    , view
+    )
 
 import Api.InputObject
 import Api.Mutation

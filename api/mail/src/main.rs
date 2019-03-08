@@ -2,13 +2,13 @@
 extern crate failure;
 
 use askama::Template;
+use aws_lambda_events::event::sns::SnsEvent;
 use failure::Error;
+use lambda_runtime::{error::HandlerError, lambda, Context};
 use rusoto_core::Region;
 use rusoto_ses::{Body, Content, Destination, Message, SendEmailRequest, Ses, SesClient};
-use std::{default::Default, env, time::Duration};
 use shared::email_kinds::EmailKind;
-use lambda_runtime::{error::HandlerError, lambda, Context};
-use aws_lambda_events::event::sns::SnsEvent;
+use std::{default::Default, env, time::Duration};
 
 #[derive(Template)]
 #[template(path = "invite.html")]
@@ -63,7 +63,7 @@ struct ResetPasswordTemplate<'a> {
 }
 
 fn main() {
-    lambda!(handler)
+	lambda!(handler)
 }
 
 fn handler(event: SnsEvent, _: Context) -> Result<String, HandlerError> {
@@ -269,8 +269,8 @@ fn get_config() -> Result<Config, Error> {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use chrono::prelude::*;
 	use aws_lambda_events::event::sns::{SnsEntity, SnsEvent, SnsEventRecord};
+	use chrono::prelude::*;
 	use std::collections::HashMap;
 
 	fn build_event(message: &str) -> SnsEvent {

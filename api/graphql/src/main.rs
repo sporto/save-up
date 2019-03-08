@@ -27,12 +27,12 @@ extern crate env_logger;
 
 use rocket::{
 	config::{Config, Environment, Value},
+	fairing::AdHoc,
 	http::{Method, Status},
 	outcome,
 	request::{self, FromRequest, Request},
 	Rocket, State,
 };
-use rocket::fairing::AdHoc;
 use std::collections::HashMap;
 
 use rocket_cors::{AllowedHeaders, AllowedOrigins};
@@ -42,7 +42,7 @@ mod graph;
 mod models;
 mod utils;
 
-embed_migrations!();	
+embed_migrations!();
 
 struct JWT(String);
 
@@ -130,7 +130,7 @@ fn run_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {
 		Err(e) => {
 			error!("Failed to run database migrations: {:?}", e);
 			Err(rocket)
-		}
+		},
 	}
 }
 

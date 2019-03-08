@@ -1,4 +1,11 @@
-module Admin.Pages.Requests exposing (Model, Msg, init, subscriptions, update, view)
+module Admin.Pages.Requests exposing
+    ( Model
+    , Msg
+    , init
+    , subscriptions
+    , update
+    , view
+    )
 
 import Api.Enum.TransactionKind exposing (TransactionKind)
 import Api.Enum.TransactionRequestState exposing (TransactionRequestState)

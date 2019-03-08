@@ -1,4 +1,8 @@
-module Shared.Return exposing (andThen, mapBoth, mapModel)
+module Shared.Return exposing
+    ( andThen
+    , mapBoth
+    , mapModel
+    )
 
 
 type alias R model msg =

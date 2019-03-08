@@ -1,4 +1,7 @@
-module Shared.AppLocation exposing (AppLocation, fromUrl)
+module Shared.AppLocation exposing
+    ( AppLocation
+    , fromUrl
+    )
 
 import Shared.Routes as Routes exposing (Route)
 import Url exposing (Url)

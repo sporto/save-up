@@ -1,4 +1,11 @@
-module Shared.Globals exposing (Authentication, Context, Flags, PublicContext, Role(..), TokenData)
+module Shared.Globals exposing
+    ( Authentication
+    , Context
+    , Flags
+    , PublicContext
+    , Role(..)
+    , TokenData
+    )
 
 import Browser.Navigation as Nav
 import Shared.AppLocation exposing (AppLocation)

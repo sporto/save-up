@@ -1,4 +1,7 @@
-module Shared.Css exposing (molecules, notificationArgs)
+module Shared.Css exposing
+    ( molecules
+    , notificationArgs
+    )
 
 import Notifications
 

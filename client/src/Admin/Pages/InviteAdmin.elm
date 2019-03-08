@@ -1,4 +1,13 @@
-module Admin.Pages.InviteAdmin exposing (InvitationResponse, Model, Msg(..), init, newModel, subscriptions, update, view)
+module Admin.Pages.InviteAdmin exposing
+    ( InvitationResponse
+    , Model
+    , Msg(..)
+    , init
+    , newModel
+    , subscriptions
+    , update
+    , view
+    )
 
 import Api.Mutation
 import Api.Object

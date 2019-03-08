@@ -1,4 +1,11 @@
-module Public.Pages.RequestPassword exposing (Model, Msg, init, subscriptions, update, view)
+module Public.Pages.RequestPassword exposing
+    ( Model
+    , Msg
+    , init
+    , subscriptions
+    , update
+    , view
+    )
 
 import ApiPub.InputObject exposing (RequestPasswordResetInput)
 import ApiPub.Mutation
