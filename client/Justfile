@@ -25,10 +25,10 @@ test:
 # This builds the bundle for production in `./dist`
 build:
 	rm -rf ./dist
-	env API_HOST=$API_HOST_PROD npx parcel build src/app.html
+	env API_HOST=$API_HOST_PROD npx parcel build src/index.html
 
 start:
-	npx parcel -p 8080 src/app.html
+	npx parcel -p 8080 src/index.html
 
 # This has to be the same port as the FE
 # Otherwise it won't find the token in LS

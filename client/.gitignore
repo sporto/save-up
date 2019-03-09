@@ -1,6 +1,6 @@
 node_modules
 elm-stuff
-index.html
+./index.html
 dist
 dist-dev
 dist-prod
