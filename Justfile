@@ -5,11 +5,11 @@ graphiql:
 	hivemind Procfile.graphiql
 
 net-login:
-	netlifyctl login
+	netlify login
 
-net-deploy:
+deploy-client:
 	just client/build
-	netlifyctl deploy
+	netlify deploy --prod --dir=./client/dist
 
 cypress:
 	npx cypress open

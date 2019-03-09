@@ -1,6 +1,0 @@
-[Settings]
-  ID = "493af08d-b244-4cb2-afcd-437c4968a924"
-
-[Build]
-  Publish = "client/dist"
-  Functions = ""
