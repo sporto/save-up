@@ -34,3 +34,9 @@ start:
 # Otherwise it won't find the token in LS
 graphiql:
 	npx parcel -p 8080 src/graphiql.html
+
+net-login:
+	netlify login
+
+deploy: build
+	env NETLIFY_SITE_ID=$NETLIFY_SITE_ID_APP netlify deploy --prod
