@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "serverless-rust": "^0.3.0"
+    "serverless": "^1.39.1",
+    "serverless-rust": "^0.3.2"
   }
 }
