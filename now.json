@@ -2,8 +2,8 @@
 	"version": 2,
 	"builds": [
 		{
-			"src": "api/dist/bin/api.exe",
-			"use": "now-static-bin",
+			"src": "graphql/src/main.rs",
+			"use": "@now/rust",
 			"config": {
 				"port": 4010
 			}

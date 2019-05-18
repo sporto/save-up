@@ -1,12 +1,10 @@
+.vscode
 api-*
+api/.serverless
 api/config
-api/lib
-api/log
-api/migrations
-api/packer
-api/src
+api/hello
+api/mail
 api/target
-api/templates
 api/.terraform
 client
 cypress
