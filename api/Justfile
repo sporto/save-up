@@ -10,11 +10,14 @@ try-hello-local:
 try-mail:
 	npx sls invoke -f mail -p mail/src/fixtures/sns-event-invite.json
 
-build:
-	docker run \
-		--rm \
-		-it \
-		-v $PWD:/volume/ \
-		-v cargo-cache:/root/.cargo \
-		clux/muslrust:nightly \
-		cargo build --release
+run:
+	cargo run -p api
+
+# build:
+# 	docker run \
+# 		--rm \
+# 		-it \
+# 		-v $PWD:/volume/ \
+# 		-v cargo-cache:/root/.cargo \
+# 		clux/muslrust:nightly \
+# 		cargo build --release
