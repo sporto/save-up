@@ -134,7 +134,7 @@ fn run_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {
 	}
 }
 
-fn rocket() -> Rocket {
+fn rocket() -> Result<Rocket, failure::Error> {
 	let config = utils::config::get().expect("Failed to get config");
 
 	let mut database_config = HashMap::new();
@@ -152,9 +152,11 @@ fn rocket() -> Rocket {
 		.expect("Failed to create rocket config");
 
 	// CORS
-	let (allowed_origins, failed_origins) = AllowedOrigins::some(&[&config.client_host]);
+	// let (allowed_origins, failed_origins) = AllowedOrigins::some(&[&config.client_host]);
 
-	assert!(failed_origins.is_empty());
+	let allowed_origins = AllowedOrigins::some_exact(&[&config.client_host]);
+
+	// assert!(failed_origins.is_empty());
 
 	let allowed_methods = vec![Method::Get, Method::Post]
 		.into_iter()
@@ -163,29 +165,33 @@ fn rocket() -> Rocket {
 
 	let allowed_headers = AllowedHeaders::some(&["Authorization", "Accept", "content-type"]);
 
-	let options = rocket_cors::Cors {
+	let options = rocket_cors::CorsOptions {
 		allowed_origins: allowed_origins,
 		allowed_methods: allowed_methods,
 		allowed_headers: allowed_headers,
 		allow_credentials: true,
 		..Default::default()
-	};
+	}.to_cors()?;
 
 	let routes = routes![index, graphql_app_handler, graphql_pub_handler,];
 
 	let schema_app = graph::create_app_schema();
 	let schema_pub = graph::create_public_schema();
 
-	rocket::custom(rocket_config)
+	let ro = rocket::custom(rocket_config)
 		.attach(DbConn::fairing())
 		.attach(AdHoc::on_attach("Database Migrations", run_migrations))
 		.manage(schema_app)
 		.manage(schema_pub)
 		.mount("/", routes)
-		.attach(options)
+		.attach(options);
+
+	Ok(ro)
 }
 
 fn main() {
 	env_logger::init();
-	rocket().launch();
+
+	rocket()
+		.map(|ro| ro.launch());
 }
