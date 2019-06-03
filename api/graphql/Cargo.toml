@@ -9,7 +9,7 @@ askama = "0.8.0"
 bigdecimal = "0.0.14" # Depends on the version that Diesel uses
 chrono = "0.4"
 chrono-tz = "0.5"
-diesel = { version = "1.4.1", features = ["postgres", "chrono", "numeric", "r2d2"] }
+diesel = { version = "1.4.2", features = ["postgres", "chrono", "numeric", "r2d2"] }
 diesel_migrations = "1.4.0"
 log = "0.4"
 env_logger = "0.6"
