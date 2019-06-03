@@ -43,14 +43,14 @@ test:
 # 	terraform apply
 
 # Build the Rust application binary
-build:
-	docker run \
-		--rm \
-		-it \
-		-v $PWD:/volume/ \
-		-v cargo-cache:/root/.cargo \
-		clux/muslrust:nightly \
-		cargo build --release
+# build:
+# 	docker run \
+# 		--rm \
+# 		-it \
+# 		-v $PWD:/volume/ \
+# 		-v cargo-cache:/root/.cargo \
+# 		clux/muslrust:nightly \
+# 		cargo build --release
 
 # Copy the binary into /dist/bin
 copy-bin:
