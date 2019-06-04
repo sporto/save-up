@@ -61,17 +61,16 @@ type RouteInInvestor
 
 matchers : Parser (Route -> a) a
 matchers =
-    s segBasepath
-        </> oneOf
-                [ map Route_Public <| map RouteInPublic_SignIn top
-                , map Route_Public <| map RouteInPublic_SignIn <| s segSignIn
-                , map Route_Public <| map RouteInPublic_SignUp <| s segSignUp
-                , map Route_Public <| map RouteInPublic_Invitation <| s segInvitations </> string
-                , map Route_Public <| map RouteInPublic_RequestPasswordReset <| s segPasswordResets </> s segNew
-                , map Route_Public <| map RouteInPublic_ResetPassword <| s segPasswordResets </> string
-                , map Route_Admin (s segAdmin </> matchersForAdmin)
-                , map Route_Investor (s segInvestor </> matchersForInvestor)
-                ]
+    oneOf
+        [ map Route_Public <| map RouteInPublic_SignIn top
+        , map Route_Public <| map RouteInPublic_SignIn <| s segSignIn
+        , map Route_Public <| map RouteInPublic_SignUp <| s segSignUp
+        , map Route_Public <| map RouteInPublic_Invitation <| s segInvitations </> string
+        , map Route_Public <| map RouteInPublic_RequestPasswordReset <| s segPasswordResets </> s segNew
+        , map Route_Public <| map RouteInPublic_ResetPassword <| s segPasswordResets </> string
+        , map Route_Admin (s segAdmin </> matchersForAdmin)
+        , map Route_Investor (s segInvestor </> matchersForInvestor)
+        ]
 
 
 matchersForAdmin : Parser (RouteInAdmin -> a) a
@@ -116,7 +115,7 @@ pathFor : Route -> String
 pathFor route =
     let
         prefix =
-            "/" ++ segBasepath ++ "/"
+            "/"
     in
     case route of
         Route_NotFound ->
@@ -206,10 +205,6 @@ segSignIn =
 
 segSignUp =
     "sign-up"
-
-
-segBasepath =
-    "a"
 
 
 segInvestor =

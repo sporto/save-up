@@ -33,8 +33,8 @@ parsingTest testCase path expected =
 parsingTests : Test
 parsingTests =
     describe "parse"
-        [ parsingTest "home" "/a/admin" routeForAdminHome
-        , parsingTest "home with trailing" "/a/admin/" routeForAdminHome
+        [ parsingTest "home" "/admin" routeForAdminHome
+        , parsingTest "home with trailing" "/admin/" routeForAdminHome
         ]
 
 

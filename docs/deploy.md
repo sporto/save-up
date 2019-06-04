@@ -15,7 +15,9 @@ To deploy we use Serverless.
 Client
 ------
 
-The client is published to Netlify. Simply pushing to master will trigger a Netlify build.
+The client is published to Netlify.
+
+  just client/deploy
 
 Web: Static site
 ----------------
