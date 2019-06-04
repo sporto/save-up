@@ -1,8 +1,0 @@
-*
-!Cargo.toml
-!Cargo.lock
-!migrations
-!src
-!templates
-!build.rs
-!Rocket.toml

@@ -11,7 +11,10 @@ try-mail:
 	npx sls invoke -f mail -p mail/src/fixtures/sns-event-invite.json
 
 run:
-	cargo run -p api
+	cargo run --bin api
+
+build:
+	cargo build
 
 # build:
 # 	docker run \
