@@ -1,13 +1,9 @@
 # Development
 
-## Build binaries
+## Run the GraphQl server and client locally
 
-In api folder run:
+In the root of the project:
 
-  just build-graph
-  just build-mail
-  ...
-
-## Run the GraphQl server locally
+  just start
 
 

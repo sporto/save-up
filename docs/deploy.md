@@ -4,7 +4,13 @@ Deployment
 API
 ---
 
-...
+The GraphQL API is deployed automatically using Render via Github hooks.
+
+Lambda functions
+----------------
+
+The app sends emails using AWS SES. This runs inside lambda.
+To deploy we use Serverless.
 
 Client
 ------
