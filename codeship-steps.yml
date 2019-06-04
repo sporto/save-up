@@ -4,3 +4,6 @@
     - name: Test Api Build
       service: api
       command: cargo check
+    - name: Test Client
+      service: client
+      command: npx elm-test

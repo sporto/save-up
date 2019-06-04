@@ -22,3 +22,8 @@ api:
     SYSTEM_JWT: abc
   volumes:
     - cargo-cache:/root/.cargo
+
+client:
+  build:
+    context: client
+    dockerfile: Dockerfile.ci

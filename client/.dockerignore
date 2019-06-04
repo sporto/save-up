@@ -1,0 +1,5 @@
+.cache
+.netlify
+dist
+elm-stuff
+node_modules
