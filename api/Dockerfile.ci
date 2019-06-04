@@ -1,0 +1,4 @@
+FROM rustlang/rust:nightly
+
+WORKDIR /usr/src
+COPY . .

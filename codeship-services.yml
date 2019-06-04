@@ -4,10 +4,10 @@
 postgres:
   image: healthcheck/postgres:alpine
 
-graphql:
+api:
   build: 
     context: api
-    dockerfile: Dockerfile.graphql.ci
+    dockerfile: Dockerfile.ci
   depends_on:
     - postgres
   cached: true
@@ -20,15 +20,5 @@ graphql:
     DATABASE_USER_TEST: postgres
     DATABASE_PASS_TEST: x
     SYSTEM_JWT: abc
-  volumes:
-    - cargo-cache:/root/.cargo
-  
-mail:
-  build:
-    context: api
-    dockerfile: Dockerfile.mail.ci
-  cached: true
-  environment:
-    SYSTEM_EMAIL: hello@sample.com
   volumes:
     - cargo-cache:/root/.cargo
