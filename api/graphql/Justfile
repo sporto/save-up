@@ -53,41 +53,41 @@ test:
 # 		cargo build --release
 
 # Copy the binary into /dist/bin
-copy-bin:
-	mkdir -p ./dist/bin/
-	rm -rf ./dist/bin/*
-	cp target/x86_64-unknown-linux-musl/release/api ./dist/bin
-	mv ./dist/bin/api ./dist/bin/api.exe
+# copy-bin:
+# 	mkdir -p ./dist/bin/
+# 	rm -rf ./dist/bin/*
+# 	cp target/x86_64-unknown-linux-musl/release/api ./dist/bin
+# 	mv ./dist/bin/api ./dist/bin/api.exe
 
 # This makes the binary smaller
 # But it removes valuable stack tracing information
-strip:
-	docker run --rm -it \
-		-v $PWD:/volume/ \
-		clux/muslrust:nightly \
-		strip ./dist/bin/api.exe
+# strip:
+# 	docker run --rm -it \
+# 		-v $PWD:/volume/ \
+# 		clux/muslrust:nightly \
+# 		strip ./dist/bin/api.exe
 
-compress:
-	cd ./dist/bin/ && tar -zcvf api.tar.gz api.exe
+# compress:
+# 	cd ./dist/bin/ && tar -zcvf api.tar.gz api.exe
 
 # Run before deploy when binary has changed
-prepare-release: build copy-bin compress
+# prepare-release: build copy-bin compress
 
 # run ssh-add first
-deploy: prepare-release
-	deployr run -verbose \
-		--set "API_SECRET=$API_SECRET_PROD" \
-		--set "CLIENT_HOST=$CLIENT_HOST_PROD" \
-		--set "DATABASE_URL=$DATABASE_URL_PROD" \
-		--set "SYSTEM_JWT=$SYSTEM_JWT_PROD" \
-		./deployr.recipe
+# deploy: prepare-release
+# 	deployr run -verbose \
+# 		--set "API_SECRET=$API_SECRET_PROD" \
+# 		--set "CLIENT_HOST=$CLIENT_HOST_PROD" \
+# 		--set "DATABASE_URL=$DATABASE_URL_PROD" \
+# 		--set "SYSTEM_JWT=$SYSTEM_JWT_PROD" \
+# 		./deployr.recipe
 
-docker-run-local:
-	docker run \
-		--rm \
-		--name save-up-api \
-		--env RUST_BACKTRACE=1 \
-		--env-file ./env.prod \
-		--expose=4010 \
-		-p 4020:4010 \
-		$API_IMAGE_TAG
+# docker-run-local:
+# 	docker run \
+# 		--rm \
+# 		--name save-up-api \
+# 		--env RUST_BACKTRACE=1 \
+# 		--env-file ./env.prod \
+# 		--expose=4010 \
+# 		-p 4020:4010 \
+# 		$API_IMAGE_TAG
