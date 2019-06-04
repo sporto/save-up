@@ -6,7 +6,7 @@ authors = ["Sebastian Porto <s@porto5.com>"]
 
 [dependencies]
 askama = "0.8.0"
-bigdecimal = "0.0.14" # Depends on the version that Diesel uses
+bigdecimal = "0.1.0" # Depends on the version that Diesel uses
 chrono = "0.4"
 chrono-tz = "0.5"
 diesel = { version = "1.4.2", features = ["postgres", "chrono", "numeric", "r2d2"] }
