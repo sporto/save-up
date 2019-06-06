@@ -27,3 +27,4 @@ client:
   build:
     context: client
     dockerfile: Dockerfile.ci
+  cached: true

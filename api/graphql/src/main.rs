@@ -70,7 +70,7 @@ struct DbConn(diesel::PgConnection);
 
 #[get("/status")]
 fn index() -> &'static str {
-	"Hello"
+	"Ok"
 }
 
 #[post("/app/graphql", data = "<request>")]

@@ -1,6 +1,5 @@
 start:
-	gutenberg serve
+	zola serve
 
 build:
-	gutenberg build
-	mv public ../client/dist-web
+	zola build
