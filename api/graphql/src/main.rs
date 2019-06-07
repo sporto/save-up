@@ -73,6 +73,13 @@ fn index() -> &'static str {
 	"Ok"
 }
 
+#[get("/email")]
+fn send_email()->  Result<String, String> {
+	actions::emails::send_test::call()
+		.map(|_| "Ok".to_string() )
+		.map_err(|e| e.to_string())
+}
+
 #[post("/app/graphql", data = "<request>")]
 fn graphql_app_handler(
 	jwt: JWT,
@@ -173,7 +180,7 @@ fn rocket() -> Result<Rocket, failure::Error> {
 		..Default::default()
 	}.to_cors()?;
 
-	let routes = routes![index, graphql_app_handler, graphql_pub_handler,];
+	let routes = routes![index, send_email, graphql_app_handler, graphql_pub_handler,];
 
 	let schema_app = graph::create_app_schema();
 	let schema_pub = graph::create_public_schema();

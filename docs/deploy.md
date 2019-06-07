@@ -10,7 +10,12 @@ Lambda functions
 ----------------
 
 The app sends emails using AWS SES. This runs inside lambda.
+
 To deploy we use Serverless.
+
+```
+just deploy-fns
+```
 
 Client
 ------

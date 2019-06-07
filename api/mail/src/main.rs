@@ -62,6 +62,10 @@ struct ResetPasswordTemplate<'a> {
 	reset_url: &'a str,
 }
 
+#[derive(Template)]
+#[template(path = "test.html")]
+struct TestTemplate {}
+
 fn main() {
 	lambda!(handler)
 }
@@ -172,6 +176,8 @@ fn generate_intermediate(email_kind: &EmailKind) -> Result<String, Error> {
 		},
 
 		EmailKind::ResetPassword { reset_url, .. } => ResetPasswordTemplate { reset_url }.render(),
+
+		EmailKind::Test { .. } => TestTemplate {}.render(),
 	};
 
 	result.map_err(|e| format_err!("{}", e))
@@ -237,6 +243,7 @@ fn email_for_email_kind(email_kind: &EmailKind) -> String {
 		EmailKind::RequestWithdrawal { email, .. } => email.to_owned(),
 		EmailKind::RejectTransactionRequest { email, .. } => email.to_owned(),
 		EmailKind::ResetPassword { email, .. } => email.to_owned(),
+		EmailKind::Test { email, .. } => email.to_owned(),
 	}
 }
 
@@ -250,6 +257,7 @@ fn subject_for_email_kind(email_kind: &EmailKind) -> String {
 		EmailKind::ApproveTransactionRequest { .. } => "Your request has been approved".to_owned(),
 		EmailKind::RejectTransactionRequest { .. } => "Your request".to_owned(),
 		EmailKind::ResetPassword { .. } => "Reset your password".to_owned(),
+		EmailKind::Test {..} => "Test".to_owned(),
 	}
 }
 

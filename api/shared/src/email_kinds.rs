@@ -36,4 +36,7 @@ pub enum EmailKind {
 		email: String,
 		reset_url: String,
 	},
+	Test {
+		email: String,
+	},
 }

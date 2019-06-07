@@ -5,3 +5,4 @@ pub mod request_withdrawal;
 pub mod resolve_transaction_request;
 pub mod send;
 pub mod send_invitation;
+pub mod send_test;
