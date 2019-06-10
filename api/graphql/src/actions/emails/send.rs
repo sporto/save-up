@@ -2,8 +2,12 @@ use failure::Error;
 use rusoto_core::Region;
 use rusoto_sns::{Sns,PublishInput, SnsClient};
 use shared::email_kinds::EmailKind;
+use crate::{
+	utils::config,
+};
 
 pub fn call(email_kind: &EmailKind) -> Result<(), Error> {
+	let config = config::get()?;
 	let client = SnsClient::new(Region::ApSoutheast1);
 
 	let message = json!(email_kind);
@@ -15,7 +19,7 @@ pub fn call(email_kind: &EmailKind) -> Result<(), Error> {
 		phone_number: None,
 		subject: None,
 		target_arn: None,
-		topic_arn: Some("emails".into()),
+		topic_arn: Some(config.aws_sns_email_topic_arn),
 	};
 
 	client

@@ -4,6 +4,7 @@ export API_PORT=4010
 export API_SECRET=abc
 export AWS_ACCESS_KEY_ID=4010
 export AWS_SECRET_ACCESS_KEY=4010
+export AWS_SNS_EMAIL_TOPIC_ARN=AWS_SNS_EMAIL_TOPIC_ARN
 export CLIENT_HOST=http://localhost:8080
 export DATABASE_URL_TEST=xx
 export DATABASE_URL=postgres://postgres@localhost/db_name

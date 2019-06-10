@@ -11,6 +11,7 @@ pub enum AppEnv {
 pub struct Config {
 	pub api_port:     u16,
 	pub api_secret:   String,
+	pub aws_sns_email_topic_arn:   String,
 	pub client_host:  String,
 	pub database_url: String,
 	pub system_jwt:   String,
@@ -56,6 +57,9 @@ pub fn get() -> Result<Config, Error> {
 	let api_secret = env::var("API_SECRET")
 		.map_err(|_| format_err!("API_SECRET not found"))?;
 
+	let aws_sns_email_topic_arn = env::var("AWS_SNS_EMAIL_TOPIC_ARN")
+		.map_err(|_| format_err!("AWS_SNS_EMAIL_TOPIC_ARN not found"))?;
+
 	let client_host = env::var("CLIENT_HOST").map_err(|_| format_err!("CLIENT_HOST not found"))?;
 
 	let database_url =
@@ -66,6 +70,7 @@ pub fn get() -> Result<Config, Error> {
 	let config = Config {
 		api_port,
 		api_secret,
+		aws_sns_email_topic_arn,
 		client_host,
 		database_url,
 		system_jwt,
