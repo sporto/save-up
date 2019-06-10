@@ -1,5 +1,5 @@
 deploy-fns:
-	sls deploy
+	npx sls deploy
 
 try-hello:
 	npx sls invoke -f hello -d '{"foo":"bar"}'
@@ -8,7 +8,7 @@ try-hello-local:
 	npx sls invoke local -f hello -d '{"foo":"bar"}'
 
 try-mail:
-	npx sls invoke -f mail -p mail/src/fixtures/sns-event-invite.json
+	env SLS_DEBUG=* npx sls invoke -f mail -p mail/src/fixtures/sns-event-invite.json
 
 start:
 	cargo run --bin api
