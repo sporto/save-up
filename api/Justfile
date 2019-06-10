@@ -10,7 +10,7 @@ try-hello-local:
 try-mail:
 	npx sls invoke -f mail -p mail/src/fixtures/sns-event-invite.json
 
-run:
+start:
 	cargo run --bin api
 
 build:
