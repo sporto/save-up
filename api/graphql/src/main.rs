@@ -180,7 +180,7 @@ fn rocket() -> Result<Rocket, failure::Error> {
 		..Default::default()
 	}.to_cors()?;
 
-	let routes = routes![index, send_email, graphql_app_handler, graphql_pub_handler,];
+	let routes = routes![index, graphql_app_handler, graphql_pub_handler,];
 
 	let schema_app = graph::create_app_schema();
 	let schema_pub = graph::create_public_schema();
