@@ -68,7 +68,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for JWT {
 #[database("postgres")]
 struct DbConn(diesel::PgConnection);
 
-#[get("/status")]
+#[get("/")]
 fn index() -> &'static str {
 	"Ok"
 }
