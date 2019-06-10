@@ -8,7 +8,7 @@ use crate::{
 
 pub fn call(email_kind: &EmailKind) -> Result<(), Error> {
 	let config = config::get()?;
-	let client = SnsClient::new(Region::ApSoutheast1);
+	let client = SnsClient::new(Region::ApSoutheast2);
 
 	let message = json!(email_kind);
 
