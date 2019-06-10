@@ -195,7 +195,7 @@ fn send_email(email_kind: &EmailKind, html: &str) -> Result<(), Error> {
 	let to = vec![email.to_owned()];
 	let subject = subject_for_email_kind(email_kind);
 
-	let client = SesClient::new(Region::UsEast1);
+	let client = SesClient::new(Region::ApSoutheast2);
 
 	let body = Body {
 		html: Some(Content {
