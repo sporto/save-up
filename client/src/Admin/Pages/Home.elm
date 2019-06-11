@@ -236,7 +236,7 @@ investors context model =
 investorsData : Context -> Data -> Html Msg
 investorsData context data =
     if List.isEmpty data.investors then
-        p [ class "mt-4" ] [ text "You don't have any investors, please create one using the invite link above." ]
+        p [ class "mt-4" ] [ text "You don't have any investors, please create one using the 'Create Investor' link above." ]
 
     else
         let
