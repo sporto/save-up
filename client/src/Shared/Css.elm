@@ -12,15 +12,15 @@ buttonBase =
 
 molecules =
     { button =
-        { primary = buttonBase ++ "font-bold bg-indigo hover:bg-indigo-dark text-white"
-        , secondary = buttonBase ++ "border border-grey text-grey-dark hover:text-grey-darker"
+        { primary = buttonBase ++ "font-bold bg-indigo-500 hover:bg-indigo-700 text-white"
+        , secondary = buttonBase ++ "border border-grey text-grey-dark hover:text-gray-800"
         }
     , form =
         { label = "blocktext-sm font-bold"
         , fieldset = "mt-6"
-        , input = "appearance-none border w-full py-2 px-3 text-grey-darker leading-tight mt-1"
+        , input = "appearance-none border w-full py-2 px-3 text-gray-800 leading-tight mt-1"
         , actions = "mt-8"
-        , submit = "bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded"
+        , submit = "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         }
     , page =
         { container = "p-4"
@@ -33,6 +33,6 @@ notificationArgs : Notifications.Args
 notificationArgs =
     Notifications.args
         |> Notifications.withContainerClass "p-4 border w-64 text-center"
-        |> Notifications.withSuccessClass "text-green border-green bg-green-lightest"
-        |> Notifications.withErrorClass "text-red border-red bg-red-lightest"
-        |> Notifications.withInfoClass "text-blue border-blue bg-blue-lightest"
+        |> Notifications.withSuccessClass "text-green-500 border-green-500 bg-green-100"
+        |> Notifications.withErrorClass "text-red-500 border-red-500 bg-red-100"
+        |> Notifications.withInfoClass "text-blue-500 border-blue-500 bg-blue-100"

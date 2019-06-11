@@ -100,7 +100,7 @@ view context page =
 
 header_ : Context -> Html Msg
 header_ context =
-    nav [ class "flex p-4 bg-grey-darkest text-white flex-no-shrink" ]
+    nav [ class "flex p-4 bg-gray-800 text-white flex-no-shrink" ]
         [ Navigation.logo
         , div
             [ class "ml-8 flex-grow" ]

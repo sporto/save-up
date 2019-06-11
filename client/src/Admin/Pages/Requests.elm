@@ -325,7 +325,7 @@ requestView model request =
                 , span [ class "ml-6" ] [ amount ]
                 ]
     in
-    div [ class "border p-4 rounded shadow-md mb-6 flex justify-between items-center" ]
+    div [ class "border p-4 rounded shadow-md mb-6 bg-white flex justify-between items-center" ]
         [ left, maybeActions ]
 
 

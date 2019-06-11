@@ -267,7 +267,7 @@ investorView investor =
             else
                 div [ class "mt-5" ] (List.map accountView investor.accounts)
     in
-    div [ class "border p-4 rounded shadow-md mb-6" ]
+    div [ class "border p-4 rounded shadow-md mb-6 bg-white" ]
         [ div [ class "text-xl flex items-center" ]
             [ text investor.name
             , investorActions investor
