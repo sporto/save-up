@@ -1,5 +1,6 @@
 [build]
-  publish = "dist"
+  publish = "client/dist"
+  command = "npx parcel build src/index.html"
 
 [[redirects]]
   from = "/*"
