@@ -1,8 +1,0 @@
-[build]
-  publish = "client/dist"
-  command = "npx parcel build src/index.html"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
