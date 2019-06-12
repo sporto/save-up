@@ -10,7 +10,7 @@ module Public.Pages.EmailConfirmation exposing
 import ApiPub.InputObject
 import ApiPub.Mutation
 import ApiPub.Object
-import ApiPub.Object.ResetPasswordResponse
+import ApiPub.Object.ConfirmEmailResponse
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet as SelectionSet exposing (SelectionSet, with)
 import Html exposing (..)
@@ -24,6 +24,7 @@ import Shared.Css as Css exposing (molecules)
 import Shared.Globals exposing (..)
 import Shared.GraphQl exposing (GraphData, GraphResponse, MutationError, mutationErrorPublicSelection, sendPublicMutation)
 import String.Verify
+import UI.Empty as Empty
 import UI.Flash as Flash
 import UI.Forms as Forms
 import UI.Icons as Icons
@@ -32,48 +33,16 @@ import Verify exposing (Validator, validate, verify)
 
 
 type alias Model =
-    { form : Form
-    , resetToken : String
+    { token : String
     , response : GraphData Response
-    , validationErrors : Maybe ( ValidationError, List ValidationError )
     }
 
 
 newModel : String -> Model
 newModel token =
-    { form = newForm
-    , resetToken = token
+    { token = token
     , response = RemoteData.NotAsked
-    , validationErrors = Nothing
     }
-
-
-type alias Form =
-    { password : String
-    }
-
-
-newForm =
-    { password = ""
-    }
-
-
-asFormInModel : Model -> Form -> Model
-asFormInModel model form =
-    { model | form = form }
-
-
-asPasswordInForm : Form -> String -> Form
-asPasswordInForm form val =
-    { form | password = val }
-
-
-type alias ValidationError =
-    ( Field, String )
-
-
-type Field
-    = Field_Password
 
 
 type alias Returns =
@@ -83,13 +52,17 @@ type alias Returns =
 type alias Response =
     { success : Bool
     , errors : List MutationError
-    , jwt : Maybe String
     }
 
 
 init : PublicContext -> String -> Returns
 init context token =
-    ( newModel token, Cmd.none, Actions.none )
+    ( newModel token
+        |> (\model -> { model | response = RemoteData.Loading })
+    , sendMutation context
+        token
+    , Actions.none
+    )
 
 
 subscriptions : Model -> Sub Msg
@@ -98,43 +71,12 @@ subscriptions model =
 
 
 type Msg
-    = ChangePassword String
-    | Submit
-    | OnSubmitResponse (GraphResponse Response)
+    = OnSubmitResponse (GraphResponse Response)
 
 
 update : PublicContext -> Msg -> Model -> Returns
 update context msg model =
     case msg of
-        ChangePassword password ->
-            ( password
-                |> asPasswordInForm model.form
-                |> asFormInModel model
-            , Cmd.none
-            , Actions.none
-            )
-
-        Submit ->
-            case validateForm model.form of
-                Err errors ->
-                    ( { model
-                        | validationErrors = Just errors
-                      }
-                    , Cmd.none
-                    , Actions.none
-                    )
-
-                Ok input ->
-                    ( { model
-                        | response = RemoteData.Loading
-                        , validationErrors = Nothing
-                      }
-                    , sendMutation context
-                        model.form
-                        model.resetToken
-                    , Actions.none
-                    )
-
         OnSubmitResponse result ->
             case result of
                 Err e ->
@@ -145,92 +87,73 @@ update context msg model =
                     )
 
                 Ok response ->
-                    case response.jwt of
-                        Just jwt ->
-                            ( { model | response = RemoteData.Success response }
-                            , Cmd.none
-                            , Actions.startSession jwt
-                            )
-
-                        Nothing ->
-                            ( { model | response = RemoteData.Success response }
-                            , Cmd.none
-                            , Actions.none
-                            )
-
-
-validateForm : Validator ValidationError Form Form
-validateForm =
-    validate Form
-        |> verify .password (Forms.verifyPassword Field_Password)
+                    ( { model | response = RemoteData.Success response }
+                    , Cmd.none
+                    , Actions.none
+                    )
 
 
 view : PublicContext -> Model -> Html Msg
 view context model =
+    let
+        children =
+            case model.response of
+                RemoteData.NotAsked ->
+                    [ Empty.loading ]
+
+                RemoteData.Loading ->
+                    [ Empty.loading ]
+
+                RemoteData.Failure err ->
+                    [ Empty.graphError e ]
+
+                RemoteData.Success data ->
+                    viewWithData data
+    in
     Common.layout
         context
         { containerAttributes = [ class "w-80" ]
         }
-        [ Forms.form_ (formArgs model)
-        ]
+        children
 
 
-formArgs : Model -> Forms.Args Response Msg
-formArgs model =
-    { title = "Reset password"
-    , intro = Nothing
-    , submitContent = [ text "Reset" ]
-    , fields = formFields model
-    , onSubmit = Submit
-    , response = model.response
-    }
+viewWithData : Response -> List (Html Msg)
+viewWithData response =
+    if response.success then
+        [ text "Success" ]
+
+    else
+        response.errors
+            |> List.map Forms.mutationErrorV2
 
 
-formFields model =
-    [ Forms.set
-        Field_Password
-        "New password"
-        (input
-            [ class molecules.form.input
-            , onInput ChangePassword
-            , type_ "password"
-            , value model.form.password
-            ]
-            []
-        )
-        model.validationErrors
-    ]
-
-
-sendMutation : PublicContext -> Form -> String -> Cmd Msg
-sendMutation context form resetToken =
+sendMutation : PublicContext -> String -> Cmd Msg
+sendMutation context token =
     sendPublicMutation
         context
-        "reset-password"
-        (resetMutation form resetToken)
+        "email-confirmation"
+        (mutation token)
         OnSubmitResponse
 
 
-resetMutation : Form -> String -> SelectionSet Response RootMutation
-resetMutation form resetToken =
+mutation : String -> SelectionSet Response RootMutation
+mutation token =
     let
-        input : ApiPub.InputObject.ResetPasswordInput
+        input : ApiPub.InputObject.ConfirmEmailInput
         input =
-            { password = form.password
-            , token = resetToken
+            { token = token
             }
     in
     SelectionSet.succeed identity
         |> with
-            (ApiPub.Mutation.resetPassword
+            (ApiPub.Mutation.confirmEmail
                 { input = input }
                 responseSelection
             )
 
 
-responseSelection : SelectionSet Response ApiPub.Object.ResetPasswordResponse
+responseSelection : SelectionSet Response ApiPub.Object.ConfirmEmailResponse
 responseSelection =
     SelectionSet.succeed Response
-        |> with ApiPub.Object.ResetPasswordResponse.success
-        |> with (ApiPub.Object.ResetPasswordResponse.errors mutationErrorPublicSelection)
-        |> with ApiPub.Object.ResetPasswordResponse.jwt
+        |> with ApiPub.Object.ConfirmEmailResponse.success
+        |> with (ApiPub.Object.ConfirmEmailResponse.errors mutationErrorPublicSelection)

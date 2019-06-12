@@ -4,6 +4,7 @@ module UI.Forms exposing
     , isValidEmail
     , mustBeEmail
     , mutationError
+    , mutationErrorV2
     , set
     , validateAmount
     , verifyEmail
