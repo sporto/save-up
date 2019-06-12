@@ -10,6 +10,10 @@ graph-app:
 graph-pub:
 	npx elm-graphql $API_HOST/pub/graphql --base ApiPub
 
+elm:
+	elm make src/App.elm
+	rm index.html
+
 elm-analyse:
 	npx elm-analyse
 

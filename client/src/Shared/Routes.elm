@@ -38,6 +38,7 @@ type RouteInPublic
     | RouteInPublic_Invitation String
     | RouteInPublic_RequestPasswordReset
     | RouteInPublic_ResetPassword String
+    | RouteInPublic_EmailConfirmation String
 
 
 type RouteInAdmin
@@ -68,6 +69,7 @@ matchers =
         , map Route_Public <| map RouteInPublic_Invitation <| s segInvitations </> string
         , map Route_Public <| map RouteInPublic_RequestPasswordReset <| s segPasswordResets </> s segNew
         , map Route_Public <| map RouteInPublic_ResetPassword <| s segPasswordResets </> string
+        , map Route_Public <| map RouteInPublic_EmailConfirmation <| s segEmailConfirmations </> string
         , map Route_Admin (s segAdmin </> matchersForAdmin)
         , map Route_Investor (s segInvestor </> matchersForInvestor)
         ]
@@ -149,6 +151,9 @@ pathInPublic route =
         RouteInPublic_ResetPassword token ->
             segPasswordResets ++ "/" ++ token
 
+        RouteInPublic_EmailConfirmation token ->
+            segEmailConfirmations ++ "/" ++ token
+
 
 pathForAdminRoute : RouteInAdmin -> String
 pathForAdminRoute route =
@@ -197,6 +202,10 @@ segAccounts =
 
 segAdmin =
     "admin"
+
+
+segEmailConfirmations =
+    "email-confirmations"
 
 
 segSignIn =

@@ -5,6 +5,7 @@ import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
 import Html.Events exposing (onClick)
+import Public.Pages.EmailConfirmation as EmailConfirmation
 import Public.Pages.RedeemInvitation as RedeemInvitation
 import Public.Pages.RequestPassword as RequestPassword
 import Public.Pages.ResetPassword as ResetPassword
@@ -24,6 +25,7 @@ type Page
     | Page_SignUp SignUp.Model
     | Page_RequestPasswordReset RequestPassword.Model
     | Page_ResetPassword ResetPassword.Model
+    | Page_EmailConfirmation EmailConfirmation.Model
 
 
 type Msg
@@ -32,6 +34,7 @@ type Msg
     | Msg_SignUp SignUp.Msg
     | Msg_RequestPassword RequestPassword.Msg
     | Msg_ResetPassword ResetPassword.Msg
+    | Msg_EmailConfirmation EmailConfirmation.Msg
 
 
 type alias Returns =
@@ -71,6 +74,12 @@ initCurrentPage context route =
                     Page_ResetPassword
                     Msg_ResetPassword
 
+        Routes.RouteInPublic_EmailConfirmation token ->
+            EmailConfirmation.init context token
+                |> Return.mapAll
+                    Page_EmailConfirmation
+                    Msg_EmailConfirmation
+
 
 subscriptions : Page -> Sub Msg
 subscriptions page =
@@ -89,6 +98,9 @@ subscriptions page =
 
         Page_ResetPassword pageModel ->
             Sub.map Msg_ResetPassword (ResetPassword.subscriptions pageModel)
+
+        Page_EmailConfirmation pageModel ->
+            Sub.map Msg_EmailConfirmation (EmailConfirmation.subscriptions pageModel)
 
 
 update : PublicContext -> Msg -> Page -> Returns
@@ -154,6 +166,18 @@ update context msg page =
                 _ ->
                     ( page, Cmd.none, Actions.none )
 
+        Msg_EmailConfirmation sub ->
+            case page of
+                Page_EmailConfirmation pageModel ->
+                    EmailConfirmation.update
+                        context
+                        sub
+                        pageModel
+                        |> Return.mapAll Page_EmailConfirmation Msg_EmailConfirmation
+
+                _ ->
+                    ( page, Cmd.none, Actions.none )
+
 
 view : PublicContext -> Page -> Html Msg
 view context page =
@@ -179,5 +203,9 @@ view context page =
                 Page_ResetPassword pageModel ->
                     ResetPassword.view context pageModel
                         |> map Msg_ResetPassword
+
+                Page_EmailConfirmation pageModel ->
+                    EmailConfirmation.view context pageModel
+                        |> map Msg_EmailConfirmation
     in
     inner
