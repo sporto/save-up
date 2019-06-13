@@ -34,6 +34,9 @@ build:
 start:
 	npx parcel -p 8080 src/index.html
 
+sg:
+	npx parcel -p 9090 src/style-guide.html
+
 # This has to be the same port as the FE
 # Otherwise it won't find the token in LS
 graphiql:
