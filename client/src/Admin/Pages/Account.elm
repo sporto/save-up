@@ -551,7 +551,7 @@ navigation context model =
         routeWithdraw =
             Routes.routeForAdminAccountWithdraw model.accountID
     in
-    nav [ class "p-4 bg-indigo-100" ]
+    nav [ class "p-4 bg-indigo-500" ]
         [ navigationLink context routeShow "Account"
         , navigationLink context routeDeposit "Deposit"
         , navigationLink context routeWithdraw "Withdraw"
