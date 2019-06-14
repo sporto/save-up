@@ -6,6 +6,7 @@ module UI.Forms exposing
     , mutationError
     , mutationErrorV2
     , set
+    , setError
     , validateAmount
     , verifyEmail
     , verifyName
