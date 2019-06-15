@@ -8,11 +8,12 @@ use crate::{
 use diesel::pg::PgConnection;
 use failure::Error;
 use validator::Validate;
+use crate::utils::validations;
 
 pub fn call(conn: &PgConnection, user_attrs: UserAttrs) -> Result<User, Error> {
 	user_attrs
 		.validate()
-		.map_err(|e| format_err!("{}", e.to_string()))?;
+		.map_err(|e| format_err!("{}", validations::to_human_error(e)))?;
 
 	let user = User::create(conn, user_attrs).map_err(|e| format_err!("{}", e.to_string()))?;
 

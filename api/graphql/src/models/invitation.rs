@@ -19,7 +19,7 @@ pub struct Invitation {
 #[table_name = "invitations"]
 pub struct InvitationAttrs {
 	pub user_id: i32,
-	#[validate(email)]
+	#[validate(email(message="Email is not valid"))]
 	pub email: String,
 	pub role: Role,
 	pub token: String,

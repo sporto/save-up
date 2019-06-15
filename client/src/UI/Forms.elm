@@ -148,7 +148,7 @@ setError field errors =
     in
     case error of
         Just ( _, message ) ->
-            p [ class "mt-3 text-red text-sm" ] [ text message ]
+            p [ class "mt-3 text-red-500 text-sm" ] [ text message ]
 
         Nothing ->
             text ""

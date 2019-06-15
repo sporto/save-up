@@ -7,6 +7,7 @@ use diesel::pg::PgConnection;
 use failure::Error;
 use uuid::Uuid;
 use validator::Validate;
+use crate::utils::validations;
 
 pub fn call(
 	conn: &PgConnection,
@@ -26,7 +27,7 @@ pub fn call(
 
 	invitation_attrs
 		.validate()
-		.map_err(|e| format_err!("{}", e.to_string()))?;
+		.map_err(|e| format_err!("{}", validations::to_human_error(e)))?;
 
 	let invitation =
 		Invitation::create(conn, invitation_attrs).map_err(|e| format_err!("{}", e.to_string()))?;

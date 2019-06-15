@@ -32,16 +32,16 @@ pub struct User {
 #[table_name = "users"]
 pub struct UserAttrs {
 	pub client_id: i32,
-	#[validate(email)]
+	#[validate(email(message="Email is not valid"))]
 	pub email: Option<String>,
 	pub password_hash: String,
-	#[validate(length(min = "1"))]
+	#[validate(length(min = "1", message="Name must be at least one character"))]
 	pub name: String,
 	pub role: Role,
 	pub email_confirmation_token: Option<String>,
 	pub email_confirmed_at: Option<NaiveDateTime>,
-	#[validate(length(min = "5"))]
-	#[validate(regex = "USERNAME_RE")]
+	#[validate(length(min = "5", message="Username must be at least five characters"))]
+	#[validate(regex(path = "USERNAME_RE", message="Username can only have characters, numbers - and _"))]
 	pub username: String,
 	pub archived_at: Option<NaiveDateTime>,
 	pub password_reset_token: Option<String>,

@@ -11,6 +11,7 @@ use diesel::{dsl::exists, pg::PgConnection, prelude::*, select};
 use failure::Error;
 use uuid::Uuid;
 use validator::Validate;
+use crate::utils::validations;
 
 pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 	let password_hash =
@@ -32,7 +33,7 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 
 	temp_user_attrs
 		.validate()
-		.map_err(|e| format_err!("{}", e))?;
+		.map_err(|e| format_err!("{}", validations::to_human_error(e)))?;
 
 	// Check if we have a user with this email already
 	let filter = users::table.filter(users::email.eq(sign_up.email.clone()));
