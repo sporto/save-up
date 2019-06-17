@@ -7,7 +7,7 @@ import Notifications
 
 
 buttonBase =
-    "py-2 px-4 rounded no-underline "
+    "py-2 px-4 rounded no-underline inline-block "
 
 
 molecules =

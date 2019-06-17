@@ -100,38 +100,25 @@ view context page =
 
 header_ : Context -> Html Msg
 header_ context =
-    nav [ class "flex p-4 bg-gray-800 text-white flex-no-shrink" ]
-        [ Navigation.logo
-        , div
-            [ class "ml-8 flex-grow" ]
+    Navigation.view
+        context
+        { links =
             [ navigationLink context Routes.routeForInvestorHome "Home"
             ]
-        , div []
-            [ text context.auth.data.name
-            , Navigation.signOut SignOut
-            ]
-        ]
+        , onSignOut = SignOut
+        }
 
 
-navigationLink : Context -> Route -> String -> Html Msg
+navigationLink : Context -> Route -> String -> Navigation.Link
 navigationLink context route label =
     let
         isCurrent =
             route == context.currentLocation.route
-
-        currentClass =
-            if isCurrent then
-                "font-extrabold"
-
-            else
-                ""
     in
-    a
-        [ href (Routes.pathFor route)
-        , class "text-white mr-4 no-underline"
-        , class currentClass
-        ]
-        [ text label ]
+    { url = Routes.pathFor route
+    , isCurrent = isCurrent
+    , label = label
+    }
 
 
 currentPage : Context -> Page -> Html Msg

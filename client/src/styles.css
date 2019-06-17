@@ -12,3 +12,11 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+.displayOnParentHover {
+  display: none;
+}
+
+*:hover > .displayOnParentHover {
+  display: block;
+}

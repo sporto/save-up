@@ -177,41 +177,28 @@ view context adminPage =
 
 header_ : Context -> Html Msg
 header_ context =
-    nav [ class "flex p-4 bg-gray-800 text-white flex-no-shrink" ]
-        [ Navigation.logo
-        , div
-            [ class "ml-8 flex-grow" ]
+    Navigation.view
+        context
+        { links =
             [ navigationLink context Routes.routeForAdminHome "Home"
             , navigationLink context Routes.routeForAdminInviteAdmin "Invite admin"
             , navigationLink context Routes.routeForAdminCreateInvestor "Create investor"
             , navigationLink context Routes.routeForAdminRequests "Requests"
             ]
-        , div []
-            [ text context.auth.data.name
-            , Navigation.signOut SignOut
-            ]
-        ]
+        , onSignOut = SignOut
+        }
 
 
-navigationLink : Context -> Route -> String -> Html Msg
+navigationLink : Context -> Route -> String -> Navigation.Link
 navigationLink context route label =
     let
         isCurrent =
             context.currentLocation.route == route
-
-        classCurrent =
-            if isCurrent then
-                "font-extrabold"
-
-            else
-                ""
     in
-    a
-        [ href (Routes.pathFor route)
-        , class "text-white mr-6 no-underline"
-        , class classCurrent
-        ]
-        [ text label ]
+    { url = Routes.pathFor route
+    , isCurrent = isCurrent
+    , label = label
+    }
 
 
 currentPage : Context -> Page -> Html Msg

@@ -322,23 +322,24 @@ accountView account =
         balance =
             account.balanceInCents // 100
     in
-    div [ class "flex items-center justify-between" ]
+    div [ class "sm:flex items-center justify-between" ]
         [ div [] [ text "Balance: ", strong [ class "mr-1 text-3xl" ] [ text (String.fromInt balance) ], Icons.money ]
-        , div []
+        , div [ class "mt-8 sm:mt-0" ]
             [ a
                 [ href pathShow
-                , class "mr-3"
+                , class "w-full sm:mr-3 sm:w-auto"
                 , class molecules.button.primary
                 ]
                 [ span [ class "mr-2" ] [ Icons.chart ], text "Show" ]
             , a
                 [ href pathDeposit
-                , class "mr-3"
+                , class "mt-2 w-full sm:mr-3 sm:w-auto"
                 , class molecules.button.primary
                 ]
                 [ span [ class "mr-2" ] [ Icons.deposit ], text "Deposit" ]
             , a
                 [ href pathWithdraw
+                , class "mt-2 w-full sm:w-auto"
                 , class molecules.button.primary
                 ]
                 [ span [ class "mr-2" ] [ Icons.withdraw ], text "Withdraw" ]
