@@ -13,6 +13,7 @@ provider:
   runtime: rust
   environment:
     SYSTEM_EMAIL: ${env:SYSTEM_EMAIL}
+    OBSERVER_EMAIL: ${env:OBSERVER_EMAIL}
   iamRoleStatements:
     - Effect: Allow
       Action:

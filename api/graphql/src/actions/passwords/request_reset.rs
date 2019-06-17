@@ -3,7 +3,7 @@ use crate::{
 	models::{ schema as db, user::User},
 	utils::links,
 };
-use shared::email_kinds::EmailKind;
+use shared::emails::{Email, EmailKind};
 use diesel::{self, pg::PgConnection, prelude::*};
 use failure::Error;
 use uuid::Uuid;
@@ -15,7 +15,7 @@ pub fn call(conn: &PgConnection, username_or_email: &str) -> Result<String, Erro
 
 	let reset_url = links::reset_url(&token)?;
 
-	let email = match user.email {
+	let email_address = match user.email {
 		Some(ref email) => email,
 		None => return Err(format_err!("No email found for this user")),
 	};
@@ -26,11 +26,15 @@ pub fn call(conn: &PgConnection, username_or_email: &str) -> Result<String, Erro
 		.map_err(|e| format_err!("{}", e))?;
 
 	let email_kind = EmailKind::ResetPassword {
-		email:     email.to_string(),
 		reset_url: reset_url.to_string(),
 	};
 
-	send::call(&email_kind)?;
+	let email = Email {
+		to: email_address.to_string(),
+		kind: email_kind,
+	};
+
+	send::call(&email)?;
 
 	Ok(token)
 }

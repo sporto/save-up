@@ -1,16 +1,16 @@
 use failure::Error;
 use rusoto_core::Region;
 use rusoto_sns::{Sns,PublishInput, SnsClient};
-use shared::email_kinds::EmailKind;
+use shared::emails::Email;
 use crate::{
 	utils::config,
 };
 
-pub fn call(email_kind: &EmailKind) -> Result<(), Error> {
+pub fn call(email: &Email) -> Result<(), Error> {
 	let config = config::get()?;
 	let client = SnsClient::new(Region::UsEast1);
 
-	let message = json!(email_kind);
+	let message = json!(email);
 
 	let input = PublishInput {
 		message: message.to_string(),

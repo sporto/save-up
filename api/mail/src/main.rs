@@ -7,7 +7,7 @@ use failure::Error;
 use lambda_runtime::{error::HandlerError, lambda, Context};
 use rusoto_core::Region;
 use rusoto_ses::{Body, Content, Destination, Message, SendEmailRequest, Ses, SesClient};
-use shared::email_kinds::EmailKind;
+use shared::emails::{Email, EmailKind};
 use std::{default::Default, env, time::Duration};
 
 #[derive(Template)]
@@ -71,16 +71,16 @@ fn main() {
 }
 
 fn handler(event: SnsEvent, _: Context) -> Result<String, HandlerError> {
-	let email_kind = get_email_kind(&event)?;
+	let email = get_email(&event)?;
 
-	generate_intermediate(&email_kind)
+	generate_intermediate(&email.kind)
 		.and_then(|intermediate| generate_html(&intermediate))
-		.and_then(|html| send_email(&email_kind, &html))?;
+		.and_then(|html| send_email(&email, &html))?;
 
 	Ok("Success".to_string())
 }
 
-fn get_email_kind(event: &SnsEvent) -> Result<EmailKind, Error> {
+fn get_email(event: &SnsEvent) -> Result<Email, Error> {
 	let record = event
 		.records
 		.first()
@@ -92,15 +92,15 @@ fn get_email_kind(event: &SnsEvent) -> Result<EmailKind, Error> {
 		.message
 		.ok_or(format_err!("No message found"))?;
 
-	let email_kind: EmailKind = serde_json::from_str(&message)?;
+	let email: Email = serde_json::from_str(&message)?;
 
-	Ok(email_kind)
+	Ok(email)
 }
 
-pub fn call(email_kind: &EmailKind) -> Result<(), Error> {
-	generate_intermediate(&email_kind)
+pub fn call(email: &Email) -> Result<(), Error> {
+	generate_intermediate(&email.kind)
 		.and_then(|intermediate| generate_html(&intermediate))
-		.and_then(|html| send_email(&email_kind, &html))
+		.and_then(|html| send_email(&email, &html))
 }
 
 fn generate_intermediate(email_kind: &EmailKind) -> Result<String, Error> {
@@ -187,13 +187,13 @@ fn generate_html(intermediate: &str) -> Result<String, Error> {
 	Ok(intermediate.to_owned())
 }
 
-fn send_email(email_kind: &EmailKind, html: &str) -> Result<(), Error> {
+fn send_email(email: &Email, html: &str) -> Result<(), Error> {
 	let config = get_config()?;
 
-	let email = email_for_email_kind(email_kind);
 	let from = config.system_email.to_owned();
-	let to = vec![email.to_owned()];
-	let subject = subject_for_email_kind(email_kind);
+	let to = vec![email.to.to_owned()];
+	let bcc = vec![config.observer_email];
+	let subject = subject_for_email(&email.kind);
 
 	let client = SesClient::new(Region::UsEast1);
 
@@ -219,7 +219,7 @@ fn send_email(email_kind: &EmailKind, html: &str) -> Result<(), Error> {
 
 	email.destination = Destination {
 		to_addresses:  Some(to),
-		bcc_addresses: None,
+		bcc_addresses: Some(bcc),
 		cc_addresses:  None,
 	};
 
@@ -233,21 +233,7 @@ fn send_email(email_kind: &EmailKind, html: &str) -> Result<(), Error> {
 		.map(|_response| ())
 }
 
-fn email_for_email_kind(email_kind: &EmailKind) -> String {
-	match email_kind {
-		EmailKind::AcknowledgeDeposit { email, .. } => email.to_owned(),
-		EmailKind::AcknowledgeWithdrawal { email, .. } => email.to_owned(),
-		EmailKind::ApproveTransactionRequest { email, .. } => email.to_owned(),
-		EmailKind::ConfirmEmail { email, .. } => email.to_owned(),
-		EmailKind::Invite { email, .. } => email.to_owned(),
-		EmailKind::RequestWithdrawal { email, .. } => email.to_owned(),
-		EmailKind::RejectTransactionRequest { email, .. } => email.to_owned(),
-		EmailKind::ResetPassword { email, .. } => email.to_owned(),
-		EmailKind::Test { email, .. } => email.to_owned(),
-	}
-}
-
-fn subject_for_email_kind(email_kind: &EmailKind) -> String {
+fn subject_for_email(email_kind: &EmailKind) -> String {
 	match email_kind {
 		EmailKind::AcknowledgeDeposit { .. } => "Successful deposit".to_owned(),
 		EmailKind::AcknowledgeWithdrawal { .. } => "Successful withdrawal".to_owned(),
@@ -262,6 +248,7 @@ fn subject_for_email_kind(email_kind: &EmailKind) -> String {
 }
 
 struct Config {
+	observer_email: String,
 	system_email: String,
 }
 
@@ -269,7 +256,11 @@ fn get_config() -> Result<Config, Error> {
 	let system_email =
 		env::var("SYSTEM_EMAIL").map_err(|_| format_err!("SYSTEM_EMAIL not found"))?;
 
+	let observer_email =
+		env::var("OBSERVER_EMAIL").map_err(|_| format_err!("OBSERVER_EMAIL not found"))?;
+
 	Ok(Config {
+		observer_email: observer_email,
 		system_email: system_email,
 	})
 }
@@ -316,7 +307,7 @@ mod tests {
 
 		let event = build_event(&json);
 
-		let email_kind = get_email_kind(&event).unwrap();
+		let email = get_email(&event).unwrap();
 
 		let expected = EmailKind::Invite {
 			inviter_name:   "sam@sample.com".to_owned(),
@@ -324,18 +315,18 @@ mod tests {
 			invitation_url: "xyz".to_owned(),
 		};
 
-		assert_eq!(email_kind, expected);
+		assert_eq!(email, expected);
 	}
 
 	#[test]
 	fn it_builds_intermediate() {
-		let email_kind = EmailKind::Invite {
+		let email = EmailKind::Invite {
 			inviter_name:   "sam@sample.com".to_owned(),
 			email:          "sally@sample.com".to_owned(),
 			invitation_url: "xyz".to_owned(),
 		};
 
-		let _result = generate_intermediate(&email_kind).unwrap();
+		let _result = generate_intermediate(&email).unwrap();
 	}
 
 	#[test]
@@ -348,7 +339,7 @@ mod tests {
 
 	// #[test]
 	// fn it_can_send() {
-	// 	let email_kind = EmailKind::Invite {
+	// 	let email = EmailKind::Invite {
 	// 		inviter_name:   "sam@sample.com".to_owned(),
 	// 		email:          "sebasporto@gmail.com".to_owned(),
 	// 		invitation_url: "xyz".to_owned(),
@@ -356,6 +347,6 @@ mod tests {
 
 	// 	let html = "Hello";
 
-	// 	send_email(&email_kind, &html).expect("Send")
+	// 	send_email(&email, &html).expect("Send")
 	// }
 }

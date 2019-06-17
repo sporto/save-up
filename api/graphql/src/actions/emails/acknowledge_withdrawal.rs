@@ -9,15 +9,14 @@ use crate::{
 		user::User,
 	},
 };
-use shared::email_kinds::EmailKind;
-
+use shared::emails::{Email, EmailKind};
 
 pub fn call(conn: &PgConnection, transaction: &Transaction) -> Result<(), Error> {
 	// Find the user
 	let account = Account::find(&conn, transaction.account_id)?;
 	let user = User::find(&conn, account.user_id)?;
 
-	let email = match user.email {
+	let email_address = match user.email {
 		Some(email) => email,
 		None => return Ok(()),
 	};
@@ -26,10 +25,14 @@ pub fn call(conn: &PgConnection, transaction: &Transaction) -> Result<(), Error>
 	let Cents(balance) = transaction.balance;
 
 	let email_kind = EmailKind::AcknowledgeWithdrawal {
-		email:            email,
 		amount_in_cents:  cents,
 		balance_in_cents: balance,
 	};
 
-	send::call(&email_kind)
+	let email = Email {
+		to: email_address.to_string(),
+		kind: email_kind,
+	};
+
+	send::call(&email)
 }

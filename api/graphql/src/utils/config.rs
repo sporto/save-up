@@ -9,12 +9,13 @@ pub enum AppEnv {
 
 #[derive(Clone)]
 pub struct Config {
-	pub api_port:     u16,
-	pub api_secret:   String,
+	pub api_port:       u16,
+	pub api_secret:     String,
 	pub aws_sns_email_topic_arn:   String,
-	pub client_host:  String,
-	pub database_url: String,
-	pub system_jwt:   String,
+	pub client_host:    String,
+	pub database_url:   String,
+	pub observer_email: String,
+	pub system_jwt:     String,
 }
 
 struct VariableNames {
@@ -65,6 +66,9 @@ pub fn get() -> Result<Config, Error> {
 	let database_url =
 		env::var(names.database_url).map_err(|_| format_err!("database_url not found"))?;
 
+	let observer_email =
+		env::var("OBSERVER_EMAIL").map_err(|_| format_err!("OBSERVER_EMAIL not found"))?;
+
 	let system_jwt = env::var("SYSTEM_JWT").map_err(|_| format_err!("SYSTEM_JWT not found"))?;
 
 	let config = Config {
@@ -73,6 +77,7 @@ pub fn get() -> Result<Config, Error> {
 		aws_sns_email_topic_arn,
 		client_host,
 		database_url,
+		observer_email,
 		system_jwt,
 	};
 

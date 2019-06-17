@@ -3,13 +3,17 @@ use failure::Error;
 use crate::{
 	actions::emails::send,
 };
-use shared::email_kinds::EmailKind;
-
+use shared::emails::{Email, EmailKind};
+use crate::utils::config;
 
 pub fn call() -> Result<(), Error> {
-	let email_kind = EmailKind::Test {
-		email: "sebasporto@gmail.com".to_string(),
+	let config = config::get()?;
+	let email_kind = EmailKind::Test {};
+
+	let email = Email {
+		to: config.observer_email,
+		kind: email_kind,
 	};
 
-	send::call(&email_kind)
+	send::call(&email)
 }

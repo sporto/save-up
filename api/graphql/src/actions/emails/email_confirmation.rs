@@ -3,7 +3,7 @@ use crate::{
 	models::{user::User},
 	utils::links,
 };
-use shared::email_kinds::EmailKind;
+use shared::emails::{Email, EmailKind};
 
 use failure::Error;
 
@@ -15,15 +15,19 @@ pub fn call(user: &User) -> Result<(), Error> {
 
 	let url = links::email_confirmation_url(&confirmation_token)?;
 
-	let email = match user.email {
+	let email_address = match user.email {
 		Some(ref email) => email,
 		None => return Ok(()),
 	};
 
 	let email_kind = EmailKind::ConfirmEmail {
-		email:            email.to_string(),
 		confirmation_url: url.to_string(),
 	};
 
-	send::call(&email_kind)
+	let email = Email {
+		to: email_address.to_string(),
+		kind: email_kind,
+	};
+
+	send::call(&email)
 }
