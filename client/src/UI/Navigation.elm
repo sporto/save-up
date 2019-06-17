@@ -68,7 +68,7 @@ view context args =
             , logo
             , links
             ]
-        , div []
+        , div [ class "mt-4 sm:mt-0" ]
             [ text context.auth.data.name
             , signOut args.onSignOut
             ]

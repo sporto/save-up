@@ -68,7 +68,7 @@ form_ args =
 
 title : Args resp msg -> Html msg
 title args =
-    h2 [ class "" ] [ text args.title ]
+    h2 [ class "text-2xl font-semibold" ] [ text args.title ]
 
 
 intro : Args resp msg -> Html msg
@@ -108,6 +108,7 @@ submit args =
         _ ->
             button
                 [ class molecules.form.submit
+                , class "w-full sm:w-auto"
                 ]
                 args.submitContent
 
