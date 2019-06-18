@@ -2,7 +2,7 @@
 #   cargo-cache:
 
 postgres:
-  image: healthcheck/postgres:alpine
+  image: postgres:11.3
 
 api:
   build:
@@ -12,13 +12,13 @@ api:
     - postgres
   cached: true
   environment:
+    API_PORT: 3000
     API_SECRET: abc
-    CLIENT_HOST: client
     APP_ENV: test
-    DATABASE_NAME_TEST: postgres
-    DATABASE_HOST_TEST: x
-    DATABASE_USER_TEST: postgres
-    DATABASE_PASS_TEST: x
+    AWS_SNS_EMAIL_TOPIC_ARN: abc
+    CLIENT_HOST: client
+    DATABASE_URL_TEST: postgresql://postgres@postgres/save_up_test
+    OBSERVER_EMAIL: sam@test.com
     SYSTEM_JWT: abc
   volumes:
     - cargo-cache:/root/.cargo

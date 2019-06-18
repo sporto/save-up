@@ -29,7 +29,7 @@ db-down:
 	DATABASE_URL=$DATABASE_URL_LOCAL diesel migration revert
 	DATABASE_URL=$DATABASE_URL_TEST diesel migration revert
 
-dp-setup-test:
+db-setup-test:
 	DATABASE_URL=$DATABASE_URL_TEST diesel setup
 
 schema:
@@ -37,6 +37,8 @@ schema:
 
 test:
 	APP_ENV=test cargo test
+
+test-with-setup: db-setup-test test
 
 # Build the server infrastructe in Scaleway
 # provision:

@@ -6,7 +6,7 @@
       command: cargo check
     - name: Test Api GraphQl
       service: api
-      command: just graphql/test
+      command: just graphql/test-with-setup
     - name: Test Client
       service: client
       command: npx elm-test
