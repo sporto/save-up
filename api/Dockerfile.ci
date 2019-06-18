@@ -1,6 +1,7 @@
 FROM rustlang/rust:nightly
 
 RUN cargo install just
+RUN cargo install diesel
 
 WORKDIR /usr/src
 COPY . .
