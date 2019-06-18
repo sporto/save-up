@@ -49,8 +49,8 @@ pub fn call(conn: &PgConnection, input: DepositInput) -> Result<Transaction, Err
 #[cfg(test)]
 mod test {
 	use super::*;
-	use models;
-	use utils::tests;
+	use crate::models;
+	use crate::utils::tests;
 
 	#[test]
 	fn it_creates_a_transaction() {

@@ -65,7 +65,7 @@ impl Transaction {
 pub mod factories {
 	use super::*;
 	// use bigdecimal::FromPrimitive;
-	use models::account::Account;
+	use crate::models::account::Account;
 
 	#[allow(dead_code)]
 	pub fn transaction_attrs(account: &Account) -> TransactionAttrs {

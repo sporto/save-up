@@ -40,8 +40,8 @@ pub fn call(
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use models::{self, role::Role};
-	use utils::tests;
+	use crate::models::{self, role::Role};
+	use crate::utils::tests;
 
 	#[test]
 	fn it_creates_an_invitation() {

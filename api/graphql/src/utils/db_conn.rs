@@ -6,6 +6,7 @@ use rocket::{
 	Outcome, Request, State,
 };
 use std::ops::Deref;
+use failure::Error;
 
 pub type ManagedPgConn = r2d2::ConnectionManager<PgConnection>;
 pub type DBPool = r2d2::Pool<ManagedPgConn>;
@@ -17,10 +18,6 @@ pub fn init_pool() -> DBPool {
 	let manager = r2d2::ConnectionManager::<PgConnection>::new(config.database_url);
 
 	r2d2::Pool::new(manager).expect("Failed to create pool.")
-
-	// r2d2::Pool::builder()
-	// 	.build(manager)
-	// 	.expect("Failed to create pool.")
 }
 
 /// Db Connection request guard type: wrapper around r2d2 pooled connection
@@ -48,6 +45,14 @@ impl<'a, 'r> FromRequest<'a, 'r> for DBConn {
 			Err(_) => Outcome::Failure((Status::ServiceUnavailable, ())),
 		}
 	}
+}
+
+#[cfg(test)]
+pub fn establish_connection() -> Result<PgConnection, Error> {
+	let config = config::get()?;
+
+ 	PgConnection::establish(&config.database_url)
+		.map_err(|_| format_err!("Error connecting to {}", config.database_url))
 }
 
 #[cfg(test)]

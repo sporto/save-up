@@ -57,7 +57,7 @@ fn get_admin_ids(conn: &PgConnection, account: &Account) -> Result<Vec<i32>, Err
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use utils::tests;
+	use crate::utils::tests;
 
 	#[test]
 	fn is_true_for_the_user() {

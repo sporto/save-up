@@ -68,8 +68,8 @@ pub fn call(conn: &PgConnection, input: &RedeemInvitationInput) -> Result<User, 
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use models::{account::Account, client};
-	use utils::tests;
+	use crate::models::{account::Account, client};
+	use crate::utils::tests;
 
 	#[test]
 	fn it_creates_a_user() {

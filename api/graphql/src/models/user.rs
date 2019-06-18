@@ -135,7 +135,7 @@ impl User {
 #[cfg(test)]
 pub mod factories {
 	use super::*;
-	use models::client::Client;
+	use crate::models::client::Client;
 
 	#[allow(dead_code)]
 	pub fn user_attrs(client: &Client) -> UserAttrs {

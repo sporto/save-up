@@ -25,9 +25,9 @@ pub fn call(conn: &PgConnection, sign_in: SignIn) -> Result<User, Error> {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use actions::passwords;
-	use models;
-	use utils::tests;
+	use crate::actions::passwords;
+	use crate::models;
+	use crate::utils::tests;
 
 	#[test]
 	fn it_can_sign_in() {

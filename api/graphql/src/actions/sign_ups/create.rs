@@ -78,7 +78,7 @@ pub fn call(conn: &PgConnection, sign_up: SignUp) -> Result<User, Error> {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use utils::tests;
+	use crate::utils::tests;
 
 	#[test]
 	fn it_creates_a_client_and_user() {

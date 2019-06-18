@@ -70,8 +70,8 @@ pub fn call(conn: &PgConnection, account_id: i32) -> Result<PayInterestResponse,
 mod tests {
 	use super::*;
 	use diesel::{self, prelude::*};
-	use models::{self, schema::transactions};
-	use utils::tests;
+	use crate::models::{self, schema::transactions};
+	use crate::utils::tests;
 
 	#[test]
 	fn it_doesnt_do_anything_if_there_is_no_previous_transaction() {

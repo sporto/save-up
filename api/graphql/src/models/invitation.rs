@@ -46,7 +46,7 @@ impl Invitation {
 #[cfg(test)]
 pub mod factories {
 	use super::*;
-	use models::user::{Role, User};
+	use crate::models::user::{Role, User};
 
 	#[allow(dead_code)]
 	pub fn invitation_attrs(inviter: &User) -> InvitationAttrs {

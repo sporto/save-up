@@ -1,7 +1,7 @@
 {
+	"to": "sally@sample.com",
 	"Invite": {
 		"inviter_name": "sam@sample.com",
-		"email": "sally@sample.com",
 		"invitation_url": "xyz"
 	}
 }

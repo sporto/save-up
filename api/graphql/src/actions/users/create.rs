@@ -27,8 +27,8 @@ pub fn call(conn: &PgConnection, user_attrs: UserAttrs) -> Result<User, Error> {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use models;
-	use utils::tests;
+	use crate::models;
+	use crate::utils::tests;
 
 	#[test]
 	fn it_enforces_unique_usernames() {

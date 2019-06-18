@@ -20,8 +20,8 @@ pub fn call(conn: &PgConnection, token: &str) -> Result<user::User, Error> {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use models::client;
-	use utils::tests;
+	use crate::models::client;
+	use crate::utils::tests;
 
 	#[test]
 	fn it_updates_the_user() {

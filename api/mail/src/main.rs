@@ -309,10 +309,14 @@ mod tests {
 
 		let email = get_email(&event).unwrap();
 
-		let expected = EmailKind::Invite {
+		let kind = EmailKind::Invite {
 			inviter_name:   "sam@sample.com".to_owned(),
-			email:          "sally@sample.com".to_owned(),
 			invitation_url: "xyz".to_owned(),
+		};
+
+		let expected = Email {
+			to: "sally@sample.com".to_owned(),
+			kind: kind,
 		};
 
 		assert_eq!(email, expected);
@@ -320,13 +324,12 @@ mod tests {
 
 	#[test]
 	fn it_builds_intermediate() {
-		let email = EmailKind::Invite {
+		let kind = EmailKind::Invite {
 			inviter_name:   "sam@sample.com".to_owned(),
-			email:          "sally@sample.com".to_owned(),
 			invitation_url: "xyz".to_owned(),
 		};
 
-		let _result = generate_intermediate(&email).unwrap();
+		let _result = generate_intermediate(&kind).unwrap();
 	}
 
 	#[test]

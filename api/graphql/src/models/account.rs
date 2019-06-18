@@ -123,7 +123,7 @@ impl Account {
 pub mod factories {
 	use super::*;
 	use bigdecimal::FromPrimitive;
-	use models::user::User;
+	use crate::models::user::User;
 
 	#[allow(dead_code)]
 	pub fn account_attrs(user: &User) -> AccountAttrs {
