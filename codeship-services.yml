@@ -5,7 +5,7 @@ postgres:
   image: healthcheck/postgres:alpine
 
 api:
-  build: 
+  build:
     context: api
     dockerfile: Dockerfile.ci
   depends_on:
