@@ -2,7 +2,7 @@
 #   cargo-cache:
 
 postgres:
-  image: postgres:11.3
+  image: healthcheck/postgres
 
 api:
   build:
