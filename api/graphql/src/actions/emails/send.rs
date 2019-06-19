@@ -22,6 +22,10 @@ pub fn call(email: &Email) -> Result<(), Error> {
 		topic_arn: Some(config.aws_sns_email_topic_arn),
 	};
 
+	if (config.env == config::AppEnv::Test) {
+		return Ok(());
+	};
+
 	client
 		.publish(input)
 		.sync()

@@ -1,7 +1,7 @@
 use failure::Error;
 use std::env;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum AppEnv {
 	Test,
 	Dev,
@@ -9,6 +9,7 @@ pub enum AppEnv {
 
 #[derive(Clone)]
 pub struct Config {
+	pub env:            AppEnv,
 	pub api_port:       u16,
 	pub api_secret:     String,
 	pub aws_sns_email_topic_arn:   String,
@@ -47,6 +48,8 @@ fn variable_names() -> VariableNames {
 }
 
 pub fn get() -> Result<Config, Error> {
+	let env = app_env();
+
 	let names = variable_names();
 
 	let api_port = env::var("API_PORT")
@@ -72,6 +75,7 @@ pub fn get() -> Result<Config, Error> {
 	let system_jwt = env::var("SYSTEM_JWT").map_err(|_| format_err!("SYSTEM_JWT not found"))?;
 
 	let config = Config {
+		env,
 		api_port,
 		api_secret,
 		aws_sns_email_topic_arn,
