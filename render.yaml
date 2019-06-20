@@ -1,5 +1,8 @@
 version: 1
 
+envVarGroups:
+- name: save-up
+
 services:
 - type: web
   name: save-up-api
@@ -8,3 +11,5 @@ services:
   buildCommand: cd api && cargo build --release
   startCommand: cd api && cargo run --release --bin api
   domain: api.saveup.app
+  envVars:
+  - fromGroup: save-up
