@@ -10,8 +10,23 @@ services:
   repo: https://github.com/sporto/save-up
   buildCommand: cd api && cargo build --release
   startCommand: cd api && cargo run --release --bin api
-  domains: api.saveup.app
   healthCheckPath: "/"
   envVars:
   - fromGroup: save-up
 
+- type: web
+  name: save-up-fe
+  env: static
+  repo: https://github.com/sporto/save-up
+  buildCommand: cd client && npx parcel build src/index.html
+  staticPublishPath: client/dist
+  envVars:
+  - fromGroup: save-up
+
+- type: web
+  name: save-up-web
+  env: static
+  repo: https://github.com/sporto/save-up
+  staticPublishPath: web/public
+  envVars:
+  - fromGroup: save-up
