@@ -7,7 +7,7 @@ services:
 - type: web
   name: save-up-api
   env: rust
-  repo: https://github.com/sporto/save-up.git
+  repo: https://github.com/sporto/save-up
   buildCommand: cd api && cargo build --release
   startCommand: cd api && cargo run --release --bin api
   domain: api.saveup.app
