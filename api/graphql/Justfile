@@ -15,8 +15,8 @@ try-prod:
 		--header "Authorization: Bearer $SYSTEM_JWT_PROD" \
 		http://51.15.65.131/app/graphql?id=data
 
-dp-setup:
-	DATABASE_URL=$DATABASE_URL_LOCAL diesel setup
+db-setup:
+	diesel setup
 
 db-gen name:
 	diesel migration generate {{name}}

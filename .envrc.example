@@ -8,7 +8,6 @@ export AWS_SNS_EMAIL_TOPIC_ARN=AWS_SNS_EMAIL_TOPIC_ARN
 export CLIENT_HOST=http://localhost:8080
 export DATABASE_URL_TEST=xx
 export DATABASE_URL=postgres://postgres@localhost/db_name
-export NETLIFY_SITE_ID_APP=123
 export OBSERVER_EMAIL=foo@example.com
 export RUSTFLAGS="-Aproc-macro-derive-resolution-fallback"
 export SYSTEM_EMAIL=foo@example.com
