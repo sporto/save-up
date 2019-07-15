@@ -10,6 +10,6 @@
   "license": "ISC",
   "devDependencies": {
     "serverless": "^1.46.1",
-    "serverless-rust": "^0.3.5"
+    "serverless-rust": "^0.3.6"
   }
 }
