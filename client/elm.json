@@ -26,7 +26,7 @@
             "kalutheo/elm-ui-explorer": "2.0.3",
             "krisajenkins/remotedata": "6.0.1",
             "ryannhg/date-format": "2.3.0",
-            "simonh1000/elm-jwt": "7.0.0",
+            "simonh1000/elm-jwt": "7.1.0",
             "stoeffel/elm-verify": "5.0.0"
         },
         "indirect": {
