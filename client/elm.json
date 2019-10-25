@@ -19,7 +19,7 @@
             "elm/time": "1.0.0",
             "elm/url": "1.0.0",
             "elm-community/maybe-extra": "5.0.0",
-            "elm-community/result-extra": "2.2.1",
+            "elm-community/result-extra": "2.3.0",
             "elm-community/typed-svg": "5.0.1",
             "folkertdev/one-true-path-experiment": "4.0.3",
             "gampleman/elm-visualization": "2.0.0",
