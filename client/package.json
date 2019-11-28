@@ -16,7 +16,7 @@
 		"postcss": "^7.0.17",
 		"postcss-modules": "^1.4.1",
 		"tailwindcss": "^1.0.4",
-		"ts-node": "^8.3.0",
+		"ts-node": "^8.5.4",
 		"typescript": "^3.5.3"
 	},
 	"dependencies": {
