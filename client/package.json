@@ -17,7 +17,7 @@
 		"postcss-modules": "^1.4.1",
 		"tailwindcss": "^1.0.4",
 		"ts-node": "^8.3.0",
-		"typescript": "^3.5.3"
+		"typescript": "^3.7.5"
 	},
 	"dependencies": {
 		"elm-outdated": "^1.1.0",
